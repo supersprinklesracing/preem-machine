@@ -1,10 +1,10 @@
 {
-  "name": "@preem-machine/preem-machine-e2e",
+  "name": "@preem-machine/e2e-main",
   "version": "0.0.1",
   "private": true,
   "nx": {
     "implicitDependencies": [
-      "@preem-machine/preem-machine"
+      "@preem-machine/main"
     ]
   }
 }
