@@ -1,0 +1,2 @@
+npx nx affected -t test \
+  && npx nx affected -t component-test
