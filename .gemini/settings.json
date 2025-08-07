@@ -1,0 +1,10 @@
+{
+  "autoAccept": true,
+  "preferredEditor": "vscode",
+  "mcpServers": {
+    "nx-mcp": {
+      "command": "npx",
+      "args": ["nx-mcp@latest"]
+    }
+  }
+}
