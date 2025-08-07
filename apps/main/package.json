@@ -1,5 +1,5 @@
 {
-  "name": "@preem-machine/preem-machine",
+  "name": "@preem-machine/main",
   "version": "0.0.1",
   "private": true,
   "dependencies": {

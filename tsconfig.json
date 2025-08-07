@@ -4,10 +4,10 @@
   "files": [],
   "references": [
     {
-      "path": "./apps/preem-machine-e2e"
+      "path": "./apps/e2e-main"
     },
     {
-      "path": "./apps/preem-machine"
+      "path": "./apps/main"
     }
   ]
 }

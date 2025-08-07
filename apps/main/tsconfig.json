@@ -6,11 +6,7 @@
     "emitDeclarationOnly": false,
     "esModuleInterop": true,
     "resolveJsonModule": true,
-    "lib": [
-      "dom",
-      "dom.iterable",
-      "esnext"
-    ],
+    "lib": ["dom", "dom.iterable", "esnext"],
     "allowJs": true,
     "allowSyntheticDefaultImports": true,
     "forceConsistentCasingInFileNames": true,
@@ -21,21 +17,16 @@
       }
     ],
     "paths": {
-      "@/*": [
-        "./src/*"
-      ]
+      "@/*": ["./src/*"]
     },
-    "types": [
-      "jest",
-      "node"
-    ],
+    "types": ["jest", "node"],
     "outDir": "dist",
     "rootDir": "src",
     "tsBuildInfoFile": "dist/tsconfig.tsbuildinfo"
   },
   "include": [
-    "../../apps/preem-machine/.next/types/**/*.ts",
-    "../../dist/apps/preem-machine/.next/types/**/*.ts",
+    "../../apps/main/.next/types/**/*.ts",
+    "../../dist/apps/main/.next/types/**/*.ts",
     "next-env.d.ts",
     "src/**/*.js",
     "src/**/*.jsx",
