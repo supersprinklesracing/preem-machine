@@ -1,0 +1,125 @@
+'use client';
+
+export const dynamic = 'force-dynamic';
+
+import { raceSeries, users } from '@/datastore/mock-data';
+import type { Contribution } from '@/datastore/types';
+import {
+  Avatar,
+  Button,
+  Card,
+  Grid,
+  Group,
+  Stack,
+  Table,
+  Text,
+  Title,
+} from '@mantine/core';
+import { IconEdit, IconMail } from '@tabler/icons-react';
+import { format } from 'date-fns';
+import React from 'react';
+
+type ContributionWithMeta = Contribution & {
+  raceName: string;
+  preemName: string;
+};
+
+const UserProfilePage: React.FC<{ params: { id: string } }> = ({ params }) => {
+  const user = users.find((u) => u.id === params.id);
+
+  if (!user) {
+    return <div>User not found</div>;
+  }
+
+  const contributions: ContributionWithMeta[] = raceSeries.flatMap((series) =>
+    series.races.flatMap((race) =>
+      race.preems.flatMap((preem) =>
+        preem.contributionHistory
+          .filter((c) => c.contributorId === user.id)
+          .map((c) => ({
+            ...c,
+            raceName: race.name,
+            preemName: preem.name,
+          }))
+      )
+    )
+  );
+
+  const totalContributed = contributions.reduce((sum, c) => sum + c.amount, 0);
+
+  const contributionRows = contributions
+    .sort((a, b) => new Date(b.date).getTime() - new Date(a.date).getTime())
+    .map((c) => (
+      <Table.Tr key={c.id}>
+        <Table.Td>{format(new Date(c.date), 'PP')}</Table.Td>
+        <Table.Td>{c.raceName}</Table.Td>
+        <Table.Td>{c.preemName}</Table.Td>
+        <Table.Td>
+          <Text ta="right" c="green" fw={600}>
+            ${c.amount.toLocaleString()}
+          </Text>
+        </Table.Td>
+      </Table.Tr>
+    ));
+
+  return (
+    <Grid gutter="xl">
+      <Grid.Col span={{ base: 12, lg: 4 }}>
+        <Card withBorder padding="lg" radius="md">
+          <Stack align="center" ta="center">
+            <Avatar
+              src={user.avatarUrl}
+              alt={user.name}
+              size={120}
+              radius="50%"
+            />
+            <Title order={2} ff="Space Grotesk, var(--mantine-font-family)">
+              {user.name}
+            </Title>
+            <Group gap="xs">
+              <IconMail size={16} />
+              <Text c="dimmed">{user.email}</Text>
+            </Group>
+            <Button
+              variant="outline"
+              size="sm"
+              mt="md"
+              leftSection={<IconEdit size={14} />}
+            >
+              Edit Profile
+            </Button>
+            <Stack gap={0} mt="md">
+              <Text c="dimmed" size="sm">
+                Total Contributed
+              </Text>
+              <Title order={3} c="blue">
+                ${totalContributed.toLocaleString()}
+              </Title>
+            </Stack>
+          </Stack>
+        </Card>
+      </Grid.Col>
+
+      <Grid.Col span={{ base: 12, lg: 8 }}>
+        <Title order={1} ff="Space Grotesk, var(--mantine-font-family)" mb="lg">
+          Contribution History
+        </Title>
+        <Card withBorder padding={0} radius="md">
+          <Table highlightOnHover>
+            <Table.Thead>
+              <Table.Tr>
+                <Table.Th>Date</Table.Th>
+                <Table.Th>Race</Table.Th>
+                <Table.Th>Preem</Table.Th>
+                <Table.Th style={{ textAlign: 'right' }}>Amount</Table.Th>
+              </Table.Tr>
+            </Table.Thead>
+            <Table.Tbody>{contributionRows}</Table.Tbody>
+          </Table>
+        </Card>
+      </Grid.Col>
+    </Grid>
+  );
+};
+
+export default UserProfilePage;

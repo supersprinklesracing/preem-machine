@@ -19,7 +19,7 @@ import { signOut } from 'firebase/auth';
 import { useRouter } from 'next/navigation';
 import { checkEmailVerification, logout } from '../../auth';
 import { getAppCheck } from '../../../app-check';
-import { refreshCookies } from '../../actions/refresh-cookies';
+import { refreshCookies } from '@/actions/refresh-cookies';
 import { useAuth } from '../../auth/AuthContext';
 import { getFirebaseAuth } from '../../auth/firebase';
 import { incrementCounterUsingClientFirestore } from './user-counters';

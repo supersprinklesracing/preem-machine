@@ -7,7 +7,7 @@ import { Metadata } from 'next';
 import { getTokens } from 'next-firebase-auth-edge/lib/next/tokens';
 import { cookies } from 'next/headers';
 import Link from 'next/link';
-import { incrementCounter } from '../actions/user-counters';
+import { incrementCounter } from '@/actions/user-counters';
 import { UserProfile } from './UserProfile';
 
 async function getUserCounter(): Promise<number> {
