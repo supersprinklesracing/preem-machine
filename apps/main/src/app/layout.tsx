@@ -6,6 +6,7 @@ import {
   mantineHtmlProps,
   MantineProvider,
 } from '@mantine/core';
+import { Notifications } from '@mantine/notifications';
 import { getTokens } from 'next-firebase-auth-edge';
 import { cookies, headers } from 'next/headers';
 import { AuthProvider } from './auth/AuthProvider';
@@ -30,9 +31,16 @@ export default async function RootLayout({
     <html lang="en" {...mantineHtmlProps}>
       <head>
         <ColorSchemeScript />
+        <link rel="preconnect" href="https://fonts.googleapis.com" />
+        <link
+          rel="preconnect"
+          href="https://fonts.gstatic.com"
+          crossOrigin="anonymous"
+        />
       </head>
       <body>
         <MantineProvider theme={theme}>
+          <Notifications />
           <AuthProvider user={user}>
             <Layout>{children}</Layout>
           </AuthProvider>

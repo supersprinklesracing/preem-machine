@@ -2,7 +2,7 @@
 
 import { signInWithEmailAndPassword } from 'firebase/auth';
 import { refreshCookiesWithIdToken } from 'next-firebase-auth-edge/lib/next/cookies';
-import { getFirebaseAuth } from '../auth/firebase';
+import { getFirebaseAuth } from '@/app/auth/firebase';
 import { cookies, headers } from 'next/headers';
 import { authConfigFn } from '@/firebase-admin/config';
 import { redirect } from 'next/navigation';

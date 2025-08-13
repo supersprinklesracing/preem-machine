@@ -3,6 +3,7 @@
   "version": "0.0.1",
   "private": true,
   "dependencies": {
+    "date-fns": "^4.1.0",
     "react-loading-hook": "^1.1.2"
   }
 }
