@@ -1,7 +1,15 @@
 'use client';
 
-import { NavLink, Stack } from '@mantine/core';
-import { IconBike, IconCrown, IconUser } from '@tabler/icons-react';
+import { Box, Divider, NavLink, Stack } from '@mantine/core';
+import {
+  IconBike,
+  IconBug,
+  IconCrown,
+  IconDeviceTv,
+  IconHome,
+  IconShield,
+  IconUser,
+} from '@tabler/icons-react';
 import Link from 'next/link';
 import { usePathname } from 'next/navigation';
 import React from 'react';
@@ -26,16 +34,21 @@ const Sidebar: React.FC<SidebarProps> = ({ races }) => {
         <NavLink
           href="/"
           label="Home"
-          leftSection={<IconBike size={18} />}
+          leftSection={<IconHome size={18} />}
           active={pathname === '/'}
           component={Link}
         />
         <NavLink
           href="/organizer"
-          label="Organizer Hub"
+          label="Event Hub"
           leftSection={<IconCrown size={18} />}
-          active={pathname.startsWith('/organizer')}
+          active={pathname === '/organizer'}
           component={Link}
+        />
+        <NavLink
+          label="Race Management"
+          leftSection={<IconBike size={18} />}
+          active={pathname.startsWith('/organizer/race')}
           defaultOpened
         >
           {mostRecentRaces.map((race) => (
@@ -43,19 +56,48 @@ const Sidebar: React.FC<SidebarProps> = ({ races }) => {
               key={race.id}
               href={`/organizer/race/${race.id}`}
               label={race.name}
+              leftSection={<Box w={18} />}
               active={pathname === `/organizer/race/${race.id}`}
               component={Link}
             />
           ))}
         </NavLink>
       </div>
-      <NavLink
-        href="/user"
-        label="My Profile"
-        leftSection={<IconUser size={18} />}
-        active={pathname.startsWith('/user')}
-        component={Link}
-      />
+      <div>
+        <NavLink
+          href="/user"
+          label="My Profile"
+          leftSection={<IconUser size={18} />}
+          active={pathname.startsWith('/user')}
+          component={Link}
+        />
+        <Divider my="sm" />
+        <Box
+          bg="gray.1"
+          p="xs"
+          style={{ borderRadius: 'var(--mantine-radius-md)' }}
+        >
+          <NavLink
+            label="Debug"
+            leftSection={<IconBug size={18} />}
+            defaultOpened
+          >
+            <NavLink
+              href="/big-screen/race-1"
+              label="Big Screen"
+              leftSection={<IconDeviceTv size={18} />}
+              active={pathname === '/big-screen/race-1'}
+              component={Link}
+            />
+            <NavLink
+              href="/admin"
+              label="Admin"
+              leftSection={<IconShield size={18} />}
+              active={pathname === '/admin'}
+            />
+          </NavLink>
+        </Box>
+      </div>
     </Stack>
   );
 };
