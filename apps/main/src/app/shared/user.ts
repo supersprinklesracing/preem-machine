@@ -1,6 +1,8 @@
-import { Tokens } from 'next-firebase-auth-edge';
 import { User } from '@/auth/AuthContext';
+import { authConfigFn } from '@/firebase-admin/config';
+import { getTokens, Tokens } from 'next-firebase-auth-edge';
 import { filterStandardClaims } from 'next-firebase-auth-edge/lib/auth/claims';
+import { cookies, headers } from 'next/headers';
 
 export const toUser = ({ token, customToken, decodedToken }: Tokens): User => {
   const {
@@ -27,4 +29,18 @@ export const toUser = ({ token, customToken, decodedToken }: Tokens): User => {
     idToken: token,
     customToken,
   };
+};
+
+export const getUserFromCookies = async () => {
+  const authConfig = await authConfigFn();
+  const tokens = await getTokens(await cookies(), {
+    ...authConfig,
+    headers: await headers(),
+  });
+
+  if (!tokens) {
+    return null;
+  }
+
+  return toUser(tokens);
 };

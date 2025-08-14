@@ -1,6 +1,7 @@
 'use client';
 
-import type { Contribution, User } from '@/datastore/types';
+import { useAuth } from '@/auth/AuthContext';
+import type { Contribution, User as UserType } from '@/datastore/types';
 import {
   Avatar,
   Button,
@@ -12,8 +13,9 @@ import {
   Text,
   Title,
 } from '@mantine/core';
-import { IconEdit, IconMail } from '@tabler/icons-react';
+import { IconEdit, IconMail, IconSettings } from '@tabler/icons-react';
 import { format } from 'date-fns';
+import Link from 'next/link';
 import React from 'react';
 
 type ContributionWithMeta = Contribution & {
@@ -22,11 +24,14 @@ type ContributionWithMeta = Contribution & {
 };
 
 interface UserProps {
-  user: User;
+  user: UserType;
   contributions: ContributionWithMeta[];
 }
 
 const User: React.FC<UserProps> = ({ user, contributions }) => {
+  const { user: authUser } = useAuth();
+  const isOwnProfile = authUser?.uid === user.id;
+
   const totalContributed = contributions.reduce((sum, c) => sum + c.amount, 0);
 
   const contributionRows = contributions
@@ -62,14 +67,27 @@ const User: React.FC<UserProps> = ({ user, contributions }) => {
               <IconMail size={16} />
               <Text c="dimmed">{user.email}</Text>
             </Group>
-            <Button
-              variant="outline"
-              size="sm"
-              mt="md"
-              leftSection={<IconEdit size={14} />}
-            >
-              Edit Profile
-            </Button>
+            {isOwnProfile ? (
+              <Button
+                component={Link}
+                href="/account"
+                variant="outline"
+                size="sm"
+                mt="md"
+                leftSection={<IconSettings size={14} />}
+              >
+                Go to My Account
+              </Button>
+            ) : (
+              <Button
+                variant="outline"
+                size="sm"
+                mt="md"
+                leftSection={<IconEdit size={14} />}
+              >
+                Edit Profile
+              </Button>
+            )}
             <Stack gap={0} mt="md">
               <Text c="dimmed" size="sm">
                 Total Contributed
