@@ -1,16 +1,13 @@
 'use server';
 
-import { authConfigFn } from '@/firebase-admin/config';
 import {
   ColorSchemeScript,
   mantineHtmlProps,
   MantineProvider,
 } from '@mantine/core';
-import { getTokens } from 'next-firebase-auth-edge';
-import { cookies, headers } from 'next/headers';
 import { AuthProvider } from '../auth/AuthProvider';
 import './global.css';
-import { toUser } from './shared/user';
+import { getUserFromCookies } from './shared/user';
 import { theme } from './theme';
 
 export default async function RootLayout({
@@ -18,12 +15,7 @@ export default async function RootLayout({
 }: {
   children: React.ReactNode;
 }) {
-  const authConfig = await authConfigFn();
-  const tokens = await getTokens(await cookies(), {
-    ...authConfig,
-    headers: await headers(),
-  });
-  const user = tokens ? toUser(tokens) : null;
+  const user = await getUserFromCookies();
 
   return (
     <html lang="en" {...mantineHtmlProps}>
