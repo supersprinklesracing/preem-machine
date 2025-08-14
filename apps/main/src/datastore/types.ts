@@ -8,7 +8,7 @@ export interface User {
 
 export interface Contribution {
   id: string;
-  contributorId: string | null; 
+  contributorId: string | null;
   amount: number;
   date: string;
   message?: string;
@@ -50,7 +50,7 @@ export interface Race {
 export interface RaceSeries {
   id: string;
   organizerId: string;
-  name:string;
+  name: string;
   region: string;
   website?: string;
   startDate: string;
@@ -58,11 +58,11 @@ export interface RaceSeries {
   races: Race[];
 }
 
-export type View = 
+export type View =
   | { type: 'race'; id: string }
   | { type: 'preem'; id: string }
   | { type: 'organizer-hub' }
-  | { type: 'live-dashboard'; id: string }
+  | { type: 'organizer-race'; id: string }
   | { type: 'big-screen'; id: string }
   | { type: 'profile'; id: string }
   | { type: 'admin' };
