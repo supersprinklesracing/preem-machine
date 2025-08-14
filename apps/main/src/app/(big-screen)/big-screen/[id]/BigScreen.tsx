@@ -92,7 +92,32 @@ const BigScreen: React.FC<{ initialRace: Race; users: User[] }> = ({
   const nextPreem =
     race.preems.find(
       (p) => p.status === 'Minimum Met' || p.status === 'Open'
-    ) || race.preems[0];
+    ) ||
+    race.preems
+      .filter((p) => p.timeLimit)
+      .sort(
+        (a, b) =>
+          new Date(b.timeLimit!).getTime() - new Date(a.timeLimit!).getTime()
+      )[0];
+
+  if (!nextPreem) {
+    return (
+      <Box
+        style={{
+          backgroundColor: '#111',
+          color: 'white',
+          minHeight: '100vh',
+          padding: '2rem',
+          display: 'flex',
+          alignItems: 'center',
+          justifyContent: 'center',
+        }}
+      >
+        <Title>No upcoming preems for this race.</Title>
+      </Box>
+    );
+  }
+
   const sponsor = nextPreem.sponsorInfo
     ? users.find((u) => u.id === nextPreem.sponsorInfo?.userId)
     : null;

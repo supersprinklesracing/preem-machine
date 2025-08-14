@@ -6,7 +6,7 @@ export default async function BigScreenPage({
 }: {
   params: { id: string };
 }) {
-  const race = await getRaceById(params.id);
+  const race = await getRaceById((await params).id);
 
   if (!race) {
     return <div>Race not found</div>;
