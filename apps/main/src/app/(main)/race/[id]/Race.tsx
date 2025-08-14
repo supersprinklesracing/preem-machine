@@ -19,7 +19,7 @@ import {
   Text,
   Title,
 } from '@mantine/core';
-import { IconCurrencyDollar } from '@tabler/icons-react';
+import { IconCurrencyDollar, IconDeviceTv } from '@tabler/icons-react';
 import Link from 'next/link';
 import React, { useState } from 'react';
 
@@ -45,9 +45,14 @@ export const Race: React.FC<{ race: RaceType; users: User[] }> = ({
 
   const getContributor = (id: string | null) => {
     if (!id)
-      return { name: 'Anonymous', avatarUrl: 'https://placehold.co/40x40.png' };
+      return {
+        id: null,
+        name: 'Anonymous',
+        avatarUrl: 'https://placehold.co/40x40.png',
+      };
     return (
       users.find((u) => u.id === id) || {
+        id,
         name: 'A Contributor',
         avatarUrl: 'https://placehold.co/40x40.png',
       }
@@ -103,14 +108,21 @@ export const Race: React.FC<{ race: RaceType; users: User[] }> = ({
     return (
       <Box key={c.id} mb="md">
         <Group>
-          <Avatar
-            src={contributor.avatarUrl}
-            alt={contributor.name}
-            radius="xl"
-          />
+          <Link href={contributor.id ? `/user/${contributor.id}` : '#'}>
+            <Avatar
+              src={contributor.avatarUrl}
+              alt={contributor.name}
+              radius="xl"
+            />
+          </Link>
           <div>
             <Text size="sm">
-              <Text span fw={600}>
+              <Text
+                component={Link}
+                href={contributor.id ? `/user/${contributor.id}` : '#'}
+                fw={600}
+                style={{ textDecoration: 'none', color: 'inherit' }}
+              >
                 {contributor.name}
               </Text>{' '}
               contributed{' '}
@@ -140,13 +152,19 @@ export const Race: React.FC<{ race: RaceType; users: User[] }> = ({
 
       <Grid gutter="xl">
         <Grid.Col span={{ base: 12, lg: 8 }}>
-          <Title
-            order={2}
-            ff="Space Grotesk, var(--mantine-font-family)"
-            mb="md"
-          >
-            Preems
-          </Title>
+          <Group justify="space-between" mb="md">
+            <Title order={2} ff="Space Grotesk, var(--mantine-font-family)">
+              Preems
+            </Title>
+            <Button
+              component={Link}
+              href={`/big-screen/${race.id}`}
+              variant="outline"
+              leftSection={<IconDeviceTv size={16} />}
+            >
+              Big Screen
+            </Button>
+          </Group>
           <Card withBorder padding={0} radius="md">
             <Table highlightOnHover>
               <Table.Thead>

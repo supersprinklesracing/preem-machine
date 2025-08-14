@@ -2,7 +2,7 @@ import Race from './Race';
 import { getRaceById, getUsersByIds } from '@/datastore/data-access';
 
 export default async function RacePage({ params }: { params: { id: string } }) {
-  const race = await getRaceById(params.id);
+  const race = await getRaceById((await params).id);
 
   if (!race) {
     return <div>Race not found</div>;
