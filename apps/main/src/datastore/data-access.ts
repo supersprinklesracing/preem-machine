@@ -11,7 +11,7 @@ export const getUsers = cache(async (): Promise<User[]> => {
 });
 
 export const getUserById = cache(
-  async (id: string): Promise<User | undefined> => {
+  async (id: string | undefined): Promise<User | undefined> => {
     console.log(`Fetching user by id: ${id}`);
     return users.find((u) => u.id === id);
   }
