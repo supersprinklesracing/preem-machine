@@ -164,7 +164,7 @@ const BigScreen: React.FC<{ initialRace: Race; users: User[] }> = ({
         position: 'relative',
       }}
     >
-      <Link href={`/race-detail/${race.id}`}>
+      <Link href={`/race/${race.id}`}>
         <Button
           variant="subtle"
           color="gray"
