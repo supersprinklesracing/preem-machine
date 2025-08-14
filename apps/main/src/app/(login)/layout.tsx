@@ -1,7 +1,11 @@
 'use server';
 
 import { authConfigFn } from '@/firebase-admin/config';
-import { ColorSchemeScript, mantineHtmlProps, MantineProvider } from '@mantine/core';
+import {
+  ColorSchemeScript,
+  mantineHtmlProps,
+  MantineProvider,
+} from '@mantine/core';
 import { getTokens } from 'next-firebase-auth-edge';
 import { cookies, headers } from 'next/headers';
 import { toUser } from '../../app/shared/user';
@@ -34,10 +38,7 @@ export default async function RootLayout({
       </head>
       <body>
         <MantineProvider theme={theme}>
-          <AuthProvider user={user}>
-            asdfasfsafd
-            {children}
-          </AuthProvider>
+          <AuthProvider user={user}>{children}</AuthProvider>
         </MantineProvider>
       </body>
     </html>
