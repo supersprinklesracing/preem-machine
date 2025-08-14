@@ -12,6 +12,7 @@ import {
   Title,
 } from '@mantine/core';
 import { signOut } from 'firebase/auth';
+import Link from 'next/link';
 import { useRouter } from 'next/navigation';
 import * as React from 'react';
 import { useLoadingCallback } from 'react-loading-hook';
@@ -50,6 +51,10 @@ export function Account() {
           <Text>{user.email}</Text>
         </Group>
 
+        <Button component={Link} href={`/user/${user.uid}`}>
+          View My Public Profile
+        </Button>
+
         {user.emailVerified ? (
           <Badge color="green">Email verified</Badge>
         ) : (
@@ -63,6 +68,12 @@ export function Account() {
               Re-check
             </Button>
           </Group>
+        )}
+
+        {!!user.customClaims.admin && (
+          <Button component={Link} href="/admin">
+            Admin
+          </Button>
         )}
 
         <Button

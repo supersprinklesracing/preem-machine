@@ -1,14 +1,7 @@
 'use client';
 
 import { NavLink } from '@mantine/core';
-import {
-  IconBike,
-  IconCrown,
-  IconDeviceTv,
-  IconShield,
-  IconUser,
-  IconUsers,
-} from '@tabler/icons-react';
+import { IconBike, IconCrown, IconUser, IconUsers } from '@tabler/icons-react';
 import Link from 'next/link';
 import { usePathname } from 'next/navigation';
 import React from 'react';
@@ -17,6 +10,11 @@ const Sidebar: React.FC = () => {
   const pathname = usePathname();
 
   const navLinks = [
+    {
+      label: 'Home',
+      icon: <IconBike size={18} />,
+      href: '/',
+    },
     {
       label: 'Tuesday Night Crit',
       icon: <IconBike size={18} />,
@@ -38,19 +36,9 @@ const Sidebar: React.FC = () => {
       href: '/organizer/race/race-1',
     },
     {
-      label: 'Big Screen',
-      icon: <IconDeviceTv size={18} />,
-      href: '/big-screen/race-1',
-    },
-    {
       label: 'My Profile',
       icon: <IconUser size={18} />,
       href: '/user/user-1',
-    },
-    {
-      label: 'Admin',
-      icon: <IconShield size={18} />,
-      href: '/admin',
     },
   ];
 
