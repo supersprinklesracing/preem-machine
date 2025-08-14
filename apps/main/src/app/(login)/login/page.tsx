@@ -1,6 +1,6 @@
 import { loginAction } from './login-action';
-import { Login as ClientLogin } from './Login';
+import { Login } from './Login';
 
-export default function Login() {
-  return <ClientLogin loginAction={loginAction} />;
+export default function LoginPage() {
+  return <Login loginAction={loginAction} />;
 }

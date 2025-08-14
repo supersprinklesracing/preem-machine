@@ -10,10 +10,13 @@ import {
 } from '@mantine/core';
 import { useDisclosure } from '@mantine/hooks';
 import { IconBell, IconSearch } from '@tabler/icons-react';
+import Link from 'next/link';
+import { useAuth } from '../auth/AuthContext';
 import Sidebar from './layout/Sidebar';
 
 export function AppLayout({ children }: { children: React.ReactNode }) {
   const [opened, { toggle }] = useDisclosure();
+  const { user } = useAuth();
 
   return (
     <AppShell
@@ -41,11 +44,15 @@ export function AppLayout({ children }: { children: React.ReactNode }) {
             <ActionIcon variant="outline" size="lg" radius="xl">
               <IconBell size={18} />
             </ActionIcon>
-            <Avatar
-              src="https://placehold.co/40x40.png"
-              alt="User"
-              radius="xl"
-            />
+            {user && (
+              <Link href="/account">
+                <Avatar
+                  src={user.photoURL ?? 'https://placehold.co/40x40.png'}
+                  alt="User"
+                  radius="xl"
+                />
+              </Link>
+            )}
           </Group>
         </Group>
       </AppShell.Header>
