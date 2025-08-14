@@ -1,18 +1,10 @@
-import { Badge, Group, Stack, Title } from '@mantine/core';
+'use server';
 
-export async function generateStaticParams() {
-  return [{}];
-}
+import { raceSeries } from '@/datastore/mock-data';
+import Home from './Home';
 
-export default async function Home() {
-  return (
-    <Stack>
-      <Title order={1}>
-        <Group>
-          <span>Home</span>
-          <Badge>Static</Badge>
-        </Group>
-      </Title>
-    </Stack>
-  );
+export default async function Page() {
+  const allRaces = raceSeries.flatMap((series) => series.races);
+
+  return <Home races={allRaces} />;
 }

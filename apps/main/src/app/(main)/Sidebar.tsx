@@ -16,16 +16,6 @@ const Sidebar: React.FC = () => {
       href: '/',
     },
     {
-      label: 'Tuesday Night Crit',
-      icon: <IconBike size={18} />,
-      href: '/race/race-1',
-    },
-    {
-      label: 'Weekend Road Race',
-      icon: <IconBike size={18} />,
-      href: '/race/race-2',
-    },
-    {
       label: 'Organizer Hub',
       icon: <IconCrown size={18} />,
       href: '/organizer',
