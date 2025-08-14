@@ -1,5 +1,3 @@
-'use server';
-
 import { Badge, Group, Stack, Title } from '@mantine/core';
 
 export async function generateStaticParams() {
