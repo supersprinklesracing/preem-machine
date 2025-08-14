@@ -15,9 +15,9 @@ export default function Home() {
         </Group>
       </Title>
       <Card>
-        <Link href="/profile">
+        <Link href="/account">
           <h2>You are logged in</h2>
-          <Button style={{ marginBottom: 0 }}>Go to profile page</Button>
+          <Button style={{ marginBottom: 0 }}>Go to Account page</Button>
         </Link>
       </Card>
     </Stack>

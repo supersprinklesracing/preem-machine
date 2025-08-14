@@ -1,6 +1,6 @@
 'use client';
 
-import { useToast } from '@/app/prototype/hooks/use-toast';
+import { useToast } from '@/app/shared/use-toast';
 import type { Preem } from '@/datastore/types';
 import {
   Button,
