@@ -43,43 +43,51 @@ export function Account() {
   }
 
   return (
-    <Card withBorder>
-      <Stack>
-        <Title order={3}>Account</Title>
-        <Group>
-          <Avatar src={user.photoURL} />
-          <Text>{user.email}</Text>
-        </Group>
+    <Card withBorder style={{ height: '100%' }}>
+      <Stack justify="space-between" style={{ height: '100%' }}>
+        <Stack>
+          <Title order={3}>Account</Title>
+          <Stack align="center" gap="xs">
+            <Avatar src={user.photoURL} size="xl" radius="50%" />
+            <Title order={4}>{user.displayName}</Title>
+            <Group>
+              <Text c="dimmed">{user.email}</Text>
+              {user.emailVerified ? (
+                <Badge color="green">Email verified</Badge>
+              ) : (
+                <Badge color="red">Not verified</Badge>
+              )}
+            </Group>
+          </Stack>
 
-        <Button component={Link} href={`/user/${user.uid}`}>
-          View My Public Profile
-        </Button>
+          <Button component={Link} href={`/user/${user.uid}`}>
+            View My Public Profile
+          </Button>
 
-        {user.emailVerified ? (
-          <Badge color="green">Email verified</Badge>
-        ) : (
-          <Group>
-            <Badge color="red">Email not verified.</Badge>
+          {!!user.customClaims.admin && (
+            <Button component={Link} href="/admin">
+              Admin
+            </Button>
+          )}
+
+          {!user.emailVerified && (
             <Button
               loading={isReCheckLoading}
               disabled={isReCheckLoading}
               onClick={handleReCheck}
+              size="xs"
+              variant="outline"
             >
-              Re-check
+              Verify Email
             </Button>
-          </Group>
-        )}
-
-        {!!user.customClaims.admin && (
-          <Button component={Link} href="/admin">
-            Admin
-          </Button>
-        )}
+          )}
+        </Stack>
 
         <Button
           loading={isLogoutLoading || hasLoggedOut}
           disabled={isLogoutLoading || hasLoggedOut}
           onClick={handleLogout}
+          variant="outline"
         >
           Log out
         </Button>

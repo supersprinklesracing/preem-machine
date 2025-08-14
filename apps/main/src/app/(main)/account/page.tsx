@@ -7,7 +7,7 @@ import { getTokens } from 'next-firebase-auth-edge/lib/next/tokens';
 import { cookies } from 'next/headers';
 import { Account } from './Account';
 import { DebugPanel } from './debug-panel/DebugPanel';
-import { Container, Stack } from '@mantine/core';
+import { Container, SimpleGrid } from '@mantine/core';
 
 async function getUserCounter(): Promise<number> {
   const authConfig = await authConfigFn();
@@ -36,11 +36,11 @@ export default async function AccountPage() {
   const count = await getUserCounter();
 
   return (
-    <Container size="xs" pt="xl">
-      <Stack>
+    <Container size="lg" pt="xl">
+      <SimpleGrid cols={{ base: 1, md: 2 }}>
         <Account />
         <DebugPanel count={count} incrementCounter={incrementCounter} />
-      </Stack>
+      </SimpleGrid>
     </Container>
   );
 }
