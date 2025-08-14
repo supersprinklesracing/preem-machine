@@ -50,10 +50,10 @@ const Sidebar: React.FC<SidebarProps> = ({ races }) => {
         </NavLink>
       </div>
       <NavLink
-        href="/user/user-1"
+        href="/user"
         label="My Profile"
         leftSection={<IconUser size={18} />}
-        active={pathname === '/user/user-1'}
+        active={pathname.startsWith('/user')}
         component={Link}
       />
     </Stack>

@@ -1,11 +1,48 @@
 import { RaceSeries, User } from './types';
 
 export const users: User[] = [
-  { id: 'user-1', name: 'Alex Doe', email: 'alex@example.com', avatarUrl: 'https://placehold.co/100x100.png', role: 'contributor' },
-  { id: 'user-2', name: 'Bike Race Inc.', email: 'contact@bikerace.com', avatarUrl: 'https://placehold.co/100x100.png', role: 'organizer' },
-  { id: 'user-3', name: 'Jane Smith', email: 'jane@example.com', avatarUrl: 'https://placehold.co/100x100.png', role: 'contributor' },
-  { id: 'user-4', name: 'Local Bike Shop', email: 'shop@example.com', avatarUrl: 'https://placehold.co/100x100.png', role: 'contributor' },
-  { id: 'user-5', name: 'Admin User', email: 'admin@preemmachine.com', avatarUrl: 'https://placehold.co/100x100.png', role: 'admin' },
+  {
+    id: 'eygr7FzGzsb987AVm5uavrYTP7Q2',
+    name: 'Test User',
+    email: 'test-user@example.com',
+    avatarUrl: 'https://placehold.co/100x100.png',
+    role: 'contributor',
+  },
+  {
+    id: 'user-1',
+    name: 'Alex Doe',
+    email: 'alex@example.com',
+    avatarUrl: 'https://placehold.co/100x100.png',
+    role: 'contributor',
+  },
+  {
+    id: 'user-2',
+    name: 'Bike Race Inc.',
+    email: 'contact@bikerace.com',
+    avatarUrl: 'https://placehold.co/100x100.png',
+    role: 'organizer',
+  },
+  {
+    id: 'user-3',
+    name: 'Jane Smith',
+    email: 'jane@example.com',
+    avatarUrl: 'https://placehold.co/100x100.png',
+    role: 'contributor',
+  },
+  {
+    id: 'user-4',
+    name: 'Local Bike Shop',
+    email: 'shop@example.com',
+    avatarUrl: 'https://placehold.co/100x100.png',
+    role: 'contributor',
+  },
+  {
+    id: 'user-5',
+    name: 'Admin User',
+    email: 'admin@preemmachine.com',
+    avatarUrl: 'https://placehold.co/100x100.png',
+    role: 'admin',
+  },
 ];
 
 export const raceSeries: RaceSeries[] = [
@@ -45,7 +82,13 @@ export const raceSeries: RaceSeries[] = [
             prizePool: 100,
             sponsorInfo: { userId: 'user-4' },
             contributionHistory: [
-              { id: 'c1', contributorId: 'user-4', amount: 100, date: '2024-07-09T18:05:00Z', message: 'Good luck racers!' },
+              {
+                id: 'c1',
+                contributorId: 'user-4',
+                amount: 100,
+                date: '2024-07-09T18:05:00Z',
+                message: 'Good luck racers!',
+              },
             ],
           },
           {
@@ -59,10 +102,32 @@ export const raceSeries: RaceSeries[] = [
             timeLimit: '2024-07-09T19:30:00Z',
             sponsorInfo: null,
             contributionHistory: [
-              { id: 'c2', contributorId: 'user-1', amount: 50, date: '2024-07-09T18:10:00Z' },
-              { id: 'c3', contributorId: 'user-3', amount: 75, date: '2024-07-09T18:12:00Z', message: 'Lets go!' },
-              { id: 'c4', contributorId: null, amount: 30, date: '2024-07-09T18:15:00Z' },
-              { id: 'c5', contributorId: 'user-1', amount: 100, date: '2024-07-09T18:20:00Z', message: 'Making it spicy!' },
+              {
+                id: 'c2',
+                contributorId: 'user-1',
+                amount: 50,
+                date: '2024-07-09T18:10:00Z',
+              },
+              {
+                id: 'c3',
+                contributorId: 'user-3',
+                amount: 75,
+                date: '2024-07-09T18:12:00Z',
+                message: 'Lets go!',
+              },
+              {
+                id: 'c4',
+                contributorId: null,
+                amount: 30,
+                date: '2024-07-09T18:15:00Z',
+              },
+              {
+                id: 'c5',
+                contributorId: 'user-1',
+                amount: 100,
+                date: '2024-07-09T18:20:00Z',
+                message: 'Making it spicy!',
+              },
             ],
           },
           {
@@ -75,7 +140,12 @@ export const raceSeries: RaceSeries[] = [
             minimumThreshold: 150,
             sponsorInfo: null,
             contributionHistory: [
-              { id: 'c6', contributorId: 'user-3', amount: 75, date: '2024-07-09T18:25:00Z' },
+              {
+                id: 'c6',
+                contributorId: 'user-3',
+                amount: 75,
+                date: '2024-07-09T18:25:00Z',
+              },
             ],
           },
         ],
@@ -88,7 +158,8 @@ export const raceSeries: RaceSeries[] = [
         category: 'Pro/1/2',
         gender: 'Women',
         location: '200 Mountain Rd, Hill Valley, USA',
-        courseDetails: 'A challenging 60-mile course with significant climbing.',
+        courseDetails:
+          'A challenging 60-mile course with significant climbing.',
         maxRacers: 100,
         currentRacers: 45,
         ageCategory: 'All Ages',
@@ -96,10 +167,12 @@ export const raceSeries: RaceSeries[] = [
         laps: 3,
         podiums: 5,
         sponsors: ['Pro Cycling Team'],
-        dateTime: new Date(new Date().getTime() + 7 * 24 * 60 * 60 * 1000).toISOString(),
+        dateTime: new Date(
+          new Date().getTime() + 7 * 24 * 60 * 60 * 1000
+        ).toISOString(),
         preems: [],
       },
-       {
+      {
         id: 'race-3',
         seriesId: 'series-1',
         status: 'Finished',
@@ -115,9 +188,11 @@ export const raceSeries: RaceSeries[] = [
         laps: 25,
         podiums: 3,
         sponsors: [],
-        dateTime: new Date(new Date().getTime() - 7 * 24 * 60 * 60 * 1000).toISOString(),
+        dateTime: new Date(
+          new Date().getTime() - 7 * 24 * 60 * 60 * 1000
+        ).toISOString(),
         preems: [
-           {
+          {
             id: 'preem-3a',
             raceId: 'race-3',
             name: 'King of the Hill',
