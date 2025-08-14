@@ -5,6 +5,7 @@ import {
   IconAward,
   IconCalendar,
   IconClock,
+  IconSparkles,
   IconMapPin,
   IconUsers,
   IconUsersGroup,
@@ -21,6 +22,11 @@ interface RaceCardProps {
 }
 
 const RaceCard: React.FC<RaceCardProps> = ({ race, isClickable = true }) => {
+  const totalPrizePool = race.preems.reduce(
+    (sum, preem) => sum + preem.prizePool,
+    0
+  );
+
   const cardContent = (
     <Card
       withBorder
@@ -37,14 +43,12 @@ const RaceCard: React.FC<RaceCardProps> = ({ race, isClickable = true }) => {
         <div>
           <Group justify="space-between" align="flex-start">
             <div>
-              <StatusBadge status={race.status} />
-              <Title
-                order={1}
-                ff="Space Grotesk, var(--mantine-font-family)"
-                mt="sm"
-              >
-                {race.name}
-              </Title>
+              <Group align="center" gap="md">
+                <Title order={1} ff="Space Grotesk, var(--mantine-font-family)">
+                  {race.name}
+                </Title>
+                <StatusBadge status={race.status} />
+              </Group>
               <Text c="dimmed">
                 {race.category} - {race.gender}
               </Text>
@@ -66,6 +70,20 @@ const RaceCard: React.FC<RaceCardProps> = ({ race, isClickable = true }) => {
             {race.courseDetails}
           </Text>
           <Grid>
+            {totalPrizePool > 0 && (
+              <Grid.Col span={{ base: 6, sm: 4, md: 2.4 }}>
+                <Group gap="xs">
+                  <IconSparkles size={18} />
+                  <Text
+                    size="lg"
+                    fw={500}
+                    c={totalPrizePool > 100 ? 'green' : 'inherit'}
+                  >
+                    ${totalPrizePool.toLocaleString()} Preems
+                  </Text>
+                </Group>
+              </Grid.Col>
+            )}
             <Grid.Col span={{ base: 6, sm: 4, md: 2.4 }}>
               <Group gap="xs">
                 <IconUsers size={18} />

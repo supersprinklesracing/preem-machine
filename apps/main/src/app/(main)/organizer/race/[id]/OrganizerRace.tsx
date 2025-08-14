@@ -88,9 +88,14 @@ export const OrganizerRace: React.FC<{ initialRace: Race; users: User[] }> = ({
 
   const getContributor = (id: string | null) => {
     if (!id)
-      return { name: 'Anonymous', avatarUrl: 'https://placehold.co/40x40.png' };
+      return {
+        id: null,
+        name: 'Anonymous',
+        avatarUrl: 'https://placehold.co/40x40.png',
+      };
     return (
       users.find((u) => u.id === id) || {
+        id,
         name: 'A Contributor',
         avatarUrl: 'https://placehold.co/40x40.png',
       }
@@ -130,14 +135,21 @@ export const OrganizerRace: React.FC<{ initialRace: Race; users: User[] }> = ({
     const contributor = getContributor(c.contributorId);
     return (
       <Group key={c.id} wrap="nowrap">
-        <Avatar
-          src={contributor.avatarUrl}
-          alt={contributor.name}
-          radius="xl"
-        />
+        <Link href={contributor.id ? `/user/${contributor.id}` : '#'}>
+          <Avatar
+            src={contributor.avatarUrl}
+            alt={contributor.name}
+            radius="xl"
+          />
+        </Link>
         <div>
           <Text size="sm">
-            <Text span fw={600}>
+            <Text
+              component={Link}
+              href={contributor.id ? `/user/${contributor.id}` : '#'}
+              fw={600}
+              style={{ textDecoration: 'none', color: 'inherit' }}
+            >
               {contributor.name}
             </Text>{' '}
             just contributed{' '}
