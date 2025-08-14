@@ -6,12 +6,10 @@ import {
   mantineHtmlProps,
   MantineProvider,
 } from '@mantine/core';
-import { Notifications } from '@mantine/notifications';
 import { getTokens } from 'next-firebase-auth-edge';
 import { cookies, headers } from 'next/headers';
 import { AuthProvider } from '../auth/AuthProvider';
 import './global.css';
-import { AppLayout } from './AppLayout';
 import { toUser } from './shared/user';
 import { theme } from './theme';
 
@@ -39,12 +37,9 @@ export default async function RootLayout({
         />
       </head>
       <body>
-        <MantineProvider theme={theme}>
-          <Notifications />
-          <AuthProvider user={user}>
-            <AppLayout>{children}</AppLayout>
-          </AuthProvider>
-        </MantineProvider>
+        <AuthProvider user={user}>
+          <MantineProvider theme={theme}>{children}</MantineProvider>
+        </AuthProvider>
       </body>
     </html>
   );

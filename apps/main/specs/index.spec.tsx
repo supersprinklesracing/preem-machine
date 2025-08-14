@@ -1,6 +1,6 @@
 import { MantineProvider } from '@mantine/core';
 import { render } from '@testing-library/react';
-import Page from '../src/app/page';
+import Page from '../src/app/(main)/page';
 
 // Mock the useRouter hook
 jest.mock('next/navigation', () => ({

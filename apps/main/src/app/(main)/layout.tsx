@@ -1,5 +1,6 @@
 'use client';
 
+import { useAuth } from '@/auth/AuthContext';
 import {
   ActionIcon,
   AppShell,
@@ -9,12 +10,12 @@ import {
   Title,
 } from '@mantine/core';
 import { useDisclosure } from '@mantine/hooks';
+import { Notifications } from '@mantine/notifications';
 import { IconBell, IconSearch } from '@tabler/icons-react';
 import Link from 'next/link';
-import { useAuth } from '../auth/AuthContext';
-import Sidebar from './layout/Sidebar';
+import Sidebar from './Sidebar';
 
-export function AppLayout({ children }: { children: React.ReactNode }) {
+export default function Layout({ children }: { children: React.ReactNode }) {
   const [opened, { toggle }] = useDisclosure();
   const { user } = useAuth();
 
@@ -24,6 +25,7 @@ export function AppLayout({ children }: { children: React.ReactNode }) {
       navbar={{ width: 250, breakpoint: 'sm', collapsed: { mobile: !opened } }}
       padding="md"
     >
+      <Notifications />
       <AppShell.Header>
         <Group h="100%" px="md" justify="space-between">
           <Group>
