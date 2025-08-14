@@ -13,7 +13,7 @@ import { useDisclosure } from '@mantine/hooks';
 import { Notifications } from '@mantine/notifications';
 import { IconBell, IconSearch } from '@tabler/icons-react';
 import Link from 'next/link';
-import Sidebar from './Sidebar';
+import SidebarWrapper from './SidebarWrapper';
 
 export default function Layout({ children }: { children: React.ReactNode }) {
   const [opened, { toggle }] = useDisclosure();
@@ -59,7 +59,7 @@ export default function Layout({ children }: { children: React.ReactNode }) {
         </Group>
       </AppShell.Header>
       <AppShell.Navbar p="md">
-        <Sidebar />
+        <SidebarWrapper />
       </AppShell.Navbar>
       <AppShell.Main>{children}</AppShell.Main>
     </AppShell>
