@@ -83,10 +83,45 @@ const Sidebar: React.FC<SidebarProps> = ({ races }) => {
             defaultOpened
           >
             <NavLink
+              href="/user/user-1"
+              label="User 1"
+              leftSection={<IconDeviceTv size={18} />}
+              active={pathname === '/user/user-1'}
+              component={Link}
+            />
+            <NavLink
+              href="/race/race-1"
+              label="Race 1"
+              leftSection={<IconDeviceTv size={18} />}
+              active={pathname === '/race/race-1'}
+              component={Link}
+            />
+            <NavLink
+              href="/organizer/race/race-1"
+              label="Organizer Dash 1"
+              leftSection={<IconDeviceTv size={18} />}
+              active={pathname === '/organizer/race/race-1'}
+              component={Link}
+            />
+            <NavLink
+              href="/preem/preem-1a"
+              label="Preem 1"
+              leftSection={<IconDeviceTv size={18} />}
+              active={pathname === '/preem/preem-1a'}
+              component={Link}
+            />
+            <NavLink
               href="/big-screen/race-1"
-              label="Big Screen"
+              label="Big Screen 2"
               leftSection={<IconDeviceTv size={18} />}
               active={pathname === '/big-screen/race-1'}
+              component={Link}
+            />
+            <NavLink
+              href="/account"
+              label="Account"
+              leftSection={<IconDeviceTv size={18} />}
+              active={pathname === '/account'}
               component={Link}
             />
             <NavLink
