@@ -1,50 +1,62 @@
 'use client';
 
-import { NavLink } from '@mantine/core';
-import { IconBike, IconCrown, IconUser, IconUsers } from '@tabler/icons-react';
+import { NavLink, Stack } from '@mantine/core';
+import { IconBike, IconCrown, IconUser } from '@tabler/icons-react';
 import Link from 'next/link';
 import { usePathname } from 'next/navigation';
 import React from 'react';
+import type { Race } from '@/datastore/types';
 
-const Sidebar: React.FC = () => {
+interface SidebarProps {
+  races: Race[];
+}
+
+const Sidebar: React.FC<SidebarProps> = ({ races }) => {
   const pathname = usePathname();
 
-  const navLinks = [
-    {
-      label: 'Home',
-      icon: <IconBike size={18} />,
-      href: '/',
-    },
-    {
-      label: 'Organizer Hub',
-      icon: <IconCrown size={18} />,
-      href: '/organizer',
-    },
-    {
-      label: 'Live Dashboard',
-      icon: <IconUsers size={18} />,
-      href: '/organizer/race/race-1',
-    },
-    {
-      label: 'My Profile',
-      icon: <IconUser size={18} />,
-      href: '/user/user-1',
-    },
-  ];
+  const mostRecentRaces = races
+    .sort(
+      (a, b) => new Date(b.dateTime).getTime() - new Date(a.dateTime).getTime()
+    )
+    .slice(0, 2);
 
   return (
-    <>
-      {navLinks.map((link) => (
+    <Stack justify="space-between" style={{ height: '100%' }}>
+      <div>
         <NavLink
-          key={link.label}
-          href={link.href}
-          label={link.label}
-          leftSection={link.icon}
-          active={pathname === link.href}
+          href="/"
+          label="Home"
+          leftSection={<IconBike size={18} />}
+          active={pathname === '/'}
           component={Link}
         />
-      ))}
-    </>
+        <NavLink
+          href="/organizer"
+          label="Organizer Hub"
+          leftSection={<IconCrown size={18} />}
+          active={pathname.startsWith('/organizer')}
+          component={Link}
+          defaultOpened
+        >
+          {mostRecentRaces.map((race) => (
+            <NavLink
+              key={race.id}
+              href={`/organizer/race/${race.id}`}
+              label={race.name}
+              active={pathname === `/organizer/race/${race.id}`}
+              component={Link}
+            />
+          ))}
+        </NavLink>
+      </div>
+      <NavLink
+        href="/user/user-1"
+        label="My Profile"
+        leftSection={<IconUser size={18} />}
+        active={pathname === '/user/user-1'}
+        component={Link}
+      />
+    </Stack>
   );
 };
 
