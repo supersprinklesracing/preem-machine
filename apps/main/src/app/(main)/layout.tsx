@@ -35,9 +35,11 @@ export default function Layout({ children }: { children: React.ReactNode }) {
               hiddenFrom="sm"
               size="sm"
             />
-            <Title order={3} ff="Space Grotesk, var(--mantine-font-family)">
-              Preem Machine
-            </Title>
+            <Link href="/" style={{ textDecoration: 'none', color: 'inherit' }}>
+              <Title order={3} ff="Space Grotesk, var(--mantine-font-family)">
+                Preem Machine
+              </Title>
+            </Link>
           </Group>
           <Group>
             <ActionIcon variant="outline" size="lg" radius="xl">
