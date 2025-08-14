@@ -20,6 +20,7 @@ import {
   IconArrowLeft,
   IconAward,
   IconClock,
+  IconDeviceTv,
   IconUsers,
 } from '@tabler/icons-react';
 import { formatDistanceToNow } from 'date-fns';
@@ -45,7 +46,7 @@ export const OrganizerRace: React.FC<{ initialRace: Race; users: User[] }> = ({
           if (p.status !== 'Awarded' && Math.random() > 0.7) {
             const newAmount = Math.floor(Math.random() * 50) + 10;
             const newContribution: Contribution = {
-              id: `c-live-${Date.now()}`,
+              id: `c-live-${Date.now()}-${Math.random()}`,
               contributorId: users[Math.floor(Math.random() * users.length)].id,
               amount: newAmount,
               date: new Date().toISOString(),
@@ -174,7 +175,7 @@ export const OrganizerRace: React.FC<{ initialRace: Race; users: User[] }> = ({
     <Stack gap="lg">
       <Button
         component={Link}
-        href="/organizer-hub"
+        href="/organizer"
         variant="subtle"
         leftSection={<IconArrowLeft size={16} />}
       >
@@ -203,6 +204,16 @@ export const OrganizerRace: React.FC<{ initialRace: Race; users: User[] }> = ({
                 {race.currentRacers} racers competing
               </Text>
             </Group>
+            <Button
+              component={Link}
+              href={`/big-screen/${race.id}`}
+              variant="outline"
+              leftSection={<IconDeviceTv size={16} />}
+              mt="md"
+              fullWidth
+            >
+              Open Big Screen
+            </Button>
           </Card>
         </Grid.Col>
         <Grid.Col span={{ base: 12, md: 8 }}>
