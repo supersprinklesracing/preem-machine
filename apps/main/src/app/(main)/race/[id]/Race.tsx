@@ -68,10 +68,12 @@ export const Race: React.FC<{ race: RaceType; users: User[] }> = ({
   const preemRows = race.preems.map((preem) => (
     <Table.Tr key={preem.id} style={{ cursor: 'pointer' }}>
       <Table.Td>
-        <Link href={`/preem/${preem.id}`} passHref>
-          <Text component="a" fw={500}>
-            {preem.name}
-          </Text>
+        <Link
+          href={`/preem/${preem.id}`}
+          passHref
+          style={{ textDecoration: 'none', color: 'inherit' }}
+        >
+          <Text fw={500}>{preem.name}</Text>
         </Link>
       </Table.Td>
       <Table.Td>{preem.type}</Table.Td>
