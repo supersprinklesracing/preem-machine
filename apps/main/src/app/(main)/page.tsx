@@ -1,13 +1,12 @@
 'use server';
 
-import { getUsers } from '@/datastore/data-access';
-import { raceSeries } from '@/datastore/mock-data';
+import { getEventsWithRaces, getUsers } from '@/datastore/data-access';
 import Home from './Home';
 
 export default async function Page() {
-  const allRaces = raceSeries.flatMap((series) => series.races);
-  const allContributions = allRaces
-    .flatMap((race) =>
+  const eventsWithRaces = await getEventsWithRaces();
+  const allContributions = eventsWithRaces
+    .flatMap(({ race }) =>
       race.preems.flatMap((preem) =>
         preem.contributionHistory.map((c) => ({
           ...c,
@@ -22,6 +21,10 @@ export default async function Page() {
   const users = await getUsers();
 
   return (
-    <Home races={allRaces} users={users} contributions={allContributions} />
+    <Home
+      eventsWithRaces={eventsWithRaces}
+      users={users}
+      contributions={allContributions}
+    />
   );
 }

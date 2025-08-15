@@ -21,18 +21,24 @@ import {
 } from '@tabler/icons-react';
 import { format } from 'date-fns';
 import React from 'react';
-import type { Race } from '../datastore/types';
+import type { Event, Race } from '../datastore/types';
 import StatusBadge from './status-badge';
 
 const LARGE_PREEM_THRESHOLD = 100;
 
 interface RaceCardProps {
   race: Race;
+  event: Event;
   children?: React.ReactNode;
   style?: React.CSSProperties;
 }
 
-const RaceCard: React.FC<RaceCardProps> = ({ race, children, style }) => {
+const RaceCard: React.FC<RaceCardProps> = ({
+  race,
+  event,
+  children,
+  style,
+}) => {
   const totalPrizePool = race.preems.reduce(
     (sum, preem) => sum + preem.prizePool,
     0
@@ -45,11 +51,11 @@ const RaceCard: React.FC<RaceCardProps> = ({ race, children, style }) => {
     <>
       <Group gap="xs" wrap="nowrap">
         <IconCalendar size={16} style={{ flexShrink: 0 }} />
-        <Text size="sm">{format(new Date(race.dateTime), 'PPP p')}</Text>
+        <Text size="sm">{format(new Date(event.dateTime), 'PPP p')}</Text>
       </Group>
       <Group gap="xs" wrap="nowrap">
         <IconMapPin size={16} style={{ flexShrink: 0 }} />
-        <Text size="sm">{race.location}</Text>
+        <Text size="sm">{event.location}</Text>
       </Group>
     </>
   );
@@ -77,9 +83,9 @@ const RaceCard: React.FC<RaceCardProps> = ({ race, children, style }) => {
                       order={1}
                       ff="Space Grotesk, var(--mantine-font-family)"
                     >
-                      {race.name}
+                      {event.name}
                     </Title>
-                    <StatusBadge status={race.status} />
+                    <StatusBadge status={event.status} />
                   </Group>
                   <Text c="dimmed">
                     {race.category} - {race.gender}

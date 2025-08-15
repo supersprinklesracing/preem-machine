@@ -6,7 +6,7 @@ import RaceCard from '@/components/RaceCard';
 import AnimatedNumber from '@/components/animated-number';
 import ContributionModal from '@/components/contribution-modal';
 import StatusBadge from '@/components/status-badge';
-import type { Preem, Race as RaceType, User } from '@/datastore/types';
+import type { Event, Preem, Race as RaceType, User } from '@/datastore/types';
 import {
   Avatar,
   Box,
@@ -23,10 +23,11 @@ import { IconCurrencyDollar, IconDeviceTv } from '@tabler/icons-react';
 import Link from 'next/link';
 import React, { useState } from 'react';
 
-export const Race: React.FC<{ race: RaceType; users: User[] }> = ({
-  race,
-  users,
-}) => {
+export const Race: React.FC<{
+  race: RaceType;
+  event: Event;
+  users: User[];
+}> = ({ race, event, users }) => {
   const [selectedPreem, setSelectedPreem] = useState<Preem | null>(null);
 
   if (!race) {
@@ -161,7 +162,7 @@ export const Race: React.FC<{ race: RaceType; users: User[] }> = ({
 
   return (
     <Stack gap="xl">
-      <RaceCard race={race} />
+      <RaceCard race={race} event={event} />
 
       <Grid gutter="xl">
         <Grid.Col span={{ base: 12, lg: 8 }}>

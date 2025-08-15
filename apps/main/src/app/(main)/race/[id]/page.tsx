@@ -1,12 +1,13 @@
 import Race from './Race';
-import { getRaceById, getUsersByIds } from '@/datastore/data-access';
+import { getEventAndRaceById, getUsersByIds } from '@/datastore/data-access';
 
 export default async function RacePage({ params }: { params: { id: string } }) {
-  const race = await getRaceById((await params).id);
+  const data = await getEventAndRaceById((await params).id);
 
-  if (!race) {
+  if (!data) {
     return <div>Race not found</div>;
   }
+  const { event, race } = data;
 
   const contributorIds = race.preems.flatMap((p) =>
     p.contributionHistory.map((c) => c.contributorId)
@@ -20,5 +21,5 @@ export default async function RacePage({ params }: { params: { id: string } }) {
 
   const users = await getUsersByIds(allUserIds);
 
-  return <Race race={race} users={users} />;
+  return <Race event={event} race={race} users={users} />;
 }
