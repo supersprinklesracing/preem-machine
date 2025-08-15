@@ -1,10 +1,11 @@
 import { incrementCounter } from '@/actions/user-counters';
 import { getUserFromCookies } from '@/auth/user';
 import { getFirestore } from '@/firebase-admin/firebase-admin';
-import { Container, SimpleGrid } from '@mantine/core';
+import { Container, SimpleGrid, Stack } from '@mantine/core';
 import { Metadata } from 'next';
 import { Account } from './Account';
 import { DebugPanel } from './debug-panel/DebugPanel';
+import { PreferencesPanel } from './PreferencesPanel';
 
 async function getUserCounter(): Promise<number> {
   const user = await getUserFromCookies();
@@ -30,8 +31,14 @@ export default async function AccountPage() {
 
   return (
     <Container size="lg" pt="xl">
-      <SimpleGrid cols={{ base: 1, md: 2 }}>
-        <Account />
+      <SimpleGrid
+        cols={{ base: 1, md: 2 }}
+        style={{ alignItems: 'flex-start' }}
+      >
+        <Stack>
+          <Account />
+          <PreferencesPanel />
+        </Stack>
         <DebugPanel count={count} incrementCounter={incrementCounter} />
       </SimpleGrid>
     </Container>

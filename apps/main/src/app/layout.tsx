@@ -1,14 +1,16 @@
 'use server';
 
+import { getUserFromCookies } from '@/auth/user';
 import {
   ColorSchemeScript,
+  MantineColorScheme,
   mantineHtmlProps,
   MantineProvider,
 } from '@mantine/core';
+import { cookies } from 'next/headers';
 import { AuthProvider } from '../auth/AuthProvider';
 import './global.css';
 import { theme } from './theme';
-import { getUserFromCookies } from '@/auth/user';
 
 export default async function RootLayout({
   children,
@@ -16,11 +18,13 @@ export default async function RootLayout({
   children: React.ReactNode;
 }) {
   const user = await getUserFromCookies();
+  const colorScheme = ((await cookies()).get('mantine-color-scheme')?.value ||
+    'dark') as MantineColorScheme;
 
   return (
     <html lang="en" {...mantineHtmlProps}>
       <head>
-        <ColorSchemeScript />
+        <ColorSchemeScript defaultColorScheme={colorScheme} />
         <link rel="preconnect" href="https://fonts.googleapis.com" />
         <link
           rel="preconnect"
@@ -30,7 +34,9 @@ export default async function RootLayout({
       </head>
       <body>
         <AuthProvider user={user}>
-          <MantineProvider theme={theme}>{children}</MantineProvider>
+          <MantineProvider theme={theme} defaultColorScheme={colorScheme}>
+            {children}
+          </MantineProvider>
         </AuthProvider>
       </body>
     </html>
