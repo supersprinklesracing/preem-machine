@@ -13,7 +13,9 @@ describe('Series Page', () => {
       screen.getByRole('heading', { level: 1, name: mockSeries.name })
     ).toBeInTheDocument();
     mockSeries.events.forEach((e) => {
-      expect(screen.getByText(e.name)).toBeInTheDocument();
+      expect(
+        screen.getByRole('heading', { level: 4, name: e.name })
+      ).toBeInTheDocument();
     });
   });
 });

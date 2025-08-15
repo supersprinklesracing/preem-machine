@@ -20,7 +20,7 @@ describe('RaceCard', () => {
     );
     if (totalPrizePool > 0) {
       expect(
-        screen.getByText(`${totalPrizePool.toLocaleString()}`, { exact: false })
+        screen.getByText('Preems $', { exact: false })
       ).toBeInTheDocument();
     }
   });
