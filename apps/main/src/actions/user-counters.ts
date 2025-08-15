@@ -1,7 +1,7 @@
 'use server';
 
 import { getUserFromCookies } from '@/auth/user';
-import { getFirestore } from '@/firebase-admin';
+import { getFirestore } from '@/firebase-admin/firebase-admin';
 import { revalidatePath } from 'next/cache';
 
 export async function incrementCounter() {

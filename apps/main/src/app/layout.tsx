@@ -7,8 +7,8 @@ import {
 } from '@mantine/core';
 import { AuthProvider } from '../auth/AuthProvider';
 import './global.css';
-import { getUserFromCookies } from './shared/user';
 import { theme } from './theme';
+import { getUserFromCookies } from '@/auth/user';
 
 export default async function RootLayout({
   children,

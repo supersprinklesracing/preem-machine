@@ -5,8 +5,12 @@ import {
   inMemoryPersistence,
   setPersistence,
 } from 'firebase/auth';
-import { clientConfig } from '../config/client-config';
-import { getOrInitializeAppCheck } from './app-check';
+import {
+  connectFirestoreEmulator,
+  getFirestore as getFirestoreClient,
+} from 'firebase/firestore';
+import { getOrInitializeAppCheck } from '../auth/app-check';
+import { clientConfig } from './config';
 
 export const getFirebaseApp = () => {
   if (getApps().length) {
@@ -47,4 +51,17 @@ export function getFirebaseAuth() {
   }
 
   return auth;
+}
+
+let emulatorConnected = false;
+export function getFirestore() {
+  // Use together with Firestore Emulator https://cloud.google.com/firestore/docs/emulator#android_apple_platforms_and_web_sdks
+  const db = getFirestoreClient(getFirebaseApp());
+  if (!emulatorConnected && process.env.NEXT_PUBLIC_FIRESTORE_EMULATOR_HOST) {
+    emulatorConnected = true;
+    const [host, port] =
+      process.env.NEXT_PUBLIC_FIRESTORE_EMULATOR_HOST.split(':');
+    connectFirestoreEmulator(db, host, Number(port));
+  }
+  return db;
 }

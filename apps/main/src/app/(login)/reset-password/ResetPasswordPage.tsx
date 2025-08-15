@@ -5,7 +5,7 @@ import { sendPasswordResetEmail } from 'firebase/auth';
 import Link from 'next/link';
 import * as React from 'react';
 import { useLoadingCallback } from 'react-loading-hook';
-import { getFirebaseAuth } from '@/auth/firebase';
+import { getFirebaseAuth } from '@/firebase-client';
 import { appendRedirectParam } from '@/app/shared/redirect';
 import { useRedirectParam } from '@/app/shared/useRedirectParam';
 

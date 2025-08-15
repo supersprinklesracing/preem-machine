@@ -4,7 +4,7 @@ import { getTokens, Tokens } from 'next-firebase-auth-edge';
 import { filterStandardClaims } from 'next-firebase-auth-edge/lib/auth/claims';
 import { cookies, headers } from 'next/headers';
 
-export const toUser = ({ token, customToken, decodedToken }: Tokens): User => {
+const toUser = ({ token, customToken, decodedToken }: Tokens): User => {
   const {
     uid,
     email,

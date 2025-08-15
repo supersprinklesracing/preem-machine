@@ -25,7 +25,7 @@ import Link from 'next/link';
 import * as React from 'react';
 import { useLoadingCallback } from 'react-loading-hook';
 import { loginWithCredential } from '@/auth';
-import { getFirebaseAuth } from '@/auth/firebase';
+import { getFirebaseAuth } from '@/firebase-client';
 import { appendRedirectParam } from '@/app/shared/redirect';
 import { useRedirectAfterLogin } from '@/app/shared/useRedirectAfterLogin';
 import { useRedirectParam } from '@/app/shared/useRedirectParam';
