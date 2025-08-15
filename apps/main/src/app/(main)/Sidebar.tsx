@@ -39,25 +39,25 @@ const Sidebar: React.FC<SidebarProps> = ({ races }) => {
           component={Link}
         />
         <NavLink
-          href="/organizer"
+          href="/manage"
           label="Event Hub"
           leftSection={<IconCrown size={18} />}
-          active={pathname === '/organizer'}
+          active={pathname === '/manage'}
           component={Link}
         />
         <NavLink
           label="Race Management"
           leftSection={<IconBike size={18} />}
-          active={pathname.startsWith('/organizer/race')}
+          active={pathname.startsWith('/manage/race')}
           defaultOpened
         >
           {mostRecentRaces.map((race) => (
             <NavLink
               key={race.id}
-              href={`/organizer/race/${race.id}`}
+              href={`/manage/race/${race.id}`}
               label={race.name}
               leftSection={<Box w={18} />}
-              active={pathname === `/organizer/race/${race.id}`}
+              active={pathname === `/manage/race/${race.id}`}
               component={Link}
             />
           ))}
@@ -93,10 +93,10 @@ const Sidebar: React.FC<SidebarProps> = ({ races }) => {
               component={Link}
             />
             <NavLink
-              href="/organizer/race/race-1"
-              label="Organizer Dash 1"
+              href="/manage/race/race-1"
+              label="Manage Dash 1"
               leftSection={<IconDeviceTv size={18} />}
-              active={pathname === '/organizer/race/race-1'}
+              active={pathname === '/manage/race/race-1'}
               component={Link}
             />
             <NavLink

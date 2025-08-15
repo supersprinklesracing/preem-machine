@@ -12,7 +12,7 @@ interface LiveContributionsProps {
   users: User[];
 }
 
-export default function OrganizerRaceContributionFeed({
+export default function ManageRaceContributionFeed({
   race,
   users,
 }: LiveContributionsProps) {
