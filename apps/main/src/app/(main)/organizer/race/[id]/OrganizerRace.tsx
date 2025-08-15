@@ -4,9 +4,8 @@ export const dynamic = 'force-dynamic';
 
 import AnimatedNumber from '@/components/animated-number';
 import StatusBadge from '@/components/status-badge';
-import type { Contribution, Race, User } from '@/datastore/types';
+import type { Race, User } from '@/datastore/types';
 import {
-  Avatar,
   Button,
   Card,
   Grid,
@@ -25,51 +24,15 @@ import {
 } from '@tabler/icons-react';
 import { formatDistanceToNow } from 'date-fns';
 import Link from 'next/link';
-import React, { useEffect, useState } from 'react';
+import React, { useState } from 'react';
+
+import OrganizerRaceContributionFeed from './OrganizerRaceContributionFeed';
 
 export const OrganizerRace: React.FC<{ initialRace: Race; users: User[] }> = ({
   initialRace,
   users,
 }) => {
   const [race, setRace] = useState<Race | undefined>(initialRace);
-  const [liveContributions, setLiveContributions] = useState<
-    (Contribution & { preemName: string })[]
-  >([]);
-
-  useEffect(() => {
-    if (!initialRace) return;
-    // Simulate live updates
-    const interval = setInterval(() => {
-      setRace((prevRace) => {
-        if (!prevRace) return undefined;
-        const newPreems = prevRace.preems.map((p) => {
-          if (p.status !== 'Awarded' && Math.random() > 0.7) {
-            const newAmount = Math.floor(Math.random() * 50) + 10;
-            const newContribution: Contribution = {
-              id: `c-live-${Date.now()}-${Math.random()}`,
-              contributorId: users[Math.floor(Math.random() * users.length)].id,
-              amount: newAmount,
-              date: new Date().toISOString(),
-              message: Math.random() > 0.5 ? "Let's go!" : undefined,
-            };
-            setLiveContributions((prev) => [
-              { ...newContribution, preemName: p.name },
-              ...prev,
-            ]);
-            return {
-              ...p,
-              prizePool: p.prizePool + newAmount,
-              contributionHistory: [...p.contributionHistory, newContribution],
-            };
-          }
-          return p;
-        });
-        return { ...prevRace, preems: newPreems };
-      });
-    }, 3000);
-
-    return () => clearInterval(interval);
-  }, [initialRace, users]);
 
   if (!race) {
     return <div>Race not found</div>;
@@ -85,22 +48,6 @@ export const OrganizerRace: React.FC<{ initialRace: Race; users: User[] }> = ({
         ),
       };
     });
-  };
-
-  const getContributor = (id: string | null) => {
-    if (!id)
-      return {
-        id: null,
-        name: 'Anonymous',
-        avatarUrl: 'https://placehold.co/40x40.png',
-      };
-    return (
-      users.find((u) => u.id === id) || {
-        id,
-        name: 'A Contributor',
-        avatarUrl: 'https://placehold.co/40x40.png',
-      }
-    );
   };
 
   const preemRows = race.preems.map((preem) => (
@@ -131,45 +78,6 @@ export const OrganizerRace: React.FC<{ initialRace: Race; users: User[] }> = ({
       </Table.Td>
     </Table.Tr>
   ));
-
-  const contributionFeed = liveContributions.map((c) => {
-    const contributor = getContributor(c.contributorId);
-    return (
-      <Group key={c.id} wrap="nowrap">
-        <Link href={contributor.id ? `/user/${contributor.id}` : '#'}>
-          <Avatar
-            src={contributor.avatarUrl}
-            alt={contributor.name}
-            radius="xl"
-          />
-        </Link>
-        <div>
-          <Text size="sm">
-            <Text
-              component={Link}
-              href={contributor.id ? `/user/${contributor.id}` : '#'}
-              fw={600}
-              style={{ textDecoration: 'none', color: 'inherit' }}
-            >
-              {contributor.name}
-            </Text>{' '}
-            just contributed{' '}
-            <Text span c="green" fw={600}>
-              ${c.amount}
-            </Text>{' '}
-            to &quot;{c.preemName}&quot;!
-          </Text>
-          {c.message && (
-            <Card withBorder padding="xs" mt="xs">
-              <Text size="xs" fs="italic">
-                &quot;{c.message}&quot;
-              </Text>
-            </Card>
-          )}
-        </div>
-      </Group>
-    );
-  });
 
   return (
     <Stack gap="lg">
@@ -234,21 +142,7 @@ export const OrganizerRace: React.FC<{ initialRace: Race; users: User[] }> = ({
         </Grid.Col>
       </Grid>
 
-      <Card withBorder padding="lg" radius="md">
-        <Title order={3}>Live Contribution Feed</Title>
-        <Text size="sm" c="dimmed">
-          Real-time contributions as they happen.
-        </Text>
-        <Stack mt="md" style={{ maxHeight: '400px', overflowY: 'auto' }}>
-          {liveContributions.length === 0 ? (
-            <Text c="dimmed" ta="center" py="xl">
-              Waiting for contributions...
-            </Text>
-          ) : (
-            contributionFeed
-          )}
-        </Stack>
-      </Card>
+      <OrganizerRaceContributionFeed race={race} users={users} />
     </Stack>
   );
 };

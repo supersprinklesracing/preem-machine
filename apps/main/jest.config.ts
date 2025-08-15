@@ -14,6 +14,9 @@ const config: Config = {
   moduleFileExtensions: ['ts', 'tsx', 'js', 'jsx'],
   coverageDirectory: '../../coverage/apps/main',
   testEnvironment: 'jsdom',
+  moduleNameMapper: {
+    '^@/(.*)': '<rootDir>/src/$1',
+  },
 };
 
 export default createJestConfig(config);

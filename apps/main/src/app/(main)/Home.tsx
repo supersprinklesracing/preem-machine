@@ -1,8 +1,9 @@
 'use client';
 
-import { Grid, Title, Stack } from '@mantine/core';
-import type { Race, User, Contribution } from '@/datastore/types';
 import RaceCard from '@/components/RaceCard';
+import type { Contribution, Race, User } from '@/datastore/types';
+import { Button, Flex, Grid, Stack, Title } from '@mantine/core';
+import Link from 'next/link';
 import LiveContributionFeed from '../shared/LiveContributionFeed';
 
 interface HomeProps {
@@ -12,6 +13,7 @@ interface HomeProps {
     preemName: string;
     raceName: string;
     raceId: string;
+    preemId: string;
   })[];
 }
 
@@ -25,7 +27,26 @@ export default function Home({ races, users, contributions }: HomeProps) {
         <Grid.Col span={{ base: 12, lg: 8 }}>
           <Stack>
             {races.map((race) => (
-              <RaceCard key={race.id} race={race} />
+              <RaceCard key={race.id} race={race}>
+                <Flex mt="md" gap="md" wrap="wrap">
+                  <Button
+                    component={Link}
+                    href={`/race/${race.id}`}
+                    variant="outline"
+                    style={{ flexGrow: 1, minWidth: '120px' }}
+                  >
+                    Contribute
+                  </Button>
+                  <Button
+                    component={Link}
+                    href={`/race/${race.id}`}
+                    variant="default"
+                    style={{ flexGrow: 1, minWidth: '120px' }}
+                  >
+                    View Race
+                  </Button>
+                </Flex>
+              </RaceCard>
             ))}
           </Stack>
         </Grid.Col>

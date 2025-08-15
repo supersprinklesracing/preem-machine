@@ -2,6 +2,15 @@ import { MantineProvider } from '@mantine/core';
 import { render } from '@testing-library/react';
 import Page from '../src/app/(main)/page';
 
+// Mock data access and other dependencies
+jest.mock('@/datastore/data-access', () => ({
+  getUsers: jest.fn().mockResolvedValue([]),
+}));
+
+jest.mock('@/datastore/mock-data', () => ({
+  raceSeries: [],
+}));
+
 // Mock the useRouter hook
 jest.mock('next/navigation', () => ({
   useRouter: () => ({
@@ -16,12 +25,19 @@ jest.mock('next/navigation', () => ({
   }),
 }));
 
+// Mock the Home component
+jest.mock('../src/app/(main)/Home', () => {
+  return {
+    __esModule: true,
+    default: () => <div>Mocked Home</div>,
+  };
+});
+
 describe('Page', () => {
-  it('should render successfully', () => {
+  it('should render successfully', async () => {
+    const PageComponent = await Page();
     const { baseElement } = render(
-      <MantineProvider>
-        <Page />
-      </MantineProvider>
+      <MantineProvider>{PageComponent}</MantineProvider>
     );
     expect(baseElement).toBeTruthy();
   });
