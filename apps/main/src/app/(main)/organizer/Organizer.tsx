@@ -1,38 +1,19 @@
 'use client';
 
 import ThresholdAssistantModal from '@/components/ai/threshold-assistant-modal';
-import type { Race, RaceSeries } from '@/datastore/types';
-import {
-  Box,
-  Button,
-  Flex,
-  Group,
-  SimpleGrid,
-  Stack,
-  Text,
-  Title,
-} from '@mantine/core';
+import EventCard from '@/components/EventCard';
+import SeriesCard from '@/components/SeriesCard';
+import type { EnrichedSeries } from '@/datastore/data-access';
+import { Button, Group, SimpleGrid, Stack, Text, Title } from '@mantine/core';
 import { IconPlus, IconSparkles } from '@tabler/icons-react';
 import React, { useState } from 'react';
-import OrganizerEventCard from './OrganizerEventCard';
-import OrganizerSeriesCard from './OrganizerSeriesCard';
 
 interface OrganizerProps {
-  raceSeries: RaceSeries[];
+  raceSeries: EnrichedSeries[];
 }
 
 const Organizer: React.FC<OrganizerProps> = ({ raceSeries }) => {
   const [isAiModalOpen, setIsAiModalOpen] = useState(false);
-
-  const totalCollected = (race: Race) =>
-    race.preems.reduce((sum, preem) => sum + preem.prizePool, 0);
-
-  const totalContributors = (race: Race) =>
-    new Set(
-      race.preems.flatMap((p) =>
-        p.contributionHistory.map((c) => c.contributorId).filter(Boolean)
-      )
-    ).size;
 
   return (
     <Stack gap="xl">
@@ -57,21 +38,16 @@ const Organizer: React.FC<OrganizerProps> = ({ raceSeries }) => {
 
       <Stack gap="xl">
         {raceSeries.map((series) => {
-          const allEventsWithRaces = series.events.flatMap((event) =>
-            event.races.map((race) => ({ event, race }))
+          const upcomingEvents = series.events.filter(
+            (event) => event.status === 'Upcoming' || event.status === 'Live'
           );
-
-          const upcomingEvents = allEventsWithRaces.filter(
-            ({ event }) =>
-              event.status === 'Upcoming' || event.status === 'Live'
-          );
-          const pastEvents = allEventsWithRaces.filter(
-            ({ event }) => event.status === 'Finished'
+          const pastEvents = series.events.filter(
+            (event) => event.status === 'Finished'
           );
 
           return (
             <Stack key={series.id} gap="lg">
-              <OrganizerSeriesCard series={series} />
+              <SeriesCard series={series} />
 
               <section>
                 <Title
@@ -81,21 +57,11 @@ const Organizer: React.FC<OrganizerProps> = ({ raceSeries }) => {
                 >
                   Upcoming & Live Events
                 </Title>
-                <Flex wrap="wrap" gap="md">
-                  {upcomingEvents.map(({ event, race }) => (
-                    <Box
-                      key={race.id}
-                      style={{ flex: '1 1 350px', minWidth: '300px' }}
-                    >
-                      <OrganizerEventCard
-                        event={event}
-                        race={race}
-                        totalCollected={totalCollected(race)}
-                        totalContributors={totalContributors(race)}
-                      />
-                    </Box>
+                <SimpleGrid cols={{ base: 1, md: 2 }}>
+                  {upcomingEvents.map((event) => (
+                    <EventCard key={event.id} event={event} />
                   ))}
-                </Flex>
+                </SimpleGrid>
               </section>
 
               <section>
@@ -106,15 +72,9 @@ const Organizer: React.FC<OrganizerProps> = ({ raceSeries }) => {
                 >
                   Past Events
                 </Title>
-                <SimpleGrid cols={{ base: 1, xs: 2, md: 3 }}>
-                  {pastEvents.map(({ event, race }) => (
-                    <OrganizerEventCard
-                      key={race.id}
-                      event={event}
-                      race={race}
-                      totalCollected={totalCollected(race)}
-                      totalContributors={totalContributors(race)}
-                    />
+                <SimpleGrid cols={{ base: 1, md: 2, lg: 3 }}>
+                  {pastEvents.map((event) => (
+                    <EventCard key={event.id} event={event} />
                   ))}
                 </SimpleGrid>
               </section>
