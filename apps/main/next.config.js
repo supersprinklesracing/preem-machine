@@ -6,10 +6,17 @@ const { composePlugins, withNx } = require('@nx/next');
  * @type {import('@nx/next/plugins/with-nx').WithNxOptions}
  **/
 const nextConfig = {
-  // Use this to set Nx-specific options
-  // See: https://nx.dev/recipes/next/next-config-setup
   nx: {
     svgr: false,
+  },
+  webpack: (config, { isServer, webpack }) => {
+    // This rule uses null-loader to fix the "require.extensions" error.
+    config.module.rules.push({
+      test: /handlebars\/lib\/index\.js$/,
+      loader: 'null-loader',
+    });
+
+    return config;
   },
 };
 
