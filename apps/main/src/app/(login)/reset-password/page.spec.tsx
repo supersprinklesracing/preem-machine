@@ -1,5 +1,4 @@
-import { MantineProvider } from '@mantine/core';
-import { render, screen } from '@testing-library/react';
+import { render, screen } from '@/test-utils';
 import '@testing-library/jest-dom';
 import ResetPasswordPage from './page';
 
@@ -22,11 +21,7 @@ jest.mock('firebase/auth', () => ({
 
 describe('Reset Password Page', () => {
   it('should render successfully', () => {
-    render(
-      <MantineProvider>
-        <ResetPasswordPage />
-      </MantineProvider>
-    );
+    render(<ResetPasswordPage />);
     expect(
       screen.getByRole('heading', { level: 1, name: 'Reset password' })
     ).toBeInTheDocument();

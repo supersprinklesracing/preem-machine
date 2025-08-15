@@ -1,5 +1,4 @@
-import { MantineProvider } from '@mantine/core';
-import { render, screen } from '@testing-library/react';
+import { render, screen } from '@/test-utils';
 import '@testing-library/jest-dom';
 import LoginPage from './page';
 
@@ -27,11 +26,7 @@ jest.mock('firebase/auth', () => ({
 
 describe('Login Page', () => {
   it('should render successfully', () => {
-    render(
-      <MantineProvider>
-        <LoginPage />
-      </MantineProvider>
-    );
+    render(<LoginPage />);
     expect(screen.getByText('Login')).toBeInTheDocument();
   });
 });
