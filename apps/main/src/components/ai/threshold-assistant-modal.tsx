@@ -1,6 +1,6 @@
 'use client';
 
-import { getThresholdSuggestion } from '@/actions/threshold-suggestion-action';
+import { getThresholdSuggestion } from './threshold-suggestion-action';
 import { useToast } from '@/app/shared/use-toast';
 import {
   Button,
