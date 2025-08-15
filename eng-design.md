@@ -1,10 +1,5 @@
 # Engineering Design Document: preem-machine
 
-**Author(s):** [Your Name/Team]
-**Status:** Draft
-
----
-
 ## 1. Overview
 
 ### 1.1. Introduction & Goals
@@ -13,7 +8,7 @@ This document outlines the technical design and architecture for **preem-machine
 
 ### 1.2. Business Requirements
 
-- Provide a centralized hub for race organizers to manage race series, individual races, and prize pools ("preems").
+- Provide a centralized hub for race organizers to manage race series, events, individual races, and prize pools ("preems").
 - Allow the cycling community (users) to contribute to preem prize pools in real-time.
 - Offer a transparent view of contributions and prize statuses for both organizers and the public.
 - Provide a secure authentication system for different user roles (Contributor, Organizer, Admin).
@@ -29,7 +24,7 @@ This document outlines the technical design and architecture for **preem-machine
 - **Database:** Cloud Firestore
 - **Authentication:** Firebase Authentication
 - **Payments:** Stripe API, **Stripe Connect**
-- **CI/CD:** [e.g., GitHub Actions, Cloud Build]
+- **CI/CD:** \[e.g., GitHub Actions, Cloud Build]
 
 ### 1.4. Non-Goals
 
@@ -41,7 +36,7 @@ This document outlines the technical design and architecture for **preem-machine
 
 ### 2.1. High-Level Diagram
 
-[A diagram illustrating the main components: User -> Cloud Run (Next.js + API Routes) -> Cloud Functions -> Stripe/Firestore]
+\[A diagram illustrating the main components: User -> Cloud Run (Next.js + API Routes) -> Cloud Functions -> Stripe/Firestore]
 
 - **User/Client:** A web browser running the Next.js frontend application.
 - **Google Cloud Run:** Hosts the containerized Next.js application, which includes the UI and a "Backend-for-Frontend" (BFF) API layer via Next.js API Routes.
@@ -65,7 +60,7 @@ This document outlines the technical design and architecture for **preem-machine
 
 ## 3. Data Model & Database Design
 
-Fields that reference other documents (e.g., `organizerId`) will be stored as Firestore `DocumentReference` types for type safety and ease of querying.
+Fields that reference other documents will be stored as Firestore `DocumentReference` types for type safety and ease of querying.
 
 ### 3.1. Firestore Collections
 
@@ -232,6 +227,9 @@ This appendix details the structure of the Firestore database. This hierarchical
   - `email`: string
   - `displayName`: string
   - `role`: string (`'contributor'`, `'organizer'`, `'admin'`)
+  - `affiliation`: string
+  - `raceLicenseId`: string
+  - `address`: string
   - `stripeCustomer`: map
     - `customerId`: string
     - `connectAccountId`: string (for organizers)
@@ -241,16 +239,25 @@ This appendix details the structure of the Firestore database. This hierarchical
 - **Collection Path:** `/raceSeries`
 - **Document Structure:**
   - `id`: string
-  - `organizerId`: DocumentReference (`/users/{userId}`)
+  - `organizerRef`: DocumentReference (`/users/{userId}`)
   - `name`: string
   - `region`: string
   - `website`: string (optional)
   - `startDate`: timestamp
   - `endDate`: timestamp
 
+### **Race Events**
+
+- **Collection Path:** `/raceSeries/{seriesId}/events`
+- **Document Structure:**
+  - `id`: string
+  - `name`: string
+  - `date`: timestamp
+  - `location`: string
+
 ### **Races**
 
-- **Collection Path:** `/raceSeries/{seriesId}/races`
+- **Collection Path:** `/raceSeries/{seriesId}/events/{eventId}/races`
 - **Document Structure:**
   - `id`: string
   - `status`: string (`'Upcoming'`, `'Live'`, `'Finished'`)
@@ -263,7 +270,7 @@ This appendix details the structure of the Firestore database. This hierarchical
 
 ### **Preems (Primes)**
 
-- **Collection Path:** `/raceSeries/{seriesId}/races/{raceId}/preems`
+- **Collection Path:** `/raceSeries/{seriesId}/events/{eventId}/races/{raceId}/preems`
 - **Document Structure:**
   - `id`: string
   - `name`: string
@@ -276,10 +283,10 @@ This appendix details the structure of the Firestore database. This hierarchical
 
 ### **Contributions**
 
-- **Collection Path:** `/raceSeries/{seriesId}/races/{raceId}/preems/{preemId}/contributions`
+- **Collection Path:** `/raceSeries/{seriesId}/events/{eventId}/races/{raceId}/preems/{preemId}/contributions`
 - **Document Structure:**
   - `id`: string
-  - `contributorId`: DocumentReference (`/users/{userId}`, or null for anonymous)
+  - `contributorRef`: DocumentReference (`/users/{userId}`, or null for anonymous)
   - `amount`: number
   - `date`: timestamp
   - `message`: string (optional)
