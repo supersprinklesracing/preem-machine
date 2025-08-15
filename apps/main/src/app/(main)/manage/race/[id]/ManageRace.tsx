@@ -26,9 +26,9 @@ import { formatDistanceToNow } from 'date-fns';
 import Link from 'next/link';
 import React, { useState } from 'react';
 
-import OrganizerRaceContributionFeed from './OrganizerRaceContributionFeed';
+import ManageRaceContributionFeed from './ManageRaceContributionFeed';
 
-export const OrganizerRace: React.FC<{ initialRace: Race; users: User[] }> = ({
+export const ManageRace: React.FC<{ initialRace: Race; users: User[] }> = ({
   initialRace,
   users,
 }) => {
@@ -142,9 +142,9 @@ export const OrganizerRace: React.FC<{ initialRace: Race; users: User[] }> = ({
         </Grid.Col>
       </Grid>
 
-      <OrganizerRaceContributionFeed race={race} users={users} />
+      <ManageRaceContributionFeed race={race} users={users} />
     </Stack>
   );
 };
 
-export default OrganizerRace;
+export default ManageRace;

@@ -8,11 +8,11 @@ import { Button, Group, SimpleGrid, Stack, Text, Title } from '@mantine/core';
 import { IconPlus, IconSparkles } from '@tabler/icons-react';
 import React, { useState } from 'react';
 
-interface OrganizerProps {
+interface ManageProps {
   raceSeries: EnrichedSeries[];
 }
 
-const Organizer: React.FC<OrganizerProps> = ({ raceSeries }) => {
+const Manage: React.FC<ManageProps> = ({ raceSeries }) => {
   const [isAiModalOpen, setIsAiModalOpen] = useState(false);
 
   return (
@@ -92,4 +92,4 @@ const Organizer: React.FC<OrganizerProps> = ({ raceSeries }) => {
   );
 };
 
-export default Organizer;
+export default Manage;

@@ -1,9 +1,9 @@
 import { getEnrichedRaceSeriesForOrganization } from '@/datastore/data-access';
-import Organizer from './Organizer';
+import Manage from './Manage';
 
-export default async function OrganizerPage() {
+export default async function ManagePage() {
   // TODO: get the real user
   const raceSeries = await getEnrichedRaceSeriesForOrganization('org-1');
 
-  return <Organizer raceSeries={raceSeries} />;
+  return <Manage raceSeries={raceSeries} />;
 }
