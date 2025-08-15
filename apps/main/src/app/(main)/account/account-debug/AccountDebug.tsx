@@ -11,12 +11,12 @@ import { refreshCookies } from '@/actions/refresh-cookies';
 import { useAuth } from '@/auth/AuthContext';
 import { incrementCounterUsingClientFirestore } from './user-counters';
 
-interface DebugPanelProps {
+interface AccountDebugProps {
   count: number;
   incrementCounter: () => void;
 }
 
-export function DebugPanel({ count, incrementCounter }: DebugPanelProps) {
+export function AccountDebug({ count, incrementCounter }: AccountDebugProps) {
   const router = useRouter();
   const { user } = useAuth();
 

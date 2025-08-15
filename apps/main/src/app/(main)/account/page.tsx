@@ -4,7 +4,7 @@ import { getFirestore } from '@/firebase-admin/firebase-admin';
 import { Container, SimpleGrid, Stack } from '@mantine/core';
 import { Metadata } from 'next';
 import { Account } from './Account';
-import { DebugPanel } from './debug-panel/DebugPanel';
+import { AccountDebug } from './account-debug/AccountDebug';
 import { PreferencesPanel } from './PreferencesPanel';
 
 async function getUserCounter(): Promise<number> {
@@ -39,7 +39,7 @@ export default async function AccountPage() {
           <Account />
           <PreferencesPanel />
         </Stack>
-        <DebugPanel count={count} incrementCounter={incrementCounter} />
+        <AccountDebug count={count} incrementCounter={incrementCounter} />
       </SimpleGrid>
     </Container>
   );
