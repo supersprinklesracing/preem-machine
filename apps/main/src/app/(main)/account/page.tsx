@@ -1,5 +1,5 @@
 import { incrementCounter } from '@/actions/user-counters';
-import { getUserFromCookies } from '@/app/shared/user';
+import { getUserFromCookies } from '@/auth/user';
 import { getFirebaseAdminApp } from '@/firebase-admin';
 import { Container, SimpleGrid } from '@mantine/core';
 import { getFirestore } from 'firebase-admin/firestore';

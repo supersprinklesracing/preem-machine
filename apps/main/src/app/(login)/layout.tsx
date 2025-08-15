@@ -5,7 +5,7 @@ import {
   mantineHtmlProps,
   MantineProvider,
 } from '@mantine/core';
-import { getUserFromCookies } from '../../app/shared/user';
+import { getUserFromCookies } from '@/auth/user';
 import { theme } from '../../app/theme';
 import { AuthProvider } from '../../auth/AuthProvider';
 import '../global.css';
