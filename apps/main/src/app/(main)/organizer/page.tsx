@@ -1,8 +1,16 @@
-import { getRaceSeriesForOrganizer } from '@/datastore/data-access';
+import {
+  getOrganizationsForUser,
+  getRaceSeriesForOrganization,
+} from '@/datastore/data-access';
 import Organizer from './Organizer';
 
 export default async function OrganizerPage() {
   // TODO: get the real user
-  const raceSeries = await getRaceSeriesForOrganizer('user-2');
+  const organizations = await getOrganizationsForUser('user-2');
+  const seriesPromises = organizations.map((org) =>
+    getRaceSeriesForOrganization(org.id)
+  );
+  const raceSeries = (await Promise.all(seriesPromises)).flat();
+
   return <Organizer raceSeries={raceSeries} />;
 }

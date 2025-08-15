@@ -1,6 +1,6 @@
 'use client';
 
-import type { Race } from '@/datastore/types';
+import type { Event, Race } from '@/datastore/types';
 import { Button, Card, Group, Stack, Text, Title } from '@mantine/core';
 import {
   IconCalendar,
@@ -11,24 +11,26 @@ import {
 import { format } from 'date-fns';
 import Link from 'next/link';
 
-interface PastEventCardProps {
+interface OrganizerEventCardProps {
   race: Race;
+  event: Event;
   totalCollected: number;
   totalContributors: number;
 }
 
-export default function PastEventCard({
+export default function OrganizerEventCard({
   race,
+  event,
   totalCollected,
   totalContributors,
-}: PastEventCardProps) {
+}: OrganizerEventCardProps) {
   return (
     <Card withBorder padding="lg" radius="md">
       <Stack>
-        <Title order={4}>{race.name}</Title>
+        <Title order={4}>{event.name}</Title>
         <Group>
           <IconCalendar size={16} />
-          <Text size="sm">{format(new Date(race.dateTime), 'PP')}</Text>
+          <Text size="sm">{format(new Date(event.dateTime), 'PP')}</Text>
         </Group>
         <Group>
           <IconCurrencyDollar size={16} />

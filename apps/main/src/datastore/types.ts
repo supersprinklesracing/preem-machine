@@ -4,6 +4,15 @@ export interface User {
   email: string;
   avatarUrl?: string;
   role: 'contributor' | 'organizer' | 'admin';
+  organizationMemberships?: {
+    organizationId: string;
+    role: 'admin' | 'member';
+  }[];
+}
+
+export interface Organization {
+  id: string;
+  name: string;
 }
 
 export interface Contribution {
@@ -59,7 +68,7 @@ export interface Event {
 
 export interface RaceSeries {
   id: string;
-  organizerId: string;
+  organizationId: string;
   name: string;
   region: string;
   website?: string;
