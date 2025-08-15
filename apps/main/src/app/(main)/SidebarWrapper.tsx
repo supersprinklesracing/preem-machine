@@ -1,11 +1,9 @@
-'use client';
+'use server-only';
 
-import { raceSeries } from '@/datastore/mock-data';
+import { getAllRaces } from '@/datastore/data-access';
 import Sidebar from './Sidebar';
 
-export default function SidebarWrapper() {
-  const allRaces = raceSeries
-    .flatMap((series) => series.events)
-    .flatMap((event) => event.races);
+export default async function SidebarWrapper() {
+  const allRaces = await getAllRaces();
   return <Sidebar races={allRaces} />;
 }
