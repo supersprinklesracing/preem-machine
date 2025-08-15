@@ -1,7 +1,7 @@
 'use server';
 
 /* eslint-disable @typescript-eslint/no-non-null-assertion */
-import { clientConfig } from '../config/client-config';
+import { clientConfig } from '../firebase-client/config';
 
 export async function serverConfigFn() {
   return {

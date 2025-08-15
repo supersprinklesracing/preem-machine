@@ -17,7 +17,7 @@ import { useRouter } from 'next/navigation';
 import * as React from 'react';
 import { useLoadingCallback } from 'react-loading-hook';
 import { checkEmailVerification, logout } from '@/auth';
-import { getFirebaseAuth } from '@/auth/firebase';
+import { getFirebaseAuth } from '@/firebase-client';
 
 export function Account() {
   const router = useRouter();

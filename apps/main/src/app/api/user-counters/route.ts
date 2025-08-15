@@ -4,7 +4,7 @@ import { NextResponse } from 'next/server';
 import type { NextRequest } from 'next/server';
 import { getTokens } from 'next-firebase-auth-edge/lib/next/tokens';
 import { authConfigFn } from '@/firebase-admin/config';
-import { getFirestore } from '@/firebase-admin';
+import { getFirestore } from '@/firebase-admin/firebase-admin';
 
 export async function POST(request: NextRequest) {
   const authConfig = await authConfigFn();

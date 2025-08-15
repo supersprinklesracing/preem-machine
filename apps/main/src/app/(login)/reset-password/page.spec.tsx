@@ -12,7 +12,7 @@ jest.mock('next/navigation', () => ({
   }),
 }));
 
-jest.mock('@/auth/firebase', () => ({
+jest.mock('@/firebase-client', () => ({
   getFirebaseAuth: jest.fn(() => ({})),
 }));
 
