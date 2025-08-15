@@ -1,9 +1,10 @@
+import { User } from '@/auth/AuthContext';
+import { AuthProvider } from '@/auth/AuthProvider';
+import { User } from '@/auth/AuthContext';
 import { MantineProvider } from '@mantine/core';
 import { render, RenderOptions } from '@testing-library/react';
 import React, { ReactNode } from 'react';
 import { theme } from './app/theme';
-import { User } from './auth/AuthContext';
-import { AuthProvider } from './auth/AuthProvider';
 
 const AllTheProviders = function AllTheProviders({
   children,

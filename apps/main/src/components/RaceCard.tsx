@@ -83,7 +83,7 @@ const RaceCard: React.FC<RaceCardProps> = ({
                       order={1}
                       ff="Space Grotesk, var(--mantine-font-family)"
                     >
-                      {event.name}
+                      {race.name}
                     </Title>
                     <StatusBadge status={event.status} />
                   </Group>

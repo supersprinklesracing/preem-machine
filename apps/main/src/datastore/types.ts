@@ -1,3 +1,7 @@
+/** Represents the canonical data types stored in data store.
+ *
+ * Additional types, used specifically to build responses to frontend components should live in data-access.ts
+ */
 export interface User {
   id: string;
   name: string;
@@ -61,9 +65,11 @@ export interface Event {
   seriesId: string;
   status: 'Upcoming' | 'Live' | 'Finished';
   name: string;
+  website?: string;
   location: string;
   dateTime: string;
   races: Race[];
+  totalCollected: number;
 }
 
 export interface RaceSeries {

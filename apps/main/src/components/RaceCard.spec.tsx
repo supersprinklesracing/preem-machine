@@ -7,9 +7,9 @@ const mockEvent = raceSeries[0].events[0];
 const mockRace = mockEvent.races[0];
 
 describe('RaceCard', () => {
-  it('should render the event name', () => {
+  it('should render the race name', () => {
     render(<RaceCard race={mockRace} event={mockEvent} />);
-    expect(screen.getByText(mockEvent.name)).toBeInTheDocument();
+    expect(screen.getByText(mockRace.name)).toBeInTheDocument();
   });
 
   it('should render the total prize pool', () => {

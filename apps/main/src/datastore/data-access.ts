@@ -12,6 +12,17 @@ import type {
   User,
 } from './types';
 
+// --- Query Reponse custom types. ---
+
+export interface EnrichedEvent extends Event {
+  totalCollected: number;
+  totalContributors: number;
+}
+
+export type EnrichedSeries = Omit<RaceSeries, 'events'> & {
+  events: EnrichedEvent[];
+};
+
 // --- User Functions ---
 
 export const getUsers = cache(async (): Promise<User[]> => {
@@ -49,12 +60,132 @@ export const getOrganizationsForUser = cache(
   }
 );
 
+export const getUsersByOrganizationId = cache(
+  async (organizationId: string): Promise<User[]> => {
+    console.log(`Fetching users for organization: ${organizationId}`);
+    return users.filter((u) =>
+      u.organizationMemberships?.some(
+        (m) => m.organizationId === organizationId
+      )
+    );
+  }
+);
+
+export const getOrganizationById = cache(
+  async (id: string): Promise<Organization | undefined> => {
+    console.log(`Fetching organization by id: ${id}`);
+    return organizations.find((o) => o.id === id);
+  }
+);
+
+export const getOrganizationBySeriesId = cache(
+  async (seriesId: string): Promise<Organization | undefined> => {
+    console.log(`Fetching organization for series: ${seriesId}`);
+    const series = await getRaceSeriesById(seriesId);
+    if (!series) return undefined;
+    return organizations.find((o) => o.id === series.organizationId);
+  }
+);
+
 // --- Race & Series Functions ---
+
+export const getRaceSeriesById = cache(
+  async (id: string): Promise<RaceSeries | undefined> => {
+    console.log(`Fetching race series by id: ${id}`);
+    const series = raceSeries.find((rs) => rs.id === id);
+    if (!series) return undefined;
+
+    // Enrich events with totals
+    const enrichedEvents = series.events.map((event) => {
+      const totalCollected = event.races.reduce(
+        (raceSum, race) =>
+          raceSum +
+          race.preems.reduce(
+            (preemSum, preem) => preemSum + preem.prizePool,
+            0
+          ),
+        0
+      );
+
+      const totalContributors = new Set(
+        event.races.flatMap((race) =>
+          race.preems.flatMap((preem) =>
+            preem.contributionHistory
+              .map((c) => c.contributorId)
+              .filter(Boolean)
+          )
+        )
+      ).size;
+
+      return { ...event, totalCollected, totalContributors };
+    });
+
+    return { ...series, events: enrichedEvents };
+  }
+);
+
+export const getSeriesByEventId = cache(
+  async (eventId: string): Promise<RaceSeries | undefined> => {
+    console.log(`Fetching series for event: ${eventId}`);
+    const event = await getEventById(eventId);
+    if (!event) return undefined;
+    return raceSeries.find((rs) => rs.id === event.seriesId);
+  }
+);
+
+export const getEventById = cache(
+  async (id: string): Promise<Event | undefined> => {
+    console.log(`Fetching event by id: ${id}`);
+    return raceSeries
+      .flatMap((series) => series.events)
+      .find((e) => e.id === id);
+  }
+);
 
 export const getRaceSeriesForOrganization = cache(
   async (organizationId: string): Promise<RaceSeries[]> => {
     console.log(`Fetching race series for organization: ${organizationId}`);
     return raceSeries.filter((rs) => rs.organizationId === organizationId);
+  }
+);
+
+export const getEnrichedRaceSeriesForOrganization = cache(
+  async (organizationId: string): Promise<EnrichedSeries[]> => {
+    console.log(
+      `Fetching enriched race series for organization: ${organizationId}`
+    );
+    const seriesForOrg = raceSeries.filter(
+      (rs) => rs.organizationId === organizationId
+    );
+
+    const enrichEvent = (event: Event): EnrichedEvent => {
+      const totalCollected = event.races.reduce(
+        (raceSum, race) =>
+          raceSum +
+          race.preems.reduce(
+            (preemSum, preem) => preemSum + preem.prizePool,
+            0
+          ),
+        0
+      );
+
+      const totalContributors = new Set(
+        event.races.flatMap((race) =>
+          race.preems.flatMap((preem) =>
+            preem.contributionHistory
+              .map((c) => c.contributorId)
+              .filter(Boolean)
+          )
+        )
+      ).size;
+
+      return { ...event, totalCollected, totalContributors };
+    };
+
+    return seriesForOrg.map((series) => ({
+      ...series,
+      events: series.events.map(enrichEvent),
+    }));
   }
 );
 
