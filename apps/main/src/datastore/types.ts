@@ -29,7 +29,7 @@ export interface Preem {
 
 export interface Race {
   id: string;
-  seriesId: string;
+  eventId: string;
   status: 'Upcoming' | 'Live' | 'Finished';
   name: string;
   category: string;
@@ -47,6 +47,16 @@ export interface Race {
   preems: Preem[];
 }
 
+export interface Event {
+  id: string;
+  seriesId: string;
+  status: 'Upcoming' | 'Live' | 'Finished';
+  name: string;
+  location: string;
+  dateTime: string;
+  races: Race[];
+}
+
 export interface RaceSeries {
   id: string;
   organizerId: string;
@@ -55,7 +65,7 @@ export interface RaceSeries {
   website?: string;
   startDate: string;
   endDate: string;
-  races: Race[];
+  events: Event[];
 }
 
 export type View =
