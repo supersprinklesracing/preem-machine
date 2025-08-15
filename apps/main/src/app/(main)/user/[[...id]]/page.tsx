@@ -1,6 +1,6 @@
 'use server';
 
-import { getUserFromCookies } from '@/app/shared/user';
+import { getUserFromCookies } from '@/auth/user';
 import { getContributionsForUser, getUserById } from '@/datastore/data-access';
 import { notFound, redirect } from 'next/navigation';
 import User from './User';
