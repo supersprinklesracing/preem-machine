@@ -119,7 +119,7 @@ const RaceCard: React.FC<RaceCardProps> = ({ race, children, style }) => {
                           : 'inherit'
                       }
                     >
-                      ${totalPrizePool.toLocaleString()} Preems
+                      Preems ${totalPrizePool.toLocaleString()}
                     </Text>
                   </Group>
                 )}
