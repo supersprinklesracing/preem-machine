@@ -1,6 +1,5 @@
 import { User } from '@/auth/AuthContext';
 import { AuthProvider } from '@/auth/AuthProvider';
-import { User } from '@/auth/AuthContext';
 import { MantineProvider } from '@mantine/core';
 import { render, RenderOptions } from '@testing-library/react';
 import React, { ReactNode } from 'react';
@@ -33,4 +32,3 @@ const customRender = (
 
 export * from '@testing-library/react';
 export { customRender as render };
-
