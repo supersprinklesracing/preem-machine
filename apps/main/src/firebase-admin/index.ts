@@ -3,7 +3,6 @@
 import admin from 'firebase-admin';
 import { authConfigFn } from './config';
 
-
 const initializeApp = async () => {
   const authConfig = await authConfigFn();
   if (!authConfig.serviceAccount) {
@@ -27,7 +26,9 @@ export const getFirebaseAdminApp = async () => {
     return admin.apps[0] as admin.app.App;
   }
 
-  // admin.firestore.setLogFunction(console.log);
-
   return initializeApp();
+};
+
+export const getFirestore = async () => {
+  return (await getFirebaseAdminApp()).firestore();
 };

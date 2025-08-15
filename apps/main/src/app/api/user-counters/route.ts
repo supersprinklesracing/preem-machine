@@ -2,10 +2,9 @@
 
 import { NextResponse } from 'next/server';
 import type { NextRequest } from 'next/server';
-import { getFirestore } from 'firebase-admin/firestore';
 import { getTokens } from 'next-firebase-auth-edge/lib/next/tokens';
 import { authConfigFn } from '@/firebase-admin/config';
-import { getFirebaseAdminApp } from '@/firebase-admin';
+import { getFirestore } from '@/firebase-admin';
 
 export async function POST(request: NextRequest) {
   const authConfig = await authConfigFn();
@@ -15,7 +14,7 @@ export async function POST(request: NextRequest) {
     throw new Error('Cannot update counter of unauthenticated user');
   }
 
-  const db = getFirestore(await getFirebaseAdminApp());
+  const db = await getFirestore();
   const snapshot = await db
     .collection('user-counters')
     .doc(tokens.decodedToken.uid)

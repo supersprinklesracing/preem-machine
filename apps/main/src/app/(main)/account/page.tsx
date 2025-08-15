@@ -1,15 +1,14 @@
 import { incrementCounter } from '@/actions/user-counters';
 import { getUserFromCookies } from '@/auth/user';
-import { getFirebaseAdminApp } from '@/firebase-admin';
+import { getFirestore } from '@/firebase-admin';
 import { Container, SimpleGrid } from '@mantine/core';
-import { getFirestore } from 'firebase-admin/firestore';
 import { Metadata } from 'next';
 import { Account } from './Account';
 import { DebugPanel } from './debug-panel/DebugPanel';
 
 async function getUserCounter(): Promise<number> {
   const user = await getUserFromCookies();
-  const db = getFirestore(await getFirebaseAdminApp());
+  const db = await getFirestore();
 
   if (!user) {
     throw new Error('Cannot get counter of unauthenticated user');
