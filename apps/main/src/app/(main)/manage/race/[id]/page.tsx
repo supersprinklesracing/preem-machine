@@ -1,7 +1,7 @@
-import OrganizerRace from './OrganizerRace';
+import ManageRace from './ManageRace';
 import { getRaceById, getUsersByIds } from '@/datastore/data-access';
 
-export default async function OrganizerRacePage({
+export default async function ManageRacePage({
   params,
 }: {
   params: { id: string };
@@ -21,5 +21,5 @@ export default async function OrganizerRacePage({
 
   const users = await getUsersByIds(allUserIds);
 
-  return <OrganizerRace initialRace={race} users={users} />;
+  return <ManageRace initialRace={race} users={users} />;
 }

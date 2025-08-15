@@ -5,8 +5,8 @@ import { getFirestore } from '@/firebase-admin/firebase-admin';
 import { incrementCounter } from '@/actions/user-counters';
 
 // Mock child components
-jest.mock('./debug-panel/DebugPanel', () => ({
-  DebugPanel: ({ count }: { count: number }) => (
+jest.mock('./account-debug/AccountDebug', () => ({
+  AccountDebug: ({ count }: { count: number }) => (
     <div data-testid="debug-panel-component">{count}</div>
   ),
 }));
@@ -68,7 +68,7 @@ describe('AccountPage', () => {
     jest.clearAllMocks();
   });
 
-  it('renders the Account and DebugPanel components with the correct counter', async () => {
+  it('renders the Account and AccountDebug components with the correct counter', async () => {
     mockDb.get.mockResolvedValue({
       data: () => ({ count: 42 }),
     });
@@ -87,7 +87,7 @@ describe('AccountPage', () => {
     expect(screen.getByText('Verify Email')).toBeInTheDocument();
     expect(screen.getByText('Log out')).toBeInTheDocument();
 
-    // Check for DebugPanel component content
+    // Check for AccountDebug component content
     expect(screen.getByTestId('debug-panel-component')).toBeInTheDocument();
     expect(screen.getByTestId('debug-panel-component')).toHaveTextContent('42');
   });
