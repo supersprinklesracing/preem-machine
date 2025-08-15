@@ -66,6 +66,13 @@ export const getRaceById = cache(async (id: string) => {
     .find((r) => r.id === id);
 });
 
+export const getAllRaces = cache(async (): Promise<Race[]> => {
+  console.log('Fetching all races');
+  return raceSeries
+    .flatMap((series) => series.events)
+    .flatMap((event) => event.races);
+});
+
 export const getEventsWithRaces = cache(
   async (): Promise<{ event: Event; race: Race }[]> => {
     console.log('Fetching events with races');
