@@ -1,27 +1,21 @@
 import { incrementCounter } from '@/actions/user-counters';
+import { getUserFromCookies } from '@/app/shared/user';
 import { getFirebaseAdminApp } from '@/firebase-admin';
-import { authConfigFn } from '@/firebase-admin/config';
+import { Container, SimpleGrid } from '@mantine/core';
 import { getFirestore } from 'firebase-admin/firestore';
 import { Metadata } from 'next';
-import { getTokens } from 'next-firebase-auth-edge/lib/next/tokens';
-import { cookies } from 'next/headers';
 import { Account } from './Account';
 import { DebugPanel } from './debug-panel/DebugPanel';
-import { Container, SimpleGrid } from '@mantine/core';
 
 async function getUserCounter(): Promise<number> {
-  const authConfig = await authConfigFn();
+  const user = await getUserFromCookies();
   const db = getFirestore(await getFirebaseAdminApp());
-  const tokens = await getTokens(await cookies(), authConfig);
 
-  if (!tokens) {
+  if (!user) {
     throw new Error('Cannot get counter of unauthenticated user');
   }
 
-  const snapshot = await db
-    .collection('user-counters')
-    .doc(tokens.decodedToken.uid)
-    .get();
+  const snapshot = await db.collection('user-counters').doc(user.uid).get();
 
   const currentUserCounter = snapshot.data();
 
@@ -48,14 +42,13 @@ export default async function AccountPage() {
 // Generate customized metadata based on user cookies
 // https://nextjs.org/docs/app/building-your-application/optimizing/metadata
 export async function generateMetadata(): Promise<Metadata> {
-  const authConfig = await authConfigFn();
-  const tokens = await getTokens(await cookies(), authConfig);
+  const user = await getUserFromCookies();
 
-  if (!tokens) {
+  if (!user) {
     return {};
   }
 
   return {
-    title: `${tokens.decodedToken.email} profile page | next-firebase-auth-edge example`,
+    title: `${user.email} profile page | next-firebase-auth-edge example`,
   };
 }
