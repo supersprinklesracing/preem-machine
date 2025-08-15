@@ -72,11 +72,7 @@ const Sidebar: React.FC<SidebarProps> = ({ races }) => {
           component={Link}
         />
         <Divider my="sm" />
-        <Box
-          bg="gray.1"
-          p="xs"
-          style={{ borderRadius: 'var(--mantine-radius-md)' }}
-        >
+        <Box p="xs" style={{ borderRadius: 'var(--mantine-radius-md)' }}>
           <NavLink
             label="Debug"
             leftSection={<IconBug size={18} />}

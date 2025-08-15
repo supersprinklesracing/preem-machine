@@ -1,6 +1,8 @@
 'use client';
 
 import { useAuth } from '@/auth/AuthContext';
+import { checkEmailVerification, logout } from '@/auth';
+import { getFirebaseAuth } from '@/firebase-client';
 import {
   Avatar,
   Badge,
@@ -16,8 +18,6 @@ import Link from 'next/link';
 import { useRouter } from 'next/navigation';
 import * as React from 'react';
 import { useLoadingCallback } from 'react-loading-hook';
-import { checkEmailVerification, logout } from '@/auth';
-import { getFirebaseAuth } from '@/firebase-client';
 
 export function Account() {
   const router = useRouter();

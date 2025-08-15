@@ -1,29 +1,33 @@
-/* eslint-disable @typescript-eslint/no-explicit-any */
-/* eslint-disable @typescript-eslint/no-useless-constructor */
-
 import '@testing-library/jest-dom';
-import { TextDecoder, TextEncoder } from 'util';
+import { Request, Response, Headers } from 'node-fetch';
+import { TextEncoder, TextDecoder } from 'util';
 
-if (typeof global.Request === 'undefined') {
-  global.Request = class Request {
-    constructor(input: any, init?: any) {
-      // This is a mock implementation
-    }
-  } as any;
+// Polyfill TextEncoder and TextDecoder for Jest
+global.TextEncoder = TextEncoder;
+// @ts-expect-error: JSDOM does not have TextDecoder
+global.TextDecoder = TextDecoder;
+
+// Polyfill Request, Response, and Headers for Jest
+if (!global.Request) {
+  // @ts-expect-error: JSDOM does not have Request
+  global.Request = Request;
+  // @ts-expect-error: JSDOM does not have Response
+  global.Response = Response;
+  // @ts-expect-error: JSDOM does not have Headers
+  global.Headers = Headers;
 }
 
-if (typeof global.Response === 'undefined') {
-  global.Response = class Response {
-    constructor(body?: any, init?: any) {
-      // This is a mock implementation
-    }
-  } as any;
+// Mock ResizeObserver
+class ResizeObserver {
+  observe() {
+    // do nothing
+  }
+  unobserve() {
+    // do nothing
+  }
+  disconnect() {
+    // do nothing
+  }
 }
 
-if (typeof global.TextEncoder === 'undefined') {
-  global.TextEncoder = TextEncoder;
-}
-
-if (typeof global.TextDecoder === 'undefined') {
-  global.TextDecoder = TextDecoder as any;
-}
+window.ResizeObserver = ResizeObserver;
