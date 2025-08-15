@@ -1,5 +1,4 @@
-import { MantineProvider } from '@mantine/core';
-import { render, screen } from '@testing-library/react';
+import { render, screen } from '@/test-utils';
 import '@testing-library/jest-dom';
 import RegisterPage from './page';
 
@@ -23,11 +22,7 @@ jest.mock('firebase/auth', () => ({
 
 describe('Register Page', () => {
   it('should render successfully', () => {
-    render(
-      <MantineProvider>
-        <RegisterPage />
-      </MantineProvider>
-    );
+    render(<RegisterPage />);
     expect(
       screen.getByRole('heading', { level: 1, name: 'Register' })
     ).toBeInTheDocument();
