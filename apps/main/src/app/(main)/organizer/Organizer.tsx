@@ -1,12 +1,15 @@
 'use client';
 
-import StatusBadge from '@/components/status-badge';
+import ThresholdAssistantModal from '@/components/ai/threshold-assistant-modal';
+import RaceCard from '@/components/RaceCard';
 import type { Race, RaceSeries } from '@/datastore/types';
 import {
+  Box,
   Button,
   Card,
-  Grid,
+  Flex,
   Group,
+  SimpleGrid,
   Stack,
   Table,
   Text,
@@ -23,7 +26,7 @@ import {
 import { format } from 'date-fns';
 import Link from 'next/link';
 import React, { useState } from 'react';
-import ThresholdAssistantModal from '@/components/ai/threshold-assistant-modal';
+import PastEventCard from './PastEventCard';
 
 interface OrganizerProps {
   raceSeries: RaceSeries[];
@@ -47,47 +50,22 @@ const Organizer: React.FC<OrganizerProps> = ({ raceSeries }) => {
     ).size;
 
   const upcomingEventCards = upcomingEvents.map((race) => (
-    <Grid.Col span={{ base: 12, md: 6, lg: 4 }} key={race.id}>
-      <Card
-        withBorder
-        padding="lg"
-        radius="md"
-        style={{ display: 'flex', flexDirection: 'column', height: '100%' }}
-      >
-        <Stack justify="space-between" style={{ flexGrow: 1 }}>
-          <div>
-            <Group justify="space-between">
-              <Title order={4}>{race.name}</Title>
-              <StatusBadge status={race.status} />
-            </Group>
-            <Text c="dimmed" size="sm">
-              {race.category} - {race.gender}
-            </Text>
-            <Group gap="xs" mt="sm">
-              <IconCalendar size={16} stroke={1.5} />
-              <Text size="sm" c="dimmed">
-                {format(new Date(race.dateTime), 'PP p')}
-              </Text>
-            </Group>
-            <Text size="sm" mt="xs">
-              {race.location}
-            </Text>
-          </div>
-          <Button
-            component={Link}
-            href={
-              race.status === 'Live'
-                ? `/organizer/race/${race.id}`
-                : `/race/${race.id}`
-            }
-            fullWidth
-            mt="md"
-          >
-            Manage Event
-          </Button>
-        </Stack>
-      </Card>
-    </Grid.Col>
+    <Box key={race.id} style={{ flex: '1 1 350px', minWidth: '300px' }}>
+      <RaceCard race={race} style={{ height: '100%' }}>
+        <Button
+          component={Link}
+          href={
+            race.status === 'Live'
+              ? `/organizer/race/${race.id}`
+              : `/race/${race.id}`
+          }
+          fullWidth
+          mt="md"
+        >
+          Manage
+        </Button>
+      </RaceCard>
+    </Box>
   ));
 
   const pastEventRows = pastEvents.map((race) => (
@@ -106,7 +84,7 @@ const Organizer: React.FC<OrganizerProps> = ({ raceSeries }) => {
         <Group justify="flex-end">
           <Button
             component={Link}
-            href={`/race/${race.id}`}
+            href={`/organizer/race/${race.id}`}
             variant="outline"
             size="xs"
             leftSection={<IconChartBar size={14} />}
@@ -116,6 +94,15 @@ const Organizer: React.FC<OrganizerProps> = ({ raceSeries }) => {
         </Group>
       </Table.Td>
     </Table.Tr>
+  ));
+
+  const pastEventCards = pastEvents.map((race) => (
+    <PastEventCard
+      key={race.id}
+      race={race}
+      totalCollected={totalCollected(race)}
+      totalContributors={totalContributors(race)}
+    />
   ));
 
   return (
@@ -143,42 +130,57 @@ const Organizer: React.FC<OrganizerProps> = ({ raceSeries }) => {
         <Title order={2} ff="Space Grotesk, var(--mantine-font-family)" mb="md">
           Upcoming & Live Events
         </Title>
-        <Grid>{upcomingEventCards}</Grid>
+        <Flex wrap="wrap" gap="md">
+          {upcomingEventCards}
+        </Flex>
       </section>
 
       <section>
         <Title order={2} ff="Space Grotesk, var(--mantine-font-family)" mb="md">
           Past Events
         </Title>
-        <Card withBorder padding={0} radius="md">
-          <Table highlightOnHover>
-            <Table.Thead>
-              <Table.Tr>
-                <Table.Th>Event Name</Table.Th>
-                <Table.Th>
-                  <Group gap="xs">
-                    <IconCalendar size={16} stroke={1.5} />
-                    Date
-                  </Group>
-                </Table.Th>
-                <Table.Th>
-                  <Group gap="xs">
-                    <IconCurrencyDollar size={16} stroke={1.5} />
-                    Total Preems
-                  </Group>
-                </Table.Th>
-                <Table.Th>
-                  <Group gap="xs">
-                    <IconUsers size={16} stroke={1.5} />
-                    Contributors
-                  </Group>
-                </Table.Th>
-                <Table.Th />
-              </Table.Tr>
-            </Table.Thead>
-            <Table.Tbody>{pastEventRows}</Table.Tbody>
-          </Table>
+        <Card
+          withBorder
+          padding={0}
+          radius="md"
+          display={{ base: 'none', sm: 'block' }}
+        >
+          <Table.ScrollContainer minWidth={500}>
+            <Table highlightOnHover>
+              <Table.Thead>
+                <Table.Tr>
+                  <Table.Th>Event Name</Table.Th>
+                  <Table.Th>
+                    <Group gap="xs">
+                      <IconCalendar size={16} stroke={1.5} />
+                      Date
+                    </Group>
+                  </Table.Th>
+                  <Table.Th>
+                    <Group gap="xs">
+                      <IconCurrencyDollar size={16} stroke={1.5} />
+                      Total Preems
+                    </Group>
+                  </Table.Th>
+                  <Table.Th>
+                    <Group gap="xs">
+                      <IconUsers size={16} stroke={1.5} />
+                      Contributors
+                    </Group>
+                  </Table.Th>
+                  <Table.Th />
+                </Table.Tr>
+              </Table.Thead>
+              <Table.Tbody>{pastEventRows}</Table.Tbody>
+            </Table>
+          </Table.ScrollContainer>
         </Card>
+        <SimpleGrid
+          cols={{ base: 1, xs: 2 }}
+          display={{ base: 'grid', sm: 'none' }}
+        >
+          {pastEventCards}
+        </SimpleGrid>
       </section>
       <ThresholdAssistantModal
         isOpen={isAiModalOpen}

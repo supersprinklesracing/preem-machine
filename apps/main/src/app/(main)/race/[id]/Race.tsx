@@ -61,7 +61,11 @@ export const Race: React.FC<{ race: RaceType; users: User[] }> = ({
 
   const allContributions = race.preems
     .flatMap((p) =>
-      p.contributionHistory.map((c) => ({ ...c, preemName: p.name }))
+      p.contributionHistory.map((c) => ({
+        ...c,
+        preemName: p.name,
+        preemId: p.id,
+      }))
     )
     .sort((a, b) => new Date(b.date).getTime() - new Date(a.date).getTime());
 
@@ -133,7 +137,14 @@ export const Race: React.FC<{ race: RaceType; users: User[] }> = ({
               </Text>
             </Text>
             <Text size="xs" c="dimmed">
-              to &quot;{c.preemName}&quot;
+              to{' '}
+              <Text
+                component={Link}
+                href={`/preem/${c.preemId}`}
+                style={{ textDecoration: 'none', color: 'inherit' }}
+              >
+                &quot;{c.preemName}&quot;
+              </Text>
             </Text>
             {c.message && (
               <Card withBorder padding="xs" mt="xs">
@@ -150,7 +161,7 @@ export const Race: React.FC<{ race: RaceType; users: User[] }> = ({
 
   return (
     <Stack gap="xl">
-      <RaceCard race={race} isClickable={false} />
+      <RaceCard race={race} />
 
       <Grid gutter="xl">
         <Grid.Col span={{ base: 12, lg: 8 }}>
@@ -184,21 +195,29 @@ export const Race: React.FC<{ race: RaceType; users: User[] }> = ({
           </Card>
         </Grid.Col>
         <Grid.Col span={{ base: 12, lg: 4 }}>
-          <Title
-            order={2}
-            ff="Space Grotesk, var(--mantine-font-family)"
-            mb="md"
+          <div
+            style={{
+              position: 'sticky',
+              top: '80px',
+              height: 'calc(100vh - 180px)',
+            }}
           >
-            Recent Contributions
-          </Title>
-          <Card
-            withBorder
-            padding="lg"
-            radius="md"
-            style={{ maxHeight: '500px', overflowY: 'auto' }}
-          >
-            {contributionItems}
-          </Card>
+            <Title
+              order={2}
+              ff="Space Grotesk, var(--mantine-font-family)"
+              mb="md"
+            >
+              Recent Contributions
+            </Title>
+            <Card
+              withBorder
+              padding="lg"
+              radius="md"
+              style={{ height: '100%', overflowY: 'auto' }}
+            >
+              {contributionItems}
+            </Card>
+          </div>
         </Grid.Col>
       </Grid>
       {selectedPreem && (

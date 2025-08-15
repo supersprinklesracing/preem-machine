@@ -9,6 +9,7 @@ interface LiveContributionFeedProps {
     preemName: string;
     raceName: string;
     raceId: string;
+    preemId: string;
   })[];
   users: User[];
 }
@@ -54,11 +55,19 @@ export default function LiveContributionFeed({
             >
               {contributor.name}
             </Text>{' '}
-            just contributed{' '}
+            -{' '}
             <Text span c="green" fw={600}>
               ${c.amount}
             </Text>{' '}
-            to &quot;{c.preemName}&quot; in the{' '}
+            to{' '}
+            <Text
+              component={Link}
+              href={`/preem/${c.preemId}`}
+              style={{ textDecoration: 'none', color: 'inherit' }}
+            >
+              &quot;{c.preemName}&quot;
+            </Text>{' '}
+            in the{' '}
             <Text
               component={Link}
               href={`/race/${c.raceId}`}

@@ -1,8 +1,8 @@
 'use server';
 
+import { getUsers } from '@/datastore/data-access';
 import { raceSeries } from '@/datastore/mock-data';
 import Home from './Home';
-import { getUsers } from '@/datastore/data-access';
 
 export default async function Page() {
   const allRaces = raceSeries.flatMap((series) => series.races);
@@ -14,6 +14,7 @@ export default async function Page() {
           preemName: preem.name,
           raceName: race.name,
           raceId: race.id,
+          preemId: preem.id,
         }))
       )
     )

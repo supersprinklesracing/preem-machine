@@ -1,33 +1,60 @@
 'use client';
 
-import { Card, Grid, Group, Stack, Text, Title } from '@mantine/core';
+import {
+  Card,
+  Flex,
+  Grid,
+  Group,
+  Stack,
+  Text,
+  Title,
+  useMantineTheme,
+} from '@mantine/core';
+import { useMediaQuery } from '@mantine/hooks';
 import {
   IconAward,
   IconCalendar,
   IconClock,
-  IconSparkles,
   IconMapPin,
+  IconSparkles,
   IconUsers,
-  IconUsersGroup,
 } from '@tabler/icons-react';
 import { format } from 'date-fns';
-import Link from 'next/link';
 import React from 'react';
 import type { Race } from '../datastore/types';
 import StatusBadge from './status-badge';
 
+const LARGE_PREEM_THRESHOLD = 100;
+
 interface RaceCardProps {
   race: Race;
-  isClickable?: boolean;
+  children?: React.ReactNode;
+  style?: React.CSSProperties;
 }
 
-const RaceCard: React.FC<RaceCardProps> = ({ race, isClickable = true }) => {
+const RaceCard: React.FC<RaceCardProps> = ({ race, children, style }) => {
   const totalPrizePool = race.preems.reduce(
     (sum, preem) => sum + preem.prizePool,
     0
   );
+  const theme = useMantineTheme();
+  const isCompactLayout = useMediaQuery(`(max-width: ${theme.breakpoints.lg})`);
 
-  const cardContent = (
+  // This content is the same, but its container will change based on screen size.
+  const dateLocationDetailContent = (
+    <>
+      <Group gap="xs" wrap="nowrap">
+        <IconCalendar size={16} style={{ flexShrink: 0 }} />
+        <Text size="sm">{format(new Date(race.dateTime), 'PPP p')}</Text>
+      </Group>
+      <Group gap="xs" wrap="nowrap">
+        <IconMapPin size={16} style={{ flexShrink: 0 }} />
+        <Text size="sm">{race.location}</Text>
+      </Group>
+    </>
+  );
+
+  return (
     <Card
       withBorder
       padding="lg"
@@ -36,105 +63,106 @@ const RaceCard: React.FC<RaceCardProps> = ({ race, isClickable = true }) => {
         display: 'flex',
         flexDirection: 'column',
         height: '100%',
-        cursor: isClickable ? 'pointer' : 'default',
+        ...style,
       }}
     >
-      <Stack justify="space-between" style={{ flexGrow: 1 }}>
-        <div>
-          <Group justify="space-between" align="flex-start">
+      <Grid style={{ flexGrow: 1 }}>
+        <Grid.Col span={{ base: 12, lg: 9 }}>
+          <Stack justify="space-between" style={{ height: '100%' }}>
             <div>
-              <Group align="center" gap="md">
-                <Title order={1} ff="Space Grotesk, var(--mantine-font-family)">
-                  {race.name}
-                </Title>
-                <StatusBadge status={race.status} />
+              <Group justify="space-between" align="flex-start">
+                <div>
+                  <Group align="center" gap="md">
+                    <Title
+                      order={1}
+                      ff="Space Grotesk, var(--mantine-font-family)"
+                    >
+                      {race.name}
+                    </Title>
+                    <StatusBadge status={race.status} />
+                  </Group>
+                  <Text c="dimmed">
+                    {race.category} - {race.gender}
+                  </Text>
+                </div>
               </Group>
-              <Text c="dimmed">
-                {race.category} - {race.gender}
+
+              {/* On mobile, location is a row here */}
+              {isCompactLayout && (
+                <Group mt="md" mb="md">
+                  {dateLocationDetailContent}
+                </Group>
+              )}
+
+              <Text size="sm" mt="md" mb="md">
+                {race.courseDetails}
               </Text>
-            </div>
-            <Stack align="flex-end" gap="xs">
-              <Group gap="xs">
-                <IconCalendar size={16} />
-                <Text size="sm">
-                  {format(new Date(race.dateTime), 'PPP p')}
-                </Text>
-              </Group>
-              <Group gap="xs">
-                <IconMapPin size={16} />
-                <Text size="sm">{race.location}</Text>
-              </Group>
-            </Stack>
-          </Group>
-          <Text size="sm" mt="xs" mb="md">
-            {race.courseDetails}
-          </Text>
-          <Grid>
-            {totalPrizePool > 0 && (
-              <Grid.Col span={{ base: 6, sm: 4, md: 2.4 }}>
-                <Group gap="xs">
-                  <IconSparkles size={18} />
-                  <Text
-                    size="lg"
-                    fw={500}
-                    c={totalPrizePool > 100 ? 'green' : 'inherit'}
-                  >
-                    ${totalPrizePool.toLocaleString()} Preems
+
+              {/* Use a wrapping Flexbox for stats to make them responsive */}
+              <Flex wrap="wrap" gap="md">
+                {totalPrizePool > 0 && (
+                  <Group gap="xs" wrap="nowrap">
+                    <IconSparkles
+                      size={18}
+                      color={
+                        totalPrizePool > LARGE_PREEM_THRESHOLD
+                          ? 'var(--mantine-color-green-6)'
+                          : 'currentColor'
+                      }
+                    />
+                    <Text
+                      size="lg"
+                      fw={500}
+                      c={
+                        totalPrizePool > LARGE_PREEM_THRESHOLD
+                          ? 'green'
+                          : 'inherit'
+                      }
+                    >
+                      ${totalPrizePool.toLocaleString()} Preems
+                    </Text>
+                  </Group>
+                )}
+                <Group gap="xs" wrap="nowrap">
+                  <IconUsers size={18} />
+                  <Text size="sm" fw={500}>
+                    {race.currentRacers} / {race.maxRacers}
                   </Text>
                 </Group>
-              </Grid.Col>
+                <Group gap="xs" wrap="nowrap">
+                  <IconClock size={18} />
+                  <Text size="sm" fw={500}>
+                    {race.duration}
+                  </Text>
+                </Group>
+                <Group gap="xs" wrap="nowrap">
+                  <IconAward size={18} />
+                  <Text size="sm" fw={500}>
+                    {race.laps} laps
+                  </Text>
+                </Group>
+              </Flex>
+            </div>
+          </Stack>
+        </Grid.Col>
+        <Grid.Col span={{ base: 12, lg: 3 }}>
+          <Stack
+            align="stretch"
+            justify="space-between"
+            style={{ height: '100%' }}
+          >
+            {/* On desktop, location is a stack here */}
+            {!isCompactLayout && (
+              <Stack align="flex-start" gap="xs">
+                {dateLocationDetailContent}
+              </Stack>
             )}
-            <Grid.Col span={{ base: 6, sm: 4, md: 2.4 }}>
-              <Group gap="xs">
-                <IconUsers size={18} />
-                <Text size="sm" fw={500}>
-                  {race.currentRacers} / {race.maxRacers} Racers
-                </Text>
-              </Group>
-            </Grid.Col>
-            <Grid.Col span={{ base: 6, sm: 4, md: 2.4 }}>
-              <Group gap="xs">
-                <IconClock size={18} />
-                <Text size="sm" fw={500}>
-                  {race.duration}
-                </Text>
-              </Group>
-            </Grid.Col>
-            <Grid.Col span={{ base: 6, sm: 4, md: 2.4 }}>
-              <Group gap="xs">
-                <IconAward size={18} />
-                <Text size="sm" fw={500}>
-                  {race.laps} laps
-                </Text>
-              </Group>
-            </Grid.Col>
-            <Grid.Col span={{ base: 6, sm: 4, md: 2.4 }}>
-              <Group gap="xs">
-                <IconUsersGroup size={18} />
-                <Text size="sm" fw={500}>
-                  {race.ageCategory}
-                </Text>
-              </Group>
-            </Grid.Col>
-          </Grid>
-        </div>
-      </Stack>
+            {children}
+          </Stack>
+        </Grid.Col>
+      </Grid>
     </Card>
   );
-
-  if (isClickable) {
-    return (
-      <Link
-        href={`/race/${race.id}`}
-        passHref
-        style={{ textDecoration: 'none' }}
-      >
-        {cardContent}
-      </Link>
-    );
-  }
-
-  return cardContent;
 };
 
 export default RaceCard;
