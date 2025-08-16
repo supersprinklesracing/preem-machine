@@ -19,7 +19,7 @@ import React from 'react';
 import type {
   User as FirestoreUser,
   Contribution as FirestoreContribution,
-} from '@/datastore/firestore-types';
+} from '@/datastore/types';
 
 // --- Component-Specific Data Models ---
 

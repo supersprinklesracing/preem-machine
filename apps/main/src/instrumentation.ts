@@ -7,8 +7,9 @@ export async function register() {
   ) {
     console.log('🌱 Seeding development database...');
     try {
-      const { seedFirestore } = await require('./datastore/mock-db-utils');
-      await seedFirestore();
+      const { seedFirestore } = await import('./datastore/seed-firestore');
+      const { getFirestore } = await import('./firebase-admin/firebase-admin');
+      await seedFirestore(await getFirestore());
       console.log('OK! Database seeding complete.');
     } catch (error) {
       console.error('Error: Database seeding failed:', error);

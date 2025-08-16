@@ -2,13 +2,13 @@
 
 import RaceCard from '@/components/RaceCard';
 import type {
-  Contribution as FirestoreContribution,
-  Event as FirestoreEvent,
-  Organization as FirestoreOrganization,
-  Preem as FirestorePreem,
-  Race as FirestoreRace,
-  RaceSeries as FirestoreRaceSeries,
-} from '@/datastore/firestore-types';
+  Contribution,
+  Event,
+  Organization,
+  Preem,
+  Race,
+  RaceSeries,
+} from '@/datastore/types';
 import {
   Anchor,
   Button,
@@ -25,15 +25,15 @@ import { format } from 'date-fns';
 // --- Component-Specific Data Models ---
 
 export interface EventPageData {
-  event: FirestoreEvent & {
-    races: (FirestoreRace & {
-      preems: (FirestorePreem & {
-        contributionHistory: FirestoreContribution[];
+  event: Event & {
+    races: (Race & {
+      preems: (Preem & {
+        contributionHistory: Contribution[];
       })[];
     })[];
   };
-  series: FirestoreRaceSeries;
-  organization: FirestoreOrganization;
+  series: RaceSeries;
+  organization: Organization;
 }
 
 interface Props {

@@ -1,11 +1,7 @@
 'use client';
 
 import SeriesCard from '@/components/SeriesCard';
-import type {
-  Organization as FirestoreOrganization,
-  RaceSeries as FirestoreRaceSeries,
-  User as FirestoreUser,
-} from '@/datastore/firestore-types';
+import type { Organization, User } from '@/datastore/types';
 import {
   Avatar,
   Button,
@@ -22,9 +18,8 @@ import { IconPlus } from '@tabler/icons-react';
 // --- Component-Specific Data Models ---
 
 export interface OrganizationPageData {
-  organization: FirestoreOrganization;
-  series: FirestoreRaceSeries[];
-  members: FirestoreUser[];
+  organization: Organization;
+  members: User[];
 }
 
 interface Props {

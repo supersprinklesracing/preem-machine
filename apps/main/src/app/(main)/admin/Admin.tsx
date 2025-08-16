@@ -14,12 +14,12 @@ import {
 } from '@mantine/core';
 import { IconSearch, IconUserCheck } from '@tabler/icons-react';
 import React, { useState } from 'react';
-import type { User as FirestoreUser } from '@/datastore/firestore-types';
+import type { User } from '@/datastore/types';
 
 // --- Component-Specific Data Models ---
 
 export interface AdminPageData {
-  users: FirestoreUser[];
+  users: User[];
 }
 
 interface Props {
@@ -31,7 +31,7 @@ const Admin: React.FC<Props> = ({ data }) => {
   const [search, setSearch] = useState('');
   const { toast } = useToast();
 
-  const handleImpersonate = (user: FirestoreUser) => {
+  const handleImpersonate = (user: User) => {
     toast({
       title: 'Impersonation Started',
       description: `You are now viewing the app as ${user.name}.`,

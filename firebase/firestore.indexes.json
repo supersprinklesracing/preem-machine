@@ -1,0 +1,30 @@
+{
+  "indexes": [
+    {
+      "collectionGroup": "contributions",
+      "queryScope": "COLLECTION_GROUP",
+      "fields": [{ "fieldPath": "date", "order": "DESCENDING" }]
+    },
+    {
+      "collectionGroup": "events",
+      "queryScope": "COLLECTION_GROUP",
+      "fields": [{ "fieldPath": "id", "order": "ASCENDING" }]
+    },
+    {
+      "collectionGroup": "preems",
+      "queryScope": "COLLECTION_GROUP",
+      "fields": [{ "fieldPath": "id", "order": "ASCENDING" }]
+    },
+    {
+      "collectionGroup": "races",
+      "queryScope": "COLLECTION_GROUP",
+      "fields": [{ "fieldPath": "id", "order": "ASCENDING" }]
+    },
+    {
+      "collectionGroup": "series",
+      "queryScope": "COLLECTION_GROUP",
+      "fields": [{ "fieldPath": "id", "order": "ASCENDING" }]
+    }
+  ],
+  "fieldOverrides": []
+}

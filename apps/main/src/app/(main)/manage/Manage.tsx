@@ -7,26 +7,26 @@ import { Button, Group, SimpleGrid, Stack, Text, Title } from '@mantine/core';
 import { IconPlus, IconSparkles } from '@tabler/icons-react';
 import React, { useState } from 'react';
 import type {
-  RaceSeries as FirestoreRaceSeries,
-  Event as FirestoreEvent,
-  Race as FirestoreRace,
-  Preem as FirestorePreem,
-  Contribution as FirestoreContribution,
-} from '@/datastore/firestore-types';
+  RaceSeries,
+  Event,
+  Race,
+  Preem,
+  Contribution,
+} from '@/datastore/types';
 
 // --- Component-Specific Data Models ---
 
-type EnrichedEvent = FirestoreEvent & {
-  races: (FirestoreRace & {
-    preems: (FirestorePreem & {
-      contributionHistory: FirestoreContribution[];
+type EnrichedEvent = Event & {
+  races: (Race & {
+    preems: (Preem & {
+      contributionHistory: Contribution[];
     })[];
   })[];
   totalCollected: number;
   totalContributors: number;
 };
 
-type EnrichedSeries = FirestoreRaceSeries & { events: EnrichedEvent[] };
+type EnrichedSeries = RaceSeries & { events: EnrichedEvent[] };
 
 export interface ManagePageData {
   raceSeries: EnrichedSeries[];

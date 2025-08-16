@@ -8,7 +8,7 @@ import type {
   Preem as FirestorePreem,
   Race as FirestoreRace,
   RaceSeries as FirestoreRaceSeries,
-} from '@/datastore/firestore-types';
+} from '@/datastore/types';
 import {
   Anchor,
   Button,

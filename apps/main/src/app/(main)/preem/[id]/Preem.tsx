@@ -31,32 +31,32 @@ import Link from 'next/link';
 import React, { useState } from 'react';
 
 import type {
-  Contribution as FirestoreContribution,
-  Preem as FirestorePreem,
-  Race as FirestoreRace,
-  User as FirestoreUser,
-} from '@/datastore/firestore-types';
+  Contribution,
+  Preem as PreemType,
+  Race,
+  User,
+} from '@/datastore/types';
 
 // --- Component-Specific Data Models ---
 
 // This model defines the exact, serializable shape of data the component needs.
 // Timestamps are strings, and DocumentReferences are plain objects.
 export interface PreemPageData {
-  preem: Omit<FirestorePreem, 'timeLimit' | 'metadata'> & {
+  preem: Omit<PreemType, 'timeLimit' | 'metadata'> & {
     timeLimit?: string;
     contributionHistory: (Omit<
-      FirestoreContribution,
+      Contribution,
       'date' | 'contributorRef' | 'metadata'
     > & {
       date?: string;
       contributorRef?: { id: string; path: string } | null;
     })[];
   };
-  race: Omit<FirestoreRace, 'startDate' | 'endDate' | 'metadata'> & {
+  race: Omit<Race, 'startDate' | 'endDate' | 'metadata'> & {
     startDate?: string;
     endDate?: string;
   };
-  users: Record<string, FirestoreUser>;
+  users: Record<string, User>;
 }
 
 interface Props {

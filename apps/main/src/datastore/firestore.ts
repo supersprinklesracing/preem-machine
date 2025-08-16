@@ -1,45 +1,42 @@
 import 'server-only';
 
 import { getFirestore } from '@/firebase-admin';
-import {
+import type {
   DocumentData,
-  DocumentReference,
-  DocumentSnapshot,
   QueryDocumentSnapshot,
-  Timestamp,
 } from 'firebase-admin/firestore';
 import { cache } from 'react';
-import {
-  Contribution as FirestoreContribution,
-  Event as FirestoreEvent,
-  Organization as FirestoreOrganization,
-  Preem as FirestorePreem,
-  Race as FirestoreRace,
-  RaceSeries as FirestoreRaceSeries,
-  User as FirestoreUser,
-} from './firestore-types';
-import { PreemPageData } from '../app/(main)/preem/[id]/Preem';
+import type { AdminPageData } from '../app/(main)/admin/Admin';
+import type { EventPageData } from '../app/(main)/event/[id]/Event';
+import type { HomePageData } from '../app/(main)/Home';
+import type { ManagePageData } from '../app/(main)/manage/Manage';
+import type { OrganizationPageData } from '../app/(main)/organization/[id]/Organization';
+import type { PreemPageData } from '../app/(main)/preem/[id]/Preem';
+import type { RacePageData } from '../app/(main)/race/[id]/Race';
+import type { SeriesPageData } from '../app/(main)/series/[id]/Series';
+import type { UserPageData } from '../app/(main)/user/[[...id]]/User';
 import { genericConverter } from './converters';
-import { RacePageData } from '../app/(main)/race/[id]/Race';
-import { OrganizationPageData } from '../app/(main)/organization/[id]/Organization';
-import { SeriesPageData } from '../app/(main)/series/[id]/Series';
-import { EventPageData } from '../app/(main)/event/[id]/Event';
-import { HomePageData } from '../app/(main)/Home';
-import { UserPageData } from '../app/(main)/user/[[...id]]/User';
-import { ManagePageData } from '../app/(main)/manage/Manage';
-import { AdminPageData } from '../app/(main)/admin/Admin';
+import type {
+  Contribution,
+  Event,
+  Organization,
+  Preem,
+  Race,
+  RaceSeries,
+  User,
+} from './types';
 
 // --- Augmented Firestore Types (for returning sub-collections) ---
 
-export type RaceWithPreems = FirestoreRace & {
+export type RaceWithPreems = Race & {
   preems: PreemWithContributions[];
 };
-export type EventWithRaces = FirestoreEvent & { races: RaceWithPreems[] };
-export type SeriesWithEvents = FirestoreRaceSeries & {
+export type EventWithRaces = Event & { races: RaceWithPreems[] };
+export type SeriesWithEvents = RaceSeries & {
   events: EventWithRaces[];
 };
-export type PreemWithContributions = FirestorePreem & {
-  contributionHistory: FirestoreContribution[];
+export type PreemWithContributions = Preem & {
+  contributionHistory: Contribution[];
 };
 
 // --- Fetch Functions for Sub-collections ---
@@ -47,10 +44,10 @@ export type PreemWithContributions = FirestorePreem & {
 async function fetchContributionsForPreem(
   doc: QueryDocumentSnapshot<DocumentData>
 ): Promise<PreemWithContributions> {
-  const preem = doc.data() as FirestorePreem;
+  const preem = doc.data() as Preem;
   const contributionsSnap = await doc.ref
     .collection('contributions')
-    .withConverter(genericConverter<FirestoreContribution>())
+    .withConverter(genericConverter<Contribution>())
     .get();
   const contributionHistory = contributionsSnap.docs.map((doc) => doc.data());
   return { ...preem, contributionHistory };
@@ -59,10 +56,10 @@ async function fetchContributionsForPreem(
 async function fetchPreemsForRace(
   doc: QueryDocumentSnapshot<DocumentData>
 ): Promise<RaceWithPreems> {
-  const race = doc.data() as FirestoreRace;
+  const race = doc.data() as Race;
   const preemsSnap = await doc.ref
     .collection('preems')
-    .withConverter(genericConverter<FirestorePreem>())
+    .withConverter(genericConverter<Preem>())
     .get();
   const preems = await Promise.all(
     preemsSnap.docs.map(fetchContributionsForPreem)
@@ -73,10 +70,10 @@ async function fetchPreemsForRace(
 async function fetchRacesForEvent(
   doc: QueryDocumentSnapshot<DocumentData>
 ): Promise<EventWithRaces> {
-  const event = doc.data() as FirestoreEvent;
+  const event = doc.data() as Event;
   const racesSnap = await doc.ref
     .collection('races')
-    .withConverter(genericConverter<FirestoreRace>())
+    .withConverter(genericConverter<Race>())
     .get();
   const races = await Promise.all(racesSnap.docs.map(fetchPreemsForRace));
   return { ...event, races };
@@ -85,10 +82,10 @@ async function fetchRacesForEvent(
 async function fetchEventsForSeries(
   doc: QueryDocumentSnapshot<DocumentData>
 ): Promise<SeriesWithEvents> {
-  const series = doc.data() as FirestoreRaceSeries;
+  const series = doc.data() as RaceSeries;
   const eventsSnap = await doc.ref
     .collection('events')
-    .withConverter(genericConverter<FirestoreEvent>())
+    .withConverter(genericConverter<Event>())
     .get();
   const events = await Promise.all(eventsSnap.docs.map(fetchRacesForEvent));
   return { ...series, events };
@@ -96,41 +93,39 @@ async function fetchEventsForSeries(
 
 // --- Exported Data Access Functions ---
 
-export const getUsers = cache(async (): Promise<FirestoreUser[]> => {
+export const getUsers = cache(async (): Promise<User[]> => {
   const db = await getFirestore();
   const usersSnap = await db
     .collection('users')
-    .withConverter(genericConverter<FirestoreUser>())
+    .withConverter(genericConverter<User>())
     .get();
   return usersSnap.docs.map((doc) => doc.data());
 });
 
 export const getUserById = cache(
-  async (id: string | undefined): Promise<FirestoreUser | undefined> => {
+  async (id: string | undefined): Promise<User | undefined> => {
     if (!id) return undefined;
     const db = await getFirestore();
     const docSnap = await db
       .collection('users')
       .doc(id)
-      .withConverter(genericConverter<FirestoreUser>())
+      .withConverter(genericConverter<User>())
       .get();
     return docSnap.data();
   }
 );
 
-export const getUsersByIds = cache(
-  async (ids: string[]): Promise<FirestoreUser[]> => {
-    const uniqueIds = [...new Set(ids)];
-    if (uniqueIds.length === 0) return [];
-    const db = await getFirestore();
-    const usersSnap = await db
-      .collection('users')
-      .where('id', 'in', uniqueIds)
-      .withConverter(genericConverter<FirestoreUser>())
-      .get();
-    return usersSnap.docs.map((doc) => doc.data());
-  }
-);
+export const getUsersByIds = cache(async (ids: string[]): Promise<User[]> => {
+  const uniqueIds = [...new Set(ids)];
+  if (uniqueIds.length === 0) return [];
+  const db = await getFirestore();
+  const usersSnap = await db
+    .collection('users')
+    .where('id', 'in', uniqueIds)
+    .withConverter(genericConverter<User>())
+    .get();
+  return usersSnap.docs.map((doc) => doc.data());
+});
 
 export const getRenderablePreemDataForPage = cache(
   async (id: string): Promise<PreemPageData | undefined> => {
@@ -138,7 +133,7 @@ export const getRenderablePreemDataForPage = cache(
     const preemSnap = await db
       .collectionGroup('preems')
       .where('id', '==', id)
-      .withConverter(genericConverter<FirestorePreem>())
+      .withConverter(genericConverter<Preem>())
       .limit(1)
       .get();
     if (preemSnap.empty) return undefined;
@@ -147,9 +142,7 @@ export const getRenderablePreemDataForPage = cache(
     const raceRef = preemDoc.ref.parent.parent;
     if (!raceRef) return undefined;
 
-    const raceDoc = await raceRef
-      .withConverter(genericConverter<FirestoreRace>())
-      .get();
+    const raceDoc = await raceRef.withConverter(genericConverter<Race>()).get();
     if (!raceDoc.exists) return undefined;
 
     const race = await fetchPreemsForRace(raceDoc as QueryDocumentSnapshot);
@@ -169,7 +162,7 @@ export const getRenderablePreemDataForPage = cache(
     const users = userDocs.reduce((acc, user) => {
       acc[user.id] = user;
       return acc;
-    }, {} as Record<string, FirestoreUser>);
+    }, {} as Record<string, User>);
 
     return {
       preem: preem as unknown as PreemPageData['preem'],
@@ -185,7 +178,7 @@ export const getRenderableRaceDataForPage = cache(
     const raceSnap = await db
       .collectionGroup('races')
       .where('id', '==', id)
-      .withConverter(genericConverter<FirestoreRace>())
+      .withConverter(genericConverter<Race>())
       .limit(1)
       .get();
     if (raceSnap.empty) return undefined;
@@ -195,7 +188,7 @@ export const getRenderableRaceDataForPage = cache(
     if (!eventRef) return undefined;
 
     const eventDoc = await eventRef
-      .withConverter(genericConverter<FirestoreEvent>())
+      .withConverter(genericConverter<Event>())
       .get();
     if (!eventDoc.exists) return undefined;
 
@@ -215,7 +208,7 @@ export const getRenderableRaceDataForPage = cache(
     const users = userDocs.reduce((acc, user) => {
       acc[user.id] = user;
       return acc;
-    }, {} as Record<string, FirestoreUser>);
+    }, {} as Record<string, User>);
 
     return {
       race: race as unknown as RacePageData['race'],
@@ -231,15 +224,16 @@ export const getRenderableOrganizationDataForPage = cache(
     const orgDoc = await db
       .collection('organizations')
       .doc(id)
-      .withConverter(genericConverter<FirestoreOrganization>())
+      .withConverter(genericConverter<Organization>())
       .get();
     if (!orgDoc.exists) return undefined;
 
     const organization = orgDoc.data();
+    if (!organization) return undefined;
 
     const seriesSnap = await orgDoc.ref
       .collection('series')
-      .withConverter(genericConverter<FirestoreRaceSeries>())
+      .withConverter(genericConverter<RaceSeries>())
       .get();
     const series = await Promise.all(seriesSnap.docs.map(fetchEventsForSeries));
 
@@ -264,7 +258,7 @@ export const getRenderableSeriesDataForPage = cache(
     const seriesSnap = await db
       .collectionGroup('series')
       .where('id', '==', id)
-      .withConverter(genericConverter<FirestoreRaceSeries>())
+      .withConverter(genericConverter<RaceSeries>())
       .limit(1)
       .get();
     if (seriesSnap.empty) return undefined;
@@ -277,7 +271,7 @@ export const getRenderableSeriesDataForPage = cache(
     const organizationDoc = await db
       .collection('organizations')
       .doc(orgId)
-      .withConverter(genericConverter<FirestoreOrganization>())
+      .withConverter(genericConverter<Organization>())
       .get();
     if (!organizationDoc.exists)
       throw new Error(`Could not find organization with id ${orgId}`);
@@ -317,7 +311,7 @@ export const getRenderableEventDataForPage = cache(
     const eventSnap = await db
       .collectionGroup('events')
       .where('id', '==', id)
-      .withConverter(genericConverter<FirestoreEvent>())
+      .withConverter(genericConverter<Event>())
       .limit(1)
       .get();
     if (eventSnap.empty) return undefined;
@@ -328,7 +322,7 @@ export const getRenderableEventDataForPage = cache(
     const seriesRef = eventDoc.ref.parent.parent;
     if (!seriesRef) throw new Error(`Could not find series for event ${id}`);
     const seriesDoc = await seriesRef
-      .withConverter(genericConverter<FirestoreRaceSeries>())
+      .withConverter(genericConverter<RaceSeries>())
       .get();
     if (!seriesDoc.exists)
       throw new Error(`Could not find series with id ${seriesRef.id}`);
@@ -337,7 +331,7 @@ export const getRenderableEventDataForPage = cache(
     if (!orgRef)
       throw new Error(`Could not find organization for series ${seriesRef.id}`);
     const orgDoc = await orgRef
-      .withConverter(genericConverter<FirestoreOrganization>())
+      .withConverter(genericConverter<Organization>())
       .get();
     if (!orgDoc.exists)
       throw new Error(`Could not find organization with id ${orgRef.id}`);
@@ -355,7 +349,7 @@ export const getRenderableHomeDataForPage = cache(
     const db = await getFirestore();
     const eventsSnap = await db
       .collectionGroup('events')
-      .withConverter(genericConverter<FirestoreEvent>())
+      .withConverter(genericConverter<Event>())
       .get();
     const eventsWithRaces = await Promise.all(
       eventsSnap.docs.map(fetchRacesForEvent)
@@ -363,7 +357,7 @@ export const getRenderableHomeDataForPage = cache(
 
     const contributionsSnap = await db
       .collectionGroup('contributions')
-      .withConverter(genericConverter<FirestoreContribution>())
+      .withConverter(genericConverter<Contribution>())
       .orderBy('date', 'desc')
       .limit(20)
       .get();
@@ -379,7 +373,7 @@ export const getRenderableHomeDataForPage = cache(
     const usersMap = users.reduce((acc, user) => {
       acc[user.id] = user;
       return acc;
-    }, {} as Record<string, FirestoreUser>);
+    }, {} as Record<string, User>);
 
     const enrichedContributions = await Promise.all(
       contributions.map(async (c) => {
@@ -413,7 +407,7 @@ export const getRenderableUserDataForPage = cache(
     const contributionsSnap = await db
       .collectionGroup('contributions')
       .where('contributorRef', '==', userRef)
-      .withConverter(genericConverter<FirestoreContribution>())
+      .withConverter(genericConverter<Contribution>())
       .get();
 
     const contributions = await Promise.all(
@@ -424,17 +418,11 @@ export const getRenderableUserDataForPage = cache(
 
         const preem = preemRef
           ? (
-              await preemRef
-                .withConverter(genericConverter<FirestorePreem>())
-                .get()
+              await preemRef.withConverter(genericConverter<Preem>()).get()
             ).data()
           : undefined;
         const race = raceRef
-          ? (
-              await raceRef
-                .withConverter(genericConverter<FirestoreRace>())
-                .get()
-            ).data()
+          ? (await raceRef.withConverter(genericConverter<Race>()).get()).data()
           : undefined;
 
         return {
@@ -459,7 +447,7 @@ export const getRenderableManageDataForPage = cache(
       .collection('organizations')
       .doc(organizationId)
       .collection('series')
-      .withConverter(genericConverter<FirestoreRaceSeries>())
+      .withConverter(genericConverter<RaceSeries>())
       .get();
     const series = await Promise.all(seriesSnap.docs.map(fetchEventsForSeries));
 

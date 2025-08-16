@@ -1,22 +1,17 @@
 'use client';
 
 import RaceCard from '@/components/RaceCard';
+import type { Contribution, Event, Race, User } from '@/datastore/types';
 import { Button, Flex, Grid, Stack, Title } from '@mantine/core';
 import Link from 'next/link';
 import LiveContributionFeed from '../shared/LiveContributionFeed';
-import type {
-  Event as FirestoreEvent,
-  Race as FirestoreRace,
-  User as FirestoreUser,
-  Contribution as FirestoreContribution,
-} from '@/datastore/firestore-types';
 
 // --- Component-Specific Data Models ---
 
 export interface HomePageData {
-  eventsWithRaces: { event: FirestoreEvent; race: FirestoreRace }[];
-  users: Record<string, FirestoreUser>;
-  contributions: (FirestoreContribution & {
+  eventsWithRaces: { event: Event; race: Race }[];
+  users: Record<string, User>;
+  contributions: (Contribution & {
     preemName: string;
     raceName: string;
     raceId: string;
