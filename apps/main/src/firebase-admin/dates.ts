@@ -1,7 +1,7 @@
-'use client';
+'use server-only';
 
 import { format, fromZonedTime } from 'date-fns-tz';
-import { Timestamp } from 'firebase/firestore';
+import { Timestamp } from 'firebase-admin/firestore';
 
 export const LONG_FORMATTER = new Intl.DateTimeFormat('en-US', {
   weekday: 'long',

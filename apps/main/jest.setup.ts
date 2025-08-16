@@ -1,6 +1,12 @@
 import '@testing-library/jest-dom';
-import { Request, Response, Headers } from 'node-fetch';
-import { TextEncoder, TextDecoder } from 'util';
+import { Headers, Request, Response } from 'node-fetch';
+import { TextDecoder, TextEncoder } from 'util';
+
+import { mockGoogleCloudFirestore } from 'firestore-jest-mock';
+mockGoogleCloudFirestore(
+  {},
+  { includeIdsInData: true, mutable: true, simulateQueryFilters: true }
+);
 
 // Polyfill TextEncoder and TextDecoder for Jest
 global.TextEncoder = TextEncoder;

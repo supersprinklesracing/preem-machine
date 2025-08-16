@@ -27,7 +27,7 @@ import type {
   Race as FirestoreRace,
   User as FirestoreUser,
   Contribution as FirestoreContribution,
-} from '@/datastore/firestore-types';
+} from '@/datastore/types';
 
 // --- Component-Specific Data Models ---
 

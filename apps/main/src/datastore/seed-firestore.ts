@@ -1,5 +1,6 @@
 import { getFirestore } from '@/firebase-admin';
-import { MOCK_DB } from './mock-db';
+import { Firestore } from 'firebase-admin/firestore';
+import { createMockDb } from './mock-db';
 
 // eslint-disable-next-line @typescript-eslint/no-explicit-any
 type MockDbObject = { [key: string]: any };
@@ -37,18 +38,20 @@ async function seedCollection(
  * Seeds the entire Firestore database based on the MOCK_DB structure.
  * This will overwrite existing data in the specified collections.
  */
-export async function seedFirestore() {
+export async function seedFirestore(firestore: Firestore) {
   try {
     const db = await getFirestore();
     console.log('Starting Firestore database seeding...');
+    const mockDb = createMockDb(db);
 
-    const rootCollections = MOCK_DB;
     const promises: Promise<unknown>[] = [];
 
-    for (const collectionId in rootCollections) {
-      promises.push(
-        seedCollection(db, collectionId, rootCollections[collectionId])
-      );
+    const collectionIds = Object.keys(mockDb) as (keyof typeof mockDb)[];
+    for (const collectionId of collectionIds) {
+      const collectionData = mockDb[collectionId];
+      if (collectionData) {
+        promises.push(seedCollection(db, String(collectionId), collectionData));
+      }
     }
 
     await Promise.all(promises);

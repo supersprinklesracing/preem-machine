@@ -12,7 +12,7 @@ import { DocumentReference, Timestamp } from 'firebase-admin/firestore';
  * @param data The data object or array to traverse.
  * @returns A new, fully serializable object or array.
  */
-function serializeFirestoreData(data: any): any {
+function serializeFirestoreData(data: DocumentData): DocumentData {
   if (data === null || data === undefined) {
     return data;
   }
@@ -30,7 +30,7 @@ function serializeFirestoreData(data: any): any {
   }
 
   if (typeof data === 'object') {
-    const newData: { [key: string]: any } = {};
+    const newData: DocumentData = {};
     for (const key in data) {
       newData[key] = serializeFirestoreData(data[key]);
     }
