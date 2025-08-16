@@ -51,7 +51,7 @@ const RaceCard: React.FC<RaceCardProps> = ({
     <>
       <Group gap="xs" wrap="nowrap">
         <IconCalendar size={16} style={{ flexShrink: 0 }} />
-        <Text size="sm">{format(new Date(event.dateTime), 'PPP p')}</Text>
+        <Text size="sm">{format(new Date(event.startDate), 'PPP p')}</Text>
       </Group>
       <Group gap="xs" wrap="nowrap">
         <IconMapPin size={16} style={{ flexShrink: 0 }} />

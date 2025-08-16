@@ -1,9 +1,9 @@
-import { render, screen } from '../test-utils';
 import '@testing-library/jest-dom';
-import EventCard from './EventCard';
-import { raceSeries } from '../datastore/mock-data';
 import { format } from 'date-fns';
 import { EnrichedEvent } from '../datastore/data-access';
+import { raceSeries } from '../datastore/mock-data';
+import { render, screen } from '../test-utils';
+import EventCard from './EventCard';
 
 const mockEnrichedEvent: EnrichedEvent = {
   ...raceSeries[0].events[0],
@@ -19,7 +19,7 @@ describe('EventCard', () => {
 
   it('should render the event date', () => {
     render(<EventCard event={mockEnrichedEvent} />);
-    const expectedDate = format(new Date(mockEnrichedEvent.dateTime), 'PP');
+    const expectedDate = format(new Date(mockEnrichedEvent.startDate), 'PP');
     expect(screen.getByText(expectedDate)).toBeInTheDocument();
   });
 
