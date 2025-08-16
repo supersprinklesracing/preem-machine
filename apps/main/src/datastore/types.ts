@@ -69,7 +69,6 @@ export interface Event {
   location: string;
   dateTime: string;
   races: Race[];
-  totalCollected: number;
 }
 
 export interface RaceSeries {
