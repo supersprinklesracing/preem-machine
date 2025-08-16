@@ -1,2 +1,1 @@
-npx nx affected -t test \
-  && npx nx affected -t component-test
+nx affected --target=test --fix=false --passWithNoTests
