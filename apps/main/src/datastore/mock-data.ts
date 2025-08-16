@@ -74,7 +74,7 @@ export const raceSeries: RaceSeries[] = [
         status: 'Upcoming',
         name: 'Il Giro di San Francisco',
         location: "Levi's Plaza, San Francisco",
-        dateTime: '2025-09-01T08:00:00Z',
+        startDate: '2025-09-01T08:00:00Z',
         races: [
           {
             id: 'race-1',
@@ -92,7 +92,7 @@ export const raceSeries: RaceSeries[] = [
             laps: 20,
             podiums: 3,
             sponsors: [],
-            dateTime: '2025-09-01T08:00:00Z',
+            startDate: '2025-09-01T08:00:00Z',
             preems: [
               {
                 id: 'preem-1a',
@@ -187,7 +187,7 @@ export const raceSeries: RaceSeries[] = [
             laps: 20,
             podiums: 3,
             sponsors: [],
-            dateTime: '2025-09-01T08:45:00Z',
+            startDate: '2025-09-01T08:45:00Z',
             preems: [],
           },
         ],
@@ -209,7 +209,7 @@ export const raceSeries: RaceSeries[] = [
         status: 'Upcoming',
         name: 'West Dundee',
         location: 'West Dundee, IL',
-        dateTime: '2026-07-17T10:00:00Z',
+        startDate: '2026-07-17T10:00:00Z',
         races: [
           {
             id: 'race-3',
@@ -227,7 +227,7 @@ export const raceSeries: RaceSeries[] = [
             laps: 30,
             podiums: 3,
             sponsors: [],
-            dateTime: '2026-07-17T10:00:00Z',
+            startDate: '2026-07-17T10:00:00Z',
             preems: [],
           },
           {
@@ -246,7 +246,7 @@ export const raceSeries: RaceSeries[] = [
             laps: 30,
             podiums: 3,
             sponsors: [],
-            dateTime: '2026-07-17T11:00:00Z',
+            startDate: '2026-07-17T11:00:00Z',
             preems: [],
           },
         ],
@@ -257,7 +257,7 @@ export const raceSeries: RaceSeries[] = [
         status: 'Upcoming',
         name: 'Lake Bluff',
         location: 'Lake Bluff, IL',
-        dateTime: '2026-07-25T10:00:00Z',
+        startDate: '2026-07-25T10:00:00Z',
         races: [
           {
             id: 'race-5',
@@ -275,7 +275,7 @@ export const raceSeries: RaceSeries[] = [
             laps: 30,
             podiums: 3,
             sponsors: [],
-            dateTime: '2026-07-25T10:00:00Z',
+            startDate: '2026-07-25T10:00:00Z',
             preems: [],
           },
           {
@@ -294,7 +294,7 @@ export const raceSeries: RaceSeries[] = [
             laps: 30,
             podiums: 3,
             sponsors: [],
-            dateTime: '2026-07-25T11:00:00Z',
+            startDate: '2026-07-25T11:00:00Z',
             preems: [],
           },
         ],
@@ -305,7 +305,7 @@ export const raceSeries: RaceSeries[] = [
         status: 'Upcoming',
         name: 'Fulton Market',
         location: 'Fulton Market, Chicago, IL',
-        dateTime: '2026-07-26T10:00:00Z',
+        startDate: '2026-07-26T10:00:00Z',
         races: [
           {
             id: 'race-7',
@@ -324,7 +324,7 @@ export const raceSeries: RaceSeries[] = [
             laps: 40,
             podiums: 3,
             sponsors: [],
-            dateTime: '2026-07-26T16:55:00Z',
+            startDate: '2026-07-26T16:55:00Z',
             preems: [],
           },
           {
@@ -344,7 +344,7 @@ export const raceSeries: RaceSeries[] = [
             laps: 40,
             podiums: 3,
             sponsors: [],
-            dateTime: '2026-07-26T15:30:00Z',
+            startDate: '2026-07-26T15:30:00Z',
             preems: [],
           },
         ],

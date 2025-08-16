@@ -1,5 +1,6 @@
 'use client';
 
+import type { Race } from '@/datastore/types';
 import { Box, Divider, NavLink, Stack } from '@mantine/core';
 import {
   IconBike,
@@ -13,7 +14,6 @@ import {
 import Link from 'next/link';
 import { usePathname } from 'next/navigation';
 import React from 'react';
-import type { Race } from '@/datastore/types';
 
 interface SidebarProps {
   races: Race[];
@@ -24,7 +24,8 @@ const Sidebar: React.FC<SidebarProps> = ({ races }) => {
 
   const mostRecentRaces = races
     .sort(
-      (a, b) => new Date(b.dateTime).getTime() - new Date(a.dateTime).getTime()
+      (a, b) =>
+        new Date(b.startDate).getTime() - new Date(a.startDate).getTime()
     )
     .slice(0, 2);
 

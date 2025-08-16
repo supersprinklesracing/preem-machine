@@ -56,7 +56,7 @@ export interface Race {
   laps: number;
   podiums: number;
   sponsors: string[];
-  dateTime: string;
+  startDate: string;
   preems: Preem[];
 }
 
@@ -67,7 +67,7 @@ export interface Event {
   name: string;
   website?: string;
   location: string;
-  dateTime: string;
+  startDate: string;
   races: Race[];
 }
 

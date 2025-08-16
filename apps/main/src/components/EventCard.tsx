@@ -38,7 +38,7 @@ export default function EventCard({ event }: EventCardProps) {
           </Title>
           <Group mt="md">
             <IconCalendar size={16} />
-            <Text size="sm">{format(new Date(event.dateTime), 'PP')}</Text>
+            <Text size="sm">{format(new Date(event.startDate), 'PP')}</Text>
           </Group>
           <Flex wrap="wrap" gap="md" mt="md">
             <Group>

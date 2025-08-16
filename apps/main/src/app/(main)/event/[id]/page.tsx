@@ -3,7 +3,7 @@ import {
   getOrganizationBySeriesId,
   getSeriesByEventId,
 } from '@/datastore/data-access';
-import { Stack, Text, Title, Anchor } from '@mantine/core';
+import { Anchor, Stack, Text, Title } from '@mantine/core';
 import { format } from 'date-fns';
 import Link from 'next/link';
 import Event from './Event';
@@ -37,7 +37,7 @@ export default async function EventPage({
         </Anchor>
       </Text>
       <Text c="dimmed">
-        {event.location} | {format(new Date(event.dateTime), 'PP p')}
+        {event.location} | {format(new Date(event.startDate), 'PP p')}
       </Text>
       <Event event={event} />
     </Stack>

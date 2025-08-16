@@ -103,7 +103,7 @@ export const ManageRace: React.FC<{ initialRace: Race; users: User[] }> = ({
             <Group gap="xs" mt="sm">
               <IconClock size={16} />
               <Text size="sm" c="dimmed">
-                Live for {formatDistanceToNow(new Date(race.dateTime))}
+                Live for {formatDistanceToNow(new Date(race.startDate))}
               </Text>
             </Group>
             <Group gap="xs" mt="xs">
