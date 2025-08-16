@@ -1,7 +1,6 @@
 'use client';
 
 import { useAuth } from '@/auth/AuthContext';
-import type { Contribution, User as UserType } from '@/datastore/types';
 import {
   Avatar,
   Button,
@@ -17,33 +16,51 @@ import { IconEdit, IconMail, IconSettings } from '@tabler/icons-react';
 import { format } from 'date-fns';
 import Link from 'next/link';
 import React from 'react';
+import type {
+  User as FirestoreUser,
+  Contribution as FirestoreContribution,
+} from '@/datastore/firestore-types';
 
-type ContributionWithMeta = Contribution & {
+// --- Component-Specific Data Models ---
+
+type EnrichedContribution = FirestoreContribution & {
   raceName: string;
   preemName: string;
 };
 
-interface UserProps {
-  user: UserType;
-  contributions: ContributionWithMeta[];
+export interface UserPageData {
+  user: FirestoreUser;
+  contributions: EnrichedContribution[];
 }
 
-const User: React.FC<UserProps> = ({ user, contributions }) => {
+interface Props {
+  data: UserPageData;
+}
+
+const User: React.FC<Props> = ({ data }) => {
+  const { user, contributions } = data;
   const { user: authUser } = useAuth();
   const isOwnProfile = authUser?.uid === user.id;
 
-  const totalContributed = contributions.reduce((sum, c) => sum + c.amount, 0);
+  const totalContributed = contributions.reduce(
+    (sum, c) => sum + (c.amount ?? 0),
+    0
+  );
 
   const contributionRows = contributions
-    .sort((a, b) => new Date(b.date).getTime() - new Date(a.date).getTime())
+    .sort(
+      (a, b) =>
+        (b.date?.toDate() ?? new Date(0)).getTime() -
+        (a.date?.toDate() ?? new Date(0)).getTime()
+    )
     .map((c) => (
       <Table.Tr key={c.id}>
-        <Table.Td>{format(new Date(c.date), 'PP')}</Table.Td>
+        <Table.Td>{c.date ? format(c.date.toDate(), 'PP') : 'N/A'}</Table.Td>
         <Table.Td>{c.raceName}</Table.Td>
         <Table.Td>{c.preemName}</Table.Td>
         <Table.Td>
           <Text ta="right" c="green" fw={600}>
-            ${c.amount.toLocaleString()}
+            ${(c.amount ?? 0).toLocaleString()}
           </Text>
         </Table.Td>
       </Table.Tr>

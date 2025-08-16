@@ -97,7 +97,8 @@ const BigScreen: React.FC<{ initialRace: Race; users: User[] }> = ({
       .filter((p) => p.timeLimit)
       .sort(
         (a, b) =>
-          new Date(b.timeLimit!).getTime() - new Date(a.timeLimit!).getTime()
+          new Date(b.timeLimit ?? 0).getTime() -
+          new Date(a.timeLimit ?? 0).getTime()
       )[0];
 
   if (!nextPreem) {

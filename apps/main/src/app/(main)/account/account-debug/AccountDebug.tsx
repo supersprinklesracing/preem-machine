@@ -4,14 +4,14 @@ import { getToken } from '@firebase/app-check';
 import * as React from 'react';
 import { useLoadingCallback } from 'react-loading-hook';
 
+import { refreshCookies } from '@/actions/refresh-cookies';
+import { getAppCheck } from '@/auth/app-check';
+import { useAuth } from '@/auth/AuthContext';
 import { Button, Card, Stack, Title } from '@mantine/core';
 import { useRouter } from 'next/navigation';
-import { getAppCheck } from '@/auth/app-check';
-import { refreshCookies } from '@/actions/refresh-cookies';
-import { useAuth } from '@/auth/AuthContext';
 import { incrementCounterUsingClientFirestore } from './user-counters';
 
-interface AccountDebugProps {
+export interface AccountDebugProps {
   count: number;
   incrementCounter: () => void;
 }

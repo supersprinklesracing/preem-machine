@@ -92,6 +92,7 @@ export interface RaceSeries {
   endDate?: Timestamp;
   metadata?: Metadata;
 }
+
 export type DeepPartial<T> = T extends object
   ? {
       [P in keyof T]?: DeepPartial<T[P]>;

@@ -51,10 +51,13 @@ export function Login({
   const [email, setEmail] = React.useState('');
   const [password, setPassword] = React.useState('');
 
-  async function handleLogin(credential: UserCredential) {
-    await loginWithCredential(credential);
-    redirectAfterLogin();
-  }
+  const handleLogin = React.useCallback(
+    async (credential: UserCredential) => {
+      await loginWithCredential(credential);
+      redirectAfterLogin();
+    },
+    [redirectAfterLogin]
+  );
 
   const [handleLoginWithEmailAndPassword, isEmailLoading, emailPasswordError] =
     useLoadingCallback(async (event: React.FormEvent) => {
@@ -98,7 +101,7 @@ export function Login({
     setHasLogged(true);
   });
 
-  async function handleLoginWithRedirect() {
+  const handleLoginWithRedirect = React.useCallback(async () => {
     const credential = await getRedirectResult(auth);
 
     if (credential?.user) {
@@ -106,11 +109,11 @@ export function Login({
 
       setHasLogged(true);
     }
-  }
+  }, [handleLogin]);
 
   React.useEffect(() => {
     handleLoginWithRedirect();
-  }, []);
+  }, [handleLoginWithRedirect]);
 
   const [handleLoginWithEmailLink, isEmailLinkLoading, emailLinkError] =
     useLoadingCallback(async () => {
@@ -129,7 +132,7 @@ export function Login({
       });
     });
 
-  async function handleLoginWithEmailLinkCallback() {
+  const handleLoginWithEmailLinkCallback = React.useCallback(async () => {
     const auth = getFirebaseAuth();
     if (!isSignInWithEmailLink(auth, window.location.href)) {
       return;
@@ -152,11 +155,11 @@ export function Login({
     window.localStorage.removeItem('emailForSignIn');
 
     setHasLogged(true);
-  }
+  }, [handleLogin]);
 
   React.useEffect(() => {
     handleLoginWithEmailLinkCallback();
-  }, []);
+  }, [handleLoginWithEmailLinkCallback]);
 
   const error =
     emailPasswordError ||

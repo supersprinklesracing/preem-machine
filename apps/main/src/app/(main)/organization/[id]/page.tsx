@@ -1,9 +1,5 @@
-import {
-  getOrganizationById,
-  getRaceSeriesForOrganization,
-  getUsersByOrganizationId,
-} from '@/datastore/data-access';
-import { Stack, Title } from '@mantine/core';
+import { getRenderableOrganizationDataForPage } from '@/datastore/firestore';
+import { notFound } from 'next/navigation';
 import Organization from './Organization';
 
 export default async function OrganizationPage({
@@ -11,22 +7,11 @@ export default async function OrganizationPage({
 }: {
   params: { id: string };
 }) {
-  const organization = await getOrganizationById(params.id);
-  const series = await getRaceSeriesForOrganization(params.id);
-  const members = await getUsersByOrganizationId(params.id);
+  const data = await getRenderableOrganizationDataForPage(params.id);
 
-  if (!organization) {
-    return <div>Organization not found</div>;
+  if (!data) {
+    notFound();
   }
 
-  return (
-    <Stack>
-      <Title>{organization.name}</Title>
-      <Organization
-        organization={organization}
-        series={series}
-        members={members}
-      />
-    </Stack>
-  );
+  return <Organization data={data} />;
 }

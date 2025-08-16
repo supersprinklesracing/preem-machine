@@ -1,7 +1,6 @@
 'use client';
 
 import { useToast } from '@/app/shared/use-toast';
-import type { User } from '@/datastore/types';
 import {
   Box,
   Button,
@@ -15,16 +14,24 @@ import {
 } from '@mantine/core';
 import { IconSearch, IconUserCheck } from '@tabler/icons-react';
 import React, { useState } from 'react';
+import type { User as FirestoreUser } from '@/datastore/firestore-types';
 
-interface AdminProps {
-  users: User[];
+// --- Component-Specific Data Models ---
+
+export interface AdminPageData {
+  users: FirestoreUser[];
 }
 
-const Admin: React.FC<AdminProps> = ({ users }) => {
+interface Props {
+  data: AdminPageData;
+}
+
+const Admin: React.FC<Props> = ({ data }) => {
+  const { users } = data;
   const [search, setSearch] = useState('');
   const { toast } = useToast();
 
-  const handleImpersonate = (user: User) => {
+  const handleImpersonate = (user: FirestoreUser) => {
     toast({
       title: 'Impersonation Started',
       description: `You are now viewing the app as ${user.name}.`,
@@ -34,8 +41,8 @@ const Admin: React.FC<AdminProps> = ({ users }) => {
   const filteredUsers = search
     ? users.filter(
         (u) =>
-          u.name.toLowerCase().includes(search.toLowerCase()) ||
-          u.email.toLowerCase().includes(search.toLowerCase())
+          u.name?.toLowerCase().includes(search.toLowerCase()) ||
+          u.email?.toLowerCase().includes(search.toLowerCase())
       )
     : [];
 

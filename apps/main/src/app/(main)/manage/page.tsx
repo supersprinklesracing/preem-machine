@@ -1,9 +1,9 @@
-import { getEnrichedRaceSeriesForOrganization } from '@/datastore/data-access';
+import { getRenderableManageDataForPage } from '@/datastore/firestore';
 import Manage from './Manage';
 
 export default async function ManagePage() {
-  // TODO: get the real user
-  const raceSeries = await getEnrichedRaceSeriesForOrganization('org-1');
+  // TODO: get the real user's organization
+  const data = await getRenderableManageDataForPage('org-1');
 
-  return <Manage raceSeries={raceSeries} />;
+  return <Manage data={data} />;
 }
