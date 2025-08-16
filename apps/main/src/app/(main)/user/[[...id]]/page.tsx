@@ -1,7 +1,7 @@
 'use server';
 
 import { getUserFromCookies } from '@/auth/user';
-import { getContributionsForUser, getUserById } from '@/datastore/data-access';
+import { getRenderableUserDataForPage } from '@/datastore/firestore';
 import { notFound, redirect } from 'next/navigation';
 import User from './User';
 
@@ -16,11 +16,10 @@ export default async function UserPage({
     redirect(authUser ? `/user/${authUser.uid}` : '/login?redirect=/user');
   }
 
-  const user = await getUserById(id);
-  if (!user) {
+  const data = await getRenderableUserDataForPage(id);
+  if (!data) {
     notFound();
   }
-  const contributions = await getContributionsForUser(id);
 
-  return <User user={user} contributions={contributions} />;
+  return <User data={data} />;
 }

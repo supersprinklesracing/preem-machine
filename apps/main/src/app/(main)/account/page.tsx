@@ -1,11 +1,8 @@
 import { incrementCounter } from '@/actions/user-counters';
 import { getUserFromCookies } from '@/auth/user';
 import { getFirestore } from '@/firebase-admin/firebase-admin';
-import { Container, SimpleGrid, Stack } from '@mantine/core';
 import { Metadata } from 'next';
-import { Account } from './Account';
-import { AccountDebug } from './account-debug/AccountDebug';
-import { PreferencesPanel } from './PreferencesPanel';
+import Account from './Account';
 
 async function getUserCounter(): Promise<number> {
   const user = await getUserFromCookies();
@@ -29,20 +26,7 @@ async function getUserCounter(): Promise<number> {
 export default async function AccountPage() {
   const count = await getUserCounter();
 
-  return (
-    <Container size="lg" pt="xl">
-      <SimpleGrid
-        cols={{ base: 1, md: 2 }}
-        style={{ alignItems: 'flex-start' }}
-      >
-        <Stack>
-          <Account />
-          <PreferencesPanel />
-        </Stack>
-        <AccountDebug count={count} incrementCounter={incrementCounter} />
-      </SimpleGrid>
-    </Container>
-  );
+  return <Account debugProps={{ count, incrementCounter }} />;
 }
 
 // Generate customized metadata based on user cookies

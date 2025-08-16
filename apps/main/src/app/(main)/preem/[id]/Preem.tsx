@@ -30,34 +30,63 @@ import { format } from 'date-fns';
 import Link from 'next/link';
 import React, { useState } from 'react';
 
-import type { Preem as PreemType, Race, User } from '@/datastore/types';
+import type {
+  Contribution as FirestoreContribution,
+  Preem as FirestorePreem,
+  Race as FirestoreRace,
+  User as FirestoreUser,
+} from '@/datastore/firestore-types';
 
-export const Preem: React.FC<{
-  preem: PreemType;
-  race: Race;
-  users: User[];
-}> = ({ preem, race, users }) => {
+// --- Component-Specific Data Models ---
+
+// This model defines the exact, serializable shape of data the component needs.
+// Timestamps are strings, and DocumentReferences are plain objects.
+export interface PreemPageData {
+  preem: Omit<FirestorePreem, 'timeLimit' | 'metadata'> & {
+    timeLimit?: string;
+    contributionHistory: (Omit<
+      FirestoreContribution,
+      'date' | 'contributorRef' | 'metadata'
+    > & {
+      date?: string;
+      contributorRef?: { id: string; path: string } | null;
+    })[];
+  };
+  race: Omit<FirestoreRace, 'startDate' | 'endDate' | 'metadata'> & {
+    startDate?: string;
+    endDate?: string;
+  };
+  users: Record<string, FirestoreUser>;
+}
+
+interface Props {
+  data: PreemPageData;
+}
+
+export const Preem: React.FC<Props> = ({ data }) => {
   const [isModalOpen, setIsModalOpen] = useState(false);
+  const { preem, race, users } = data;
 
-  const sponsor = preem.sponsorInfo
-    ? users.find((u) => u.id === preem.sponsorInfo?.userId)
-    : null;
+  const sponsor = preem.sponsorUserRef ? users[preem.sponsorUserRef.id] : null;
 
-  const getContributor = (id: string | null) => {
+  const getContributor = (id: string | undefined) => {
     if (!id)
       return { name: 'Anonymous', avatarUrl: 'https://placehold.co/40x40.png' };
     return (
-      users.find((u) => u.id === id) || {
+      users[id] || {
         name: 'A Contributor',
         avatarUrl: 'https://placehold.co/40x40.png',
       }
     );
   };
 
-  const contributionRows = [...preem.contributionHistory]
-    .sort((a, b) => new Date(b.date).getTime() - new Date(a.date).getTime())
+  const contributionRows = [...(preem.contributionHistory || [])]
+    .sort(
+      (a, b) =>
+        new Date(b.date ?? 0).getTime() - new Date(a.date ?? 0).getTime()
+    )
     .map((c) => {
-      const contributor = getContributor(c.contributorId);
+      const contributor = getContributor(c.contributorRef?.id);
       return (
         <Table.Tr key={c.id}>
           <Table.Td>
@@ -72,10 +101,12 @@ export const Preem: React.FC<{
           </Table.Td>
           <Table.Td>
             <Text c="green" fw={600}>
-              ${c.amount.toLocaleString()}
+              ${(c.amount ?? 0).toLocaleString()}
             </Text>
           </Table.Td>
-          <Table.Td>{format(new Date(c.date), 'PP p')}</Table.Td>
+          <Table.Td>
+            {c.date ? format(new Date(c.date), 'PP p') : 'N/A'}
+          </Table.Td>
           <Table.Td>
             <Text c="dimmed" fs="italic">
               {c.message || 'No message'}
@@ -111,7 +142,7 @@ export const Preem: React.FC<{
             </Title>
             <SimpleGrid cols={2} spacing="md">
               <Group>
-                <StatusBadge status={preem.status} />
+                <StatusBadge status={preem.status || 'Open'} />
               </Group>
               <Group gap="xs">
                 <IconUsers size={18} stroke={1.5} />
@@ -155,7 +186,7 @@ export const Preem: React.FC<{
               ff="Space Grotesk, var(--mantine-font-family)"
               style={{ fontSize: '3.5rem' }}
             >
-              $<AnimatedNumber value={preem.prizePool} />
+              $<AnimatedNumber value={preem.prizePool ?? 0} />
             </Title>
             <Button
               color="yellow"
@@ -176,7 +207,9 @@ export const Preem: React.FC<{
         <Text c="dimmed" size="sm">
           {sponsor
             ? `Sponsored by ${sponsor.name}`
-            : `${preem.contributionHistory.length} contributors have built this prize pool.`}
+            : `${
+                preem.contributionHistory?.length || 0
+              } contributors have built this prize pool.`}
         </Text>
         <Table mt="md" highlightOnHover>
           <Table.Thead>
@@ -193,7 +226,7 @@ export const Preem: React.FC<{
       <ContributionModal
         isOpen={isModalOpen}
         onClose={() => setIsModalOpen(false)}
-        preem={preem}
+        preem={{ name: preem.name ?? '' }}
       />
     </Stack>
   );

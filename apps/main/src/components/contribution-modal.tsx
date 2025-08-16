@@ -1,7 +1,6 @@
 'use client';
 
 import { useToast } from '@/app/shared/use-toast';
-import type { Preem } from '@/datastore/types';
 import {
   Button,
   Checkbox,
@@ -18,7 +17,7 @@ import React from 'react';
 interface ContributionModalProps {
   isOpen: boolean;
   onClose: () => void;
-  preem: Preem;
+  preem: { name: string };
 }
 
 const ContributionModal: React.FC<ContributionModalProps> = ({

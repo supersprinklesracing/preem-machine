@@ -1,11 +1,5 @@
-import {
-  getEventById,
-  getOrganizationBySeriesId,
-  getSeriesByEventId,
-} from '@/datastore/data-access';
-import { Anchor, Stack, Text, Title } from '@mantine/core';
-import { format } from 'date-fns';
-import Link from 'next/link';
+import { getRenderableEventDataForPage } from '@/datastore/firestore';
+import { notFound } from 'next/navigation';
 import Event from './Event';
 
 export default async function EventPage({
@@ -13,33 +7,10 @@ export default async function EventPage({
 }: {
   params: { id: string };
 }) {
-  const event = await getEventById(params.id);
-  const series = event ? await getSeriesByEventId(event.id) : undefined;
-  const organization = series
-    ? await getOrganizationBySeriesId(series.id)
-    : undefined;
+  const data = await getRenderableEventDataForPage(params.id);
 
-  if (!event || !series || !organization) {
-    return <div>Event not found</div>;
+  if (!data) {
+    notFound();
   }
-
-  return (
-    <Stack>
-      <Title>{event.name}</Title>
-      <Text>
-        Part of{' '}
-        <Anchor component={Link} href={`/series/${series.id}`}>
-          {series.name}
-        </Anchor>{' '}
-        hosted by{' '}
-        <Anchor component={Link} href={`/organization/${organization.id}`}>
-          {organization.name}
-        </Anchor>
-      </Text>
-      <Text c="dimmed">
-        {event.location} | {format(new Date(event.startDate), 'PP p')}
-      </Text>
-      <Event event={event} />
-    </Stack>
-  );
+  return <Event data={data} />;
 }

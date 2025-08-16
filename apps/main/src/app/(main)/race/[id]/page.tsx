@@ -1,25 +1,13 @@
 import Race from './Race';
-import { getEventAndRaceById, getUsersByIds } from '@/datastore/data-access';
+import { getRenderableRaceDataForPage } from '@/datastore/firestore';
+import { notFound } from 'next/navigation';
 
 export default async function RacePage({ params }: { params: { id: string } }) {
-  const data = await getEventAndRaceById((await params).id);
+  const data = await getRenderableRaceDataForPage(params.id);
 
   if (!data) {
-    return <div>Race not found</div>;
+    notFound();
   }
-  const { event, race } = data;
 
-  const contributorIds = race.preems.flatMap((p) =>
-    p.contributionHistory.map((c) => c.contributorId)
-  );
-  const sponsorIds = race.preems
-    .map((p) => p.sponsorInfo?.userId)
-    .filter(Boolean);
-  const allUserIds = [...contributorIds, ...sponsorIds].filter(
-    (id): id is string => id !== null
-  );
-
-  const users = await getUsersByIds(allUserIds);
-
-  return <Race event={event} race={race} users={users} />;
+  return <Race data={data} />;
 }

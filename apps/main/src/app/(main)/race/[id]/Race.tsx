@@ -6,7 +6,6 @@ import RaceCard from '@/components/RaceCard';
 import AnimatedNumber from '@/components/animated-number';
 import ContributionModal from '@/components/contribution-modal';
 import StatusBadge from '@/components/status-badge';
-import type { Event, Preem, Race as RaceType, User } from '@/datastore/types';
 import {
   Avatar,
   Box,
@@ -22,55 +21,76 @@ import {
 import { IconCurrencyDollar, IconDeviceTv } from '@tabler/icons-react';
 import Link from 'next/link';
 import React, { useState } from 'react';
+import type {
+  Event as FirestoreEvent,
+  Preem as FirestorePreem,
+  Race as FirestoreRace,
+  User as FirestoreUser,
+  Contribution as FirestoreContribution,
+} from '@/datastore/firestore-types';
 
-export const Race: React.FC<{
-  race: RaceType;
-  event: Event;
-  users: User[];
-}> = ({ race, event, users }) => {
-  const [selectedPreem, setSelectedPreem] = useState<Preem | null>(null);
+// --- Component-Specific Data Models ---
+
+export interface RacePageData {
+  race: FirestoreRace & {
+    preems: (FirestorePreem & {
+      contributionHistory: FirestoreContribution[];
+    })[];
+  };
+  event: FirestoreEvent;
+  users: Record<string, FirestoreUser>;
+}
+
+interface Props {
+  data: RacePageData;
+}
+
+export const Race: React.FC<Props> = ({ data }) => {
+  const { race, event, users } = data;
+  const [selectedPreem, setSelectedPreem] = useState<FirestorePreem | null>(
+    null
+  );
 
   if (!race) {
     return <div>Race not found</div>;
   }
 
-  const getSponsorName = (preem: Preem) => {
-    if (preem.type === 'One-Shot' && preem.sponsorInfo) {
-      return (
-        users.find((u) => u.id === preem.sponsorInfo?.userId)?.name ||
-        'A Sponsor'
-      );
+  const getSponsorName = (preem: FirestorePreem) => {
+    if (preem.type === 'One-Shot' && preem.sponsorUserRef) {
+      return users[preem.sponsorUserRef.id]?.name || 'A Sponsor';
     }
     return 'Community Pooled';
   };
 
-  const getContributor = (id: string | null) => {
+  const getContributor = (id: string | undefined) => {
     if (!id)
       return {
-        id: null,
+        id: undefined,
         name: 'Anonymous',
         avatarUrl: 'https://placehold.co/40x40.png',
       };
-    return (
-      users.find((u) => u.id === id) || {
-        id,
-        name: 'A Contributor',
-        avatarUrl: 'https://placehold.co/40x40.png',
-      }
-    );
+    const user = users[id];
+    if (user) {
+      return { ...user, id };
+    }
+    return {
+      id: undefined,
+      name: 'A Contributor',
+      avatarUrl: 'https://placehold.co/40x40.png',
+    };
   };
 
-  const allContributions = race.preems
+  const allContributions = (race.preems || [])
     .flatMap((p) =>
-      p.contributionHistory.map((c) => ({
+      (p.contributionHistory || []).map((c) => ({
         ...c,
         preemName: p.name,
         preemId: p.id,
       }))
     )
-    .sort((a, b) => new Date(b.date).getTime() - new Date(a.date).getTime());
+    .sort((a, b) => (b.date?.seconds ?? 0) - (a.date?.seconds ?? 0));
 
-  const preemRows = race.preems.map((preem) => (
+  const preemRows = (race.preems || []).map((preem) => (
     <Table.Tr key={preem.id} style={{ cursor: 'pointer' }}>
       <Table.Td>
         <Link
@@ -84,12 +104,12 @@ export const Race: React.FC<{
       <Table.Td>{preem.type}</Table.Td>
       <Table.Td>
         <Text c="blue" fw={600}>
-          $<AnimatedNumber value={preem.prizePool} />
+          $<AnimatedNumber value={preem.prizePool ?? 0} />
         </Text>
       </Table.Td>
       <Table.Td>{getSponsorName(preem)}</Table.Td>
       <Table.Td>
-        <StatusBadge status={preem.status} />
+        <StatusBadge status={preem.status || 'Open'} />
       </Table.Td>
       <Table.Td>
         <Group justify="flex-end">
@@ -111,7 +131,7 @@ export const Race: React.FC<{
   ));
 
   const contributionItems = allContributions.map((c) => {
-    const contributor = getContributor(c.contributorId);
+    const contributor = getContributor(c.contributorRef?.id);
     return (
       <Box key={c.id} mb="md">
         <Group>

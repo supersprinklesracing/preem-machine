@@ -2,6 +2,7 @@
 
 import {
   Card,
+  MantineColorScheme,
   SegmentedControl,
   Stack,
   Title,
@@ -17,7 +18,7 @@ export function PreferencesPanel() {
         <Title order={3}>Preferences</Title>
         <SegmentedControl
           value={colorScheme}
-          onChange={(value) => setColorScheme(value as any)}
+          onChange={(value) => setColorScheme(value as MantineColorScheme)}
           data={[
             { label: 'Default', value: 'auto' },
             { label: 'Light', value: 'light' },

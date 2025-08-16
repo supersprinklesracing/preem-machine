@@ -1,15 +1,22 @@
 'use client';
 
 import RaceCard from '@/components/RaceCard';
-import type { Contribution, Event, Race, User } from '@/datastore/types';
 import { Button, Flex, Grid, Stack, Title } from '@mantine/core';
 import Link from 'next/link';
 import LiveContributionFeed from '../shared/LiveContributionFeed';
+import type {
+  Event as FirestoreEvent,
+  Race as FirestoreRace,
+  User as FirestoreUser,
+  Contribution as FirestoreContribution,
+} from '@/datastore/firestore-types';
 
-interface HomeProps {
-  eventsWithRaces: { event: Event; race: Race }[];
-  users: User[];
-  contributions: (Contribution & {
+// --- Component-Specific Data Models ---
+
+export interface HomePageData {
+  eventsWithRaces: { event: FirestoreEvent; race: FirestoreRace }[];
+  users: Record<string, FirestoreUser>;
+  contributions: (FirestoreContribution & {
     preemName: string;
     raceName: string;
     raceId: string;
@@ -17,11 +24,12 @@ interface HomeProps {
   })[];
 }
 
-export default function Home({
-  eventsWithRaces,
-  users,
-  contributions,
-}: HomeProps) {
+interface Props {
+  data: HomePageData;
+}
+
+export default function Home({ data }: Props) {
+  const { eventsWithRaces, users, contributions } = data;
   return (
     <Stack>
       <Title order={1} ff="Space Grotesk, var(--mantine-font-family)">
@@ -55,7 +63,10 @@ export default function Home({
           </Stack>
         </Grid.Col>
         <Grid.Col span={{ base: 12, lg: 4 }}>
-          <LiveContributionFeed contributions={contributions} users={users} />
+          <LiveContributionFeed
+            contributions={contributions}
+            users={Object.values(users)}
+          />
         </Grid.Col>
       </Grid>
     </Stack>

@@ -1,7 +1,7 @@
-import { getUsers } from '@/datastore/data-access';
+import { getRenderableAdminDataForPage } from '@/datastore/firestore';
 import Admin from './Admin';
 
 export default async function AdminPage() {
-  const users = await getUsers();
-  return <Admin users={users} />;
+  const data = await getRenderableAdminDataForPage();
+  return <Admin data={data} />;
 }

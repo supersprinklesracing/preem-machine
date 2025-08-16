@@ -3,16 +3,41 @@
 import ThresholdAssistantModal from '@/components/ai/threshold-assistant-modal';
 import EventCard from '@/components/EventCard';
 import SeriesCard from '@/components/SeriesCard';
-import type { EnrichedSeries } from '@/datastore/data-access';
 import { Button, Group, SimpleGrid, Stack, Text, Title } from '@mantine/core';
 import { IconPlus, IconSparkles } from '@tabler/icons-react';
 import React, { useState } from 'react';
+import type {
+  RaceSeries as FirestoreRaceSeries,
+  Event as FirestoreEvent,
+  Race as FirestoreRace,
+  Preem as FirestorePreem,
+  Contribution as FirestoreContribution,
+} from '@/datastore/firestore-types';
 
-interface ManageProps {
+// --- Component-Specific Data Models ---
+
+type EnrichedEvent = FirestoreEvent & {
+  races: (FirestoreRace & {
+    preems: (FirestorePreem & {
+      contributionHistory: FirestoreContribution[];
+    })[];
+  })[];
+  totalCollected: number;
+  totalContributors: number;
+};
+
+type EnrichedSeries = FirestoreRaceSeries & { events: EnrichedEvent[] };
+
+export interface ManagePageData {
   raceSeries: EnrichedSeries[];
 }
 
-const Manage: React.FC<ManageProps> = ({ raceSeries }) => {
+interface Props {
+  data: ManagePageData;
+}
+
+const Manage: React.FC<Props> = ({ data }) => {
+  const { raceSeries } = data;
   const [isAiModalOpen, setIsAiModalOpen] = useState(false);
 
   return (
