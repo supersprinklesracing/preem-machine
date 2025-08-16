@@ -1,4 +1,4 @@
-'use server';
+'use server-only';
 
 import admin from 'firebase-admin';
 import { authConfigFn } from './config';
