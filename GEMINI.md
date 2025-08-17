@@ -42,6 +42,6 @@ The workspace is set up to use Nx generators for creating new applications and l
 
 ## Key Documentation
 
-@eng-design.md
+@docs/eng-design.md
 
-@product-design.md
+@docs/product-design.md
