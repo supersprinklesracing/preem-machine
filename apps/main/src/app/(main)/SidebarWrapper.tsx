@@ -1,9 +1,9 @@
 'use server-only';
 
-import { getAllRaces } from '@/datastore/data-access';
+import { getAllRaces } from '@/datastore/firestore';
 import Sidebar from './Sidebar';
 
 export default async function SidebarWrapper() {
-  const allRaces = await getAllRaces();
-  return <Sidebar races={allRaces} />;
+  const races = await getAllRaces();
+  return <Sidebar data={{ races }} />;
 }

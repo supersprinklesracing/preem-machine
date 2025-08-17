@@ -1,7 +1,7 @@
 'use client';
 
 import SeriesCard from '@/components/SeriesCard';
-import type { Organization, User } from '@/datastore/types';
+import type { DeepClient, Organization, Series, User } from '@/datastore/types';
 import {
   Avatar,
   Button,
@@ -15,11 +15,10 @@ import {
 } from '@mantine/core';
 import { IconPlus } from '@tabler/icons-react';
 
-// --- Component-Specific Data Models ---
-
 export interface OrganizationPageData {
-  organization: Organization;
-  members: User[];
+  organization: DeepClient<Organization>;
+  series: DeepClient<Series>;
+  members: DeepClient<User>[];
 }
 
 interface Props {

@@ -1,22 +1,14 @@
 'use client';
 
 import RaceCard from '@/components/RaceCard';
-import type { Contribution, Event, Race, User } from '@/datastore/types';
+import type { Contribution, DeepClient, Race } from '@/datastore/types';
 import { Button, Flex, Grid, Stack, Title } from '@mantine/core';
 import Link from 'next/link';
 import LiveContributionFeed from '../shared/LiveContributionFeed';
 
-// --- Component-Specific Data Models ---
-
 export interface HomePageData {
-  eventsWithRaces: { event: Event; race: Race }[];
-  users: Record<string, User>;
-  contributions: (Contribution & {
-    preemName: string;
-    raceName: string;
-    raceId: string;
-    preemId: string;
-  })[];
+  recentRaces: DeepClient<Race>[];
+  contributions: DeepClient<Contribution>[];
 }
 
 interface Props {
@@ -24,7 +16,7 @@ interface Props {
 }
 
 export default function Home({ data }: Props) {
-  const { eventsWithRaces, users, contributions } = data;
+  const { recentRaces, contributions: contributions } = data;
   return (
     <Stack>
       <Title order={1} ff="Space Grotesk, var(--mantine-font-family)">
@@ -33,8 +25,8 @@ export default function Home({ data }: Props) {
       <Grid>
         <Grid.Col span={{ base: 12, lg: 8 }}>
           <Stack>
-            {eventsWithRaces.map(({ event, race }) => (
-              <RaceCard key={race.id} race={race} event={event}>
+            {recentRaces.map((race) => (
+              <RaceCard key={race.id} race={race}>
                 <Flex mt="md" gap="md" wrap="wrap">
                   <Button
                     component={Link}
@@ -58,10 +50,7 @@ export default function Home({ data }: Props) {
           </Stack>
         </Grid.Col>
         <Grid.Col span={{ base: 12, lg: 4 }}>
-          <LiveContributionFeed
-            contributions={contributions}
-            users={Object.values(users)}
-          />
+          <LiveContributionFeed data={{ contributions: contributions }} />
         </Grid.Col>
       </Grid>
     </Stack>

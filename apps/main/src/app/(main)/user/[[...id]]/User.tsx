@@ -1,6 +1,7 @@
 'use client';
 
 import { useAuth } from '@/auth/AuthContext';
+import type { Contribution, DeepClient, User } from '@/datastore/types';
 import {
   Avatar,
   Button,
@@ -16,21 +17,10 @@ import { IconEdit, IconMail, IconSettings } from '@tabler/icons-react';
 import { format } from 'date-fns';
 import Link from 'next/link';
 import React from 'react';
-import type {
-  User as FirestoreUser,
-  Contribution as FirestoreContribution,
-} from '@/datastore/types';
-
-// --- Component-Specific Data Models ---
-
-type EnrichedContribution = FirestoreContribution & {
-  raceName: string;
-  preemName: string;
-};
 
 export interface UserPageData {
-  user: FirestoreUser;
-  contributions: EnrichedContribution[];
+  user: User;
+  contributions: DeepClient<Contribution>[];
 }
 
 interface Props {
@@ -56,8 +46,8 @@ const User: React.FC<Props> = ({ data }) => {
     .map((c) => (
       <Table.Tr key={c.id}>
         <Table.Td>{c.date ? format(c.date.toDate(), 'PP') : 'N/A'}</Table.Td>
-        <Table.Td>{c.raceName}</Table.Td>
-        <Table.Td>{c.preemName}</Table.Td>
+        <Table.Td>{c.preemBrief?.raceBrief?.name}</Table.Td>
+        <Table.Td>{c.preemBrief?.name}</Table.Td>
         <Table.Td>
           <Text ta="right" c="green" fw={600}>
             ${(c.amount ?? 0).toLocaleString()}

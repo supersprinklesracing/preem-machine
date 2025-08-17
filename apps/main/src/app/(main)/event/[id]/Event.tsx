@@ -1,14 +1,8 @@
 'use client';
 
 import RaceCard from '@/components/RaceCard';
-import type {
-  Contribution,
-  Event,
-  Organization,
-  Preem,
-  Race,
-  RaceSeries,
-} from '@/datastore/types';
+import { EventWithRaces } from '@/datastore/firestore';
+import type { DeepClient } from '@/datastore/types';
 import {
   Anchor,
   Button,
@@ -19,45 +13,40 @@ import {
   Title,
 } from '@mantine/core';
 import { IconPencil } from '@tabler/icons-react';
-import Link from 'next/link';
 import { format } from 'date-fns';
-
-// --- Component-Specific Data Models ---
+import Link from 'next/link';
 
 export interface EventPageData {
-  event: Event & {
-    races: (Race & {
-      preems: (Preem & {
-        contributionHistory: Contribution[];
-      })[];
-    })[];
-  };
-  series: RaceSeries;
-  organization: Organization;
+  event: DeepClient<EventWithRaces>;
 }
-
 interface Props {
   data: EventPageData;
 }
 
 export default function Event({ data }: Props) {
-  const { event, series, organization } = data;
+  const { event } = data;
+  const series = event.seriesBrief;
+  const organization = series?.organizationBrief;
+
   return (
     <Stack>
       <Title>{event.name}</Title>
       <Text>
         Part of{' '}
-        <Anchor component={Link} href={`/series/${series.id}`}>
-          {series.name}
+        <Anchor component={Link} href={`/series/${event.seriesBrief?.id}`}>
+          {series?.name}
         </Anchor>{' '}
         hosted by{' '}
-        <Anchor component={Link} href={`/organization/${organization.id}`}>
-          {organization.name}
+        <Anchor
+          component={Link}
+          href={`/organization/${event.seriesBrief?.organizationBrief?.id}`}
+        >
+          {organization?.name}
         </Anchor>
       </Text>
       <Text c="dimmed">
         {event.location} |{' '}
-        {event.startDate ? format(event.startDate.toDate(), 'PP p') : ''}
+        {event.startDate ? format(new Date(event.startDate ?? ''), 'PP p') : ''}
       </Text>
       <Stack>
         <Group justify="space-between">
@@ -76,7 +65,11 @@ export default function Event({ data }: Props) {
         </Group>
         <SimpleGrid cols={{ base: 1, lg: 2 }}>
           {event.races.map((race) => (
-            <RaceCard key={race.id} race={race} event={event} />
+            <RaceCard
+              key={race.id}
+              race={race}
+              event={event as FirestoreEvent}
+            />
           ))}
         </SimpleGrid>
       </Stack>

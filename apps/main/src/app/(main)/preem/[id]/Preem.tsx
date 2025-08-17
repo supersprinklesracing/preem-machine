@@ -5,7 +5,8 @@ export const dynamic = 'force-dynamic';
 import AnimatedNumber from '@/components/animated-number';
 import ContributionModal from '@/components/contribution-modal';
 import StatusBadge from '@/components/status-badge';
-
+import { PreemWithContributions } from '@/datastore/firestore';
+import type { DeepClient } from '@/datastore/types';
 import {
   Avatar,
   Box,
@@ -30,33 +31,8 @@ import { format } from 'date-fns';
 import Link from 'next/link';
 import React, { useState } from 'react';
 
-import type {
-  Contribution,
-  Preem as PreemType,
-  Race,
-  User,
-} from '@/datastore/types';
-
-// --- Component-Specific Data Models ---
-
-// This model defines the exact, serializable shape of data the component needs.
-// Timestamps are strings, and DocumentReferences are plain objects.
 export interface PreemPageData {
-  preem: Omit<PreemType, 'timeLimit' | 'metadata'> & {
-    timeLimit?: string;
-    contributionHistory: (Omit<
-      Contribution,
-      'date' | 'contributorRef' | 'metadata'
-    > & {
-      date?: string;
-      contributorRef?: { id: string; path: string } | null;
-    })[];
-  };
-  race: Omit<Race, 'startDate' | 'endDate' | 'metadata'> & {
-    startDate?: string;
-    endDate?: string;
-  };
-  users: Record<string, User>;
+  preem: DeepClient<PreemWithContributions>;
 }
 
 interface Props {
@@ -65,51 +41,38 @@ interface Props {
 
 export const Preem: React.FC<Props> = ({ data }) => {
   const [isModalOpen, setIsModalOpen] = useState(false);
-  const { preem, race, users } = data;
+  const { preem } = data;
 
-  const sponsor = preem.sponsorUserRef ? users[preem.sponsorUserRef.id] : null;
-
-  const getContributor = (id: string | undefined) => {
-    if (!id)
-      return { name: 'Anonymous', avatarUrl: 'https://placehold.co/40x40.png' };
-    return (
-      users[id] || {
-        name: 'A Contributor',
-        avatarUrl: 'https://placehold.co/40x40.png',
-      }
-    );
-  };
-
-  const contributionRows = [...(preem.contributionHistory || [])]
+  const contributionRows = [...(preem.contributions || [])]
     .sort(
       (a, b) =>
         new Date(b.date ?? 0).getTime() - new Date(a.date ?? 0).getTime()
     )
-    .map((c) => {
-      const contributor = getContributor(c.contributorRef?.id);
+    .map((contribution) => {
+      console.log(contribution);
       return (
-        <Table.Tr key={c.id}>
+        <Table.Tr key={contribution.id}>
           <Table.Td>
             <Group>
               <Avatar
-                src={contributor.avatarUrl}
-                alt={contributor.name}
+                src={contribution.contributorBrief?.avatarUrl}
+                alt={contribution.contributorBrief?.name}
                 radius="xl"
               />
-              <Text fw={500}>{contributor.name}</Text>
+              <Text fw={500}>{contribution.contributorBrief?.name}</Text>
             </Group>
           </Table.Td>
           <Table.Td>
             <Text c="green" fw={600}>
-              ${(c.amount ?? 0).toLocaleString()}
+              ${contribution.amount?.toLocaleString()}
             </Text>
           </Table.Td>
           <Table.Td>
-            {c.date ? format(new Date(c.date), 'PP p') : 'N/A'}
+            {format(new Date(contribution.date ?? ''), 'PP p')}
           </Table.Td>
           <Table.Td>
             <Text c="dimmed" fs="italic">
-              {c.message || 'No message'}
+              {contribution.message || ''}
             </Text>
           </Table.Td>
         </Table.Tr>
@@ -121,17 +84,17 @@ export const Preem: React.FC<Props> = ({ data }) => {
       <Box>
         <Button
           component={Link}
-          href={`/race/${race.id}`}
+          href={`/race/${preem.raceBrief?.id}`}
           variant="subtle"
           mb="sm"
           leftSection={<IconArrowLeft size={16} />}
         >
-          Back to {race.name}
+          Back to {preem.raceBrief?.name}
         </Button>
         <Title order={1} ff="Space Grotesk, var(--mantine-font-family)">
           {preem.name}
         </Title>
-        <Text c="dimmed">Part of {race.name}</Text>
+        <Text c="dimmed">Part of {preem.raceBrief?.name}</Text>
       </Box>
 
       <Grid gutter="lg">
@@ -205,11 +168,9 @@ export const Preem: React.FC<Props> = ({ data }) => {
           Contribution History
         </Title>
         <Text c="dimmed" size="sm">
-          {sponsor
-            ? `Sponsored by ${sponsor.name}`
-            : `${
-                preem.contributionHistory?.length || 0
-              } contributors have built this prize pool.`}
+          {`${
+            preem.contributions?.length || 0
+          } contributors have built this prize pool.`}
         </Text>
         <Table mt="md" highlightOnHover>
           <Table.Thead>

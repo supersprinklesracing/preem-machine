@@ -4,6 +4,7 @@ import type {
   QueryDocumentSnapshot,
 } from 'firebase-admin/firestore';
 import { DocumentReference, Timestamp } from 'firebase-admin/firestore';
+import { DeepClient } from './types';
 
 /**
  * Recursively finds and converts all complex Firestore objects (Timestamp, DocumentReference)
@@ -12,12 +13,13 @@ import { DocumentReference, Timestamp } from 'firebase-admin/firestore';
  * @param data The data object or array to traverse.
  * @returns A new, fully serializable object or array.
  */
-function serializeFirestoreData(data: DocumentData): DocumentData {
+function serializeFirestoreData(data: DocumentData): DeepClient<DocumentData> {
   if (data === null || data === undefined) {
     return data;
   }
 
   if (data instanceof Timestamp) {
+    // @ts-expect-error Not sure why there is an error here, but it works.
     return data.toDate().toISOString();
   }
 
@@ -46,17 +48,19 @@ function serializeFirestoreData(data: DocumentData): DocumentData {
  * 1. Automatically adds the document `id` to the object.
  * 2. Recursively converts all Firestore Timestamps and DocumentReferences to serializable types.
  */
-export const genericConverter = <T>(): FirestoreDataConverter<T> => ({
-  toFirestore: (data: T) => {
+export const genericConverter = <T>(): FirestoreDataConverter<
+  DeepClient<T>
+> => ({
+  toFirestore: (data: DeepClient<T>) => {
     // Note: This direction (writing to Firestore) is not fully implemented.
     return data as DocumentData;
   },
-  fromFirestore: (snapshot: QueryDocumentSnapshot): T => {
+  fromFirestore: (snapshot: QueryDocumentSnapshot): DeepClient<T> => {
     const data = snapshot.data();
     const convertedData = serializeFirestoreData(data);
     return {
       id: snapshot.id,
       ...convertedData,
-    } as T;
+    } as unknown as DeepClient<T>;
   },
 });

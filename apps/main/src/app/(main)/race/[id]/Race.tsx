@@ -6,6 +6,8 @@ import RaceCard from '@/components/RaceCard';
 import AnimatedNumber from '@/components/animated-number';
 import ContributionModal from '@/components/contribution-modal';
 import StatusBadge from '@/components/status-badge';
+import { PreemWithContributions, RaceWithPreems } from '@/datastore/firestore';
+import { DeepClient, Preem } from '@/datastore/types';
 import {
   Avatar,
   Box,
@@ -21,24 +23,9 @@ import {
 import { IconCurrencyDollar, IconDeviceTv } from '@tabler/icons-react';
 import Link from 'next/link';
 import React, { useState } from 'react';
-import type {
-  Event as FirestoreEvent,
-  Preem as FirestorePreem,
-  Race as FirestoreRace,
-  User as FirestoreUser,
-  Contribution as FirestoreContribution,
-} from '@/datastore/types';
-
-// --- Component-Specific Data Models ---
 
 export interface RacePageData {
-  race: FirestoreRace & {
-    preems: (FirestorePreem & {
-      contributionHistory: FirestoreContribution[];
-    })[];
-  };
-  event: FirestoreEvent;
-  users: Record<string, FirestoreUser>;
+  race: DeepClient<RaceWithPreems>;
 }
 
 interface Props {
@@ -46,43 +33,24 @@ interface Props {
 }
 
 export const Race: React.FC<Props> = ({ data }) => {
-  const { race, event, users } = data;
-  const [selectedPreem, setSelectedPreem] = useState<FirestorePreem | null>(
-    null
-  );
+  const { race } = data;
+  const [selectedPreem, setSelectedPreem] = useState<Preem | null>(null);
 
   if (!race) {
     return <div>Race not found</div>;
   }
 
-  const getSponsorName = (preem: FirestorePreem) => {
-    if (preem.type === 'One-Shot' && preem.sponsorUserRef) {
-      return users[preem.sponsorUserRef.id]?.name || 'A Sponsor';
+  const getSponsorName = (preem: PreemWithContributions) => {
+    const name = preem.contributions?.[0]?.contributorBrief?.name;
+    if (preem.type === 'One-Shot' && name) {
+      return name || 'A Sponsor';
     }
     return 'Community Pooled';
   };
 
-  const getContributor = (id: string | undefined) => {
-    if (!id)
-      return {
-        id: undefined,
-        name: 'Anonymous',
-        avatarUrl: 'https://placehold.co/40x40.png',
-      };
-    const user = users[id];
-    if (user) {
-      return { ...user, id };
-    }
-    return {
-      id: undefined,
-      name: 'A Contributor',
-      avatarUrl: 'https://placehold.co/40x40.png',
-    };
-  };
-
   const allContributions = (race.preems || [])
     .flatMap((p) =>
-      (p.contributionHistory || []).map((c) => ({
+      (p.contributions || []).map((c) => ({
         ...c,
         preemName: p.name,
         preemId: p.id,
@@ -131,7 +99,17 @@ export const Race: React.FC<Props> = ({ data }) => {
   ));
 
   const contributionItems = allContributions.map((c) => {
-    const contributor = getContributor(c.contributorRef?.id);
+    const contributor = c.contributorBrief
+      ? {
+          id: c.contributorBrief.id,
+          name: c.contributorBrief.name,
+          avatarUrl: c.contributorBrief.avatarUrl,
+        }
+      : {
+          id: undefined,
+          name: 'Anonymous',
+          avatarUrl: 'https://placehold.co/40x40.png',
+        };
     return (
       <Box key={c.id} mb="md">
         <Group>
@@ -182,7 +160,7 @@ export const Race: React.FC<Props> = ({ data }) => {
 
   return (
     <Stack gap="xl">
-      <RaceCard race={race} event={event} />
+      <RaceCard race={race} />
 
       <Grid gutter="xl">
         <Grid.Col span={{ base: 12, lg: 8 }}>

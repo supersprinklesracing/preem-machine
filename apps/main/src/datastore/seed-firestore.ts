@@ -15,14 +15,19 @@ async function seedCollection(
 
   for (const docId in collectionData) {
     const { _collections, ...docData } = collectionData[docId];
-    promises.push(collectionRef.doc(docId).set(docData));
+    const id = docData.id;
+    try {
+      promises.push(collectionRef.doc(id).set(docData));
+    } catch (e) {
+      console.error('Failed to push: ', JSON.stringify(docData), e);
+    }
 
     if (_collections) {
       for (const subCollectionId in _collections) {
         promises.push(
           seedCollection(
             db,
-            `${collectionPath}/${docId}/${subCollectionId}`,
+            `${collectionPath}/${id}/${subCollectionId}`,
             _collections[subCollectionId]
           )
         );
@@ -36,7 +41,6 @@ async function seedCollection(
 
 /**
  * Seeds the entire Firestore database based on the MOCK_DB structure.
- * This will overwrite existing data in the specified collections.
  */
 export async function seedFirestore(firestore: Firestore) {
   try {

@@ -1,6 +1,5 @@
 'use client';
 
-import type { Race } from '@/datastore/types';
 import { Box, Divider, NavLink, Stack } from '@mantine/core';
 import {
   IconBike,
@@ -15,19 +14,15 @@ import Link from 'next/link';
 import { usePathname } from 'next/navigation';
 import React from 'react';
 
+interface SidebarData {
+  races: { id: string; name?: string }[];
+}
 interface SidebarProps {
-  races: Race[];
+  data: SidebarData;
 }
 
-const Sidebar: React.FC<SidebarProps> = ({ races }) => {
+const Sidebar: React.FC<SidebarProps> = ({ data }) => {
   const pathname = usePathname();
-
-  const mostRecentRaces = races
-    .sort(
-      (a, b) =>
-        new Date(b.startDate).getTime() - new Date(a.startDate).getTime()
-    )
-    .slice(0, 2);
 
   return (
     <Stack justify="space-between" style={{ height: '100%' }}>
@@ -52,7 +47,7 @@ const Sidebar: React.FC<SidebarProps> = ({ races }) => {
           active={pathname.startsWith('/manage/race')}
           defaultOpened
         >
-          {mostRecentRaces.map((race) => (
+          {data.races.map((race) => (
             <NavLink
               key={race.id}
               href={`/manage/race/${race.id}`}
@@ -80,38 +75,44 @@ const Sidebar: React.FC<SidebarProps> = ({ races }) => {
             defaultOpened
           >
             <NavLink
-              href="/user/user-1"
-              label="User 1"
+              href="/user/eygr7FzGzsb987AVm5uavrYTP7Q2"
+              label="User"
               leftSection={<IconDeviceTv size={18} />}
-              active={pathname === '/user/user-1'}
+              active={pathname === '/user/eygr7FzGzsb987AVm5uavrYTP7Q2'}
               component={Link}
             />
             <NavLink
-              href="/race/race-1"
-              label="Race 1"
+              href="/race/race-giro-sf-2025-masters-women"
+              label="Race"
               leftSection={<IconDeviceTv size={18} />}
-              active={pathname === '/race/race-1'}
+              active={pathname === '/race/race-giro-sf-2025-masters-women'}
               component={Link}
             />
             <NavLink
-              href="/manage/race/race-1"
-              label="Manage Dash 1"
+              href="/manage/race/race-giro-sf-2025-masters-women"
+              label="Manage Dash"
               leftSection={<IconDeviceTv size={18} />}
-              active={pathname === '/manage/race/race-1'}
+              active={
+                pathname === '/manage/race/race-giro-sf-2025-masters-women'
+              }
               component={Link}
             />
             <NavLink
-              href="/preem/preem-1a"
-              label="Preem 1"
+              href="/preem/preem-giro-sf-2025-masters-women-first-lap"
+              label="Preem"
               leftSection={<IconDeviceTv size={18} />}
-              active={pathname === '/preem/preem-1a'}
+              active={
+                pathname === '/preem/preem-giro-sf-2025-masters-women-first-lap'
+              }
               component={Link}
             />
             <NavLink
-              href="/big-screen/race-1"
-              label="Big Screen 2"
+              href="/big-screen/race-giro-sf-2025-masters-women"
+              label="Big Screen"
               leftSection={<IconDeviceTv size={18} />}
-              active={pathname === '/big-screen/race-1'}
+              active={
+                pathname === '/big-screen/race-giro-sf-2025-masters-women'
+              }
               component={Link}
             />
             <NavLink
@@ -126,6 +127,34 @@ const Sidebar: React.FC<SidebarProps> = ({ races }) => {
               label="Admin"
               leftSection={<IconShield size={18} />}
               active={pathname === '/admin'}
+            />
+            <NavLink
+              href="/organization/org-super-sprinkles"
+              label="Organization"
+              leftSection={<IconDeviceTv size={18} />}
+              active={pathname === '/organization/org-super-sprinkles'}
+              component={Link}
+            />
+            <NavLink
+              href="/series/series-giro-sf"
+              label="Series"
+              leftSection={<IconDeviceTv size={18} />}
+              active={pathname === '/series/series-giro-sf'}
+              component={Link}
+            />
+            <NavLink
+              href="/event/event-giro-sf-2025"
+              label="Event"
+              leftSection={<IconDeviceTv size={18} />}
+              active={pathname === '/event/event-giro-sf-2025'}
+              component={Link}
+            />
+            <NavLink
+              href="/manage"
+              label="Manage"
+              leftSection={<IconDeviceTv size={18} />}
+              active={pathname === '/manage'}
+              component={Link}
             />
           </NavLink>
         </Box>

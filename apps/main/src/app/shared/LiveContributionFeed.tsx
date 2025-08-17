@@ -1,47 +1,30 @@
 'use client';
 
+import type { Contribution, DeepClient } from '@/datastore/types';
 import { Avatar, Card, Group, Stack, Text, Title } from '@mantine/core';
-import type { Contribution, User } from '@/datastore/types';
 import Link from 'next/link';
 
+export interface LiveContributionFeedData {
+  contributions: DeepClient<Contribution>[];
+}
+
 interface LiveContributionFeedProps {
-  contributions: (Contribution & {
-    preemName: string;
-    raceName: string;
-    raceId: string;
-    preemId: string;
-  })[];
-  users: User[];
+  data: LiveContributionFeedData;
 }
 
 export default function LiveContributionFeed({
-  contributions,
-  users,
+  data,
 }: LiveContributionFeedProps) {
-  const getContributor = (id: string | null) => {
-    if (!id)
-      return {
-        id: null,
-        name: 'Anonymous',
-        avatarUrl: 'https://placehold.co/40x40.png',
-      };
-    return (
-      users.find((u) => u.id === id) || {
-        id,
-        name: 'A Contributor',
-        avatarUrl: 'https://placehold.co/40x40.png',
-      }
-    );
-  };
-
-  const contributionFeed = contributions.map((c) => {
-    const contributor = getContributor(c.contributorId);
+  const contributionFeed = data.contributions.map((c) => {
+    const contributorBrief = c.contributorBrief;
     return (
       <Group key={c.id} wrap="nowrap">
-        <Link href={contributor.id ? `/user/${contributor.id}` : '#'}>
+        <Link
+          href={contributorBrief?.id ? `/user/${contributorBrief?.id}` : '#'}
+        >
           <Avatar
-            src={contributor.avatarUrl}
-            alt={contributor.name}
+            src={contributorBrief?.avatarUrl}
+            alt={contributorBrief?.name}
             radius="xl"
           />
         </Link>
@@ -49,11 +32,11 @@ export default function LiveContributionFeed({
           <Text size="sm">
             <Text
               component={Link}
-              href={contributor.id ? `/user/${contributor.id}` : '#'}
+              href={contributorBrief?.id ? `/user/${contributorBrief.id}` : '#'}
               fw={600}
               style={{ textDecoration: 'none', color: 'inherit' }}
             >
-              {contributor.name}
+              {contributorBrief?.name}
             </Text>{' '}
             -{' '}
             <Text span c="green" fw={600}>
@@ -62,19 +45,19 @@ export default function LiveContributionFeed({
             to{' '}
             <Text
               component={Link}
-              href={`/preem/${c.preemId}`}
+              href={`/preem/${c.preemBrief?.id}`}
               style={{ textDecoration: 'none', color: 'inherit' }}
             >
-              &quot;{c.preemName}&quot;
+              &quot;{c.preemBrief?.name}&quot;
             </Text>{' '}
             in the{' '}
             <Text
               component={Link}
-              href={`/race/${c.raceId}`}
+              href={`/race/${c.preemBrief?.raceBrief?.id}`}
               fw={600}
               style={{ textDecoration: 'none', color: 'inherit' }}
             >
-              &quot;{c.raceName}&quot;
+              &quot;{c.preemBrief?.raceBrief?.name}&quot;
             </Text>{' '}
             race!
           </Text>
@@ -106,7 +89,7 @@ export default function LiveContributionFeed({
         Real-time contributions as they happen.
       </Text>
       <Stack mt="md" style={{ flexGrow: 1, overflowY: 'auto', height: '100%' }}>
-        {contributions.length === 0 ? (
+        {data.contributions.length === 0 ? (
           <Text c="dimmed" ta="center" py="xl">
             Waiting for contributions...
           </Text>

@@ -1,25 +1,16 @@
+import { getRacePageDataWithUsers } from '@/datastore/firestore';
 import ManageRace from './ManageRace';
-import { getRaceById, getUsersByIds } from '@/datastore/data-access';
 
 export default async function ManageRacePage({
   params,
 }: {
   params: { id: string };
 }) {
-  const race = await getRaceById((await params).id);
+  const data = await getRacePageDataWithUsers((await params).id);
 
-  if (!race) {
+  if (!data) {
     return <div>Race not found</div>;
   }
 
-  const contributorIds = race.preems.flatMap((p) =>
-    p.contributionHistory.map((c) => c.contributorId)
-  );
-  const allUserIds = [...contributorIds].filter(
-    (id): id is string => id !== null
-  );
-
-  const users = await getUsersByIds(allUserIds);
-
-  return <ManageRace initialRace={race} users={users} />;
+  return <ManageRace data={data} />;
 }
