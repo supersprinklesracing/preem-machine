@@ -6,18 +6,20 @@ import SeriesCard from '@/components/SeriesCard';
 import { EventWithRaces } from '@/datastore/firestore';
 import type { DeepClient, Series } from '@/datastore/types';
 import { Button, Group, SimpleGrid, Stack, Text, Title } from '@mantine/core';
-import { IconPlus, IconSparkles } from '@tabler/icons-react';
+import { IconChevronRight, IconPlus, IconSparkles } from '@tabler/icons-react';
+import Link from 'next/link';
 import React, { useState } from 'react';
 
 type EnrichedEvent = DeepClient<EventWithRaces> & {
   totalCollected: number;
   totalContributors: number;
+  status: 'Upcoming' | 'Live' | 'Finished';
 };
 
-type EnrichedSeries = Series & { events: EnrichedEvent[] };
+type EnrichedSeries = DeepClient<Series & { events: EnrichedEvent[] }>;
 
 export interface ManagePageData {
-  raceSeries: EnrichedSeries[];
+  serieses: EnrichedSeries[];
 }
 
 interface Props {
@@ -25,7 +27,7 @@ interface Props {
 }
 
 const Manage: React.FC<Props> = ({ data }) => {
-  const { raceSeries } = data;
+  const { serieses } = data;
   const [isAiModalOpen, setIsAiModalOpen] = useState(false);
 
   return (
@@ -50,17 +52,26 @@ const Manage: React.FC<Props> = ({ data }) => {
       </Group>
 
       <Stack gap="xl">
-        {raceSeries.map((series) => {
-          const upcomingEvents = series.events.filter(
-            (event) => event.status === 'Upcoming' || event.status === 'Live'
-          );
-          const pastEvents = series.events.filter(
-            (event) => event.status === 'Finished'
-          );
+        {serieses.map((series) => {
+          const upcomingEvents =
+            series.events?.filter(
+              (event) => event.status === 'Upcoming' || event.status === 'Live'
+            ) ?? [];
+          const pastEvents =
+            series.events?.filter((event) => event.status === 'Finished') ?? [];
 
           return (
             <Stack key={series.id} gap="lg">
-              <SeriesCard series={series} />
+              <SeriesCard series={series}>
+                <Button
+                  component={Link}
+                  href={`/series/${series.id}`}
+                  variant="light"
+                  rightSection={<IconChevronRight size={16} />}
+                >
+                  Manage Series
+                </Button>
+              </SeriesCard>
 
               <section>
                 <Title
@@ -72,7 +83,7 @@ const Manage: React.FC<Props> = ({ data }) => {
                 </Title>
                 <SimpleGrid cols={{ base: 1, md: 2 }}>
                   {upcomingEvents.map((event) => (
-                    <EventCard key={event.id} data={{ event }} />
+                    <EventCard key={event.id} event={event} />
                   ))}
                 </SimpleGrid>
               </section>
@@ -87,7 +98,7 @@ const Manage: React.FC<Props> = ({ data }) => {
                 </Title>
                 <SimpleGrid cols={{ base: 1, md: 2, lg: 3 }}>
                   {pastEvents.map((event) => (
-                    <EventCard key={event.id} data={{ event }} />
+                    <EventCard key={event.id} event={event} />
                   ))}
                 </SimpleGrid>
               </section>

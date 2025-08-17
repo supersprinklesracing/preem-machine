@@ -13,11 +13,12 @@ import {
   Text,
   Title,
 } from '@mantine/core';
-import { IconPlus } from '@tabler/icons-react';
+import { IconChevronRight, IconPlus } from '@tabler/icons-react';
+import Link from 'next/link';
 
 export interface OrganizationPageData {
   organization: DeepClient<Organization>;
-  series: DeepClient<Series>;
+  serieses: DeepClient<Series>[];
   members: DeepClient<User>[];
 }
 
@@ -26,7 +27,7 @@ interface Props {
 }
 
 export default function Organization({ data }: Props) {
-  const { organization, series, members } = data;
+  const { organization, serieses, members } = data;
 
   const memberRows = members.map((member) => (
     <Table.Tr key={member.id}>
@@ -64,8 +65,17 @@ export default function Organization({ data }: Props) {
             <Title order={2} ff="Space Grotesk, var(--mantine-font-family)">
               Race Series
             </Title>
-            {series.map((s) => (
-              <SeriesCard key={s.id} series={s} />
+            {serieses.map((s) => (
+              <SeriesCard key={s.id} series={s}>
+                <Button
+                  component={Link}
+                  href={`/series/${s.id}`}
+                  variant="light"
+                  rightSection={<IconChevronRight size={16} />}
+                >
+                  View Series
+                </Button>
+              </SeriesCard>
             ))}
           </Stack>
         </Grid.Col>

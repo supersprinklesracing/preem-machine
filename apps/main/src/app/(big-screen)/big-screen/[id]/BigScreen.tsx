@@ -22,7 +22,7 @@ import React, { useEffect, useState } from 'react';
 
 interface BigScreenProps {
   initialRace: DeepClient<RaceWithPreems>;
-  users: User[];
+  users: DeepClient<User>[];
 }
 
 const BigScreen: React.FC<BigScreenProps> = ({ initialRace, users }) => {

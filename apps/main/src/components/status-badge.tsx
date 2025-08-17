@@ -1,7 +1,7 @@
 import { Badge } from '@mantine/core';
 import React from 'react';
 
-type Status =
+export type Status =
   | 'Upcoming'
   | 'Live'
   | 'Finished'

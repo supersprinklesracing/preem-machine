@@ -1,8 +1,7 @@
 'use client';
 
-import type { Series } from '@/datastore/types';
+import { SeriesWithEvents } from '@/datastore/firestore';
 import {
-  Button,
   Card,
   Grid,
   Group,
@@ -12,15 +11,16 @@ import {
   useMantineTheme,
 } from '@mantine/core';
 import { useMediaQuery } from '@mantine/hooks';
-import { IconCalendar, IconChevronRight } from '@tabler/icons-react';
+import { IconCalendar } from '@tabler/icons-react';
 import { format } from 'date-fns';
-import Link from 'next/link';
+import React from 'react';
 
 interface SeriesCardProps {
-  series: Series;
+  series: SeriesWithEvents;
+  children?: React.ReactNode;
 }
 
-export default function SeriesCard({ series }: SeriesCardProps) {
+export default function SeriesCard({ series, children }: SeriesCardProps) {
   const theme = useMantineTheme();
   const isCompact = useMediaQuery(`(max-width: ${theme.breakpoints.sm})`);
 
@@ -35,8 +35,8 @@ export default function SeriesCard({ series }: SeriesCardProps) {
             <Group>
               <IconCalendar size={16} />
               <Text size="sm">
-                {format(new Date(series.startDate), 'PP')} -{' '}
-                {format(new Date(series.endDate), 'PP')}
+                {format(new Date(series.startDate!), 'PP')} -{' '}
+                {format(new Date(series.endDate!), 'PP')}
               </Text>
             </Group>
             <Text size="sm" c="dimmed">
@@ -49,14 +49,7 @@ export default function SeriesCard({ series }: SeriesCardProps) {
             justify={isCompact ? 'flex-start' : 'flex-end'}
             mt={isCompact ? 'md' : 0}
           >
-            <Button
-              component={Link}
-              href={`/series/${series.id}`}
-              variant="light"
-              rightSection={<IconChevronRight size={16} />}
-            >
-              Manage Series
-            </Button>
+            {children}
           </Group>
         </Grid.Col>
       </Grid>

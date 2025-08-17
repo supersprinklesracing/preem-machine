@@ -7,7 +7,7 @@ import AnimatedNumber from '@/components/animated-number';
 import ContributionModal from '@/components/contribution-modal';
 import StatusBadge from '@/components/status-badge';
 import { PreemWithContributions, RaceWithPreems } from '@/datastore/firestore';
-import { DeepClient, Preem } from '@/datastore/types';
+import { DeepClient } from '@/datastore/types';
 import {
   Avatar,
   Box,
@@ -34,7 +34,7 @@ interface Props {
 
 export const Race: React.FC<Props> = ({ data }) => {
   const { race } = data;
-  const [selectedPreem, setSelectedPreem] = useState<Preem | null>(null);
+  const [selectedPreem, setSelectedPreem] = useState<any | null>(null);
 
   if (!race) {
     return <div>Race not found</div>;
@@ -56,7 +56,7 @@ export const Race: React.FC<Props> = ({ data }) => {
         preemId: p.id,
       }))
     )
-    .sort((a, b) => (b.date?.seconds ?? 0) - (a.date?.seconds ?? 0));
+    .sort((a, b) => new Date(b.date!).getTime() - new Date(a.date!).getTime());
 
   const preemRows = (race.preems || []).map((preem) => (
     <Table.Tr key={preem.id} style={{ cursor: 'pointer' }}>
