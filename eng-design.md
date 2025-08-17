@@ -90,6 +90,45 @@ The integration between TanStack Query and Firebase will follow a clear pattern:
 
 TODO
 
+#### 4.1.1 Frontend Project Structure
+
+The frontend lives in `apps/main`.
+
+Project Structure conventions are mandatory.
+
+##### 4.1.1.2 Datastore & Data Access
+
+*   `datastore/types` - Defines types of documents stored directly in firestore.
+*   `datastore/converters.ts` - Defines a genericConverter which allows client components to receive firestore data.
+*   `datastore/firestore` - Defines queries to fetch firestore data. The queries return `ClientCompat` types via the genericConverter
+
+
+##### 4.1.1.1 Page Structure
+
+Within `apps/` a "page" is typically structured in two parts:
+
+###### 4.1.1.1.1 page.tsx
+
+`page.tsx` - A server component responsible for fetching data to present on the page.
+
+*    Fetches data via `@/datastore/firestore.`
+
+###### 4.1.1.1.2 Component.tsx
+
+`Component.tsx` - The main client component of a page.
+
+*   Props & Data Passing: Client components only access firestore types when wrapped in `ClientCompat<T>`
+    ```typescript
+    export interface RacePageData {
+      race: ClientCompat<RaceWithPreems>;
+    }
+
+    interface Props {
+      data: RacePageData;
+    }
+    [...]
+    ```
+
 ### 4.2. Frontend Architecture
 
 The frontend is a Next.js application located in `apps/main`. It is built using the App Router for UI pages and Route Handlers for the BFF API. The UI will be constructed using the Mantine component library, and all forms will be managed using the `@mantine/form` package for state and validation.
