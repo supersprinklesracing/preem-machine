@@ -98,10 +98,9 @@ Project Structure conventions are mandatory.
 
 ##### 4.1.1.2 Datastore & Data Access
 
-*   `datastore/types` - Defines types of documents stored directly in firestore.
-*   `datastore/converters.ts` - Defines a genericConverter which allows client components to receive firestore data.
-*   `datastore/firestore` - Defines queries to fetch firestore data. The queries return `ClientCompat` types via the genericConverter
-
+- `datastore/types` - Defines types of documents stored directly in firestore.
+- `datastore/converters.ts` - Defines a genericConverter which allows client components to receive firestore data.
+- `datastore/firestore` - Defines queries to fetch firestore data. The queries return `ClientCompat` types via the genericConverter
 
 ##### 4.1.1.1 Page Structure
 
@@ -111,23 +110,24 @@ Within `apps/` a "page" is typically structured in two parts:
 
 `page.tsx` - A server component responsible for fetching data to present on the page.
 
-*    Fetches data via `@/datastore/firestore.`
+- Fetches data via `@/datastore/firestore.`
 
 ###### 4.1.1.1.2 Component.tsx
 
 `Component.tsx` - The main client component of a page.
 
-*   Props & Data Passing: Client components only access firestore types when wrapped in `ClientCompat<T>`
-    ```typescript
-    export interface RacePageData {
-      race: ClientCompat<RaceWithPreems>;
-    }
+- Props & Data Passing: Client components only access firestore types when wrapped in `ClientCompat<T>`
 
-    interface Props {
-      data: RacePageData;
-    }
-    [...]
-    ```
+  ```typescript
+  export interface RacePageData {
+    race: ClientCompat<RaceWithPreems>;
+  }
+
+  interface Props {
+    data: RacePageData;
+  }
+  [...]
+  ```
 
 ### 4.2. Frontend Architecture
 
