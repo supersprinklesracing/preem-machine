@@ -2,7 +2,7 @@
 
 import EventCard from '@/components/EventCard';
 import { SeriesWithEvents } from '@/datastore/firestore';
-import { DeepClient } from '@/datastore/types';
+import { ClientCompat } from '@/datastore/types';
 import {
   Anchor,
   Button,
@@ -17,7 +17,7 @@ import { format } from 'date-fns';
 import Link from 'next/link';
 
 export interface SeriesPageData {
-  series: DeepClient<SeriesWithEvents>;
+  series: ClientCompat<SeriesWithEvents>;
 }
 
 interface Props {

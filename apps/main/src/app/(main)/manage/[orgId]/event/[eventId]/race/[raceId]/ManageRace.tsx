@@ -4,7 +4,7 @@ export const dynamic = 'force-dynamic';
 
 import AnimatedNumber from '@/components/animated-number';
 import StatusBadge from '@/components/status-badge';
-import type { DeepClient, User } from '@/datastore/types';
+import type { ClientCompat, User } from '@/datastore/types';
 import {
   Button,
   Card,
@@ -31,7 +31,7 @@ import ManageRaceContributionFeed from './ManageRaceContributionFeed';
 
 export interface ManageRaceData {
   race: RaceWithPreems;
-  users: DeepClient<User>[];
+  users: ClientCompat<User>[];
 }
 
 export interface ManageRaceProps {

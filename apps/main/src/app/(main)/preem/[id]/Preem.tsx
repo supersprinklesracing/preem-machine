@@ -6,7 +6,7 @@ import AnimatedNumber from '@/components/animated-number';
 import ContributionModal from '@/components/contribution-modal';
 import StatusBadge from '@/components/status-badge';
 import { PreemWithContributions } from '@/datastore/firestore';
-import type { DeepClient } from '@/datastore/types';
+import type { ClientCompat } from '@/datastore/types';
 import {
   Avatar,
   Box,
@@ -32,7 +32,7 @@ import Link from 'next/link';
 import React, { useState } from 'react';
 
 export interface PreemPageData {
-  preem: DeepClient<PreemWithContributions>;
+  preem: ClientCompat<PreemWithContributions>;
 }
 
 interface Props {

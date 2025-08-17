@@ -1,7 +1,12 @@
 'use client';
 
 import SeriesCard from '@/components/SeriesCard';
-import type { DeepClient, Organization, Series, User } from '@/datastore/types';
+import type {
+  ClientCompat,
+  Organization,
+  Series,
+  User,
+} from '@/datastore/types';
 import {
   Avatar,
   Button,
@@ -17,9 +22,9 @@ import { IconChevronRight, IconPlus } from '@tabler/icons-react';
 import Link from 'next/link';
 
 export interface OrganizationPageData {
-  organization: DeepClient<Organization>;
-  serieses: DeepClient<Series>[];
-  members: DeepClient<User>[];
+  organization: ClientCompat<Organization>;
+  serieses: ClientCompat<Series>[];
+  members: ClientCompat<User>[];
 }
 
 interface Props {

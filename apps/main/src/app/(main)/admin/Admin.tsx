@@ -1,7 +1,7 @@
 'use client';
 
 import { useToast } from '@/app/shared/use-toast';
-import type { DeepClient, User } from '@/datastore/types';
+import type { ClientCompat, User } from '@/datastore/types';
 import {
   Box,
   Button,
@@ -17,7 +17,7 @@ import { IconSearch, IconUserCheck } from '@tabler/icons-react';
 import React, { useState } from 'react';
 
 export interface AdminPageData {
-  users: DeepClient<User>[];
+  users: ClientCompat<User>[];
 }
 
 interface Props {
@@ -29,7 +29,7 @@ const Admin: React.FC<Props> = ({ data }) => {
   const [search, setSearch] = useState('');
   const { toast } = useToast();
 
-  const handleImpersonate = (user: DeepClient<User>) => {
+  const handleImpersonate = (user: ClientCompat<User>) => {
     if (!user.name) {
       return;
     }

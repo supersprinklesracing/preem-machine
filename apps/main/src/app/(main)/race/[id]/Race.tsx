@@ -7,7 +7,7 @@ import AnimatedNumber from '@/components/animated-number';
 import ContributionModal from '@/components/contribution-modal';
 import StatusBadge from '@/components/status-badge';
 import { PreemWithContributions, RaceWithPreems } from '@/datastore/firestore';
-import { DeepClient } from '@/datastore/types';
+import { ClientCompat } from '@/datastore/types';
 import {
   Avatar,
   Box,
@@ -25,7 +25,7 @@ import Link from 'next/link';
 import React, { useState } from 'react';
 
 export interface RacePageData {
-  race: DeepClient<RaceWithPreems>;
+  race: ClientCompat<RaceWithPreems>;
 }
 
 interface Props {

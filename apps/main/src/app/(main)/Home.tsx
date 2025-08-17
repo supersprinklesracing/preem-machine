@@ -1,14 +1,14 @@
 'use client';
 
 import RaceCard from '@/components/RaceCard';
-import type { Contribution, DeepClient, Race } from '@/datastore/types';
+import type { Contribution, ClientCompat, Race } from '@/datastore/types';
 import { Button, Flex, Grid, Stack, Title } from '@mantine/core';
 import Link from 'next/link';
 import LiveContributionFeed from '../shared/LiveContributionFeed';
 
 export interface HomePageData {
-  recentRaces: DeepClient<Race>[];
-  contributions: DeepClient<Contribution>[];
+  recentRaces: ClientCompat<Race>[];
+  contributions: ClientCompat<Contribution>[];
 }
 
 interface Props {

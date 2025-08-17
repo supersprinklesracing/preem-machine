@@ -1,6 +1,6 @@
 'use client';
 
-import { DeepClient, Event } from '@/datastore/types';
+import { ClientCompat, Event } from '@/datastore/types';
 import { Box, Divider, NavLink, Stack } from '@mantine/core';
 import {
   IconBike,
@@ -16,7 +16,7 @@ import { usePathname } from 'next/navigation';
 import React from 'react';
 
 interface SidebarData {
-  events: DeepClient<Event>[];
+  events: ClientCompat<Event>[];
 }
 interface SidebarProps {
   data: SidebarData;
@@ -110,8 +110,7 @@ const Sidebar: React.FC<SidebarProps> = ({ data }) => {
               label="Preem"
               leftSection={<IconDeviceTv size={18} />}
               active={
-                pathname ===
-                '/preem/preem-giro-sf-2025-masters-women-first-lap'
+                pathname === '/preem/preem-giro-sf-2025-masters-women-first-lap'
               }
               component={Link}
             />

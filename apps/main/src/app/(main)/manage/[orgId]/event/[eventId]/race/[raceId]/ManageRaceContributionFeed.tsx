@@ -1,14 +1,14 @@
 'use client';
 
 import { PreemWithContributions, RaceWithPreems } from '@/datastore/firestore';
-import { DeepClient, User } from '@/datastore/types';
+import { ClientCompat, User } from '@/datastore/types';
 import { Avatar, Button, Card, Group, Table, Text, Title } from '@mantine/core';
 import { formatDistanceToNow } from 'date-fns';
 import Link from 'next/link';
 
 interface LiveContributionsProps {
   race: RaceWithPreems;
-  users: DeepClient<User>[];
+  users: ClientCompat<User>[];
 }
 
 export default function ManageRaceContributionFeed({

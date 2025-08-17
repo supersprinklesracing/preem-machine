@@ -36,7 +36,7 @@ type DeepPartial<T> =
       : T[P];
   };
 
-export type DeepClient<T> = DeepPartial<ForClient<T>>;
+export type ClientCompat<T> = DeepPartial<ForClient<T>>;
 
 export interface Metadata {
   created?: Timestamp;

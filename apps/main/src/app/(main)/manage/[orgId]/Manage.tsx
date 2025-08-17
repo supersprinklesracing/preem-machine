@@ -4,19 +4,19 @@ import ThresholdAssistantModal from '@/components/ai/threshold-assistant-modal';
 import EventCard from '@/components/EventCard';
 import SeriesCard from '@/components/SeriesCard';
 import { EventWithRaces } from '@/datastore/firestore';
-import type { DeepClient, Series } from '@/datastore/types';
+import type { ClientCompat, Series } from '@/datastore/types';
 import { Button, Group, SimpleGrid, Stack, Text, Title } from '@mantine/core';
 import { IconChevronRight, IconPlus, IconSparkles } from '@tabler/icons-react';
 import Link from 'next/link';
 import React, { useState } from 'react';
 
-type EnrichedEvent = DeepClient<EventWithRaces> & {
+type EnrichedEvent = ClientCompat<EventWithRaces> & {
   totalCollected: number;
   totalContributors: number;
   status: 'Upcoming' | 'Live' | 'Finished';
 };
 
-type EnrichedSeries = DeepClient<Series & { events: EnrichedEvent[] }>;
+type EnrichedSeries = ClientCompat<Series & { events: EnrichedEvent[] }>;
 
 export interface ManagePageData {
   serieses: EnrichedSeries[];

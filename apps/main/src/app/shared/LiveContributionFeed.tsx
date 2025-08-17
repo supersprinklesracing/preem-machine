@@ -1,11 +1,11 @@
 'use client';
 
-import type { Contribution, DeepClient } from '@/datastore/types';
+import type { Contribution, ClientCompat } from '@/datastore/types';
 import { Avatar, Card, Group, Stack, Text, Title } from '@mantine/core';
 import Link from 'next/link';
 
 export interface LiveContributionFeedData {
-  contributions: DeepClient<Contribution>[];
+  contributions: ClientCompat<Contribution>[];
 }
 
 interface LiveContributionFeedProps {
