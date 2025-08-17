@@ -22,13 +22,13 @@ import {
 } from '@tabler/icons-react';
 import { format } from 'date-fns';
 import React from 'react';
-import type { DeepClient } from '../datastore/types';
+import type { ClientCompat } from '../datastore/types';
 import StatusBadge, { Status } from './status-badge';
 
 const LARGE_PREEM_THRESHOLD = 100;
 
 interface RaceCardProps {
-  race: DeepClient<RaceWithPreems>;
+  race: ClientCompat<RaceWithPreems>;
   children?: React.ReactNode;
   style?: React.CSSProperties;
 }

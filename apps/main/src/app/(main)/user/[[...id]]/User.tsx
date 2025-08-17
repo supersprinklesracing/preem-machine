@@ -1,7 +1,7 @@
 'use client';
 
 import { useAuth } from '@/auth/AuthContext';
-import type { Contribution, DeepClient, User } from '@/datastore/types';
+import type { Contribution, ClientCompat, User } from '@/datastore/types';
 import {
   Avatar,
   Button,
@@ -19,8 +19,8 @@ import Link from 'next/link';
 import React from 'react';
 
 export interface UserPageData {
-  user: DeepClient<User>;
-  contributions: DeepClient<Contribution>[];
+  user: ClientCompat<User>;
+  contributions: ClientCompat<Contribution>[];
 }
 
 interface Props {

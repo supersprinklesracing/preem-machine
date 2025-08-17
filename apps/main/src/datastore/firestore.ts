@@ -15,7 +15,7 @@ import type { UserPageData } from '../app/(main)/user/[[...id]]/User';
 import { genericConverter } from './converters';
 import type {
   Contribution,
-  DeepClient,
+  ClientCompat,
   Event,
   Organization,
   Preem,
@@ -24,23 +24,23 @@ import type {
   User,
 } from './types';
 
-export type RaceWithPreems = DeepClient<
+export type RaceWithPreems = ClientCompat<
   Race & {
     preems: PreemWithContributions[];
   }
 >;
-export type EventWithRaces = DeepClient<Event & { races: RaceWithPreems[] }>;
-export type SeriesWithEvents = DeepClient<
+export type EventWithRaces = ClientCompat<Event & { races: RaceWithPreems[] }>;
+export type SeriesWithEvents = ClientCompat<
   Series & { events: EventWithRaces[] }
 >;
-export type PreemWithContributions = DeepClient<
+export type PreemWithContributions = ClientCompat<
   Preem & {
     contributions: Contribution[];
   }
 >;
 
 const getContributionsForPreem = async (
-  preemDoc: firestore.QueryDocumentSnapshot<DeepClient<Preem>>
+  preemDoc: firestore.QueryDocumentSnapshot<ClientCompat<Preem>>
 ): Promise<PreemWithContributions> => {
   const preem = preemDoc.data();
   const contributionsSnap = await preemDoc.ref
@@ -52,7 +52,7 @@ const getContributionsForPreem = async (
 };
 
 const getPreemsForRace = async (
-  raceDoc: firestore.QueryDocumentSnapshot<DeepClient<Race>>
+  raceDoc: firestore.QueryDocumentSnapshot<ClientCompat<Race>>
 ): Promise<RaceWithPreems> => {
   const race = raceDoc.data();
   const preemsSnap = await raceDoc.ref
@@ -66,7 +66,7 @@ const getPreemsForRace = async (
 };
 
 const getRacesForEvent = async (
-  eventDoc: firestore.QueryDocumentSnapshot<DeepClient<Event>>
+  eventDoc: firestore.QueryDocumentSnapshot<ClientCompat<Event>>
 ): Promise<EventWithRaces> => {
   const event = eventDoc.data();
   const racesSnap = await eventDoc.ref
@@ -78,18 +78,18 @@ const getRacesForEvent = async (
 };
 
 const getEventsForSeries = async (
-  seriesDoc: firestore.QueryDocumentSnapshot<DeepClient<Series>>
-): Promise<DeepClient<SeriesWithEvents>> => {
+  seriesDoc: firestore.QueryDocumentSnapshot<ClientCompat<Series>>
+): Promise<ClientCompat<SeriesWithEvents>> => {
   const series = seriesDoc.data();
   const eventsSnap = await seriesDoc.ref
     .collection('events')
-    .withConverter(genericConverter<DeepClient<Event>>())
+    .withConverter(genericConverter<ClientCompat<Event>>())
     .get();
   const events = await Promise.all(eventsSnap.docs.map(getRacesForEvent));
   return { ...series, events };
 };
 
-export const getUsers = cache(async (): Promise<DeepClient<User>[]> => {
+export const getUsers = cache(async (): Promise<ClientCompat<User>[]> => {
   const db = await getFirestore();
   const usersSnap = await db
     .collection('users')
@@ -99,7 +99,7 @@ export const getUsers = cache(async (): Promise<DeepClient<User>[]> => {
 });
 
 export const getUserById = cache(
-  async (id: string | undefined): Promise<DeepClient<User> | undefined> => {
+  async (id: string | undefined): Promise<ClientCompat<User> | undefined> => {
     if (!id) {
       return undefined;
     }
@@ -114,7 +114,7 @@ export const getUserById = cache(
 );
 
 export const getUsersByIds = cache(
-  async (ids: string[]): Promise<DeepClient<User>[]> => {
+  async (ids: string[]): Promise<ClientCompat<User>[]> => {
     const uniqueIds = [...new Set(ids)];
     if (uniqueIds.length === 0) {
       return [];
@@ -129,7 +129,7 @@ export const getUsersByIds = cache(
   }
 );
 
-export const getAllRaces = cache(async (): Promise<DeepClient<Race>[]> => {
+export const getAllRaces = cache(async (): Promise<ClientCompat<Race>[]> => {
   const db = await getFirestore();
   const racesSnap = await db
     .collectionGroup('races')
@@ -139,7 +139,7 @@ export const getAllRaces = cache(async (): Promise<DeepClient<Race>[]> => {
 });
 
 export const getEventsForOrganizations = cache(
-  async (organizationIds: string[]): Promise<DeepClient<Event>[]> => {
+  async (organizationIds: string[]): Promise<ClientCompat<Event>[]> => {
     if (organizationIds.length === 0) {
       return [];
     }
@@ -164,7 +164,7 @@ export const getEventsForOrganizations = cache(
 );
 
 export const getEventsForUser = cache(
-  async (userId: string): Promise<DeepClient<Event>[]> => {
+  async (userId: string): Promise<ClientCompat<Event>[]> => {
     console.log('Getting events for user', userId);
     const user = await getUserById(userId);
     console.log('User', user);
@@ -221,7 +221,7 @@ export const getRacePageDataWithUsers = cache(
   async (
     id: string
   ): Promise<
-    { race: RaceWithPreems; users: DeepClient<User>[] } | undefined
+    { race: RaceWithPreems; users: ClientCompat<User>[] } | undefined
   > => {
     const raceData = await getRenderableRaceDataForPage(id);
     if (!raceData) {
@@ -240,7 +240,7 @@ export const getRacePageDataWithUsers = cache(
 
     return {
       race: race as RaceWithPreems,
-      users: users as DeepClient<User>[],
+      users: users as ClientCompat<User>[],
     };
   }
 );
@@ -360,7 +360,7 @@ export const getRenderableHomeDataForPage = cache(
             await db
               .collectionGroup('preems')
               .where('id', 'in', preemIds)
-              .withConverter(genericConverter<DeepClient<Preem>>())
+              .withConverter(genericConverter<ClientCompat<Preem>>())
               .get()
           ).docs.map((d) => d.data())
         : [];
@@ -368,7 +368,7 @@ export const getRenderableHomeDataForPage = cache(
     const preemsMap = preems.reduce((acc, preem) => {
       acc[preem.id] = preem;
       return acc;
-    }, {} as Record<string, DeepClient<Preem>>);
+    }, {} as Record<string, ClientCompat<Preem>>);
 
     const recentContributions = recentContributionsRaw.map((c) => {
       const fullPreem = c.preemBrief?.id

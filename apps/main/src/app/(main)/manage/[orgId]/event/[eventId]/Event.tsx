@@ -2,7 +2,7 @@
 
 import RaceCard from '@/components/RaceCard';
 import { EventWithRaces } from '@/datastore/firestore';
-import type { DeepClient } from '@/datastore/types';
+import type { ClientCompat } from '@/datastore/types';
 import {
   Anchor,
   Button,
@@ -17,7 +17,7 @@ import { format } from 'date-fns';
 import Link from 'next/link';
 
 export interface EventPageData {
-  event: DeepClient<EventWithRaces>;
+  event: ClientCompat<EventWithRaces>;
 }
 interface Props {
   data: EventPageData;

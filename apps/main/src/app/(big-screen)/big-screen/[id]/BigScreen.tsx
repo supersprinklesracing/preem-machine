@@ -4,7 +4,7 @@ export const dynamic = 'force-dynamic';
 
 import AnimatedNumber from '@/components/animated-number';
 import { RaceWithPreems } from '@/datastore/firestore';
-import type { Contribution, DeepClient, User } from '@/datastore/types';
+import type { Contribution, ClientCompat, User } from '@/datastore/types';
 import {
   Avatar,
   Box,
@@ -21,16 +21,16 @@ import Link from 'next/link';
 import React, { useEffect, useState } from 'react';
 
 interface BigScreenProps {
-  initialRace: DeepClient<RaceWithPreems>;
-  users: DeepClient<User>[];
+  initialRace: ClientCompat<RaceWithPreems>;
+  users: ClientCompat<User>[];
 }
 
 const BigScreen: React.FC<BigScreenProps> = ({ initialRace, users }) => {
-  const [race, setRace] = useState<DeepClient<RaceWithPreems> | undefined>(
+  const [race, setRace] = useState<ClientCompat<RaceWithPreems> | undefined>(
     initialRace
   );
   const [liveContributions, setLiveContributions] = useState<
-    (DeepClient<Contribution> & { preemName: string })[]
+    (ClientCompat<Contribution> & { preemName: string })[]
   >([]);
 
   useEffect(() => {
@@ -58,7 +58,7 @@ const BigScreen: React.FC<BigScreenProps> = ({ initialRace, users }) => {
             const newAmount = Math.floor(Math.random() * 75) + 10;
             const randomUser = users[Math.floor(Math.random() * users.length)];
             if (!randomUser) return p;
-            const newContribution: DeepClient<Contribution> = {
+            const newContribution: ClientCompat<Contribution> = {
               id: `c-live-${Date.now()}`,
               contributorBrief: {
                 id: randomUser.id,
@@ -91,7 +91,7 @@ const BigScreen: React.FC<BigScreenProps> = ({ initialRace, users }) => {
   }, [initialRace, users]);
 
   const getContributor = (
-    contribution: DeepClient<Contribution>
+    contribution: ClientCompat<Contribution>
   ): { name: string; avatarUrl: string } => {
     if (!contribution.contributorBrief?.id) {
       return {

@@ -4,7 +4,7 @@ import type {
   QueryDocumentSnapshot,
 } from 'firebase-admin/firestore';
 import { DocumentReference, Timestamp } from 'firebase-admin/firestore';
-import { DeepClient } from './types';
+import type { ClientCompat } from './types';
 
 /**
  * Recursively finds and converts all complex Firestore objects (Timestamp, DocumentReference)
@@ -13,7 +13,9 @@ import { DeepClient } from './types';
  * @param data The data object or array to traverse.
  * @returns A new, fully serializable object or array.
  */
-function serializeFirestoreData(data: DocumentData): DeepClient<DocumentData> {
+function serializeFirestoreData(
+  data: DocumentData
+): ClientCompat<DocumentData> {
   if (data === null || data === undefined) {
     return data;
   }
@@ -49,18 +51,18 @@ function serializeFirestoreData(data: DocumentData): DeepClient<DocumentData> {
  * 2. Recursively converts all Firestore Timestamps and DocumentReferences to serializable types.
  */
 export const genericConverter = <T>(): FirestoreDataConverter<
-  DeepClient<T>
+  ClientCompat<T>
 > => ({
-  toFirestore: (data: DeepClient<T>) => {
+  toFirestore: (data: ClientCompat<T>) => {
     // Note: This direction (writing to Firestore) is not fully implemented.
     return data as DocumentData;
   },
-  fromFirestore: (snapshot: QueryDocumentSnapshot): DeepClient<T> => {
+  fromFirestore: (snapshot: QueryDocumentSnapshot): ClientCompat<T> => {
     const data = snapshot.data();
     const convertedData = serializeFirestoreData(data);
     return {
       id: snapshot.id,
       ...convertedData,
-    } as unknown as DeepClient<T>;
+    } as unknown as ClientCompat<T>;
   },
 });
