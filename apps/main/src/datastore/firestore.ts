@@ -138,6 +138,43 @@ export const getAllRaces = cache(async (): Promise<DeepClient<Race>[]> => {
   return racesSnap.docs.map((doc) => doc.data());
 });
 
+export const getEventsForOrganizations = cache(
+  async (organizationIds: string[]): Promise<DeepClient<Event>[]> => {
+    if (organizationIds.length === 0) {
+      return [];
+    }
+    const db = await getFirestore();
+    const oneDayAgo = new Date();
+    // TODO: This should just be one day.
+    oneDayAgo.setDate(oneDayAgo.getDate() - 365);
+
+    const eventsSnap = await db
+      .collectionGroup('events')
+      // .where('seriesBrief.organizationBrief.id', 'in', organizationIds)
+      // .where('endDate', '>=', oneDayAgo)
+      // .orderBy('endDate', 'asc')
+      .withConverter(genericConverter<Event>())
+      .get();
+    console.log(
+      'Events',
+      eventsSnap.docs.map((doc) => doc.data())
+    );
+    return eventsSnap.docs.map((doc) => doc.data());
+  }
+);
+
+export const getEventsForUser = cache(
+  async (userId: string): Promise<DeepClient<Event>[]> => {
+    console.log('Getting events for user', userId);
+    const user = await getUserById(userId);
+    console.log('User', user);
+    const organizationIds =
+      user?.organizationRefs?.map((ref) => ref.id).filter((id) => !!id) ?? [];
+    console.log('Organization IDs', organizationIds);
+    return getEventsForOrganizations(organizationIds);
+  }
+);
+
 export const getRenderablePreemDataForPage = cache(
   async (id: string): Promise<PreemPageData | undefined> => {
     const db = await getFirestore();
@@ -240,7 +277,7 @@ export const getRenderableOrganizationDataForPage = cache(
     return {
       organization:
         organization as unknown as OrganizationPageData['organization'],
-      series: series as unknown as OrganizationPageData['series'],
+      serieses: series as unknown as OrganizationPageData['serieses'],
       members: members as unknown as OrganizationPageData['members'],
     };
   }
@@ -381,11 +418,9 @@ export const getRenderableManageDataForPage = cache(
       .collection(`organizations/${organizationId}/series`)
       .withConverter(genericConverter<Series>())
       .get();
-    const series = await Promise.all(seriesSnap.docs.map(getEventsForSeries));
+    const serieses = await Promise.all(seriesSnap.docs.map(getEventsForSeries));
 
-    return {
-      raceSeries: series as unknown as ManagePageData['raceSeries'],
-    };
+    return { serieses };
   }
 );
 

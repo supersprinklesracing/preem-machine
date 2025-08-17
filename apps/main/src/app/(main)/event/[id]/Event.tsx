@@ -64,12 +64,8 @@ export default function Event({ data }: Props) {
           </Button>
         </Group>
         <SimpleGrid cols={{ base: 1, lg: 2 }}>
-          {event.races.map((race) => (
-            <RaceCard
-              key={race.id}
-              race={race}
-              event={event as FirestoreEvent}
-            />
+          {event.races?.map((race) => (
+            <RaceCard key={race.id} race={race} />
           ))}
         </SimpleGrid>
       </Stack>

@@ -1,5 +1,6 @@
 'use client';
 
+import { RaceWithPreems } from '@/datastore/firestore';
 import {
   Card,
   Flex,
@@ -20,18 +21,46 @@ import {
   IconUsers,
 } from '@tabler/icons-react';
 import { format } from 'date-fns';
-import type { Timestamp } from 'firebase-admin/firestore';
 import React from 'react';
-import type { Race, RecursiveReplace } from '../datastore/types';
-import StatusBadge from './status-badge';
+import type { DeepClient } from '../datastore/types';
+import StatusBadge, { Status } from './status-badge';
 
 const LARGE_PREEM_THRESHOLD = 100;
 
 interface RaceCardProps {
-  race: RecursiveReplace<Partial<Race>, Timestamp, string>;
+  race: DeepClient<RaceWithPreems>;
   children?: React.ReactNode;
   style?: React.CSSProperties;
 }
+
+const RaceStatusBadge = ({
+  startDate,
+  endDate,
+}: {
+  startDate?: string;
+  endDate?: string;
+}) => {
+  let status: Status | undefined = undefined;
+
+  if (startDate && endDate) {
+    const now = new Date();
+    const start = new Date(startDate);
+    const end = new Date(endDate);
+
+    if (now < start) {
+      status = 'Upcoming';
+    } else if (now >= start && now <= end) {
+      status = 'Live';
+    } else if (now > end) {
+      status = 'Finished';
+    }
+  }
+  if (!status) {
+    return <></>;
+  }
+
+  return <StatusBadge status={status} />;
+};
 
 const RaceCard: React.FC<RaceCardProps> = ({ race, children, style }) => {
   const totalPrizePool = (race.preems ?? []).reduce(
@@ -82,7 +111,7 @@ const RaceCard: React.FC<RaceCardProps> = ({ race, children, style }) => {
                     >
                       {race.name}
                     </Title>
-                    <StatusBadge status={race.status} />
+                    <RaceStatusBadge {...race} />
                   </Group>
                   <Text c="dimmed">
                     {race.category} - {race.gender}

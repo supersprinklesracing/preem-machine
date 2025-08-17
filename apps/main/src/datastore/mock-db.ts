@@ -62,16 +62,17 @@ const postProcessDatabase = (db: DatabaseCollections): DatabaseCollections => {
     const series = organization._collections?.series;
     if (!series) return;
 
-    series.forEach((s) => {
-      s.organizationBrief = organizationBrief;
+    series.forEach((series) => {
+      series.organizationBrief = organizationBrief;
       const seriesBrief: SeriesBrief = {
-        id: s.id,
-        name: s.name,
-        startDate: s.startDate,
-        endDate: s.endDate,
+        id: series.id,
+        name: series.name,
+        startDate: series.startDate,
+        endDate: series.endDate,
+        organizationBrief,
       };
 
-      const events = s._collections?.events;
+      const events = series._collections?.events;
       if (!events) return;
 
       events.forEach((event) => {
@@ -81,6 +82,7 @@ const postProcessDatabase = (db: DatabaseCollections): DatabaseCollections => {
           name: event.name,
           startDate: event.startDate,
           endDate: event.endDate,
+          seriesBrief,
         };
 
         const races = event._collections?.races;
@@ -93,7 +95,7 @@ const postProcessDatabase = (db: DatabaseCollections): DatabaseCollections => {
             name: race.name,
             startDate: race.startDate,
             endDate: race.endDate,
-            eventBrief: eventBrief,
+            eventBrief,
           };
 
           const preems = race._collections?.preems;
@@ -104,6 +106,7 @@ const postProcessDatabase = (db: DatabaseCollections): DatabaseCollections => {
             const preemBrief: PreemBrief = {
               id: preem.id,
               name: preem.name,
+              raceBrief,
             };
 
             const contributions = preem._collections?.contributions;
@@ -119,6 +122,7 @@ const postProcessDatabase = (db: DatabaseCollections): DatabaseCollections => {
                     id: contributor.id,
                     name: contributor.name,
                     avatarUrl: contributor.avatarUrl,
+                    preemBrief,
                   };
                 }
               }

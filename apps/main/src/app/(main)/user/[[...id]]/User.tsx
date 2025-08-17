@@ -19,7 +19,7 @@ import Link from 'next/link';
 import React from 'react';
 
 export interface UserPageData {
-  user: User;
+  user: DeepClient<User>;
   contributions: DeepClient<Contribution>[];
 }
 
@@ -38,14 +38,10 @@ const User: React.FC<Props> = ({ data }) => {
   );
 
   const contributionRows = contributions
-    .sort(
-      (a, b) =>
-        (b.date?.toDate() ?? new Date(0)).getTime() -
-        (a.date?.toDate() ?? new Date(0)).getTime()
-    )
+    .sort((a, b) => new Date(b.date!).getTime() - new Date(a.date!).getTime())
     .map((c) => (
       <Table.Tr key={c.id}>
-        <Table.Td>{c.date ? format(c.date.toDate(), 'PP') : 'N/A'}</Table.Td>
+        <Table.Td>{c.date ? format(new Date(c.date), 'PP') : 'N/A'}</Table.Td>
         <Table.Td>{c.preemBrief?.raceBrief?.name}</Table.Td>
         <Table.Td>{c.preemBrief?.name}</Table.Td>
         <Table.Td>

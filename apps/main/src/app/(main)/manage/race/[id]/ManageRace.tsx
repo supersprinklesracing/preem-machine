@@ -4,7 +4,7 @@ export const dynamic = 'force-dynamic';
 
 import AnimatedNumber from '@/components/animated-number';
 import StatusBadge from '@/components/status-badge';
-import type { DeepClient, Race, User } from '@/datastore/types';
+import type { DeepClient, User } from '@/datastore/types';
 import {
   Button,
   Card,
@@ -39,7 +39,7 @@ export interface ManageRaceProps {
 }
 
 export const ManageRace: React.FC<{ data: ManageRaceData }> = ({ data }) => {
-  const [race, setRace] = useState<DeepClient<Race> | undefined>(data.race);
+  const [race, setRace] = useState<RaceWithPreems | undefined>(data.race);
 
   if (!race) {
     return <div>Race not found</div>;
@@ -50,25 +50,25 @@ export const ManageRace: React.FC<{ data: ManageRaceData }> = ({ data }) => {
       if (!prevRace) return undefined;
       return {
         ...prevRace,
-        preems: prevRace.preems.map((p) =>
+        preems: prevRace.preems?.map((p) =>
           p.id === preemId ? { ...p, status: 'Awarded' } : p
         ),
       };
     });
   };
 
-  const preemRows = race.preems.map((preem) => (
+  const preemRows = race.preems?.map((preem) => (
     <Table.Tr key={preem.id}>
       <Table.Td>
         <Text fw={500}>{preem.name}</Text>
       </Table.Td>
       <Table.Td>
         <Text c="blue" fw={600}>
-          $<AnimatedNumber value={preem.prizePool} />
+          $<AnimatedNumber value={preem.prizePool ?? 0} />
         </Text>
       </Table.Td>
       <Table.Td>
-        <StatusBadge status={preem.status} />
+        <StatusBadge status={preem.status ?? 'Open'} />
       </Table.Td>
       <Table.Td>
         <Group justify="flex-end">
@@ -110,7 +110,7 @@ export const ManageRace: React.FC<{ data: ManageRaceData }> = ({ data }) => {
             <Group gap="xs" mt="sm">
               <IconClock size={16} />
               <Text size="sm" c="dimmed">
-                Live for {formatDistanceToNow(new Date(race.startDate))}
+                Live for {formatDistanceToNow(new Date(race.startDate!))}
               </Text>
             </Group>
             <Group gap="xs" mt="xs">
@@ -149,7 +149,7 @@ export const ManageRace: React.FC<{ data: ManageRaceData }> = ({ data }) => {
         </Grid.Col>
       </Grid>
 
-      <ManageRaceContributionFeed race={race} />
+      <ManageRaceContributionFeed race={race} users={data.users} />
     </Stack>
   );
 };

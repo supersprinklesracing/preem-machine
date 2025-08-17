@@ -38,8 +38,8 @@ export default function Series({ data }: Props) {
       </Text>
       <Text c="dimmed">
         {series.region} |{' '}
-        {series.startDate ? format(new Date(series.startDate ?? ''), 'PP') : ''}{' '}
-        - {series.endDate ? format(new Date(series.endDate ?? ''), 'PP') : ''}
+        {series.startDate ? format(new Date(series.startDate!), 'PP') : ''} -{' '}
+        {series.endDate ? format(new Date(series.endDate!), 'PP') : ''}
       </Text>
       <Stack>
         <Group justify="space-between">
@@ -65,7 +65,7 @@ export default function Series({ data }: Props) {
           </Button>
         </Group>
         <SimpleGrid cols={{ base: 1, md: 2 }}>
-          {series.events.map((event) => (
+          {series.events!.map((event) => (
             <EventCard key={event.id} event={event} />
           ))}
         </SimpleGrid>

@@ -15,7 +15,7 @@ import { usePathname } from 'next/navigation';
 import React from 'react';
 
 interface SidebarData {
-  races: { id: string; name?: string }[];
+  events: { id: string; name?: string }[];
 }
 interface SidebarProps {
   data: SidebarData;
@@ -42,18 +42,18 @@ const Sidebar: React.FC<SidebarProps> = ({ data }) => {
           component={Link}
         />
         <NavLink
-          label="Race Management"
+          label="Event Management"
           leftSection={<IconBike size={18} />}
-          active={pathname.startsWith('/manage/race')}
+          active={pathname.startsWith('/manage/event')}
           defaultOpened
         >
-          {data.races.map((race) => (
+          {data.events.map((event) => (
             <NavLink
-              key={race.id}
-              href={`/manage/race/${race.id}`}
-              label={race.name}
+              key={event.id}
+              href={`/manage/event/${event.id}`}
+              label={event.name}
               leftSection={<Box w={18} />}
-              active={pathname === `/manage/race/${race.id}`}
+              active={pathname === `/manage/event/${event.id}`}
               component={Link}
             />
           ))}

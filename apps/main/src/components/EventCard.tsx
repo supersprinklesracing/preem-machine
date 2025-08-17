@@ -1,6 +1,6 @@
 'use client';
 
-import type { Event, Race } from '@/datastore/types';
+import { EventWithRaces } from '@/datastore/firestore';
 import {
   Button,
   Card,
@@ -22,7 +22,7 @@ import { format } from 'date-fns';
 import Link from 'next/link';
 
 export interface EventCardProps {
-  event: Event & { races: Race[] };
+  event: EventWithRaces;
 }
 
 export default function EventCard({ event }: EventCardProps) {
@@ -39,8 +39,8 @@ export default function EventCard({ event }: EventCardProps) {
   const totalContributors = new Set(
     (event.races ?? []).flatMap((r) =>
       (r.preems ?? []).flatMap((p) =>
-        (p.contributionHistory ?? [])
-          .map((c) => c.contributorBrief.id)
+        (p.contributions ?? [])
+          .map((c) => c.contributorBrief?.id)
           .filter(Boolean)
       )
     )
@@ -81,7 +81,7 @@ export default function EventCard({ event }: EventCardProps) {
           fullWidth={isCompact}
           rightSection={<IconChevronRight size={14} />}
         >
-          View Event
+          View event
         </Button>
       </Stack>
     </Card>

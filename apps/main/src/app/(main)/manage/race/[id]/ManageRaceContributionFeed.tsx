@@ -15,31 +15,13 @@ export default function ManageRaceContributionFeed({
   race,
   users,
 }: LiveContributionsProps) {
-  const getContributor = (id: string | null) => {
-    if (!id)
-      return {
-        id: null,
-        name: 'Anonymous',
-        avatarUrl: 'https://placehold.co/40x40.png',
-      };
-    return (
-      users.find((u) => u.id === id) || {
-        id,
-        name: 'A Contributor',
-        avatarUrl: 'https://placehold.co/40x40.png',
-      }
-    );
-  };
-
   const liveContributions =
     race.preems
       ?.flatMap((p: PreemWithContributions) => p.contributions)
       .filter((p) => !!p) ?? [];
 
   const contributionRows = liveContributions.map((contribution) => {
-    const contributor = getContributor(
-      contribution?.contributorBrief?.id ?? null
-    );
+    const contributor = contribution.contributorBrief!;
     return (
       <Table.Tr key={contribution.id}>
         <Table.Td>
