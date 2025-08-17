@@ -1,8 +1,8 @@
-import Event from './Event';
+import ManageEvent from './ManageEvent';
 import { getRenderableEventDataForPage } from '@/datastore/firestore';
 import { notFound } from 'next/navigation';
 
-export default async function EventPage({
+export default async function ManageEventPage({
   params,
 }: {
   params: { orgId: string; eventId: string };
@@ -12,5 +12,5 @@ export default async function EventPage({
   if (!data) {
     notFound();
   }
-  return <Event data={data} />;
+  return <ManageEvent data={data} />;
 }
