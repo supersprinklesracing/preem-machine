@@ -1,5 +1,6 @@
 'use client';
 
+import { DeepClient, Event } from '@/datastore/types';
 import { Box, Divider, NavLink, Stack } from '@mantine/core';
 import {
   IconBike,
@@ -15,7 +16,7 @@ import { usePathname } from 'next/navigation';
 import React from 'react';
 
 interface SidebarData {
-  events: { id: string; name?: string }[];
+  events: DeepClient<Event>[];
 }
 interface SidebarProps {
   data: SidebarData;
@@ -23,6 +24,7 @@ interface SidebarProps {
 
 const Sidebar: React.FC<SidebarProps> = ({ data }) => {
   const pathname = usePathname();
+  const primaryOrgId = data.events[0]?.seriesBrief?.organizationBrief?.id;
 
   return (
     <Stack justify="space-between" style={{ height: '100%' }}>
@@ -35,28 +37,33 @@ const Sidebar: React.FC<SidebarProps> = ({ data }) => {
           component={Link}
         />
         <NavLink
-          href="/manage"
+          href={primaryOrgId ? `/manage/${primaryOrgId}` : '/'}
           label="Event Hub"
           leftSection={<IconCrown size={18} />}
-          active={pathname === '/manage'}
+          active={pathname.startsWith('/manage')}
           component={Link}
         />
         <NavLink
           label="Event Management"
           leftSection={<IconBike size={18} />}
-          active={pathname.startsWith('/manage/event')}
+          active={pathname.startsWith('/manage')}
           defaultOpened
         >
-          {data.events.map((event) => (
-            <NavLink
-              key={event.id}
-              href={`/manage/event/${event.id}`}
-              label={event.name}
-              leftSection={<Box w={18} />}
-              active={pathname === `/manage/event/${event.id}`}
-              component={Link}
-            />
-          ))}
+          {data.events.map((event) => {
+            const orgId = event.seriesBrief?.organizationBrief?.id;
+            if (!orgId) return null;
+            const href = `/manage/${orgId}/event/${event.id}`;
+            return (
+              <NavLink
+                key={event.id}
+                href={href}
+                label={event.name}
+                leftSection={<Box w={18} />}
+                active={pathname === href}
+                component={Link}
+              />
+            );
+          })}
         </NavLink>
       </div>
       <div>
@@ -89,11 +96,12 @@ const Sidebar: React.FC<SidebarProps> = ({ data }) => {
               component={Link}
             />
             <NavLink
-              href="/manage/race/race-giro-sf-2025-masters-women"
+              href="/manage/org-super-sprinkles/event/event-giro-sf-2025/race/race-giro-sf-2025-masters-women"
               label="Manage Dash"
               leftSection={<IconDeviceTv size={18} />}
               active={
-                pathname === '/manage/race/race-giro-sf-2025-masters-women'
+                pathname ===
+                '/manage/org-super-sprinkles/event/event-giro-sf-2025/race/race-giro-sf-2025-masters-women'
               }
               component={Link}
             />
@@ -102,7 +110,8 @@ const Sidebar: React.FC<SidebarProps> = ({ data }) => {
               label="Preem"
               leftSection={<IconDeviceTv size={18} />}
               active={
-                pathname === '/preem/preem-giro-sf-2025-masters-women-first-lap'
+                pathname ===
+                '/preem/preem-giro-sf-2025-masters-women-first-lap'
               }
               component={Link}
             />
@@ -150,10 +159,10 @@ const Sidebar: React.FC<SidebarProps> = ({ data }) => {
               component={Link}
             />
             <NavLink
-              href="/manage"
+              href="/manage/org-super-sprinkles"
               label="Manage"
               leftSection={<IconDeviceTv size={18} />}
-              active={pathname === '/manage'}
+              active={pathname.startsWith('/manage')}
               component={Link}
             />
           </NavLink>

@@ -6,7 +6,7 @@ import { cache } from 'react';
 import type { AdminPageData } from '../app/(main)/admin/Admin';
 import type { EventPageData } from '../app/(main)/event/[id]/Event';
 import type { HomePageData } from '../app/(main)/Home';
-import type { ManagePageData } from '../app/(main)/manage/Manage';
+import type { ManagePageData } from '../app/(main)/manage/[orgId]/Manage';
 import type { OrganizationPageData } from '../app/(main)/organization/[id]/Organization';
 import type { PreemPageData } from '../app/(main)/preem/[id]/Preem';
 import type { RacePageData } from '../app/(main)/race/[id]/Race';
