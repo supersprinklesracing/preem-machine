@@ -3,6 +3,7 @@
   packages = [
     pkgs.nodejs_22
     pkgs.hostname-debian
+    pkgs.gh
   ];
   idx.extensions = [
     "dbaeumer.vscode-eslint"
