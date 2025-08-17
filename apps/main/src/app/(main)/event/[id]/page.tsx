@@ -7,7 +7,7 @@ export default async function EventPage({
 }: {
   params: { id: string };
 }) {
-  const data = await getRenderableEventDataForPage(params.id);
+  const data = await getRenderableEventDataForPage((await params).id);
 
   if (!data) {
     notFound();

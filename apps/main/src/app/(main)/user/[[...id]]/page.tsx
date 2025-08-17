@@ -10,7 +10,7 @@ export default async function UserPage({
 }: {
   params: { id: string[] | undefined };
 }) {
-  const id = params.id?.[0];
+  const id = (await params).id?.[0];
   if (!id) {
     const authUser = await getUserFromCookies();
     redirect(authUser ? `/user/${authUser.uid}` : '/login?redirect=/user');

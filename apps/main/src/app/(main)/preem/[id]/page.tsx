@@ -7,7 +7,7 @@ export default async function PreemPage({
 }: {
   params: { id: string };
 }) {
-  const data = await getRenderablePreemDataForPage(params.id);
+  const data = await getRenderablePreemDataForPage((await params).id);
 
   if (!data) {
     notFound();

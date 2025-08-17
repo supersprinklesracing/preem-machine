@@ -7,7 +7,7 @@ export default async function OrganizationPage({
 }: {
   params: { id: string };
 }) {
-  const data = await getRenderableOrganizationDataForPage(params.id);
+  const data = await getRenderableOrganizationDataForPage((await params).id);
 
   if (!data) {
     notFound();

@@ -7,7 +7,7 @@ export default async function SeriesPage({
 }: {
   params: { id: string };
 }) {
-  const data = await getRenderableSeriesDataForPage(params.id);
+  const data = await getRenderableSeriesDataForPage((await params).id);
 
   if (!data) {
     notFound();
