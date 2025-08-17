@@ -4,9 +4,9 @@ import ManageRace from './ManageRace';
 export default async function ManageRacePage({
   params,
 }: {
-  params: { id: string };
+  params: { raceId: string; eventId: string; orgId: string };
 }) {
-  const data = await getRacePageDataWithUsers((await params).id);
+  const data = await getRacePageDataWithUsers((await params).raceId);
 
   if (!data) {
     return <div>Race not found</div>;
