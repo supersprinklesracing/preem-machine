@@ -20,27 +20,22 @@ import {
   IconUsers,
 } from '@tabler/icons-react';
 import { format } from 'date-fns';
+import type { Timestamp } from 'firebase-admin/firestore';
 import React from 'react';
-import type { Event, Race } from '../datastore/types';
+import type { Race, RecursiveReplace } from '../datastore/types';
 import StatusBadge from './status-badge';
 
 const LARGE_PREEM_THRESHOLD = 100;
 
 interface RaceCardProps {
-  race: Race;
-  event: Event;
+  race: RecursiveReplace<Partial<Race>, Timestamp, string>;
   children?: React.ReactNode;
   style?: React.CSSProperties;
 }
 
-const RaceCard: React.FC<RaceCardProps> = ({
-  race,
-  event,
-  children,
-  style,
-}) => {
-  const totalPrizePool = race.preems.reduce(
-    (sum, preem) => sum + preem.prizePool,
+const RaceCard: React.FC<RaceCardProps> = ({ race, children, style }) => {
+  const totalPrizePool = (race.preems ?? []).reduce(
+    (sum, preem) => sum + (preem.prizePool ?? 0),
     0
   );
   const theme = useMantineTheme();
@@ -51,11 +46,13 @@ const RaceCard: React.FC<RaceCardProps> = ({
     <>
       <Group gap="xs" wrap="nowrap">
         <IconCalendar size={16} style={{ flexShrink: 0 }} />
-        <Text size="sm">{format(new Date(event.startDate), 'PPP p')}</Text>
+        <Text size="sm">
+          {format(new Date(race.eventBrief?.startDate ?? ''), 'PPP p')}
+        </Text>
       </Group>
       <Group gap="xs" wrap="nowrap">
         <IconMapPin size={16} style={{ flexShrink: 0 }} />
-        <Text size="sm">{event.location}</Text>
+        <Text size="sm">{race.eventBrief?.location}</Text>
       </Group>
     </>
   );
@@ -85,7 +82,7 @@ const RaceCard: React.FC<RaceCardProps> = ({
                     >
                       {race.name}
                     </Title>
-                    <StatusBadge status={event.status} />
+                    <StatusBadge status={race.status} />
                   </Group>
                   <Text c="dimmed">
                     {race.category} - {race.gender}

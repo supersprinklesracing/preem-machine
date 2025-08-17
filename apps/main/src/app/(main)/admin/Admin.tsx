@@ -1,6 +1,7 @@
 'use client';
 
 import { useToast } from '@/app/shared/use-toast';
+import type { DeepClient, User } from '@/datastore/types';
 import {
   Box,
   Button,
@@ -14,12 +15,9 @@ import {
 } from '@mantine/core';
 import { IconSearch, IconUserCheck } from '@tabler/icons-react';
 import React, { useState } from 'react';
-import type { User } from '@/datastore/types';
-
-// --- Component-Specific Data Models ---
 
 export interface AdminPageData {
-  users: User[];
+  users: DeepClient<User>[];
 }
 
 interface Props {
@@ -31,7 +29,10 @@ const Admin: React.FC<Props> = ({ data }) => {
   const [search, setSearch] = useState('');
   const { toast } = useToast();
 
-  const handleImpersonate = (user: User) => {
+  const handleImpersonate = (user: DeepClient<User>) => {
+    if (!user.name) {
+      return;
+    }
     toast({
       title: 'Impersonation Started',
       description: `You are now viewing the app as ${user.name}.`,

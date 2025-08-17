@@ -3,7 +3,8 @@
 export const dynamic = 'force-dynamic';
 
 import AnimatedNumber from '@/components/animated-number';
-import type { Contribution, Race, User } from '@/datastore/types';
+import { RaceWithPreems } from '@/datastore/firestore';
+import type { Contribution, DeepClient, User } from '@/datastore/types';
 import {
   Avatar,
   Box,
@@ -19,47 +20,65 @@ import { IconArrowLeft } from '@tabler/icons-react';
 import Link from 'next/link';
 import React, { useEffect, useState } from 'react';
 
-const BigScreen: React.FC<{ initialRace: Race; users: User[] }> = ({
-  initialRace,
-  users,
-}) => {
-  const [race, setRace] = useState<Race | undefined>(initialRace);
+interface BigScreenProps {
+  initialRace: DeepClient<RaceWithPreems>;
+  users: User[];
+}
+
+const BigScreen: React.FC<BigScreenProps> = ({ initialRace, users }) => {
+  const [race, setRace] = useState<DeepClient<RaceWithPreems> | undefined>(
+    initialRace
+  );
   const [liveContributions, setLiveContributions] = useState<
-    (Contribution & { preemName: string })[]
+    (DeepClient<Contribution> & { preemName: string })[]
   >([]);
 
   useEffect(() => {
     if (!initialRace) return;
 
-    const allInitialContributions = initialRace.preems
-      .flatMap((p) =>
-        p.contributionHistory.map((c) => ({ ...c, preemName: p.name }))
-      )
-      .sort((a, b) => new Date(b.date).getTime() - new Date(a.date).getTime());
+    const allInitialContributions =
+      initialRace.preems
+        ?.flatMap((p) =>
+          p.contributions?.map((c) => ({ ...c, preemName: p.name ?? '' }))
+        )
+        .filter((c): c is NonNullable<typeof c> => !!c) ?? [];
+    allInitialContributions.sort((a, b) => {
+      if (!a || !b) {
+        return 0;
+      }
+      return new Date(b.date ?? 0).getTime() - new Date(a.date ?? 0).getTime();
+    });
     setLiveContributions(allInitialContributions.slice(0, 5));
 
     const interval = setInterval(() => {
       setRace((prevRace) => {
         if (!prevRace) return undefined;
-        const newPreems = prevRace.preems.map((p) => {
+        const newPreems = prevRace.preems?.map((p) => {
           if (p.status !== 'Awarded' && Math.random() > 0.6) {
             const newAmount = Math.floor(Math.random() * 75) + 10;
-            const newContributorId =
-              users[Math.floor(Math.random() * users.length)].id;
-            const newContribution: Contribution = {
+            const randomUser = users[Math.floor(Math.random() * users.length)];
+            if (!randomUser) return p;
+            const newContribution: DeepClient<Contribution> = {
               id: `c-live-${Date.now()}`,
-              contributorId: newContributorId,
+              contributorBrief: {
+                id: randomUser.id,
+                name: randomUser.name,
+                avatarUrl: randomUser.avatarUrl,
+              },
               amount: newAmount,
               date: new Date().toISOString(),
               message: Math.random() > 0.4 ? 'For the win!' : 'Go go go!',
             };
             setLiveContributions((prev) =>
-              [{ ...newContribution, preemName: p.name }, ...prev].slice(0, 10)
+              [{ ...newContribution, preemName: p.name ?? '' }, ...prev].slice(
+                0,
+                10
+              )
             );
             return {
               ...p,
-              prizePool: p.prizePool + newAmount,
-              contributionHistory: [...p.contributionHistory, newContribution],
+              prizePool: (p.prizePool ?? 0) + newAmount,
+              contributions: [...(p.contributions ?? []), newContribution],
             };
           }
           return p;
@@ -71,18 +90,21 @@ const BigScreen: React.FC<{ initialRace: Race; users: User[] }> = ({
     return () => clearInterval(interval);
   }, [initialRace, users]);
 
-  const getContributor = (id: string | null) => {
-    if (!id)
+  const getContributor = (
+    contribution: DeepClient<Contribution>
+  ): { name: string; avatarUrl: string } => {
+    if (!contribution.contributorBrief?.id) {
       return {
         name: 'Anonymous',
         avatarUrl: 'https://placehold.co/100x100.png',
       };
-    return (
-      users.find((u) => u.id === id) || {
-        name: 'A Fan',
-        avatarUrl: 'https://placehold.co/100x100.png',
-      }
-    );
+    }
+    return {
+      name: contribution.contributorBrief.name ?? 'A Fan',
+      avatarUrl:
+        contribution.contributorBrief.avatarUrl ??
+        'https://placehold.co/100x100.png',
+    };
   };
 
   if (!race) {
@@ -90,11 +112,11 @@ const BigScreen: React.FC<{ initialRace: Race; users: User[] }> = ({
   }
 
   const nextPreem =
-    race.preems.find(
+    race.preems?.find(
       (p) => p.status === 'Minimum Met' || p.status === 'Open'
     ) ||
     race.preems
-      .filter((p) => p.timeLimit)
+      ?.filter((p) => p.timeLimit)
       .sort(
         (a, b) =>
           new Date(b.timeLimit ?? 0).getTime() -
@@ -119,12 +141,8 @@ const BigScreen: React.FC<{ initialRace: Race; users: User[] }> = ({
     );
   }
 
-  const sponsor = nextPreem.sponsorInfo
-    ? users.find((u) => u.id === nextPreem.sponsorInfo?.userId)
-    : null;
-
   const contributionCards = liveContributions.map((c) => {
-    const contributor = getContributor(c.contributorId);
+    const contributor = getContributor(c);
     return (
       <Card key={c.id} p="sm" radius="md" bg="dark.7">
         <Group>
@@ -238,12 +256,12 @@ const BigScreen: React.FC<{ initialRace: Race; users: User[] }> = ({
               c="yellow"
               ff="Space Grotesk, var(--mantine-font-family)"
             >
-              $<AnimatedNumber value={nextPreem.prizePool} />
+              $<AnimatedNumber value={nextPreem.prizePool ?? 0} />
             </Title>
             <Text size="1.2rem" c="dimmed" mt="xl">
               Sponsored by{' '}
               <Text span fw={700} c="white">
-                {sponsor ? sponsor.name : 'The Community'}
+                The Community
               </Text>
             </Text>
           </Card>

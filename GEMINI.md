@@ -10,6 +10,7 @@ The following commands are used to build, run, and test the project. Note that t
 - **Create a production bundle:** `npx nx --outputStyle=stream-without-prefixes build main`
 - **Run unit tests:** `npx nx --outputStyle=stream-without-prefixes test main --forceExit`
 - **Run end-to-end tests:** `npx nx --outputStyle=stream-without-prefixes e2e e2e-main`
+- **Build an the app (for testing and verifying):** nx build apps/main --outputPath=/tmp
 
 To see all available targets for the main application, run:
 

@@ -3,30 +3,18 @@
 import ThresholdAssistantModal from '@/components/ai/threshold-assistant-modal';
 import EventCard from '@/components/EventCard';
 import SeriesCard from '@/components/SeriesCard';
+import { EventWithRaces } from '@/datastore/firestore';
+import type { DeepClient, Series } from '@/datastore/types';
 import { Button, Group, SimpleGrid, Stack, Text, Title } from '@mantine/core';
 import { IconPlus, IconSparkles } from '@tabler/icons-react';
 import React, { useState } from 'react';
-import type {
-  RaceSeries,
-  Event,
-  Race,
-  Preem,
-  Contribution,
-} from '@/datastore/types';
 
-// --- Component-Specific Data Models ---
-
-type EnrichedEvent = Event & {
-  races: (Race & {
-    preems: (Preem & {
-      contributionHistory: Contribution[];
-    })[];
-  })[];
+type EnrichedEvent = DeepClient<EventWithRaces> & {
   totalCollected: number;
   totalContributors: number;
 };
 
-type EnrichedSeries = RaceSeries & { events: EnrichedEvent[] };
+type EnrichedSeries = Series & { events: EnrichedEvent[] };
 
 export interface ManagePageData {
   raceSeries: EnrichedSeries[];
@@ -84,7 +72,7 @@ const Manage: React.FC<Props> = ({ data }) => {
                 </Title>
                 <SimpleGrid cols={{ base: 1, md: 2 }}>
                   {upcomingEvents.map((event) => (
-                    <EventCard key={event.id} event={event} />
+                    <EventCard key={event.id} data={{ event }} />
                   ))}
                 </SimpleGrid>
               </section>
@@ -99,7 +87,7 @@ const Manage: React.FC<Props> = ({ data }) => {
                 </Title>
                 <SimpleGrid cols={{ base: 1, md: 2, lg: 3 }}>
                   {pastEvents.map((event) => (
-                    <EventCard key={event.id} event={event} />
+                    <EventCard key={event.id} data={{ event }} />
                   ))}
                 </SimpleGrid>
               </section>

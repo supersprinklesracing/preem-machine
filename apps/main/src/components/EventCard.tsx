@@ -1,6 +1,6 @@
 'use client';
 
-import type { EnrichedEvent } from '@/datastore/data-access';
+import type { Event, Race } from '@/datastore/types';
 import {
   Button,
   Card,
@@ -21,13 +21,30 @@ import {
 import { format } from 'date-fns';
 import Link from 'next/link';
 
-interface EventCardProps {
-  event: EnrichedEvent;
+export interface EventCardProps {
+  event: Event & { races: Race[] };
 }
 
 export default function EventCard({ event }: EventCardProps) {
   const theme = useMantineTheme();
   const isCompact = useMediaQuery(`(max-width: ${theme.breakpoints.sm})`);
+
+  const totalCollected = (event.races ?? []).reduce(
+    (sum, race) =>
+      sum +
+      (race.preems ?? []).reduce((pSum, p) => pSum + (p.prizePool ?? 0), 0),
+    0
+  );
+
+  const totalContributors = new Set(
+    (event.races ?? []).flatMap((r) =>
+      (r.preems ?? []).flatMap((p) =>
+        (p.contributionHistory ?? [])
+          .map((c) => c.contributorBrief.id)
+          .filter(Boolean)
+      )
+    )
+  ).size;
 
   return (
     <Card withBorder padding="lg" radius="md" style={{ height: '100%' }}>
@@ -38,18 +55,20 @@ export default function EventCard({ event }: EventCardProps) {
           </Title>
           <Group mt="md">
             <IconCalendar size={16} />
-            <Text size="sm">{format(new Date(event.startDate), 'PP')}</Text>
+            <Text size="sm">
+              {format(new Date(event.startDate ?? ''), 'PP')}
+            </Text>
           </Group>
           <Flex wrap="wrap" gap="md" mt="md">
             <Group>
               <IconCurrencyDollar size={16} />
               <Text size="sm" c="green" fw={600}>
-                ${event.totalCollected.toLocaleString()}
+                ${totalCollected.toLocaleString()}
               </Text>
             </Group>
             <Group>
               <IconUsers size={16} />
-              <Text size="sm">{event.totalContributors} Contributors</Text>
+              <Text size="sm">{totalContributors} Contributors</Text>
             </Group>
           </Flex>
         </div>

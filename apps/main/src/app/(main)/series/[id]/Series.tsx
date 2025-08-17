@@ -1,14 +1,8 @@
 'use client';
 
 import EventCard from '@/components/EventCard';
-import type {
-  Contribution as FirestoreContribution,
-  Event as FirestoreEvent,
-  Organization as FirestoreOrganization,
-  Preem as FirestorePreem,
-  Race as FirestoreRace,
-  RaceSeries as FirestoreRaceSeries,
-} from '@/datastore/types';
+import { SeriesWithEvents } from '@/datastore/firestore';
+import { DeepClient } from '@/datastore/types';
 import {
   Anchor,
   Button,
@@ -19,24 +13,11 @@ import {
   Title,
 } from '@mantine/core';
 import { IconPencil, IconWorldWww } from '@tabler/icons-react';
-import Link from 'next/link';
 import { format } from 'date-fns';
-
-// --- Component-Specific Data Models ---
-
-type EnrichedEvent = FirestoreEvent & {
-  races: (FirestoreRace & {
-    preems: (FirestorePreem & {
-      contributionHistory: FirestoreContribution[];
-    })[];
-  })[];
-  totalCollected: number;
-  totalContributors: number;
-};
+import Link from 'next/link';
 
 export interface SeriesPageData {
-  series: FirestoreRaceSeries & { events: EnrichedEvent[] };
-  organization: FirestoreOrganization;
+  series: DeepClient<SeriesWithEvents>;
 }
 
 interface Props {
@@ -44,20 +25,21 @@ interface Props {
 }
 
 export default function Series({ data }: Props) {
-  const { series, organization } = data;
+  const { series } = data;
+  const organization = series.organizationBrief;
   return (
     <Stack>
       <Title>{series.name}</Title>
       <Text>
         Hosted by{' '}
-        <Anchor component={Link} href={`/organization/${organization.id}`}>
-          {organization.name}
+        <Anchor component={Link} href={`/organization/${organization?.id}`}>
+          {organization?.name}
         </Anchor>
       </Text>
       <Text c="dimmed">
         {series.region} |{' '}
-        {series.startDate ? format(series.startDate.toDate(), 'PP') : ''} -{' '}
-        {series.endDate ? format(series.endDate.toDate(), 'PP') : ''}
+        {series.startDate ? format(new Date(series.startDate ?? ''), 'PP') : ''}{' '}
+        - {series.endDate ? format(new Date(series.endDate ?? ''), 'PP') : ''}
       </Text>
       <Stack>
         <Group justify="space-between">

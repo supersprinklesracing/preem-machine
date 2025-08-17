@@ -6,6 +6,16 @@
       "fields": [{ "fieldPath": "date", "order": "DESCENDING" }]
     },
     {
+      "collectionGroup": "contributions",
+      "queryScope": "COLLECTION_GROUP",
+      "fields": [{ "fieldPath": "contributorRef", "order": "ASCENDING" }]
+    },
+    {
+      "collectionGroup": "contributions",
+      "queryScope": "COLLECTION_GROUP",
+      "fields": [{ "fieldPath": "contributorBrief.id", "order": "ASCENDING" }]
+    },
+    {
       "collectionGroup": "events",
       "queryScope": "COLLECTION_GROUP",
       "fields": [{ "fieldPath": "id", "order": "ASCENDING" }]
@@ -21,8 +31,18 @@
       "fields": [{ "fieldPath": "id", "order": "ASCENDING" }]
     },
     {
+      "collectionGroup": "races",
+      "queryScope": "COLLECTION_GROUP",
+      "fields": [{ "fieldPath": "startDate", "order": "DESCENDING" }]
+    },
+    {
       "collectionGroup": "series",
       "queryScope": "COLLECTION_GROUP",
+      "fields": [{ "fieldPath": "id", "order": "ASCENDING" }]
+    },
+    {
+      "collectionGroup": "users",
+      "queryScope": "COLLECTION",
       "fields": [{ "fieldPath": "id", "order": "ASCENDING" }]
     }
   ],

@@ -1,51 +1,20 @@
 'use client';
 
-import type { Contribution, Race, User } from '@/datastore/types';
+import { PreemWithContributions, RaceWithPreems } from '@/datastore/firestore';
+import { DeepClient, User } from '@/datastore/types';
 import { Avatar, Button, Card, Group, Table, Text, Title } from '@mantine/core';
 import { formatDistanceToNow } from 'date-fns';
 import Link from 'next/link';
-import { useEffect, useState } from 'react';
-import { v4 as uuidv4 } from 'uuid';
 
 interface LiveContributionsProps {
-  race: Race;
-  users: User[];
+  race: RaceWithPreems;
+  users: DeepClient<User>[];
 }
 
 export default function ManageRaceContributionFeed({
   race,
   users,
 }: LiveContributionsProps) {
-  const [liveContributions, setLiveContributions] = useState<
-    (Contribution & { preemName: string; preemId: string })[]
-  >([]);
-
-  useEffect(() => {
-    // Simulate live updates
-    const interval = setInterval(() => {
-      race.preems.forEach((p) => {
-        if (p.status !== 'Awarded' && Math.random() > 0.7) {
-          const newAmount = Math.floor(Math.random() * 50) + 10;
-          const newContribution: Contribution = {
-            id: uuidv4(),
-            contributorId: users[Math.floor(Math.random() * users.length)].id,
-            amount: newAmount,
-            date: new Date().toISOString(),
-            message: Math.random() > 0.5 ? "Let's go!" : undefined,
-          };
-          setLiveContributions((prev) =>
-            [
-              { ...newContribution, preemName: p.name, preemId: p.id },
-              ...prev,
-            ].slice(0, 100)
-          );
-        }
-      });
-    }, 3000);
-
-    return () => clearInterval(interval);
-  }, [race, users]);
-
   const getContributor = (id: string | null) => {
     if (!id)
       return {
@@ -62,10 +31,17 @@ export default function ManageRaceContributionFeed({
     );
   };
 
-  const contributionRows = liveContributions.map((c) => {
-    const contributor = getContributor(c.contributorId);
+  const liveContributions =
+    race.preems
+      ?.flatMap((p: PreemWithContributions) => p.contributions)
+      .filter((p) => !!p) ?? [];
+
+  const contributionRows = liveContributions.map((contribution) => {
+    const contributor = getContributor(
+      contribution?.contributorBrief?.id ?? null
+    );
     return (
-      <Table.Tr key={c.id}>
+      <Table.Tr key={contribution.id}>
         <Table.Td>
           <Group>
             <Link href={contributor.id ? `/user/${contributor.id}` : '#'}>
@@ -87,26 +63,30 @@ export default function ManageRaceContributionFeed({
         </Table.Td>
         <Table.Td>
           <Text c="green" fw={600}>
-            ${c.amount}
+            ${contribution.amount}
           </Text>
         </Table.Td>
         <Table.Td>
           <Text
             component={Link}
-            href={`/preem/${c.preemId}`}
+            href={`/preem/${contribution.preemBrief?.id}`}
             style={{ textDecoration: 'none', color: 'inherit' }}
           >
-            {c.preemName}
+            {contribution.preemBrief?.name}
           </Text>
         </Table.Td>
         <Table.Td>
           <Text fs="italic" c="dimmed">
-            {c.message}
+            {contribution.message}
           </Text>
         </Table.Td>
         <Table.Td>
           <Text c="dimmed" size="xs">
-            {formatDistanceToNow(new Date(c.date), { addSuffix: true })}
+            {contribution.date
+              ? formatDistanceToNow(new Date(contribution.date), {
+                  addSuffix: true,
+                })
+              : ''}
           </Text>
         </Table.Td>
       </Table.Tr>

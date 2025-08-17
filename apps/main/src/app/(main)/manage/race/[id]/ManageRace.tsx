@@ -4,7 +4,7 @@ export const dynamic = 'force-dynamic';
 
 import AnimatedNumber from '@/components/animated-number';
 import StatusBadge from '@/components/status-badge';
-import type { Race, User } from '@/datastore/types';
+import type { DeepClient, Race, User } from '@/datastore/types';
 import {
   Button,
   Card,
@@ -26,13 +26,20 @@ import { formatDistanceToNow } from 'date-fns';
 import Link from 'next/link';
 import React, { useState } from 'react';
 
+import { RaceWithPreems } from '@/datastore/firestore';
 import ManageRaceContributionFeed from './ManageRaceContributionFeed';
 
-export const ManageRace: React.FC<{ initialRace: Race; users: User[] }> = ({
-  initialRace,
-  users,
-}) => {
-  const [race, setRace] = useState<Race | undefined>(initialRace);
+export interface ManageRaceData {
+  race: RaceWithPreems;
+  users: DeepClient<User>[];
+}
+
+export interface ManageRaceProps {
+  data: ManageRaceData;
+}
+
+export const ManageRace: React.FC<{ data: ManageRaceData }> = ({ data }) => {
+  const [race, setRace] = useState<DeepClient<Race> | undefined>(data.race);
 
   if (!race) {
     return <div>Race not found</div>;
@@ -142,7 +149,7 @@ export const ManageRace: React.FC<{ initialRace: Race; users: User[] }> = ({
         </Grid.Col>
       </Grid>
 
-      <ManageRaceContributionFeed race={race} users={users} />
+      <ManageRaceContributionFeed race={race} />
     </Stack>
   );
 };

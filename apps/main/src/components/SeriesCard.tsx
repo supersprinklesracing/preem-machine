@@ -1,6 +1,6 @@
 'use client';
 
-import type { RaceSeries } from '@/datastore/types';
+import type { Series } from '@/datastore/types';
 import {
   Button,
   Card,
@@ -17,7 +17,7 @@ import { format } from 'date-fns';
 import Link from 'next/link';
 
 interface SeriesCardProps {
-  series: RaceSeries;
+  series: Series;
 }
 
 export default function SeriesCard({ series }: SeriesCardProps) {
