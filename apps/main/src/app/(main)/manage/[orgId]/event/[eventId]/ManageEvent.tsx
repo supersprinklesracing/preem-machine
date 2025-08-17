@@ -16,14 +16,14 @@ import { IconPencil } from '@tabler/icons-react';
 import { format } from 'date-fns';
 import Link from 'next/link';
 
-export interface EventPageData {
+export interface ManageEventPageData {
   event: ClientCompat<EventWithRaces>;
 }
 interface Props {
-  data: EventPageData;
+  data: ManageEventPageData;
 }
 
-export default function Event({ data }: Props) {
+export default function ManageEvent({ data }: Props) {
   const { event } = data;
   const series = event.seriesBrief;
   const organization = series?.organizationBrief;
@@ -65,7 +65,16 @@ export default function Event({ data }: Props) {
         </Group>
         <SimpleGrid cols={{ base: 1, lg: 2 }}>
           {event.races?.map((race) => (
-            <RaceCard key={race.id} race={race} />
+            <RaceCard key={race.id} race={race}>
+              <Button
+                component={Link}
+                href={`/manage/${organization?.id}/event/${event.id}/race/${race.id}`}
+                fullWidth
+                mt="md"
+              >
+                Manage
+              </Button>
+            </RaceCard>
           ))}
         </SimpleGrid>
       </Stack>

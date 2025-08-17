@@ -4,7 +4,7 @@ import { getFirestore } from '@/firebase-admin';
 import type { firestore } from 'firebase-admin';
 import { cache } from 'react';
 import type { AdminPageData } from '../app/(main)/admin/Admin';
-import type { EventPageData } from '../app/(main)/event/[id]/Event';
+import type { ManageEventPageData } from '../app/(main)/manage/[orgId]/event/[eventId]/ManageEvent';
 import type { HomePageData } from '../app/(main)/Home';
 import type { ManagePageData } from '../app/(main)/manage/[orgId]/Manage';
 import type { OrganizationPageData } from '../app/(main)/organization/[id]/Organization';
@@ -305,7 +305,7 @@ export const getRenderableSeriesDataForPage = cache(
 );
 
 export const getRenderableEventDataForPage = cache(
-  async (id: string): Promise<EventPageData | undefined> => {
+  async (id: string): Promise<ManageEventPageData | undefined> => {
     const db = await getFirestore();
     const eventSnap = await db
       .collectionGroup('events')
@@ -320,7 +320,7 @@ export const getRenderableEventDataForPage = cache(
     const event = await getRacesForEvent(eventSnap.docs[0]);
 
     return {
-      event: event as unknown as EventPageData['event'],
+      event: event as unknown as ManageEventPageData['event'],
     };
   }
 );
