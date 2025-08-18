@@ -82,11 +82,11 @@ export interface Contribution {
   id: string;
   metadata?: Metadata;
 
+  contributor?: Partial<User>;
   amount?: number;
   date?: Timestamp;
   message?: string;
 
-  contributorBrief?: UserBrief;
   preemBrief?: PreemBrief;
 }
 
