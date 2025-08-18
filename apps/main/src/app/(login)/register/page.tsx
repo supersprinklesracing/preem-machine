@@ -1,5 +1,5 @@
-import { RegisterPage } from './RegisterPage';
+import { Register } from './Register';
 
-export default function Register() {
-  return <RegisterPage />;
+export default function RegisterPage() {
+  return <Register />;
 }
