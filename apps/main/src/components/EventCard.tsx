@@ -74,14 +74,14 @@ export default function EventCard({ event }: EventCardProps) {
         </div>
         <Button
           component={Link}
-          href={`/event/${event.id}`}
+          href={`/manage/${event.seriesBrief?.organizationBrief?.id}/event/${event.id}`}
           variant="light"
           size="sm"
           mt="md"
           fullWidth={isCompact}
           rightSection={<IconChevronRight size={14} />}
         >
-          View event
+          Manage event
         </Button>
       </Stack>
     </Card>
