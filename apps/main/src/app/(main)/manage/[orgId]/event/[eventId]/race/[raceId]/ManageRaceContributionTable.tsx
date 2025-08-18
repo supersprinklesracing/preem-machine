@@ -22,10 +22,10 @@ export default function ManageRaceContributionTable({
   const liveContributions =
     race.preems
       ?.flatMap((p: PreemWithContributions) => p.contributions || [])
-      .filter((c) => !!c?.contributorBrief) ?? [];
+      .filter((c) => !!c?.contributor) ?? [];
 
   const contributionRows = liveContributions.map((contribution) => {
-    const contributor = contribution.contributorBrief;
+    const contributor = contribution.contributor;
     return (
       <Table.Tr key={contribution.id}>
         <Table.Td>

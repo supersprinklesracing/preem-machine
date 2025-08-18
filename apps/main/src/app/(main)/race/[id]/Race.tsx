@@ -41,7 +41,7 @@ export const Race: React.FC<Props> = ({ data }) => {
   }
 
   const getSponsorName = (preem: PreemWithContributions) => {
-    const name = preem.contributions?.[0]?.contributorBrief?.name;
+    const name = preem.contributions?.[0]?.contributor?.name;
     if (preem.type === 'One-Shot' && name) {
       return name || 'A Sponsor';
     }
@@ -99,11 +99,11 @@ export const Race: React.FC<Props> = ({ data }) => {
   ));
 
   const contributionItems = allContributions.map((c) => {
-    const contributor = c.contributorBrief
+    const contributor = c.contributor
       ? {
-          id: c.contributorBrief.id,
-          name: c.contributorBrief.name,
-          avatarUrl: c.contributorBrief.avatarUrl,
+          id: c.contributor.id,
+          name: c.contributor.name,
+          avatarUrl: c.contributor.avatarUrl,
         }
       : {
           id: undefined,

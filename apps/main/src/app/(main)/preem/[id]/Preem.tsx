@@ -55,11 +55,11 @@ export const Preem: React.FC<Props> = ({ data }) => {
           <Table.Td>
             <Group>
               <Avatar
-                src={contribution.contributorBrief?.avatarUrl}
-                alt={contribution.contributorBrief?.name}
+                src={contribution.contributor?.avatarUrl}
+                alt={contribution.contributor?.name}
                 radius="xl"
               />
-              <Text fw={500}>{contribution.contributorBrief?.name}</Text>
+              <Text fw={500}>{contribution.contributor?.name}</Text>
             </Group>
           </Table.Td>
           <Table.Td>

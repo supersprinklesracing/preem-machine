@@ -64,7 +64,7 @@ const BigScreen: React.FC<BigScreenProps> = ({ data, users }) => {
             if (!randomUser) return p;
             const newContribution: ClientCompat<Contribution> = {
               id: `c-live-${Date.now()}-${Math.random()}`,
-              contributorBrief: {
+              contributor: {
                 id: randomUser.id,
                 name: randomUser.name,
                 avatarUrl: randomUser.avatarUrl,
@@ -97,16 +97,16 @@ const BigScreen: React.FC<BigScreenProps> = ({ data, users }) => {
   const getContributor = (
     contribution: ClientCompat<Contribution>
   ): { name: string; avatarUrl: string } => {
-    if (!contribution.contributorBrief?.id) {
+    if (!contribution.contributor?.id) {
       return {
         name: 'Anonymous',
         avatarUrl: 'https://placehold.co/100x100.png',
       };
     }
     return {
-      name: contribution.contributorBrief.name ?? 'A Fan',
+      name: contribution.contributor.name ?? 'A Fan',
       avatarUrl:
-        contribution.contributorBrief.avatarUrl ??
+        contribution.contributor.avatarUrl ??
         'https://placehold.co/100x100.png',
     };
   };

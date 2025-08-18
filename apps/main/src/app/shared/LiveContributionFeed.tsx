@@ -16,15 +16,13 @@ export default function LiveContributionFeed({
   data,
 }: LiveContributionFeedProps) {
   const contributionFeed = data.contributions.map((c) => {
-    const contributorBrief = c.contributorBrief;
+    const contributor = c.contributor;
     return (
       <Group key={c.id} wrap="nowrap">
-        <Link
-          href={contributorBrief?.id ? `/user/${contributorBrief?.id}` : '#'}
-        >
+        <Link href={contributor?.id ? `/user/${contributor?.id}` : '#'}>
           <Avatar
-            src={contributorBrief?.avatarUrl}
-            alt={contributorBrief?.name}
+            src={contributor?.avatarUrl}
+            alt={contributor?.name}
             radius="xl"
           />
         </Link>
@@ -32,11 +30,11 @@ export default function LiveContributionFeed({
           <Text size="sm">
             <Text
               component={Link}
-              href={contributorBrief?.id ? `/user/${contributorBrief.id}` : '#'}
+              href={contributor?.id ? `/user/${contributor.id}` : '#'}
               fw={600}
               style={{ textDecoration: 'none', color: 'inherit' }}
             >
-              {contributorBrief?.name}
+              {contributor?.name}
             </Text>{' '}
             -{' '}
             <Text span c="green" fw={600}>
