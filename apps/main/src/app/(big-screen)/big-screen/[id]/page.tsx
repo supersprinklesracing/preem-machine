@@ -1,16 +1,17 @@
+import { getRenderableRaceDataForPage, getUsers } from '@/datastore/firestore';
 import BigScreen from './BigScreen';
-import { getRacePageDataWithUsers } from '@/datastore/firestore';
 
 export default async function BigScreenPage({
   params,
 }: {
-  params: { id: string };
+  params: Promise<{ id: string }>;
 }) {
-  const data = await getRacePageDataWithUsers((await params).id);
+  const data = await getRenderableRaceDataForPage((await params).id);
+  const users = await getUsers();
 
   if (!data) {
     return <div>Race not found</div>;
   }
 
-  return <BigScreen initialRace={data.race} users={data.users} />;
+  return <BigScreen data={data} users={users} />;
 }

@@ -4,7 +4,7 @@ export const dynamic = 'force-dynamic';
 
 import AnimatedNumber from '@/components/animated-number';
 import { RaceWithPreems } from '@/datastore/firestore';
-import type { Contribution, ClientCompat, User } from '@/datastore/types';
+import type { ClientCompat, Contribution, User } from '@/datastore/types';
 import {
   Avatar,
   Box,
@@ -20,24 +20,28 @@ import { IconArrowLeft } from '@tabler/icons-react';
 import Link from 'next/link';
 import React, { useEffect, useState } from 'react';
 
+export interface BigScreenData {
+  race: ClientCompat<RaceWithPreems>;
+}
+
 interface BigScreenProps {
-  initialRace: ClientCompat<RaceWithPreems>;
+  data: BigScreenData;
   users: ClientCompat<User>[];
 }
 
-const BigScreen: React.FC<BigScreenProps> = ({ initialRace, users }) => {
+const BigScreen: React.FC<BigScreenProps> = ({ data, users }) => {
   const [race, setRace] = useState<ClientCompat<RaceWithPreems> | undefined>(
-    initialRace
+    data.race
   );
   const [liveContributions, setLiveContributions] = useState<
     (ClientCompat<Contribution> & { preemName: string })[]
   >([]);
 
   useEffect(() => {
-    if (!initialRace) return;
+    if (!data) return;
 
     const allInitialContributions =
-      initialRace.preems
+      data.race.preems
         ?.flatMap((p) =>
           p.contributions?.map((c) => ({ ...c, preemName: p.name ?? '' }))
         )
@@ -59,7 +63,7 @@ const BigScreen: React.FC<BigScreenProps> = ({ initialRace, users }) => {
             const randomUser = users[Math.floor(Math.random() * users.length)];
             if (!randomUser) return p;
             const newContribution: ClientCompat<Contribution> = {
-              id: `c-live-${Date.now()}`,
+              id: `c-live-${Date.now()}-${Math.random()}`,
               contributorBrief: {
                 id: randomUser.id,
                 name: randomUser.name,
@@ -88,7 +92,7 @@ const BigScreen: React.FC<BigScreenProps> = ({ initialRace, users }) => {
     }, 4000);
 
     return () => clearInterval(interval);
-  }, [initialRace, users]);
+  }, [data, users]);
 
   const getContributor = (
     contribution: ClientCompat<Contribution>
