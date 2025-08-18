@@ -1,8 +1,10 @@
-import { createContext, useContext } from 'react';
 import { UserInfo } from 'firebase/auth';
 import { Claims } from 'next-firebase-auth-edge/lib/auth/claims';
+import { createContext, useContext } from 'react';
 
-export interface User extends UserInfo {
+export interface AuthContextUser extends UserInfo {
+  id: string;
+
   idToken: string;
   customToken?: string;
   emailVerified: boolean;
@@ -10,11 +12,11 @@ export interface User extends UserInfo {
 }
 
 export interface AuthContextValue {
-  user: User | null;
+  authUser: AuthContextUser | null;
 }
 
 export const AuthContext = createContext<AuthContextValue>({
-  user: null,
+  authUser: null,
 });
 
 export const useAuth = () => useContext(AuthContext);

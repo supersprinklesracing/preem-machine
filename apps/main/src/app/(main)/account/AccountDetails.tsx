@@ -1,7 +1,7 @@
 'use client';
 
-import { checkEmailVerification, logout } from '@/auth';
 import { useAuth } from '@/auth/AuthContext';
+import { checkEmailVerification, logout } from '@/auth/client-util';
 import { getFirebaseAuth } from '@/firebase-client';
 import {
   Avatar,
@@ -21,7 +21,7 @@ import { useLoadingCallback } from 'react-loading-hook';
 
 export function AccountDetails() {
   const router = useRouter();
-  const { user } = useAuth();
+  const { authUser } = useAuth();
   const [hasLoggedOut, setHasLoggedOut] = React.useState(false);
   const [handleLogout, isLogoutLoading] = useLoadingCallback(async () => {
     const auth = getFirebaseAuth();
@@ -38,7 +38,7 @@ export function AccountDetails() {
     router.refresh();
   });
 
-  if (!user) {
+  if (!authUser) {
     return null;
   }
 
@@ -48,11 +48,11 @@ export function AccountDetails() {
         <Stack>
           <Title order={3}>Account</Title>
           <Stack align="center" gap="xs">
-            <Avatar src={user.photoURL} size="xl" radius="50%" />
-            <Title order={4}>{user.displayName}</Title>
+            <Avatar src={authUser.photoURL} size="xl" radius="50%" />
+            <Title order={4}>{authUser.displayName}</Title>
             <Group>
-              <Text c="dimmed">{user.email}</Text>
-              {user.emailVerified ? (
+              <Text c="dimmed">{authUser.email}</Text>
+              {authUser.emailVerified ? (
                 <Badge color="green">Email verified</Badge>
               ) : (
                 <Badge color="red">Not verified</Badge>
@@ -60,17 +60,17 @@ export function AccountDetails() {
             </Group>
           </Stack>
 
-          <Button component={Link} href={`/user/${user.uid}`}>
+          <Button component={Link} href={`/user/${authUser.uid}`}>
             View My Public Profile
           </Button>
 
-          {!!user.customClaims.admin && (
+          {!!authUser.customClaims.admin && (
             <Button component={Link} href="/admin">
               Admin
             </Button>
           )}
 
-          {!user.emailVerified && (
+          {!authUser.emailVerified && (
             <Button
               loading={isReCheckLoading}
               disabled={isReCheckLoading}

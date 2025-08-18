@@ -1,7 +1,7 @@
 'use client';
 
 import { useAuth } from '@/auth/AuthContext';
-import type { Contribution, ClientCompat, User } from '@/datastore/types';
+import type { ClientCompat, Contribution, User } from '@/datastore/types';
 import {
   Avatar,
   Button,
@@ -29,7 +29,7 @@ interface Props {
 
 const User: React.FC<Props> = ({ data }) => {
   const { user, contributions } = data;
-  const { user: authUser } = useAuth();
+  const { authUser } = useAuth();
   const isOwnProfile = authUser?.uid === user.id;
 
   const totalContributed = contributions.reduce(

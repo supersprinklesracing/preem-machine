@@ -2,8 +2,8 @@ import { authConfigFn } from '@/firebase-admin/config';
 import { getFirebaseAuth } from 'next-firebase-auth-edge/lib/auth';
 import { getTokens } from 'next-firebase-auth-edge/lib/next/tokens';
 import { cookies } from 'next/headers';
-import { User } from './AuthContext';
-import { toUser } from './user';
+import { AuthContextUser } from './AuthContext';
+import { toAuthContextUser } from './user';
 
 export class AuthError extends Error {
   status: number;
@@ -14,7 +14,9 @@ export class AuthError extends Error {
   }
 }
 
-export async function verifyUserRole(requiredRole: string): Promise<User> {
+export async function verifyUserRole(
+  requiredRole: string
+): Promise<AuthContextUser> {
   const authConfig = await authConfigFn();
   const tokens = await getTokens(await cookies(), authConfig);
 
@@ -27,13 +29,13 @@ export async function verifyUserRole(requiredRole: string): Promise<User> {
     apiKey: authConfig.apiKey,
   });
 
-  const user = await getUser(tokens.decodedToken.uid);
+  const userRecord = await getUser(tokens.decodedToken.uid);
 
-  if (!user) {
+  if (!userRecord) {
     throw new AuthError('User not found.', 404);
   }
 
-  const roles = user.customClaims?.role;
+  const roles = userRecord.customClaims?.role;
 
   if (!Array.isArray(roles) || !roles.includes(requiredRole)) {
     throw new AuthError(
@@ -42,5 +44,5 @@ export async function verifyUserRole(requiredRole: string): Promise<User> {
     );
   }
 
-  return toUser(tokens);
+  return toAuthContextUser(tokens);
 }
