@@ -1,4 +1,4 @@
-import { User } from '@/auth/AuthContext';
+import { AuthContextUser } from '@/auth/AuthContext';
 import { AuthProvider } from '@/auth/AuthProvider';
 import { MantineProvider } from '@mantine/core';
 import { render, RenderOptions } from '@testing-library/react';
@@ -7,25 +7,29 @@ import { theme } from './app/theme';
 
 const AllTheProviders = function AllTheProviders({
   children,
-  user,
+  authUser,
 }: {
   children: ReactNode;
-  user: User | null;
+  authUser: AuthContextUser | null;
 }) {
   return (
     <MantineProvider theme={theme}>
-      <AuthProvider user={user}>{children}</AuthProvider>
+      <AuthProvider authUser={authUser}>{children}</AuthProvider>
     </MantineProvider>
   );
 };
 
 const customRender = (
   ui: React.ReactElement,
-  options?: Omit<RenderOptions, 'wrapper'> & { user?: User | null }
+  options?: Omit<RenderOptions, 'wrapper'> & {
+    authUser?: AuthContextUser | null;
+  }
 ) => {
-  const { user, ...renderOptions } = options || {};
+  const { authUser, ...renderOptions } = options || {};
   return render(ui, {
-    wrapper: (props) => <AllTheProviders {...props} user={user ?? null} />,
+    wrapper: (props) => (
+      <AllTheProviders {...props} authUser={authUser ?? null} />
+    ),
     ...renderOptions,
   });
 };

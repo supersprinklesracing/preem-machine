@@ -18,7 +18,7 @@ export interface AccountDebugProps {
 
 export function AccountDebug({ count, incrementCounter }: AccountDebugProps) {
   const router = useRouter();
-  const { user } = useAuth();
+  const { authUser } = useAuth();
 
   const [handleClaims, isClaimsLoading] = useLoadingCallback(async () => {
     const headers: Record<string, string> = {};
@@ -68,12 +68,12 @@ export function AccountDebug({ count, incrementCounter }: AccountDebugProps) {
 
   const [handleIncrementCounterClient, isIncrementCounterClientLoading] =
     useLoadingCallback(async () => {
-      if (!user) {
+      if (!authUser) {
         return;
       }
 
-      if (user.customToken) {
-        await incrementCounterUsingClientFirestore(user.customToken);
+      if (authUser.customToken) {
+        await incrementCounterUsingClientFirestore(authUser.customToken);
       } else {
         console.warn(
           'Custom token is not present. Have you set `enableCustomToken` option to `true` in `authMiddleware`?'
@@ -89,7 +89,7 @@ export function AccountDebug({ count, incrementCounter }: AccountDebugProps) {
   const [isRefreshCookiesActionPending, startRefreshCookiesTransition] =
     React.useTransition();
 
-  if (!user) {
+  if (!authUser) {
     return null;
   }
 
@@ -103,7 +103,7 @@ export function AccountDebug({ count, incrementCounter }: AccountDebugProps) {
       <Stack>
         <Title order={3}>Debug Panel</Title>
         <Title order={5}>Custom claims</Title>
-        <pre>{JSON.stringify(user.customClaims, undefined, 2)}</pre>
+        <pre>{JSON.stringify(authUser.customClaims, undefined, 2)}</pre>
         <Button
           loading={isClaimsLoading}
           disabled={isClaimsLoading}

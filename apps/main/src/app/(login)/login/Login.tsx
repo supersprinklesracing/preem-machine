@@ -1,5 +1,10 @@
 'use client';
 
+import { appendRedirectParam } from '@/app/shared/redirect';
+import { useRedirectAfterLogin } from '@/app/shared/useRedirectAfterLogin';
+import { useRedirectParam } from '@/app/shared/useRedirectParam';
+import { loginWithCredential } from '@/auth/client-util';
+import { getFirebaseAuth } from '@/firebase-client';
 import {
   Anchor,
   Button,
@@ -24,11 +29,6 @@ import {
 import Link from 'next/link';
 import * as React from 'react';
 import { useLoadingCallback } from 'react-loading-hook';
-import { loginWithCredential } from '@/auth';
-import { getFirebaseAuth } from '@/firebase-client';
-import { appendRedirectParam } from '@/app/shared/redirect';
-import { useRedirectAfterLogin } from '@/app/shared/useRedirectAfterLogin';
-import { useRedirectParam } from '@/app/shared/useRedirectParam';
 import {
   getGoogleProvider,
   loginWithProvider,

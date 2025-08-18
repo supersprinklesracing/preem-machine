@@ -1,21 +1,21 @@
 'use client';
 
-import * as React from 'react';
-import { AuthContext, User } from './AuthContext';
+import { FunctionComponent, ReactNode } from 'react';
+import { AuthContext, AuthContextUser } from './AuthContext';
 
 export interface AuthProviderProps {
-  user: User | null;
-  children: React.ReactNode;
+  authUser: AuthContextUser | null;
+  children: ReactNode;
 }
 
-export const AuthProvider: React.FunctionComponent<AuthProviderProps> = ({
-  user,
+export const AuthProvider: FunctionComponent<AuthProviderProps> = ({
+  authUser,
   children,
 }) => {
   return (
     <AuthContext.Provider
       value={{
-        user,
+        authUser,
       }}
     >
       {children}

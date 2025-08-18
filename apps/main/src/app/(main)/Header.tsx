@@ -1,13 +1,13 @@
 'use server';
 
-import 'server-only';
-import { getUserFromCookies } from '@/auth/user';
+import { getAuthUserFromCookies } from '@/auth/user';
 import { ActionIcon, Avatar, Group } from '@mantine/core';
 import { IconBell, IconSearch } from '@tabler/icons-react';
 import Link from 'next/link';
+import 'server-only';
 
 export default async function Header() {
-  const user = await getUserFromCookies();
+  const authUser = await getAuthUserFromCookies();
 
   return (
     <Group>
@@ -17,11 +17,11 @@ export default async function Header() {
       <ActionIcon variant="outline" size="lg" radius="xl">
         <IconBell size={18} />
       </ActionIcon>
-      {user && (
+      {authUser && (
         <Link href="/account">
           <Avatar
-            src={user.photoURL ?? 'https://placehold.co/40x40.png'}
-            alt={user.displayName ?? 'User'}
+            src={authUser.photoURL ?? 'https://placehold.co/40x40.png'}
+            alt={authUser.displayName ?? 'User'}
             radius="xl"
           />
         </Link>

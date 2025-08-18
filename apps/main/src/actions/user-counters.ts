@@ -1,24 +1,24 @@
 'use server';
 
-import { getUserFromCookies } from '@/auth/user';
+import { getAuthUserFromCookies } from '@/auth/user';
 import { getFirestore } from '@/firebase-admin/firebase-admin';
 import { revalidatePath } from 'next/cache';
 
 export async function incrementCounter() {
-  const user = await getUserFromCookies();
+  const authUser = await getAuthUserFromCookies();
 
-  if (!user) {
+  if (!authUser) {
     throw new Error('Cannot update counter of unauthenticated user');
   }
 
   const db = await getFirestore();
-  const snapshot = await db.collection('user-counters').doc(user.uid).get();
+  const snapshot = await db.collection('user-counters').doc(authUser.uid).get();
 
   const currentUserCounter = snapshot.data();
 
   if (!snapshot.exists || !currentUserCounter) {
     const userCounter = {
-      id: user.uid,
+      id: authUser.uid,
       count: 1,
     };
 

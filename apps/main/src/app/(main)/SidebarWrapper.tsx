@@ -1,11 +1,11 @@
 'use server-only';
 
-import { getUserFromCookies } from '@/auth/user';
+import { getAuthUserFromCookies } from '@/auth/user';
 import { getEventsForUser } from '@/datastore/firestore';
 import Sidebar from './Sidebar';
 
 export default async function SidebarWrapper() {
-  const authUser = await getUserFromCookies();
+  const authUser = await getAuthUserFromCookies();
   if (!authUser) {
     return <Sidebar data={{ events: [] }} />;
   }

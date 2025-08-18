@@ -1,5 +1,10 @@
 'use client';
 
+import { appendRedirectParam } from '@/app/shared/redirect';
+import { useRedirectAfterLogin } from '@/app/shared/useRedirectAfterLogin';
+import { useRedirectParam } from '@/app/shared/useRedirectParam';
+import { loginWithCredential } from '@/auth/client-util';
+import { getFirebaseAuth } from '@/firebase-client';
 import {
   Button,
   Group,
@@ -17,11 +22,6 @@ import {
 import Link from 'next/link';
 import * as React from 'react';
 import { useLoadingCallback } from 'react-loading-hook';
-import { getFirebaseAuth } from '@/firebase-client';
-import { appendRedirectParam } from '@/app/shared/redirect';
-import { useRedirectAfterLogin } from '@/app/shared/useRedirectAfterLogin';
-import { useRedirectParam } from '@/app/shared/useRedirectParam';
-import { loginWithCredential } from '@/auth';
 
 export function RegisterPage() {
   const [hasLogged, setHasLogged] = React.useState(false);
