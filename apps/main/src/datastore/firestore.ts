@@ -4,8 +4,8 @@ import { getFirestore } from '@/firebase-admin';
 import type { firestore } from 'firebase-admin';
 import { cache } from 'react';
 import type { AdminPageData } from '../app/(main)/admin/Admin';
-import type { ManageEventPageData } from '../app/(main)/manage/[orgId]/event/[eventId]/ManageEvent';
 import type { HomePageData } from '../app/(main)/Home';
+import type { ManageEventPageData } from '../app/(main)/manage/[orgId]/event/[eventId]/ManageEvent';
 import type { ManagePageData } from '../app/(main)/manage/[orgId]/Manage';
 import type { OrganizationPageData } from '../app/(main)/organization/[id]/Organization';
 import type { PreemPageData } from '../app/(main)/preem/[id]/Preem';
@@ -14,8 +14,8 @@ import type { SeriesPageData } from '../app/(main)/series/[id]/Series';
 import type { UserPageData } from '../app/(main)/user/[[...id]]/User';
 import { genericConverter } from './converters';
 import type {
-  Contribution,
   ClientCompat,
+  Contribution,
   Event,
   Organization,
   Preem,
@@ -434,6 +434,7 @@ export const getRenderableAdminDataForPage = cache(
 );
 
 export const anonymousUser = () => ({
+  id: undefined,
   name: 'Anonymous',
   avatarUrl: 'https://placehold.co/100x100.png',
 });
