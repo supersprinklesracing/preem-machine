@@ -1,13 +1,14 @@
 'use client';
 
-import RaceCard from '@/components/RaceCard';
-import type { Contribution, ClientCompat, Race } from '@/datastore/types';
-import { Button, Flex, Grid, Stack, Title } from '@mantine/core';
+import { EventWithRaces } from '@/datastore/firestore';
+import type { ClientCompat, Contribution } from '@/datastore/types';
+import { Card, Grid, Stack, Text, Title } from '@mantine/core';
+import { format } from 'date-fns';
 import Link from 'next/link';
 import LiveContributionFeed from '../shared/LiveContributionFeed';
 
 export interface HomePageData {
-  recentRaces: ClientCompat<Race>[];
+  upcomingEvents: ClientCompat<EventWithRaces>[];
   contributions: ClientCompat<Contribution>[];
 }
 
@@ -16,36 +17,58 @@ interface Props {
 }
 
 export default function Home({ data }: Props) {
-  const { recentRaces, contributions: contributions } = data;
+  const { upcomingEvents, contributions: contributions } = data;
   return (
     <Stack>
       <Title order={1} ff="Space Grotesk, var(--mantine-font-family)">
-        Upcoming Races
+        Upcoming Events
       </Title>
       <Grid>
         <Grid.Col span={{ base: 12, lg: 8 }}>
           <Stack>
-            {recentRaces.map((race) => (
-              <RaceCard key={race.id} race={race}>
-                <Flex mt="md" gap="md" wrap="wrap">
-                  <Button
-                    component={Link}
-                    href={`/race/${race.id}`}
-                    variant="outline"
-                    style={{ flexGrow: 1, minWidth: '120px' }}
+            {upcomingEvents.map((event) => (
+              <Card
+                key={event.id}
+                shadow="sm"
+                padding="lg"
+                radius="md"
+                withBorder
+              >
+                <Stack>
+                  <Link
+                    href={`/event/${event.id}`}
+                    style={{ textDecoration: 'none', color: 'inherit' }}
                   >
-                    Contribute
-                  </Button>
-                  <Button
-                    component={Link}
-                    href={`/race/${race.id}`}
-                    variant="default"
-                    style={{ flexGrow: 1, minWidth: '120px' }}
-                  >
-                    View Race
-                  </Button>
-                </Flex>
-              </RaceCard>
+                    <Stack gap="sm">
+                      <Text size="lg" fw={500}>
+                        {event.name}
+                      </Text>
+                      <Text size="sm" c="dimmed">
+                        {format(new Date(event.startDate!), 'PPP')}
+                      </Text>
+                      <Text size="sm" c="dimmed">
+                        {event.location}
+                      </Text>
+                    </Stack>
+                  </Link>
+                  {event.races && event.races.length > 0 && (
+                    <Stack gap="xs" mt="md">
+                      {event.races.map((race) => (
+                        <Link
+                          key={race.id}
+                          href={`/race/${race.id}`}
+                          style={{ textDecoration: 'none', color: 'inherit' }}
+                        >
+                          <Text size="sm">
+                            {format(new Date(race.startDate!), 'p')} -{' '}
+                            {race.name} ({race.category})
+                          </Text>
+                        </Link>
+                      ))}
+                    </Stack>
+                  )}
+                </Stack>
+              </Card>
             ))}
           </Stack>
         </Grid.Col>
