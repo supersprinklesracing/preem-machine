@@ -9,6 +9,9 @@ const nextConfig = {
   nx: {
     svgr: false,
   },
+  experimental: {
+    authInterrupts: true,
+  },
   webpack: (config, { isServer, webpack }) => {
     // This rule uses null-loader to fix the "require.extensions" error.
     config.module.rules.push({
