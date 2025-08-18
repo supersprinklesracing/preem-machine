@@ -7,6 +7,7 @@ import { loginWithCredential } from '@/auth/client-util';
 import { getFirebaseAuth } from '@/firebase-client';
 import {
   Button,
+  Container,
   Group,
   Loader,
   PasswordInput,
@@ -23,7 +24,7 @@ import Link from 'next/link';
 import * as React from 'react';
 import { useLoadingCallback } from 'react-loading-hook';
 
-export function RegisterPage() {
+export function Register() {
   const [hasLogged, setHasLogged] = React.useState(false);
   const redirect = useRedirectParam();
   const redirectAfterLogin = useRedirectAfterLogin();
@@ -49,18 +50,24 @@ export function RegisterPage() {
       setHasLogged(true);
     });
 
-  return (
-    <Stack>
-      <Title order={1}>Register</Title>
-      {hasLogged && (
+  if (hasLogged) {
+    return (
+      <>
+        <Title order={1}>Register</Title>
         <Group>
           <Text>
             Redirecting to <strong>{redirect || '/'}</strong>
           </Text>
           <Loader />
         </Group>
-      )}
-      {!hasLogged && (
+      </>
+    );
+  }
+
+  return (
+    <Container size="md" pt="xl">
+      <Stack>
+        <Title order={1}>Register</Title>
         <form onSubmit={registerWithEmailAndPassword}>
           <Stack>
             <TextInput
@@ -97,7 +104,7 @@ export function RegisterPage() {
             </Button>
           </Stack>
         </form>
-      )}
-    </Stack>
+      </Stack>
+    </Container>
   );
 }

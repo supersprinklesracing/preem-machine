@@ -167,19 +167,26 @@ export function Login({
     emailLinkError ||
     googleUsingRedirectError;
 
-  return (
-    <Container size="xs" pt="xl">
-      <Stack>
-        <Title order={1}>Login</Title>
-        {hasLogged && (
+  if (hasLogged) {
+    return (
+      <Container size="xs" pt="xl">
+        <Stack>
+          <Title order={1}>Login</Title>
           <Group>
             <Text>
               Redirecting to <strong>{redirect || '/'}</strong>
             </Text>
             <Loader />
           </Group>
-        )}
-        {!hasLogged && (
+        </Stack>
+      </Container>
+    );
+  }
+  return (
+    <Container size="md" pt="xl">
+      <Stack>
+        <Title order={1}>Login</Title>
+        <Stack>
           <form onSubmit={handleLoginWithEmailAndPassword}>
             <Stack>
               <TextInput
@@ -198,15 +205,13 @@ export function Login({
                 placeholder="Password"
                 minLength={8}
               />
-              {!process.env.VERCEL && (
-                <Switch
-                  checked={shouldLoginWithAction}
-                  onChange={(event) =>
-                    setShouldLoginWithAction(event.currentTarget.checked)
-                  }
-                  label="Login with Server Action"
-                />
-              )}
+              <Switch
+                checked={shouldLoginWithAction}
+                onChange={(event) =>
+                  setShouldLoginWithAction(event.currentTarget.checked)
+                }
+                label="Login with Server Action"
+              />
               {error && <Text c="red">{error.message}</Text>}
               <Button
                 loading={isEmailLoading || isLoginActionPending}
@@ -215,45 +220,47 @@ export function Login({
               >
                 Submit
               </Button>
-              <Group>
-                <Anchor
-                  component={Link}
-                  href={appendRedirectParam('/reset-password', redirect)}
-                >
-                  Reset password
-                </Anchor>
-                <Button
-                  component={Link}
-                  href={appendRedirectParam('/register', redirect)}
-                  variant="outline"
-                >
-                  Register
-                </Button>
-                <Button
-                  loading={isGoogleLoading}
-                  disabled={isGoogleLoading}
-                  onClick={() => handleLoginWithGoogle()}
-                >
-                  Log in with Google (Popup)
-                </Button>
-                <Button
-                  loading={isGoogleUsingRedirectLoading}
-                  disabled={isGoogleUsingRedirectLoading}
-                  onClick={() => handleLoginWithGoogleUsingRedirect()}
-                >
-                  Log in with Google (Redirect)
-                </Button>
-                <Button
-                  loading={isEmailLinkLoading}
-                  disabled={isEmailLinkLoading}
-                  onClick={() => handleLoginWithEmailLink()}
-                >
-                  Log in with Email Link
-                </Button>
-              </Group>
             </Stack>
           </form>
-        )}
+          <Group pt="xl">
+            <Button
+              loading={isGoogleLoading}
+              disabled={isGoogleLoading}
+              onClick={() => handleLoginWithGoogle()}
+            >
+              Log in with Google (Popup)
+            </Button>
+            <Button
+              loading={isGoogleUsingRedirectLoading}
+              disabled={isGoogleUsingRedirectLoading}
+              onClick={() => handleLoginWithGoogleUsingRedirect()}
+            >
+              Log in with Google (Redirect)
+            </Button>
+            <Button
+              loading={isEmailLinkLoading}
+              disabled={isEmailLinkLoading}
+              onClick={() => handleLoginWithEmailLink()}
+            >
+              Log in with Email Link
+            </Button>
+          </Group>
+          <Group>
+            <Anchor
+              component={Link}
+              href={appendRedirectParam('/reset-password', redirect)}
+            >
+              Reset password
+            </Anchor>
+            <Button
+              component={Link}
+              href={appendRedirectParam('/register', redirect)}
+              variant="outline"
+            >
+              Register
+            </Button>
+          </Group>
+        </Stack>
       </Stack>
     </Container>
   );
