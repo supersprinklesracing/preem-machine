@@ -16,7 +16,6 @@ import {
   Title,
 } from '@mantine/core';
 import {
-  IconArrowLeft,
   IconAward,
   IconClock,
   IconDeviceTv,
@@ -26,8 +25,8 @@ import { formatDistanceToNow } from 'date-fns';
 import Link from 'next/link';
 import React, { useState } from 'react';
 
-import { RaceWithPreems } from '@/datastore/firestore';
-import ManageRaceContributionFeed from './ManageRaceContributionFeed';
+import type { RaceWithPreems } from '@/datastore/firestore';
+import ManageRaceContributionTable from './ManageRaceContributionTable';
 
 export interface ManageRaceData {
   race: RaceWithPreems;
@@ -88,23 +87,11 @@ export const ManageRace: React.FC<{ data: ManageRaceData }> = ({ data }) => {
 
   return (
     <Stack gap="lg">
-      <Button
-        component={Link}
-        href="/organizer"
-        variant="subtle"
-        leftSection={<IconArrowLeft size={16} />}
-      >
-        Back to Organizer Hub
-      </Button>
       <Grid gutter="lg">
         <Grid.Col span={{ base: 12, md: 4 }}>
           <Card withBorder padding="lg" radius="md">
             <Title order={3}>Race Control</Title>
-            <Title
-              order={2}
-              ff="Space Grotesk, var(--mantine-font-family)"
-              mt="sm"
-            >
+            <Title order={2} mt="sm">
               {race.name}
             </Title>
             <Group gap="xs" mt="sm">
@@ -149,7 +136,7 @@ export const ManageRace: React.FC<{ data: ManageRaceData }> = ({ data }) => {
         </Grid.Col>
       </Grid>
 
-      <ManageRaceContributionFeed race={race} users={data.users} />
+      <ManageRaceContributionTable race={race} users={data.users} />
     </Stack>
   );
 };

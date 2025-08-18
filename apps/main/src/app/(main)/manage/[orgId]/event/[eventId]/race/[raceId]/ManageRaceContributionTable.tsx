@@ -1,47 +1,35 @@
 'use client';
 
-import { PreemWithContributions, RaceWithPreems } from '@/datastore/firestore';
+import type {
+  PreemWithContributions,
+  RaceWithPreems,
+} from '@/datastore/firestore';
 import { ClientCompat, User } from '@/datastore/types';
-import { Avatar, Button, Card, Group, Table, Text, Title } from '@mantine/core';
+import { Button, Card, Group, Table, Text, Title } from '@mantine/core';
 import { formatDistanceToNow } from 'date-fns';
 import Link from 'next/link';
+import UserAvatar from './UserAvatar';
 
 interface LiveContributionsProps {
   race: RaceWithPreems;
   users: ClientCompat<User>[];
 }
 
-export default function ManageRaceContributionFeed({
+export default function ManageRaceContributionTable({
   race,
   users,
 }: LiveContributionsProps) {
   const liveContributions =
     race.preems
-      ?.flatMap((p: PreemWithContributions) => p.contributions)
-      .filter((p) => !!p) ?? [];
+      ?.flatMap((p: PreemWithContributions) => p.contributions || [])
+      .filter((c) => !!c?.contributorBrief) ?? [];
 
   const contributionRows = liveContributions.map((contribution) => {
-    const contributor = contribution.contributorBrief!;
+    const contributor = contribution.contributorBrief;
     return (
       <Table.Tr key={contribution.id}>
         <Table.Td>
-          <Group>
-            <Link href={contributor.id ? `/user/${contributor.id}` : '#'}>
-              <Avatar
-                src={contributor.avatarUrl}
-                alt={contributor.name}
-                radius="xl"
-              />
-            </Link>
-            <Text
-              component={Link}
-              href={contributor.id ? `/user/${contributor.id}` : '#'}
-              fw={500}
-              style={{ textDecoration: 'none', color: 'inherit' }}
-            >
-              {contributor.name}
-            </Text>
-          </Group>
+          <UserAvatar user={contributor} />
         </Table.Td>
         <Table.Td>
           <Text c="green" fw={600}>
