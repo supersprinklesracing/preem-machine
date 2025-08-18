@@ -46,13 +46,9 @@ const createMetadata = (firestore: Firestore, dateString: string): Metadata => {
 
 const postProcessDatabase = (db: DatabaseCollections): DatabaseCollections => {
   const organizations = db.organizations;
-  if (!organizations) return db;
-  const users = db.users as User[];
-  const usersMap = users.reduce((acc, user) => {
-    acc[user.id] = user;
-    return acc;
-  }, {} as Record<string, User>);
-
+  if (!organizations) {
+    return db;
+  }
   organizations.forEach((organization) => {
     const organizationBrief: OrganizationBrief = {
       id: organization.id,
@@ -114,19 +110,6 @@ const postProcessDatabase = (db: DatabaseCollections): DatabaseCollections => {
 
             contributions.forEach((contribution) => {
               contribution.preemBrief = preemBrief;
-              const contributorId = contribution.id;
-              if (contributorId) {
-                const contributor = usersMap[contributorId];
-                if (contributor) {
-                  contribution.contributorBrief = {
-                    id: contributor.id,
-                    name: contributor.name,
-                    avatarUrl: contributor.avatarUrl,
-                    preemBrief,
-                  };
-                }
-              }
-              delete contribution.contributorId;
             });
           });
         });
@@ -141,7 +124,7 @@ export const createMockDb = (firestore: Firestore): DatabaseCollections =>
   postProcessDatabase({
     users: [
       {
-        id: 'eygr7FzGzsb987AVm5uavrYTP7Q2',
+        id: 'BFGvWNXZoCWayJa0pNEL4bfhtUC3',
         name: 'Test User',
         email: 'test-user@example.com',
         avatarUrl: 'https://placehold.co/100x100.png',
@@ -256,7 +239,12 @@ export const createMockDb = (firestore: Firestore): DatabaseCollections =>
                                   contributions: [
                                     {
                                       id: 'contrib-1',
-                                      contributorId: 'some-user',
+                                      contributor: {
+                                        id: 'some-user',
+                                        name: 'Some User',
+                                        avatarUrl:
+                                          'https://placehold.co/100x100.png',
+                                      },
                                       amount: 100,
                                       date: getTimestampFromISODate(
                                         '2024-07-09T18:05:00Z'
@@ -288,7 +276,12 @@ export const createMockDb = (firestore: Firestore): DatabaseCollections =>
                                   contributions: [
                                     {
                                       id: 'contrib-2',
-                                      contributorId: 'user-alex-doe',
+                                      contributor: {
+                                        id: 'user-alex-doe',
+                                        name: 'Alex Doe',
+                                        avatarUrl:
+                                          'https://placehold.co/100x100.png',
+                                      },
                                       amount: 50,
                                       date: getTimestampFromISODate(
                                         '2024-07-09T18:10:00Z'
@@ -300,7 +293,12 @@ export const createMockDb = (firestore: Firestore): DatabaseCollections =>
                                     },
                                     {
                                       id: 'contrib-3',
-                                      contributorId: 'user-jane-smith',
+                                      contributor: {
+                                        id: 'user-jane-smith',
+                                        name: 'Jane Smith',
+                                        avatarUrl:
+                                          'https://placehold.co/100x100.png',
+                                      },
                                       amount: 75,
                                       date: getTimestampFromISODate(
                                         '2024-07-09T18:12:00Z'
@@ -324,7 +322,12 @@ export const createMockDb = (firestore: Firestore): DatabaseCollections =>
                                     },
                                     {
                                       id: 'contrib-5',
-                                      contributorId: 'user-alex-doe',
+                                      contributor: {
+                                        id: 'user-alex-doe',
+                                        name: 'Alex Doe',
+                                        avatarUrl:
+                                          'https://placehold.co/100x100.png',
+                                      },
                                       amount: 100,
                                       date: getTimestampFromISODate(
                                         '2024-07-09T18:20:00Z'
@@ -353,7 +356,12 @@ export const createMockDb = (firestore: Firestore): DatabaseCollections =>
                                   contributions: [
                                     {
                                       id: 'contrib-6',
-                                      contributorId: 'user-jane-smith',
+                                      contributor: {
+                                        id: 'user-jane-smith',
+                                        name: 'Jane Smith',
+                                        avatarUrl:
+                                          'https://placehold.co/100x100.png',
+                                      },
                                       amount: 75,
                                       date: getTimestampFromISODate(
                                         '2024-07-09T18:25:00Z'
