@@ -150,9 +150,9 @@ export const getEventsForOrganizations = cache(
 
     const eventsSnap = await db
       .collectionGroup('events')
-      // .where('seriesBrief.organizationBrief.id', 'in', organizationIds)
-      // .where('endDate', '>=', oneDayAgo)
-      // .orderBy('endDate', 'asc')
+      .where('seriesBrief.organizationBrief.id', 'in', organizationIds)
+      .where('endDate', '>=', oneDayAgo)
+      .orderBy('endDate', 'asc')
       .withConverter(genericConverter<Event>())
       .get();
     console.log(
