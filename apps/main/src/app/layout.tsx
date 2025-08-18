@@ -1,6 +1,8 @@
 'use server';
 
 import { getAuthUserFromCookies } from '@/auth/user';
+import { getUserById } from '@/datastore/firestore';
+import { CurrentUserProvider } from '@/datastore/user/UserProvider';
 import {
   ColorSchemeScript,
   MantineColorScheme,
@@ -18,6 +20,10 @@ export default async function RootLayout({
   children: React.ReactNode;
 }) {
   const authUser = await getAuthUserFromCookies();
+  const currentUser = authUser
+    ? (await getUserById(authUser.uid)) ?? null
+    : null;
+
   const colorScheme = ((await cookies()).get('mantine-color-scheme')?.value ||
     'dark') as MantineColorScheme;
 
@@ -34,9 +40,11 @@ export default async function RootLayout({
       </head>
       <body>
         <AuthProvider authUser={authUser}>
-          <MantineProvider theme={theme} defaultColorScheme={colorScheme}>
-            {children}
-          </MantineProvider>
+          <CurrentUserProvider currentUser={currentUser}>
+            <MantineProvider theme={theme} defaultColorScheme={colorScheme}>
+              {children}
+            </MantineProvider>
+          </CurrentUserProvider>
         </AuthProvider>
       </body>
     </html>
