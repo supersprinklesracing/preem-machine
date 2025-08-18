@@ -6,7 +6,11 @@
     "emitDeclarationOnly": false,
     "esModuleInterop": true,
     "resolveJsonModule": true,
-    "lib": ["dom", "dom.iterable", "esnext"],
+    "lib": [
+      "dom",
+      "dom.iterable",
+      "esnext"
+    ],
     "allowJs": true,
     "allowSyntheticDefaultImports": true,
     "forceConsistentCasingInFileNames": true,
@@ -17,24 +21,35 @@
       }
     ],
     "paths": {
-      "@/*": ["./src/*"]
+      "@/*": [
+        "./src/*"
+      ]
     },
-    "types": ["jest", "node"],
+    "types": [
+      "jest",
+      "node"
+    ],
     "outDir": "dist",
     "rootDir": "src",
     "tsBuildInfoFile": "dist/tsconfig.tsbuildinfo"
   },
   "include": [
     "../../apps/main/.next/types/**/*.ts",
+    "../../apps/main-verify/.next/types/**/*.ts",
     "../../dist/apps/main/.next/types/**/*.ts",
+    "../../dist/apps/main-verify/.next/types/**/*.ts",
+    ".next/types/**/*.ts",
     "next-env.d.ts",
     "src/**/*.js",
     "src/**/*.jsx",
     "src/**/*.ts",
-    "src/**/*.tsx",
-    ".next/types/**/*.ts"
+    "src/**/*.tsx"
   ],
   "exclude": [
+    "../../apps/main/.next/types/**/*.ts",
+    "../../apps/main-verify/.next/types/**/*.ts",
+    "../../dist/apps/main/.next/types/**/*.ts",
+    "../../dist/apps/main-verify/.next/types/**/*.ts",
     "out-tsc",
     "dist",
     "node_modules",
