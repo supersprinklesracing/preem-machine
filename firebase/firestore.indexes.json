@@ -13,7 +13,7 @@
     {
       "collectionGroup": "contributions",
       "queryScope": "COLLECTION_GROUP",
-      "fields": [{ "fieldPath": "contributorBrief.id", "order": "ASCENDING" }]
+      "fields": [{ "fieldPath": "contributor.id", "order": "ASCENDING" }]
     },
     {
       "collectionGroup": "events",

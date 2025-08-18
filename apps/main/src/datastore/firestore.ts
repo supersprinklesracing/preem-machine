@@ -231,7 +231,7 @@ export const getRacePageDataWithUsers = cache(
 
     const contributorIds =
       race.preems
-        ?.flatMap((p) => p.contributions?.map((c) => c.contributorBrief?.id))
+        ?.flatMap((p) => p.contributions?.map((c) => c.contributor?.id))
         .filter((id): id is string => !!id) ?? [];
 
     const uniqueUserIds = [...new Set(contributorIds)];
@@ -402,7 +402,7 @@ export const getRenderableUserDataForPage = cache(
 
     const contributionsSnap = await db
       .collectionGroup('contributions')
-      .where('contributorBrief.id', '==', id)
+      .where('contributor.id', '==', id)
       .withConverter(genericConverter<Contribution>())
       .get();
 

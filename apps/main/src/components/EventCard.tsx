@@ -39,9 +39,7 @@ export default function EventCard({ event }: EventCardProps) {
   const totalContributors = new Set(
     (event.races ?? []).flatMap((r) =>
       (r.preems ?? []).flatMap((p) =>
-        (p.contributions ?? [])
-          .map((c) => c.contributorBrief?.id)
-          .filter(Boolean)
+        (p.contributions ?? []).map((c) => c.contributor?.id).filter(Boolean)
       )
     )
   ).size;
