@@ -328,14 +328,15 @@ export const getRenderableEventDataForPage = cache(
 export const getRenderableHomeDataForPage = cache(
   async (): Promise<HomePageData> => {
     const db = await getFirestore();
-    const racesSnap = await db
-      .collectionGroup('races')
-      .orderBy('startDate', 'desc')
-      .limit(10)
-      .withConverter(genericConverter<Race>())
-      .get();
-    const recentRaces = racesSnap.docs.map((doc) => doc.data());
 
+    // Fetch upcoming events
+    const now = new Date();
+    const eventsSnap = await db
+      .collectionGroup('events')
+      .where('startDate', '>=', now)
+      .orderBy('startDate', 'asc')
+      .withConverter(genericConverter<Event>())
+      .get();
     const contributionsSnap = await db
       .collectionGroup('contributions')
       .withConverter(genericConverter<Contribution>())
@@ -380,10 +381,13 @@ export const getRenderableHomeDataForPage = cache(
       };
     });
 
+    const upcomingEvents = await Promise.all(
+      eventsSnap.docs.map(getRacesForEvent)
+    );
+
     return {
-      recentRaces: recentRaces as unknown as HomePageData['recentRaces'],
-      contributions:
-        recentContributions as unknown as HomePageData['contributions'],
+      upcomingEvents: upcomingEvents,
+      contributions: recentContributions,
     };
   }
 );
