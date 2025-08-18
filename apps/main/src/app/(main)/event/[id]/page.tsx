@@ -5,7 +5,7 @@ import Event from './Event';
 export default async function EventPage({
   params,
 }: {
-  params: { id: string };
+  params: Promise<{ id: string }>;
 }) {
   const data = await getRenderableEventDataForPage((await params).id);
 
