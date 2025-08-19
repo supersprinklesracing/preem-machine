@@ -10,6 +10,7 @@
 'use server-only';
 
 import type { DocumentReference, Timestamp } from 'firebase-admin/firestore';
+import type Stripe from 'stripe';
 
 type RecursiveReplace<T, X, Y> = T extends X
   ? Y // If T is the type we're looking for, replace it with Y.
@@ -75,8 +76,9 @@ export interface Organization {
   name?: string;
   website?: string;
   memberRefs?: DocumentReference<User>[];
-  stripe: {
+  stripe?: {
     connectAccountId?: string;
+    account?: Stripe.Account;
   };
 }
 

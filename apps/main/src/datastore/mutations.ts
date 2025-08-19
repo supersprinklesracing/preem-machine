@@ -4,6 +4,7 @@ import { AuthContextUser } from '@/auth/AuthContext';
 import { getFirestore } from '@/firebase-admin/firebase-admin';
 import { FieldValue } from 'firebase-admin/firestore';
 import { unauthorized } from 'next/navigation';
+import Stripe from 'stripe';
 import { getTimestampFromISODate } from '../firebase-admin/dates';
 import { isUserAuthorized } from './access';
 import type { Event, Organization, Series, User } from './types';
@@ -90,5 +91,39 @@ export const updateEvent = async (
     endDate: getTimestampFromISODate(event.endDate),
     'metadata.lastModified': FieldValue.serverTimestamp(),
     'metadata.lastModifiedBy': userRef,
+  });
+};
+
+export const updateOrganizationStripeConnectAccount = async (
+  organizationId: string,
+  account: Stripe.Account,
+  authUser: AuthContextUser
+) => {
+  const path = `organizations/${organizationId}`;
+  if (!(await isUserAuthorized(authUser, path))) {
+    unauthorized();
+  }
+
+  const db = await getFirestore();
+  const orgRef = db.doc(path);
+  const userRef = db.collection('users').doc(authUser.uid);
+  await orgRef.update({
+    'stripe.connectAccountId': account.id,
+    'stripe.account': account,
+    'metadata.lastModified': FieldValue.serverTimestamp(),
+    'metadata.lastModifiedBy': userRef,
+  });
+};
+
+export const updateOrganizationStripeConnectAccountForWebhook = async (
+  organizationId: string,
+  account: Stripe.Account
+) => {
+  const db = await getFirestore();
+  const orgRef = db.doc(`organizations/${organizationId}`);
+  await orgRef.update({
+    'stripe.connectAccountId': account.id,
+    'stripe.account': account,
+    'metadata.lastModified': FieldValue.serverTimestamp(),
   });
 };

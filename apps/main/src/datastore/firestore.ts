@@ -156,6 +156,25 @@ export const getEventById = cache(
   }
 );
 
+export const getOrganizationByStripeConnectAccountId = async (
+  accountId: string
+): Promise<
+  firestore.QueryDocumentSnapshot<ClientCompat<Organization>> | undefined
+> => {
+  const db = await getFirestore();
+  const orgsSnap = await db
+    .collection('organizations')
+    .where('stripe.connectAccountId', '==', accountId)
+    .withConverter(genericConverter<Organization>())
+    .limit(1)
+    .get();
+
+  if (orgsSnap.empty) {
+    return undefined;
+  }
+  return orgsSnap.docs[0];
+};
+
 export const getUsersByIds = cache(
   async (ids: string[]): Promise<ClientCompat<User>[]> => {
     const uniqueIds = [...new Set(ids)];

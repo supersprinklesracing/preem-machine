@@ -1,6 +1,6 @@
 'use server';
 
-import { getOrganizationById } from '@/datastore/firestore';
+import { getOrganizationAndRefreshStripeAccount } from '@/app/shared/data-access/organizations';
 import { notFound } from 'next/navigation';
 import { EditOrganization } from './EditOrganization';
 import { updateOrganizationAction } from './update-organization-action';
@@ -11,7 +11,9 @@ export default async function EditOrganizationPage({
   params: Promise<{ orgId: string }>;
 }) {
   const { orgId } = await params;
-  const organization = await getOrganizationById(orgId);
+  const { organization, error } = await getOrganizationAndRefreshStripeAccount(
+    orgId
+  );
 
   if (!organization) {
     notFound();
@@ -20,6 +22,7 @@ export default async function EditOrganizationPage({
   return (
     <EditOrganization
       organization={organization}
+      stripeError={error}
       updateOrganizationAction={updateOrganizationAction}
     />
   );
