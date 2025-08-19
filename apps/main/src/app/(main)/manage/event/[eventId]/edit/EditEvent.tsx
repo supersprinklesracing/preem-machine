@@ -1,7 +1,15 @@
 'use client';
 
 import type { ClientCompat, Event } from '@/datastore/types';
-import { Button, Card, Stack, Text, TextInput, Title } from '@mantine/core';
+import {
+  Button,
+  Card,
+  Group,
+  Stack,
+  Text,
+  TextInput,
+  Title,
+} from '@mantine/core';
 import { useForm } from '@mantine/form';
 import { useRouter } from 'next/navigation';
 import * as React from 'react';
@@ -73,13 +81,15 @@ export function EditEvent({
           />
           <TextInput label="Location" {...form.getInputProps('location')} />
           <TextInput label="Website" {...form.getInputProps('website')} />
-          <Button
-            onClick={() => handleSubmit(form.values)}
-            loading={isLoading}
-            disabled={!form.isValid()}
-          >
-            Save Changes
-          </Button>
+          <Group justify="right">
+            <Button
+              onClick={() => handleSubmit(form.values)}
+              loading={isLoading}
+              disabled={!form.isValid()}
+            >
+              Save Changes
+            </Button>
+          </Group>
           {submissionError && <Text c="red">{submissionError}</Text>}
         </Stack>
       </Card>
