@@ -1,6 +1,9 @@
 'use client';
 
 import { useAuth } from '@/auth/AuthContext';
+import UserProfileCard from '@/components/UpdateUserProfileCard';
+import type { FormValues } from '@/components/UserProfileFormFields';
+import FormFields from '@/components/UserProfileFormFields';
 import type { User } from '@/datastore/types';
 import {
   Box,
@@ -16,7 +19,6 @@ import { useForm } from '@mantine/form';
 import { useDebouncedValue } from '@mantine/hooks';
 import { redirect, useRouter } from 'next/navigation';
 import React, { useEffect, useState } from 'react';
-import FormFields, { FormValues } from './NewUserFormFields';
 import type { NewUserOptions } from './new-user-action';
 
 interface Props {
@@ -25,14 +27,13 @@ interface Props {
   ) => Promise<{ ok: boolean; error?: string }>;
 }
 
-import UserProfileCard from './NewUserProfileCard';
-
 const NewUser: React.FC<Props> = ({ newUserAction }: Props) => {
   const { authUser } = useAuth();
   const router = useRouter();
   const [isLoading, setIsLoading] = useState(false);
   const [submissionError, setSubmissionError] = useState<string | null>(null);
-  const [nameError, setDebouncedNameError] = useState<React.ReactNode>(null);
+  const [debouncedNameError, setDebouncedNameError] =
+    useState<React.ReactNode>(null);
 
   if (!authUser) {
     redirect('/login');
@@ -40,9 +41,9 @@ const NewUser: React.FC<Props> = ({ newUserAction }: Props) => {
 
   const form = useForm<FormValues>({
     initialValues: {
-      name: authUser.displayName ?? 'Your full name',
-      email: authUser.email ?? undefined,
-      avatarUrl: authUser.photoURL ?? undefined,
+      name: authUser.displayName ?? '',
+      email: authUser.email ?? '',
+      avatarUrl: authUser.photoURL ?? '',
       termsAccepted: true,
     },
     validateInputOnChange: false,
@@ -113,7 +114,7 @@ const NewUser: React.FC<Props> = ({ newUserAction }: Props) => {
               <UserProfileCard {...form.getValues()} name={debouncedName} />
 
               <Box display={{ base: 'block', lg: 'none' }} mt="md">
-                <FormFields form={form} nameError={nameError} />
+                <FormFields form={form} nameError={debouncedNameError} />
               </Box>
 
               <Checkbox
@@ -139,7 +140,7 @@ const NewUser: React.FC<Props> = ({ newUserAction }: Props) => {
             </Stack>
           </Grid.Col>
           <Grid.Col span={{ lg: 8 }} visibleFrom="lg">
-            <FormFields form={form} nameError={nameError} />
+            <FormFields form={form} nameError={debouncedNameError} />
           </Grid.Col>
         </Grid>
       </form>

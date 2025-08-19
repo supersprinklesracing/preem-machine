@@ -2,27 +2,99 @@
 
 import { useAuth } from '@/auth/AuthContext';
 import { checkEmailVerification, logout } from '@/auth/client-util';
+import UpdateUserProfileCard from '@/components/UpdateUserProfileCard';
+import type { FormValues } from '@/components/UserProfileFormFields';
+import UserProfileFormFields from '@/components/UserProfileFormFields';
+import type { User } from '@/datastore/types';
 import { getFirebaseAuth } from '@/firebase-client';
-import {
-  Avatar,
-  Badge,
-  Button,
-  Card,
-  Group,
-  Stack,
-  Text,
-  Title,
-} from '@mantine/core';
+import { Button, Card, SimpleGrid, Stack, Text, Title } from '@mantine/core';
+import { useForm } from '@mantine/form';
+import { useDebouncedValue } from '@mantine/hooks';
 import { signOut } from 'firebase/auth';
 import Link from 'next/link';
 import { useRouter } from 'next/navigation';
 import * as React from 'react';
 import { useLoadingCallback } from 'react-loading-hook';
+import { PreferencesPanel } from './PreferencesPanel';
+import { UpdateUserOptions } from './update-user-action';
 
-export function AccountDetails() {
+export function AccountDetails({
+  updateUserAction,
+}: {
+  updateUserAction: (
+    options: UpdateUserOptions
+  ) => Promise<{ ok: boolean; error?: string }>;
+}) {
   const router = useRouter();
   const { authUser } = useAuth();
   const [hasLoggedOut, setHasLoggedOut] = React.useState(false);
+  const [isLoading, setIsLoading] = React.useState(false);
+  const [submissionError, setSubmissionError] = React.useState<string | null>(
+    null
+  );
+  const [debouncedNameError, setDebouncedNameError] =
+    React.useState<React.ReactNode>(null);
+
+  const form = useForm<FormValues>({
+    initialValues: {
+      name: authUser?.displayName ?? '',
+      email: authUser?.email ?? '',
+      avatarUrl: authUser?.photoURL ?? '',
+      termsAccepted: true,
+    },
+    validateInputOnChange: false,
+    validate: {
+      name: (value) =>
+        !value || value.trim().length < 2
+          ? 'Name must have at least 2 letters'
+          : null,
+    },
+  });
+
+  const [debouncedName] = useDebouncedValue(form.values.name, 500);
+
+  React.useEffect(() => {
+    const result = form.validateField('name');
+    setDebouncedNameError(result.error);
+  }, [debouncedName, form]);
+
+  const handleSubmit = async (values: FormValues) => {
+    setIsLoading(true);
+    setSubmissionError(null);
+
+    const userUpdate: Partial<User> = {
+      name: values.name,
+      email: values.email,
+      avatarUrl: values.avatarUrl,
+    };
+
+    if (values.affiliation) {
+      userUpdate.affiliation = values.affiliation;
+    }
+    if (values.raceLicenseId) {
+      userUpdate.raceLicenseId = values.raceLicenseId;
+    }
+    if (values.address) {
+      userUpdate.address = values.address;
+    }
+
+    try {
+      const result = await updateUserAction({ user: userUpdate });
+      if (result.ok) {
+        router.refresh();
+      } else {
+        setSubmissionError(result.error || 'An unknown error occurred.');
+      }
+    } catch (error) {
+      console.error('Failed to save user data:', error);
+      setSubmissionError(
+        error instanceof Error ? error.message : 'An unknown error occurred.'
+      );
+    } finally {
+      setIsLoading(false);
+    }
+  };
+
   const [handleLogout, isLogoutLoading] = useLoadingCallback(async () => {
     const auth = getFirebaseAuth();
     await signOut(auth);
@@ -47,40 +119,53 @@ export function AccountDetails() {
       <Stack justify="space-between" style={{ height: '100%' }}>
         <Stack>
           <Title order={3}>Account</Title>
-          <Stack align="center" gap="xs">
-            <Avatar src={authUser.photoURL} size="xl" radius="50%" />
-            <Title order={4}>{authUser.displayName}</Title>
-            <Group>
-              <Text c="dimmed">{authUser.email}</Text>
-              {authUser.emailVerified ? (
-                <Badge color="green">Email verified</Badge>
-              ) : (
-                <Badge color="red">Not verified</Badge>
+          <SimpleGrid cols={{ base: 1, md: 2 }}>
+            <Stack>
+              <Button component={Link} href={`/user/${authUser.uid}`}>
+                View My Public Profile
+              </Button>
+              <UpdateUserProfileCard
+                name={debouncedName || authUser.displayName || 'Your full name'}
+                email={authUser.email ?? undefined}
+                avatarUrl={authUser.photoURL ?? undefined}
+              />
+              <Button
+                onClick={() => handleSubmit(form.values)}
+                loading={isLoading}
+                disabled={!form.isValid() || form.values.name !== debouncedName}
+              >
+                Save Changes
+              </Button>
+              {submissionError && (
+                <Text c="red" size="sm">
+                  {submissionError}
+                </Text>
               )}
-            </Group>
-          </Stack>
-
-          <Button component={Link} href={`/user/${authUser.uid}`}>
-            View My Public Profile
-          </Button>
-
-          {!!authUser.customClaims.admin && (
-            <Button component={Link} href="/admin">
-              Admin
-            </Button>
-          )}
-
-          {!authUser.emailVerified && (
-            <Button
-              loading={isReCheckLoading}
-              disabled={isReCheckLoading}
-              onClick={handleReCheck}
-              size="xs"
-              variant="outline"
-            >
-              Verify Email
-            </Button>
-          )}
+              {!!authUser.customClaims.admin && (
+                <Button component={Link} href="/admin">
+                  Admin
+                </Button>
+              )}
+              {!authUser.emailVerified && (
+                <Button
+                  loading={isReCheckLoading}
+                  disabled={isReCheckLoading}
+                  onClick={handleReCheck}
+                  size="xs"
+                  variant="outline"
+                >
+                  Verify Email
+                </Button>
+              )}
+            </Stack>
+            <Stack>
+              <UserProfileFormFields
+                form={form}
+                nameError={debouncedNameError}
+              />
+            </Stack>
+          </SimpleGrid>
+          <PreferencesPanel />
         </Stack>
 
         <Button
