@@ -83,11 +83,7 @@ const Sidebar: React.FC<SidebarProps> = ({ data }) => {
             leftSection={<IconDeviceTv size={18} />}
             defaultOpened
           >
-            <NavLink
-              href="/user/eygr7FzGzsb987AVm5uavrYTP7Q2"
-              label="User"
-              component={Link}
-            />
+            <NavLink href="/user" label="User" component={Link} />
             <NavLink
               href="/race/race-giro-sf-2025-masters-women"
               label="Race"
