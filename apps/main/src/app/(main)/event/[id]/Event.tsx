@@ -3,16 +3,7 @@
 import RaceCard from '@/components/RaceCard';
 import { EventWithRaces } from '@/datastore/firestore';
 import type { ClientCompat } from '@/datastore/types';
-import {
-  Anchor,
-  Button,
-  Group,
-  SimpleGrid,
-  Stack,
-  Text,
-  Title,
-} from '@mantine/core';
-import { IconPencil } from '@tabler/icons-react';
+import { Anchor, Group, SimpleGrid, Stack, Text, Title } from '@mantine/core';
 import { format } from 'date-fns';
 import Link from 'next/link';
 
@@ -55,13 +46,6 @@ export default function Event({ data }: Props) {
               Race Schedule
             </Title>
           </Stack>
-          <Button
-            variant="outline"
-            leftSection={<IconPencil size={14} />}
-            size="xs"
-          >
-            Edit Event
-          </Button>
         </Group>
         <SimpleGrid cols={{ base: 1, lg: 2 }}>
           {event.races?.map((race) => (
