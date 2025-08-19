@@ -243,6 +243,87 @@ All input to the Cloud Functions and Next.js API Routes **will** be validated us
 
 ---
 
+## 8. Stripe Connect & Webhooks Integration Plan
+
+This plan outlines the implementation of Stripe Connect for organizer onboarding and payouts. It uses a combination of API Routes and Server Actions for a secure and robust architecture, separates data-fetching logic for performance, and includes a webhook system for real-time data synchronization.
+
+---
+
+#### **Phase 1: Backend Foundation (Stripe SDK & API Routes)**
+
+1.  **Stripe SDK Initialization:**
+    *   **Action:** Create `apps/main/src/stripe/server.ts` to initialize a server-side instance of the Stripe Node.js SDK.
+
+2.  **Create Centralized User Retrieval for API Routes:**
+    *   **Action:** Add a new function, `getUserFromRequest(request: NextRequest)`, to `apps/main/src/auth/user.ts`.
+    *   **Logic:** This function will encapsulate the logic for getting user tokens from a `NextRequest` object by using `getTokens(request.cookies, authConfig)`. It will be the standard way to get the authenticated user within API Routes.
+
+3.  **Create API Route for Onboarding Link:**
+    *   **Action:** Create `apps/main/src/app/api/stripe/account-link/route.ts`.
+    *   **Logic:**
+        *   This `POST` route will accept `accountId` and `organizationId`.
+        *   **Authorization:** It will call `getUserFromRequest(request)` to get the `authUser`. It will then use the `isUserAuthorized(authUser, 'organizations/' + organizationId)` function to verify the user is a member of the organization.
+        *   If authorized, it will generate and return the Stripe `accountLink` URL.
+
+4.  **Create API Route for Dashboard Link:**
+    *   **Action:** Create `apps/main/src/app/api/stripe/dashboard-link/route.ts`.
+    *   **Logic:**
+        *   This `POST` route will accept `accountId` and `organizationId`.
+        *   **Authorization:** It will follow the exact same authorization flow as the account link route.
+        *   If authorized, it will generate and return the Stripe `loginLink` URL.
+
+---
+
+#### **Phase 2: Server Actions**
+
+1.  **Create Server Action for Account Creation:**
+    *   **Action:** Create `apps/main/src/app/(main)/manage/organization/[orgId]/edit/actions.ts`.
+    *   **Logic:**
+        *   The `createStripeConnectAccount` action will accept the `organizationId`.
+        *   **Authorization:** It will get the `authUser` via `getAuthUserFromCookies()` and then call `isUserAuthorized(authUser, 'organizations/' + organizationId)`.
+        *   If authorized, it will create the Stripe account and update the `organization.stripe.connectAccountId` field in Firestore.
+        *   It will then call `revalidatePath`.
+
+---
+
+#### **Phase 3: Data Layer & UI Integration**
+
+1.  **Update `Organization` Data Type:**
+    *   **Action:** Modify the `Organization` interface in `apps/main/src/datastore/types.ts` to include a nested `stripe` object with `connectAccountId?: string;` and `account?: Stripe.Account;`.
+
+2.  **Split Data Fetching Logic:**
+    *   **Action:** In `apps/main/src/datastore/firestore.ts`, refactor the data fetching functions.
+    *   **`getOrganizationById` (Public):** Will fetch only basic data from Firestore.
+    *   **`getManagedOrganizationById` (Private/Admin):** A new function that calls the public function and then enriches the data by retrieving the full Stripe Account object via the API, populating the `organization.stripe.account` field.
+
+3.  **Integrate into the Frontend:**
+    *   **Action (Data Fetching):** The page at `apps/main/src/app/(main)/manage/organization/[orgId]/edit/page.tsx` will be updated to call the new `getManagedOrganizationById` function.
+    *   **Action (New Component):** Create a dedicated component file at `apps/main/src/app/(main)/manage/organization/[orgId]/edit/StripeConnectCard.tsx`.
+    *   **Action (Integration):** Import and render the `StripeConnectCard` within `EditOrganization.tsx`. The card will handle all UI and client-side logic for interacting with the Stripe API routes and server actions.
+
+---
+
+#### **Phase 4: Stripe Webhook Integration**
+
+1.  **Create the Webhook Handler API Route:**
+    *   **Action:** Create `apps/main/src/app/api/stripe/webhook/route.ts`.
+    *   **Logic:**
+        *   The `POST` handler will proceed **only if the `STRIPE_WEBHOOK_SECRET` environment variable is set**.
+        *   **Security:** It will verify the authenticity of every request using `stripe.webhooks.constructEvent()` and the webhook secret.
+        *   It will use a `switch` statement on `event.type`. For `account.updated` events, it will check if `payouts_enabled` has changed and update the corresponding `Organization` document in Firestore.
+        *   It will return a `200 OK` status to acknowledge receipt of the event.
+
+2.  **Add New Environment Variable:**
+    *   **Action:** Add `STRIPE_WEBHOOK_SECRET` to the environment variables.
+
+3.  **Configure the Webhook Endpoint in Stripe:**
+    *   **Action (Manual):** In the Stripe Developer Dashboard, configure a new webhook endpoint pointing to `https://<your-production-url>/api/stripe/webhook` and listening for the `account.updated` event.
+
+4.  **Enable Local Testing with the Stripe CLI:**
+    *   **Action (Development):** Use the Stripe CLI command `stripe listen --forward-to http://localhost:3000/api/stripe/webhook` to test the webhook flow locally.
+
+---
+
 ## Appendix A: Firestore Schema
 
 This appendix details the structure of the Firestore database. This hierarchical model leverages **`CollectionGroup`** queries for cross-cutting concerns (e.g., finding all races in a region, regardless of their parent series).
