@@ -1,8 +1,8 @@
 'use client';
 
 import ThresholdAssistantModal from '@/components/ai/threshold-assistant-modal';
-import EventCard from '@/components/EventCard';
-import SeriesCard from '@/components/SeriesCard';
+import EventCard from '@/components/cards/EventCard';
+import SeriesCard from '@/components/cards/SeriesCard';
 import { EventWithRaces } from '@/datastore/firestore';
 import type { ClientCompat, Series } from '@/datastore/types';
 import { Button, Group, SimpleGrid, Stack, Text, Title } from '@mantine/core';
@@ -23,12 +23,12 @@ type EnrichedEvent = ClientCompat<EventWithRaces> & {
 
 type EnrichedSeries = ClientCompat<Series & { events: EnrichedEvent[] }>;
 
-export interface ManagePageData {
+export interface HubPageData {
   serieses: EnrichedSeries[];
 }
 
 interface Props {
-  data: ManagePageData;
+  data: HubPageData;
 }
 
 const Hub: React.FC<Props> = ({ data }) => {
@@ -96,7 +96,18 @@ const Hub: React.FC<Props> = ({ data }) => {
                 </Title>
                 <SimpleGrid cols={{ base: 1, md: 2 }}>
                   {upcomingEvents.map((event) => (
-                    <EventCard key={event.id} event={event} />
+                    <EventCard key={event.id} event={event}>
+                      <Button
+                        component={Link}
+                        href={`/manage/event/${event.id}/live`}
+                        variant="gradient"
+                        size="sm"
+                        mt="md"
+                        rightSection={<IconChevronRight size={14} />}
+                      >
+                        Live
+                      </Button>
+                    </EventCard>
                   ))}
                 </SimpleGrid>
               </section>
@@ -111,7 +122,18 @@ const Hub: React.FC<Props> = ({ data }) => {
                 </Title>
                 <SimpleGrid cols={{ base: 1, md: 2, lg: 3 }}>
                   {pastEvents.map((event) => (
-                    <EventCard key={event.id} event={event} />
+                    <EventCard key={event.id} event={event}>
+                      <Button
+                        component={Link}
+                        href={`/manage/event/${event.id}`}
+                        variant="light"
+                        size="sm"
+                        mt="md"
+                        rightSection={<IconChevronRight size={14} />}
+                      >
+                        Manage event
+                      </Button>
+                    </EventCard>
                   ))}
                 </SimpleGrid>
               </section>

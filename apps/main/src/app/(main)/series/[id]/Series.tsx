@@ -1,10 +1,18 @@
 'use client';
 
-import EventCard from '@/components/EventCard';
+import EventCard from '@/components/cards/EventCard';
 import { SeriesWithEvents } from '@/datastore/firestore';
 import { ClientCompat } from '@/datastore/types';
-import { Anchor, Group, SimpleGrid, Stack, Text, Title } from '@mantine/core';
-import { IconWorldWww } from '@tabler/icons-react';
+import {
+  Anchor,
+  Button,
+  Group,
+  SimpleGrid,
+  Stack,
+  Text,
+  Title,
+} from '@mantine/core';
+import { IconChevronRight, IconWorldWww } from '@tabler/icons-react';
 import { format } from 'date-fns';
 import Link from 'next/link';
 
@@ -51,7 +59,18 @@ export default function Series({ data }: Props) {
         </Group>
         <SimpleGrid cols={{ base: 1, md: 2 }}>
           {series.events!.map((event) => (
-            <EventCard key={event.id} event={event} />
+            <EventCard key={event.id} event={event}>
+              <Button
+                component={Link}
+                href={`/event/${event.id}`}
+                variant="light"
+                size="sm"
+                mt="md"
+                rightSection={<IconChevronRight size={14} />}
+              >
+                View
+              </Button>
+            </EventCard>
           ))}
         </SimpleGrid>
       </Stack>

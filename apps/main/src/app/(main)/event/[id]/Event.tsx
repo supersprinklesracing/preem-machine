@@ -1,9 +1,18 @@
 'use client';
 
-import RaceCard from '@/components/RaceCard';
+import RaceCard from '@/components/cards/RaceCard';
 import { EventWithRaces } from '@/datastore/firestore';
 import type { ClientCompat } from '@/datastore/types';
-import { Anchor, Group, SimpleGrid, Stack, Text, Title } from '@mantine/core';
+import {
+  Anchor,
+  Button,
+  Group,
+  SimpleGrid,
+  Stack,
+  Text,
+  Title,
+} from '@mantine/core';
+import { IconChevronRight } from '@tabler/icons-react';
 import { format } from 'date-fns';
 import Link from 'next/link';
 
@@ -49,7 +58,18 @@ export default function Event({ data }: Props) {
         </Group>
         <SimpleGrid cols={{ base: 1, lg: 2 }}>
           {event.races?.map((race) => (
-            <RaceCard key={race.id} race={race} />
+            <RaceCard key={race.id} race={race}>
+              <Button
+                component={Link}
+                href={`/race/${race.id}`}
+                variant="light"
+                size="sm"
+                mt="md"
+                rightSection={<IconChevronRight size={14} />}
+              >
+                View
+              </Button>
+            </RaceCard>
           ))}
         </SimpleGrid>
       </Stack>

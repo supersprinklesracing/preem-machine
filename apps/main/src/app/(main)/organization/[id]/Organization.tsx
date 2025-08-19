@@ -1,6 +1,6 @@
 'use client';
 
-import SeriesCard from '@/components/SeriesCard';
+import SeriesCard from '@/components/cards/SeriesCard';
 import type {
   ClientCompat,
   Organization,
