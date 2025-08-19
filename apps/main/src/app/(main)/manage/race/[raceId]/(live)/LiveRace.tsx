@@ -28,16 +28,16 @@ import React, { useState } from 'react';
 import type { RaceWithPreems } from '@/datastore/firestore';
 import ManageRaceContributionTable from './ManageRaceContributionTable';
 
-export interface ManageRaceData {
+export interface LiveRaceData {
   race: RaceWithPreems;
   users: ClientCompat<User>[];
 }
 
-export interface ManageRaceProps {
-  data: ManageRaceData;
+export interface LiveRaceProps {
+  data: LiveRaceData;
 }
 
-export const ManageRace: React.FC<{ data: ManageRaceData }> = ({ data }) => {
+export const LiveRace: React.FC<{ data: LiveRaceData }> = ({ data }) => {
   const [race, setRace] = useState<RaceWithPreems | undefined>(data.race);
 
   if (!race) {
@@ -141,4 +141,4 @@ export const ManageRace: React.FC<{ data: ManageRaceData }> = ({ data }) => {
   );
 };
 
-export default ManageRace;
+export default LiveRace;

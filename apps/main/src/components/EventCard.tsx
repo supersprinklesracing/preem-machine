@@ -72,7 +72,7 @@ export default function EventCard({ event }: EventCardProps) {
         </div>
         <Button
           component={Link}
-          href={`/manage/${event.seriesBrief?.organizationBrief?.id}/event/${event.id}`}
+          href={`/manage/event/${event.id}`}
           variant="light"
           size="sm"
           mt="md"

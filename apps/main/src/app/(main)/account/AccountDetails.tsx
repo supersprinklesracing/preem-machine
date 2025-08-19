@@ -6,8 +6,17 @@ import UpdateUserProfileCard from '@/components/UpdateUserProfileCard';
 import type { FormValues } from '@/components/UserProfileFormFields';
 import UserProfileFormFields from '@/components/UserProfileFormFields';
 import type { User } from '@/datastore/types';
+import { useCurrentUser } from '@/datastore/user/UserContext';
 import { getFirebaseAuth } from '@/firebase-client';
-import { Button, Card, SimpleGrid, Stack, Text, Title } from '@mantine/core';
+import {
+  Button,
+  Card,
+  Group,
+  SimpleGrid,
+  Stack,
+  Text,
+  Title,
+} from '@mantine/core';
 import { useForm } from '@mantine/form';
 import { useDebouncedValue } from '@mantine/hooks';
 import { signOut } from 'firebase/auth';
@@ -27,6 +36,7 @@ export function AccountDetails({
 }) {
   const router = useRouter();
   const { authUser } = useAuth();
+  const { currentUser } = useCurrentUser();
   const [hasLoggedOut, setHasLoggedOut] = React.useState(false);
   const [isLoading, setIsLoading] = React.useState(false);
   const [submissionError, setSubmissionError] = React.useState<string | null>(
@@ -37,9 +47,9 @@ export function AccountDetails({
 
   const form = useForm<FormValues>({
     initialValues: {
-      name: authUser?.displayName ?? '',
+      name: currentUser?.name ?? authUser?.displayName ?? '',
       email: authUser?.email ?? '',
-      avatarUrl: authUser?.photoURL ?? '',
+      avatarUrl: currentUser?.avatarUrl ?? authUser?.photoURL ?? '',
       termsAccepted: true,
     },
     validateInputOnChange: false,
@@ -118,16 +128,25 @@ export function AccountDetails({
     <Card withBorder style={{ height: '100%' }}>
       <Stack justify="space-between" style={{ height: '100%' }}>
         <Stack>
-          <Title order={3}>Account</Title>
+          <Group justify="space-between">
+            <Title order={3}>Account</Title>
+            <Button component={Link} href={`/user/${authUser.uid}`} size="xs">
+              View My Public Profile
+            </Button>
+          </Group>
           <SimpleGrid cols={{ base: 1, md: 2 }}>
             <Stack>
-              <Button component={Link} href={`/user/${authUser.uid}`}>
-                View My Public Profile
-              </Button>
               <UpdateUserProfileCard
-                name={debouncedName || authUser.displayName || 'Your full name'}
+                name={
+                  debouncedName ||
+                  currentUser?.name ||
+                  authUser.displayName ||
+                  'Your full name'
+                }
                 email={authUser.email ?? undefined}
-                avatarUrl={authUser.photoURL ?? undefined}
+                avatarUrl={
+                  currentUser?.avatarUrl ?? authUser.photoURL ?? undefined
+                }
               />
               <Button
                 onClick={() => handleSubmit(form.values)}

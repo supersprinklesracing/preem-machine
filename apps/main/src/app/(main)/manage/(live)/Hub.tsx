@@ -6,7 +6,12 @@ import SeriesCard from '@/components/SeriesCard';
 import { EventWithRaces } from '@/datastore/firestore';
 import type { ClientCompat, Series } from '@/datastore/types';
 import { Button, Group, SimpleGrid, Stack, Text, Title } from '@mantine/core';
-import { IconChevronRight, IconPlus, IconSparkles } from '@tabler/icons-react';
+import {
+  IconChevronRight,
+  IconPencil,
+  IconPlus,
+  IconSparkles,
+} from '@tabler/icons-react';
 import Link from 'next/link';
 import React, { useState } from 'react';
 
@@ -26,7 +31,7 @@ interface Props {
   data: ManagePageData;
 }
 
-const Manage: React.FC<Props> = ({ data }) => {
+const Hub: React.FC<Props> = ({ data }) => {
   const { serieses } = data;
   const [isAiModalOpen, setIsAiModalOpen] = useState(false);
 
@@ -48,6 +53,14 @@ const Manage: React.FC<Props> = ({ data }) => {
             AI Threshold Assistant
           </Button>
           <Button leftSection={<IconPlus size={16} />}>Create New Event</Button>
+          <Button
+            component={Link}
+            href={`/manage/${serieses[0]?.organizationBrief?.id ?? ''}/edit`}
+            variant="outline"
+            leftSection={<IconPencil size={16} />}
+          >
+            Edit Organization
+          </Button>
         </Group>
       </Group>
 
@@ -65,11 +78,11 @@ const Manage: React.FC<Props> = ({ data }) => {
               <SeriesCard series={series}>
                 <Button
                   component={Link}
-                  href={`/series/${series.id}`}
+                  href={`/manage/series/${series.id}/edit`}
                   variant="light"
                   rightSection={<IconChevronRight size={16} />}
                 >
-                  Manage Series
+                  Edit Series
                 </Button>
               </SeriesCard>
 
@@ -116,4 +129,4 @@ const Manage: React.FC<Props> = ({ data }) => {
   );
 };
 
-export default Manage;
+export default Hub;

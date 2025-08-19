@@ -1,10 +1,10 @@
 import { getRacePageDataWithUsers } from '@/datastore/firestore';
-import ManageRace from './ManageRace';
+import LiveRace from './LiveRace';
 
-export default async function ManageRacePage({
+export default async function LiveRacePage({
   params,
 }: {
-  params: { raceId: string; eventId: string; orgId: string };
+  params: { raceId: string };
 }) {
   const data = await getRacePageDataWithUsers((await params).raceId);
 
@@ -12,5 +12,5 @@ export default async function ManageRacePage({
     return <div>Race not found</div>;
   }
 
-  return <ManageRace data={data} />;
+  return <LiveRace data={data} />;
 }
