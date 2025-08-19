@@ -179,9 +179,9 @@ export const createMockDb = (firestore: Firestore): DatabaseCollections =>
         _collections: {
           series: [
             {
-              id: 'series-giro-sf',
-              name: 'Il Giro di San Francisco',
-              region: 'Northern California',
+              id: 'series-sprinkles-2025',
+              name: 'Sprinkles 2025',
+              location: 'Northern California',
               website: 'https://girosf.com',
               startDate: getTimestampFromISODate('2025-09-01T00:00:00Z'),
               endDate: getTimestampFromISODate('2025-09-01T00:00:00Z'),
@@ -425,7 +425,7 @@ export const createMockDb = (firestore: Firestore): DatabaseCollections =>
             {
               id: 'series-chicago-grit',
               name: 'Chicago Grit',
-              region: 'Chicagoland',
+              location: 'Chicagoland',
               website: 'https://chicago-grit.com/',
               startDate: getTimestampFromISODate('2026-07-17T00:00:00Z'),
               endDate: getTimestampFromISODate('2026-07-26T00:00:00Z'),
