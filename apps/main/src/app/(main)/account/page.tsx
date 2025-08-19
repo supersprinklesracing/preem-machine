@@ -1,8 +1,8 @@
 import { incrementCounter } from '@/actions/user-counters';
 import { getAuthUserFromCookies } from '@/auth/user';
 import { getFirestore } from '@/firebase-admin/firebase-admin';
-import { Metadata } from 'next';
 import Account from './Account';
+import { updateUserAction } from './update-user-action';
 
 async function getUserCounter(): Promise<number> {
   const authUser = await getAuthUserFromCookies();
@@ -26,19 +26,10 @@ async function getUserCounter(): Promise<number> {
 export default async function AccountPage() {
   const count = await getUserCounter();
 
-  return <Account debugProps={{ count, incrementCounter }} />;
-}
-
-// Generate customized metadata based on user cookies
-// https://nextjs.org/docs/app/building-your-application/optimizing/metadata
-export async function generateMetadata(): Promise<Metadata> {
-  const authUser = await getAuthUserFromCookies();
-
-  if (!authUser) {
-    return {};
-  }
-
-  return {
-    title: `${authUser.email} profile page | next-firebase-auth-edge example`,
-  };
+  return (
+    <Account
+      debugProps={{ count, incrementCounter }}
+      updateUserAction={updateUserAction}
+    />
+  );
 }

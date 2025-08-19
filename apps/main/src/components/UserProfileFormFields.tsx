@@ -10,7 +10,7 @@ export interface FormValues extends Partial<User> {
 
 const FormFields = ({
   form,
-  nameError: nameError,
+  nameError,
 }: {
   form: ReturnType<typeof useForm<FormValues>>;
   nameError: React.ReactNode;
