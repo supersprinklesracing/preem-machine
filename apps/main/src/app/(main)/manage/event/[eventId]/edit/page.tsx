@@ -8,15 +8,14 @@ import { updateEventAction } from './update-event-action';
 export default async function EditEventPage({
   params,
 }: {
-  params: { eventId: string };
+  params: Promise<{ eventId: string }>;
 }) {
-  const event = await getEventById(params.eventId);
+  const { eventId } = await params;
+  const event = await getEventById(eventId);
 
   if (!event) {
     notFound();
   }
 
-  const boundUpdateEventAction = updateEventAction.bind(null, params.eventId);
-
-  return <EditEvent event={event} updateEventAction={boundUpdateEventAction} />;
+  return <EditEvent event={event} updateEventAction={updateEventAction} />;
 }

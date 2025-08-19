@@ -1,36 +1,26 @@
 'use server';
 
-import { getAuthUserFromCookies } from '@/auth/user';
-import type { Series } from '@/datastore/types';
-import { getFirestore } from '@/firebase-admin/firebase-admin';
+import { verifyAuthUser } from '@/auth/user';
+import { updateSeries } from '@/datastore/mutations';
 
 export interface UpdateSeriesOptions {
-  series?: Partial<Series>;
+  path: string;
+  series: {
+    name?: string;
+    location?: string;
+    website?: string;
+    startDate?: string;
+    endDate?: string;
+  };
 }
 
-export async function updateSeriesAction(
-  seriesId: string,
-  updateSeries: UpdateSeriesOptions
-): Promise<{ ok: boolean; error?: string }> {
+export async function updateSeriesAction({
+  path,
+  series,
+}: UpdateSeriesOptions): Promise<{ ok: boolean; error?: string }> {
   try {
-    const authUser = await getAuthUserFromCookies();
-    if (!authUser) {
-      return { ok: false, error: 'Authentication required.' };
-    }
-
-    if (updateSeries.series) {
-      const db = await getFirestore();
-      // Note: This assumes a top-level 'series' collection.
-      // You may need to adjust the collection path based on your Firestore structure.
-      const seriesRef = db.collection('series').doc(seriesId);
-      const seriesDoc = await seriesRef.get();
-
-      if (!seriesDoc.exists) {
-        return { ok: false, error: 'Series does not exist.' };
-      }
-
-      await seriesRef.update(updateSeries.series);
-    }
+    const authUser = await verifyAuthUser();
+    await updateSeries(path, series, authUser);
 
     return { ok: true };
   } catch (error) {

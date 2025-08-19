@@ -37,7 +37,7 @@ export default function Series({ data }: Props) {
         </Anchor>
       </Text>
       <Text c="dimmed">
-        {series.region} |{' '}
+        {series.location} |{' '}
         {series.startDate ? format(new Date(series.startDate!), 'PP') : ''} -{' '}
         {series.endDate ? format(new Date(series.endDate!), 'PP') : ''}
       </Text>

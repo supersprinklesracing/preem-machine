@@ -8,20 +8,18 @@ import { updateSeriesAction } from './update-series-action';
 export default async function EditSeriesPage({
   params,
 }: {
-  params: { seriesId: string };
+  params: Promise<{ seriesId: string }>;
 }) {
-  const series = await getSeriesById(params.seriesId);
+  const { seriesId } = await params;
+  const series = await getSeriesById(seriesId);
 
   if (!series) {
     notFound();
   }
 
-  const boundUpdateSeriesAction = updateSeriesAction.bind(
-    null,
-    params.seriesId
-  );
+  const plainSeries = JSON.parse(JSON.stringify(series));
 
   return (
-    <EditSeries series={series} updateSeriesAction={boundUpdateSeriesAction} />
+    <EditSeries series={plainSeries} updateSeriesAction={updateSeriesAction} />
   );
 }

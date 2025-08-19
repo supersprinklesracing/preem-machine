@@ -1,34 +1,21 @@
 'use server';
 
-import { getAuthUserFromCookies } from '@/auth/user';
+import { verifyAuthUser } from '@/auth/user';
+import { updateOrganization } from '@/datastore/mutations';
 import type { Organization } from '@/datastore/types';
-import { getFirestore } from '@/firebase-admin/firebase-admin';
 
 export interface UpdateOrganizationOptions {
-  organization?: Partial<Organization>;
+  path: string;
+  organization: Partial<Organization>;
 }
 
-export async function updateOrganizationAction(
-  organizationId: string,
-  updateOrganization: UpdateOrganizationOptions
-): Promise<{ ok: boolean; error?: string }> {
+export async function updateOrganizationAction({
+  path,
+  organization,
+}: UpdateOrganizationOptions): Promise<{ ok: boolean; error?: string }> {
   try {
-    const authUser = await getAuthUserFromCookies();
-    if (!authUser) {
-      return { ok: false, error: 'Authentication required.' };
-    }
-
-    if (updateOrganization.organization) {
-      const db = await getFirestore();
-      const orgRef = db.collection('organizations').doc(organizationId);
-      const orgDoc = await orgRef.get();
-
-      if (!orgDoc.exists) {
-        return { ok: false, error: 'Organization does not exist.' };
-      }
-
-      await orgRef.update(updateOrganization.organization);
-    }
+    const authUser = await verifyAuthUser();
+    await updateOrganization(path, organization, authUser);
 
     return { ok: true };
   } catch (error) {
