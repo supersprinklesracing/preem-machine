@@ -252,80 +252,99 @@ This appendix details the structure of the Firestore database. This hierarchical
 - **Collection Path:** `/users`
 - **Document Structure:**
   - `id`: string
-  - `role`: string (`'contributor'`, `'organizer'`, `'admin'`)
-  - `organizationRefs`: array of DocumentReferences (`/organizations/{orgId}`)
+  - `metadata`: Metadata (object)
+  - `termsAccepted`: boolean
   - `name`: string
   - `email`: string
-  - `profilePhotoUrl`: string
+  - `avatarUrl`: string
+  - `role`: string (`'contributor'`, `'organizer'`, `'admin'`)
   - `affiliation`: string
   - `raceLicenseId`: string
   - `address`: string
-  - `stripeCustomerId`: string
+  - `organizationRefs`: array of DocumentReferences (`/organizations/{orgId}`)
 
 ### **Organizations**
 
 - **Collection Path:** `/organizations`
 - **Document Structure:**
   - `id`: string
+  - `metadata`: Metadata (object)
   - `name`: string
-  - `members`: array of DocumentReferences (`/users/{userId}`)
-  - `stripeConnectAccountId`: string
+  - `website`: string
+  - `memberRefs`: array of DocumentReferences (`/users/{userId}`)
+  - `stripe`: object
+    - `connectAccountId`: string
 
 ### **Race Series**
 
 - **Collection Path:** `/organizations/{orgId}/series`
 - **Document Structure:**
   - `id`: string
+  - `metadata`: Metadata (object)
   - `name`: string
-  - `region`: string
   - `location`: string
   - `website`: string (optional)
   - `startDate`: timestamp
   - `endDate`: timestamp
+  - `organizationBrief`: OrganizationBrief (object)
 
 ### **Race Events**
 
 - **Collection Path:** `/organizations/{orgId}/series/{seriesId}/events`
 - **Document Structure:**
   - `id`: string
+  - `metadata`: Metadata (object)
   - `name`: string
+  - `website`: string (optional)
+  - `location`: string
   - `startDate`: timestamp
   - `endDate`: timestamp
-  - `location`: string
-  - `website`: string (optional)
+  - `seriesBrief`: SeriesBrief (object)
 
 ### **Races**
 
 - **Collection Path:** `/organizations/{orgId}/series/{seriesId}/events/{eventId}/races`
 - **Document Structure:**
   - `id`: string
-  - `status`: string (`'Upcoming'`, `'Live'`, `'Finished'`)
+  - `metadata`: Metadata (object)
   - `name`: string
   - `category`: string
-  - `gender`: string
+  - `gender`: string (`'Women'`, `'Men'`, `'Open'`)
+  - `location`: string
+  - `courseDetails`: string
+  - `maxRacers`: number
+  - `currentRacers`: number
+  - `ageCategory`: string
+  - `duration`: string
+  - `laps`: number
+  - `podiums`: number
+  - `sponsors`: array of strings
   - `startDate`: timestamp
   - `endDate`: timestamp
-  - (other fields from PDD as needed)
+  - `eventBrief`: EventBrief (object)
 
 ### **Preems (Primes)**
 
 - **Collection Path:** `/organizations/{orgId}/series/{seriesId}/events/{eventId}/races/{raceId}/preems`
 - **Document Structure:**
   - `id`: string
+  - `metadata`: Metadata (object)
   - `name`: string
   - `type`: string (`'Pooled'`, `'One-Shot'`)
   - `status`: string (`'Open'`, `'Minimum Met'`, `'Awarded'`)
   - `prizePool`: number
-  - `sponsorUserRef`: DocumentReference (`/users/{userId}`) (for `One-Shot`)
   - `timeLimit`: timestamp
   - `minimumThreshold`: number (optional)
+  - `raceBrief`: RaceBrief (object)
 
 ### **Contributions**
 
 - **Collection Path:** `/organizations/{orgId}/series/{seriesId}/events/{eventId}/races/{raceId}/preems/{preemId}/contributions`
 - **Document Structure:**
   - `id`: string
-  - `contributorRef`: DocumentReference (`/users/{userId}`, or null for anonymous)
+  - `metadata`: Metadata (object)
+  - `contributor`: User (object)
   - `amount`: number
   - `date`: timestamp
   - `message`: string (optional)
+  - `preemBrief`: PreemBrief (object)
