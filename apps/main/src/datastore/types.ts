@@ -49,10 +49,16 @@ export interface User {
   id: string;
   metadata?: Metadata;
 
+  termsAccepted?: boolean;
+
   name?: string;
   email?: string;
   avatarUrl?: string;
   role?: 'contributor' | 'organizer' | 'admin';
+  affiliation?: string;
+  raceLicenseId?: string;
+  address?: string;
+
   organizationRefs?: DocumentReference<Organization>[];
 }
 

@@ -1,13 +1,13 @@
-import { NextResponse } from 'next/server';
-import type { NextRequest } from 'next/server';
+import { authConfigFn } from '@/firebase-admin/config';
 import {
   authMiddleware,
   redirectToHome,
   redirectToLogin,
 } from 'next-firebase-auth-edge';
-import { authConfigFn } from '@/firebase-admin/config';
+import type { NextRequest } from 'next/server';
+import { NextResponse } from 'next/server';
 
-const PUBLIC_PATHS = ['/register', '/login', '/reset-password'];
+const LOGGED_OUT_ONLY = ['/register', '/login', '/reset-password'];
 
 export async function middleware(request: NextRequest) {
   const authConfig = await authConfigFn();
@@ -29,7 +29,7 @@ export async function middleware(request: NextRequest) {
     dynamicCustomClaimsKeys: ['someCustomClaim'],
     handleValidToken: async ({ token, decodedToken, customToken }, headers) => {
       // Authenticated user should not be able to access /login, /register and /reset-password routes
-      if (PUBLIC_PATHS.includes(request.nextUrl.pathname)) {
+      if (LOGGED_OUT_ONLY.includes(request.nextUrl.pathname)) {
         return redirectToHome(request);
       }
 
@@ -42,7 +42,7 @@ export async function middleware(request: NextRequest) {
     handleInvalidToken: async (_reason) => {
       return redirectToLogin(request, {
         path: '/login',
-        publicPaths: PUBLIC_PATHS,
+        publicPaths: LOGGED_OUT_ONLY,
       });
     },
     handleError: async (error) => {
@@ -50,7 +50,7 @@ export async function middleware(request: NextRequest) {
 
       return redirectToLogin(request, {
         path: '/login',
-        publicPaths: PUBLIC_PATHS,
+        publicPaths: LOGGED_OUT_ONLY,
       });
     },
   });
