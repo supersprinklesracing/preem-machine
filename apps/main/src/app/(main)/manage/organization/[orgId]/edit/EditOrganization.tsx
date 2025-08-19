@@ -15,6 +15,7 @@ import {
 import { useForm } from '@mantine/form';
 import { useRouter } from 'next/navigation';
 import { useState } from 'react';
+import { StripeConnectCard } from './StripeConnectCard';
 import { UpdateOrganizationOptions } from './update-organization-action';
 
 type FormValues = Partial<Organization>;
@@ -22,11 +23,13 @@ type FormValues = Partial<Organization>;
 export function EditOrganization({
   updateOrganizationAction,
   organization,
+  stripeError,
 }: {
   updateOrganizationAction: (
     options: UpdateOrganizationOptions
   ) => Promise<{ ok: boolean; error?: string }>;
   organization: ClientCompat<Organization>;
+  stripeError?: string;
 }) {
   const router = useRouter();
   const [isLoading, setIsLoading] = useState(false);
@@ -94,6 +97,10 @@ export function EditOrganization({
             {submissionError && <Text c="red">{submissionError}</Text>}
           </Stack>
         </Card>
+        <StripeConnectCard
+          organization={organization}
+          stripeError={stripeError}
+        />
       </Stack>
     </Container>
   );

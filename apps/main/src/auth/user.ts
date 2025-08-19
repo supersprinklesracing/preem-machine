@@ -3,6 +3,7 @@ import { authConfigFn } from '@/firebase-admin/config';
 import { getTokens, Tokens } from 'next-firebase-auth-edge';
 import { filterStandardClaims } from 'next-firebase-auth-edge/lib/auth/claims';
 import { cookies } from 'next/headers';
+import { NextRequest } from 'next/server';
 import { unauthorized } from 'next/navigation';
 
 export const toAuthContextUser = ({
@@ -57,3 +58,12 @@ export const verifyAuthUser = async (): Promise<AuthContextUser> => {
   }
   return authUser;
 };
+
+export async function getUserFromRequest(request: NextRequest) {
+  const authConfig = await authConfigFn();
+  const tokens = await getTokens(request.cookies, authConfig);
+  if (!tokens) {
+    throw new Error('Unauthenticated');
+  }
+  return toAuthContextUser(tokens);
+}
