@@ -1,11 +1,12 @@
 'use server';
 
+import { ENV_USES_HTTPS as ENV_USE_HTTPS } from '@/env/env';
 /* eslint-disable @typescript-eslint/no-non-null-assertion */
 import { clientConfig } from '../firebase-client/config';
 
 export async function serverConfigFn() {
   return {
-    useSecureCookies: process.env.USE_SECURE_COOKIES === 'true',
+    useSecureCookies: ENV_USE_HTTPS,
     firebaseApiKey: process.env.NEXT_PUBLIC_FIREBASE_API_KEY!,
     serviceAccount: process.env.SERVICE_ACCOUNT_PRIVATE_KEY
       ? {
