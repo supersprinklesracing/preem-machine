@@ -61,25 +61,27 @@ export function EditSeries({
   };
 
   return (
-    <Card withBorder>
-      <Stack>
-        <Title order={3}>Edit Series</Title>
-        <TextInput
-          label="Series Name"
-          required
-          {...form.getInputProps('name')}
-        />
-        <TextInput label="Region" {...form.getInputProps('region')} />
-        <TextInput label="Website" {...form.getInputProps('website')} />
-        <Button
-          onClick={() => handleSubmit(form.values)}
-          loading={isLoading}
-          disabled={!form.isValid()}
-        >
-          Save Changes
-        </Button>
-        {submissionError && <Text c="red">{submissionError}</Text>}
-      </Stack>
-    </Card>
+    <Stack>
+      <Title order={1}>Edit Series</Title>
+      <Card withBorder>
+        <Stack>
+          <TextInput
+            label="Series Name"
+            required
+            {...form.getInputProps('name')}
+          />
+          <TextInput label="Region" {...form.getInputProps('region')} />
+          <TextInput label="Website" {...form.getInputProps('website')} />
+          <Button
+            onClick={() => handleSubmit(form.values)}
+            loading={isLoading}
+            disabled={!form.isValid()}
+          >
+            Save Changes
+          </Button>
+          {submissionError && <Text c="red">{submissionError}</Text>}
+        </Stack>
+      </Card>
+    </Stack>
   );
 }

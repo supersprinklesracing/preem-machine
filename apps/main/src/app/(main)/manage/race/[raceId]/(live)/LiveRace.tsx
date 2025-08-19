@@ -19,6 +19,7 @@ import {
   IconAward,
   IconClock,
   IconDeviceTv,
+  IconPencil,
   IconUsers,
 } from '@tabler/icons-react';
 import { formatDistanceToNow } from 'date-fns';
@@ -87,6 +88,18 @@ export const LiveRace: React.FC<{ data: LiveRaceData }> = ({ data }) => {
 
   return (
     <Stack gap="lg">
+      <Group justify="space-between">
+        <Title>{race.name}</Title>
+        <Button
+          variant="outline"
+          leftSection={<IconPencil size={14} />}
+          size="xs"
+          component={Link}
+          href={`/manage/race/${race.id}/edit`}
+        >
+          Edit Race
+        </Button>
+      </Group>
       <Grid gutter="lg">
         <Grid.Col span={{ base: 12, md: 4 }}>
           <Card withBorder padding="lg" radius="md">
