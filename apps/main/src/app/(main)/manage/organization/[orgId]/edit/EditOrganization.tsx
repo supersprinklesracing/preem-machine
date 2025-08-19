@@ -1,6 +1,14 @@
 'use client';
 
-import { Button, Card, Stack, Text, TextInput, Title } from '@mantine/core';
+import {
+  Button,
+  Card,
+  Group,
+  Stack,
+  Text,
+  TextInput,
+  Title,
+} from '@mantine/core';
 import { useForm } from '@mantine/form';
 import { useRouter } from 'next/navigation';
 import * as React from 'react';
@@ -68,13 +76,15 @@ export function EditOrganization({
             required
             {...form.getInputProps('name')}
           />
-          <Button
-            onClick={() => handleSubmit(form.values)}
-            loading={isLoading}
-            disabled={!form.isValid()}
-          >
-            Save Changes
-          </Button>
+          <Group justify="right">
+            <Button
+              onClick={() => handleSubmit(form.values)}
+              loading={isLoading}
+              disabled={!form.isValid()}
+            >
+              Save Changes
+            </Button>
+          </Group>
           {submissionError && <Text c="red">{submissionError}</Text>}
         </Stack>
       </Card>
