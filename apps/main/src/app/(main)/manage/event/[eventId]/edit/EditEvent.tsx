@@ -62,25 +62,27 @@ export function EditEvent({
   };
 
   return (
-    <Card withBorder>
-      <Stack>
-        <Title order={3}>Edit Event</Title>
-        <TextInput
-          label="Event Name"
-          required
-          {...form.getInputProps('name')}
-        />
-        <TextInput label="Location" {...form.getInputProps('location')} />
-        <TextInput label="Website" {...form.getInputProps('website')} />
-        <Button
-          onClick={() => handleSubmit(form.values)}
-          loading={isLoading}
-          disabled={!form.isValid()}
-        >
-          Save Changes
-        </Button>
-        {submissionError && <Text c="red">{submissionError}</Text>}
-      </Stack>
-    </Card>
+    <Stack>
+      <Title order={1}>Edit Event</Title>
+      <Card withBorder>
+        <Stack>
+          <TextInput
+            label="Event Name"
+            required
+            {...form.getInputProps('name')}
+          />
+          <TextInput label="Location" {...form.getInputProps('location')} />
+          <TextInput label="Website" {...form.getInputProps('website')} />
+          <Button
+            onClick={() => handleSubmit(form.values)}
+            loading={isLoading}
+            disabled={!form.isValid()}
+          >
+            Save Changes
+          </Button>
+          {submissionError && <Text c="red">{submissionError}</Text>}
+        </Stack>
+      </Card>
+    </Stack>
   );
 }

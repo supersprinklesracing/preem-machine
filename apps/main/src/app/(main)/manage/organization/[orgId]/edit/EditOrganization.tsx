@@ -59,23 +59,25 @@ export function EditOrganization({
   };
 
   return (
-    <Card withBorder>
-      <Stack>
-        <Title order={3}>Edit Organization</Title>
-        <TextInput
-          label="Organization Name"
-          required
-          {...form.getInputProps('name')}
-        />
-        <Button
-          onClick={() => handleSubmit(form.values)}
-          loading={isLoading}
-          disabled={!form.isValid()}
-        >
-          Save Changes
-        </Button>
-        {submissionError && <Text c="red">{submissionError}</Text>}
-      </Stack>
-    </Card>
+    <Stack>
+      <Title order={1}>Edit Organization</Title>
+      <Card withBorder>
+        <Stack>
+          <TextInput
+            label="Organization Name"
+            required
+            {...form.getInputProps('name')}
+          />
+          <Button
+            onClick={() => handleSubmit(form.values)}
+            loading={isLoading}
+            disabled={!form.isValid()}
+          >
+            Save Changes
+          </Button>
+          {submissionError && <Text c="red">{submissionError}</Text>}
+        </Stack>
+      </Card>
+    </Stack>
   );
 }
