@@ -33,6 +33,14 @@
       "queryScope": "COLLECTION_GROUP",
       "fields": [{ "fieldPath": "id", "order": "ASCENDING" }]
     },
+
+    {
+      "collectionGroup": "events",
+      "queryScope": "COLLECTION_GROUP",
+      "fields": [
+        { "fieldPath": "startDate", "order": "ASCENDING" }
+      ]
+    },
     {
       "collectionGroup": "preems",
       "queryScope": "COLLECTION_GROUP",

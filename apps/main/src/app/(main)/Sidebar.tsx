@@ -1,6 +1,6 @@
 'use client';
 
-import { ClientCompat, Event } from '@/datastore/types';
+import type { ClientCompat, Event } from '@/datastore/types';
 import { Box, Divider, NavLink, Stack } from '@mantine/core';
 import {
   IconBike,
@@ -8,7 +8,6 @@ import {
   IconCrown,
   IconDeviceTv,
   IconHome,
-  IconShield,
   IconUser,
 } from '@tabler/icons-react';
 import Link from 'next/link';
@@ -50,9 +49,7 @@ const Sidebar: React.FC<SidebarProps> = ({ data }) => {
           defaultOpened
         >
           {data.events.map((event) => {
-            const orgId = event.seriesBrief?.organizationBrief?.id;
-            if (!orgId) return null;
-            const href = `/manage/${orgId}/event/${event.id}`;
+            const href = `/manage/event/${event.id}`;
             return (
               <NavLink
                 key={event.id}
@@ -81,89 +78,79 @@ const Sidebar: React.FC<SidebarProps> = ({ data }) => {
             leftSection={<IconBug size={18} />}
             defaultOpened
           >
+            <NavLink href="/admin" label="Admin" />
             <NavLink
-              href="/user/eygr7FzGzsb987AVm5uavrYTP7Q2"
-              label="User"
+              label="Details"
               leftSection={<IconDeviceTv size={18} />}
-              active={pathname === '/user/eygr7FzGzsb987AVm5uavrYTP7Q2'}
-              component={Link}
-            />
+              defaultOpened
+            >
+              <NavLink
+                href="/user/eygr7FzGzsb987AVm5uavrYTP7Q2"
+                label="User"
+                component={Link}
+              />
+              <NavLink
+                href="/race/race-giro-sf-2025-masters-women"
+                label="Race"
+                component={Link}
+              />
+              <NavLink
+                href="/preem/preem-giro-sf-2025-masters-women-first-lap"
+                label="Preem"
+                component={Link}
+              />
+              <NavLink
+                href="/organization/org-super-sprinkles"
+                label="Organization"
+                component={Link}
+              />
+              <NavLink
+                href="/series/series-giro-sf"
+                label="Series"
+                component={Link}
+              />
+              <NavLink
+                href="/event/event-giro-sf-2025"
+                label="Event"
+                component={Link}
+              />
+            </NavLink>
             <NavLink
-              href="/race/race-giro-sf-2025-masters-women"
-              label="Race"
-              leftSection={<IconDeviceTv size={18} />}
-              active={pathname === '/race/race-giro-sf-2025-masters-women'}
-              component={Link}
-            />
-            <NavLink
-              href="/manage/org-super-sprinkles/event/event-giro-sf-2025/race/race-giro-sf-2025-masters-women"
-              label="Manage Dash"
-              leftSection={<IconDeviceTv size={18} />}
-              active={
-                pathname ===
-                '/manage/org-super-sprinkles/event/event-giro-sf-2025/race/race-giro-sf-2025-masters-women'
-              }
-              component={Link}
-            />
-            <NavLink
-              href="/preem/preem-giro-sf-2025-masters-women-first-lap"
-              label="Preem"
-              leftSection={<IconDeviceTv size={18} />}
-              active={
-                pathname === '/preem/preem-giro-sf-2025-masters-women-first-lap'
-              }
-              component={Link}
-            />
-            <NavLink
-              href="/big-screen/race-giro-sf-2025-masters-women"
-              label="Big Screen"
-              leftSection={<IconDeviceTv size={18} />}
-              active={
-                pathname === '/big-screen/race-giro-sf-2025-masters-women'
-              }
-              component={Link}
-            />
-            <NavLink
-              href="/account"
-              label="Account"
-              leftSection={<IconDeviceTv size={18} />}
-              active={pathname === '/account'}
-              component={Link}
-            />
-            <NavLink
-              href="/admin"
-              label="Admin"
-              leftSection={<IconShield size={18} />}
-              active={pathname === '/admin'}
-            />
-            <NavLink
-              href="/organization/org-super-sprinkles"
-              label="Organization"
-              leftSection={<IconDeviceTv size={18} />}
-              active={pathname === '/organization/org-super-sprinkles'}
-              component={Link}
-            />
-            <NavLink
-              href="/series/series-giro-sf"
-              label="Series"
-              leftSection={<IconDeviceTv size={18} />}
-              active={pathname === '/series/series-giro-sf'}
-              component={Link}
-            />
-            <NavLink
-              href="/event/event-giro-sf-2025"
-              label="Event"
-              leftSection={<IconDeviceTv size={18} />}
-              active={pathname === '/event/event-giro-sf-2025'}
-              component={Link}
-            />
-            <NavLink
-              href="/manage/org-super-sprinkles"
               label="Manage"
-              leftSection={<IconDeviceTv size={18} />}
-              active={pathname.startsWith('/manage')}
-              component={Link}
-            />
+              leftSection={<IconCrown size={18} />}
+              defaultOpened
+            >
+              <NavLink
+                href="/manage/organization/org-super-sprinkles"
+                label="Org (Live)"
+                component={Link}
+              />
+              <NavLink
+                href="/manage/organization/org-super-sprinkles/edit"
+                label="Org (Edit)"
+                component={Link}
+              />
+              <NavLink
+                href="/manage/series/series-giro-sf/edit"
+                label="Series (Edit)"
+                component={Link}
+              />
+              <NavLink
+                href="/manage/event/event-giro-sf-2025"
+                label="Event (Live)"
+                component={Link}
+              />
+              <NavLink
+                href="/manage/event/event-giro-sf-2025/edit"
+                label="Event (Edit)"
+                component={Link}
+              />
+              <NavLink
+                href="/manage/race/race-giro-sf-2025-masters-women"
+                label="Race (Live)"
+                component={Link}
+              />
+            </NavLink>
           </NavLink>
         </Box>
       </div>

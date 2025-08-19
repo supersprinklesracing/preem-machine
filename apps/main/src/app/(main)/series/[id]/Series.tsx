@@ -60,6 +60,8 @@ export default function Series({ data }: Props) {
             variant="outline"
             leftSection={<IconPencil size={14} />}
             size="xs"
+            component={Link}
+            href={`/manage/series/${series.id}/edit`}
           >
             Edit Series
           </Button>

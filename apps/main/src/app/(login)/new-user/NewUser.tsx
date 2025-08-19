@@ -111,7 +111,11 @@ const NewUser: React.FC<Props> = ({ newUserAction }: Props) => {
         <Grid>
           <Grid.Col span={{ base: 12, lg: 4 }}>
             <Stack>
-              <UserProfileCard {...form.getValues()} name={debouncedName} />
+              <UserProfileCard
+                name={debouncedName || authUser.displayName || 'Your full name'}
+                email={authUser.email ?? undefined}
+                avatarUrl={authUser.photoURL ?? undefined}
+              />
 
               <Box display={{ base: 'block', lg: 'none' }} mt="md">
                 <FormFields form={form} nameError={debouncedNameError} />

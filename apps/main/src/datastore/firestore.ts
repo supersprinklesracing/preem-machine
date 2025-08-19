@@ -5,8 +5,7 @@ import type { firestore } from 'firebase-admin';
 import { cache } from 'react';
 import type { AdminPageData } from '../app/(main)/admin/Admin';
 import type { HomePageData } from '../app/(main)/Home';
-import type { ManageEventPageData } from '../app/(main)/manage/[orgId]/event/[eventId]/ManageEvent';
-import type { ManagePageData } from '../app/(main)/manage/[orgId]/Manage';
+import type { ManagePageData } from '../app/(main)/manage/(live)/Hub';
 import type { OrganizationPageData } from '../app/(main)/organization/[id]/Organization';
 import type { PreemPageData } from '../app/(main)/preem/[id]/Preem';
 import type { RacePageData } from '../app/(main)/race/[id]/Race';
@@ -110,6 +109,50 @@ export const getUserById = cache(
       .withConverter(genericConverter<User>())
       .get();
     return docSnap.data();
+  }
+);
+
+export const getOrganizationById = cache(
+  async (id: string): Promise<ClientCompat<Organization> | undefined> => {
+    const db = await getFirestore();
+    const docSnap = await db
+      .collection('organizations')
+      .doc(id)
+      .withConverter(genericConverter<Organization>())
+      .get();
+    return docSnap.data();
+  }
+);
+
+export const getSeriesById = cache(
+  async (id: string): Promise<ClientCompat<Series> | undefined> => {
+    const db = await getFirestore();
+    const seriesSnap = await db
+      .collectionGroup('series')
+      .where('id', '==', id)
+      .withConverter(genericConverter<Series>())
+      .limit(1)
+      .get();
+    if (seriesSnap.empty) {
+      return undefined;
+    }
+    return seriesSnap.docs[0].data();
+  }
+);
+
+export const getEventById = cache(
+  async (id: string): Promise<ClientCompat<Event> | undefined> => {
+    const db = await getFirestore();
+    const eventSnap = await db
+      .collectionGroup('events')
+      .where('id', '==', id)
+      .withConverter(genericConverter<Event>())
+      .limit(1)
+      .get();
+    if (eventSnap.empty) {
+      return undefined;
+    }
+    return eventSnap.docs[0].data();
   }
 );
 
@@ -304,8 +347,10 @@ export const getRenderableSeriesDataForPage = cache(
   }
 );
 
+import type { LiveEventPageData } from '../app/(main)/manage/event/[eventId]/(live)/LiveEvent';
+// ...
 export const getRenderableEventDataForPage = cache(
-  async (id: string): Promise<ManageEventPageData | undefined> => {
+  async (id: string): Promise<LiveEventPageData | undefined> => {
     const db = await getFirestore();
     const eventSnap = await db
       .collectionGroup('events')
@@ -320,7 +365,7 @@ export const getRenderableEventDataForPage = cache(
     const event = await getRacesForEvent(eventSnap.docs[0]);
 
     return {
-      event: event as unknown as ManageEventPageData['event'],
+      event: event as unknown as LiveEventPageData['event'],
     };
   }
 );

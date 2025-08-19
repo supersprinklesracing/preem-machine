@@ -1,12 +1,12 @@
 import { getRenderableManageDataForPage } from '@/datastore/firestore';
-import Manage from './Manage';
+import Hub from './Hub';
 
-export default async function ManagePage({
+export default async function LiveOrganizationPage({
   params,
 }: {
   params: { orgId: string };
 }) {
   const data = await getRenderableManageDataForPage((await params).orgId);
 
-  return <Manage data={data} />;
+  return <Hub data={data} />;
 }

@@ -1,16 +1,16 @@
-import ManageEvent from './ManageEvent';
+import LiveEvent from './LiveEvent';
 import { getRenderableEventDataForPage } from '@/datastore/firestore';
 import { notFound } from 'next/navigation';
 
-export default async function ManageEventPage({
+export default async function LiveEventPage({
   params,
 }: {
-  params: { orgId: string; eventId: string };
+  params: { eventId: string };
 }) {
   const data = await getRenderableEventDataForPage((await params).eventId);
 
   if (!data) {
     notFound();
   }
-  return <ManageEvent data={data} />;
+  return <LiveEvent data={data} />;
 }
