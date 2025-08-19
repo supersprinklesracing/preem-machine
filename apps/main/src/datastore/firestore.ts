@@ -5,7 +5,7 @@ import type { firestore } from 'firebase-admin';
 import { cache } from 'react';
 import type { AdminPageData } from '../app/(main)/admin/Admin';
 import type { HomePageData } from '../app/(main)/Home';
-import type { ManagePageData } from '../app/(main)/manage/(live)/Hub';
+import type { HubPageData } from '../app/(main)/manage/(live)/Hub';
 import type { OrganizationPageData } from '../app/(main)/organization/[id]/Organization';
 import type { PreemPageData } from '../app/(main)/preem/[id]/Preem';
 import type { RacePageData } from '../app/(main)/race/[id]/Race';
@@ -460,8 +460,8 @@ export const getRenderableUserDataForPage = cache(
   }
 );
 
-export const getRenderableManageDataForPage = cache(
-  async (organizationId: string): Promise<ManagePageData> => {
+export const getRenderableHubDataForPage = cache(
+  async (organizationId: string): Promise<HubPageData> => {
     const db = await getFirestore();
     const seriesSnap = await db
       .collection(`organizations/${organizationId}/series`)

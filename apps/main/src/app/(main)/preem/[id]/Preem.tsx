@@ -4,7 +4,7 @@ export const dynamic = 'force-dynamic';
 
 import AnimatedNumber from '@/components/animated-number';
 import ContributionModal from '@/components/contribution-modal';
-import StatusBadge from '@/components/status-badge';
+import PreemStatusBadge from '@/components/PreemStatusBadge';
 import { PreemWithContributions } from '@/datastore/firestore';
 import type { ClientCompat } from '@/datastore/types';
 import {
@@ -105,7 +105,7 @@ export const Preem: React.FC<Props> = ({ data }) => {
             </Title>
             <SimpleGrid cols={2} spacing="md">
               <Group>
-                <StatusBadge status={preem.status || 'Open'} />
+                <PreemStatusBadge status={preem.status || 'Open'} />
               </Group>
               <Group gap="xs">
                 <IconUsers size={18} stroke={1.5} />

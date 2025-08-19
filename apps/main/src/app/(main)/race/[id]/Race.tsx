@@ -2,10 +2,10 @@
 
 export const dynamic = 'force-dynamic';
 
-import RaceCard from '@/components/RaceCard';
+import RaceCard from '@/components/cards/RaceCard';
 import AnimatedNumber from '@/components/animated-number';
 import ContributionModal from '@/components/contribution-modal';
-import StatusBadge from '@/components/status-badge';
+import PreemStatusBadge from '@/components/PreemStatusBadge';
 import { PreemWithContributions, RaceWithPreems } from '@/datastore/firestore';
 import { ClientCompat } from '@/datastore/types';
 import {
@@ -77,7 +77,7 @@ export const Race: React.FC<Props> = ({ data }) => {
       </Table.Td>
       <Table.Td>{getSponsorName(preem)}</Table.Td>
       <Table.Td>
-        <StatusBadge status={preem.status || 'Open'} />
+        <PreemStatusBadge status={preem.status || 'Open'} />
       </Table.Td>
       <Table.Td>
         <Group justify="flex-end">

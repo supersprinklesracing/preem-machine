@@ -3,7 +3,7 @@
 export const dynamic = 'force-dynamic';
 
 import AnimatedNumber from '@/components/animated-number';
-import StatusBadge from '@/components/status-badge';
+import PreemStatusBadge from '@/components/PreemStatusBadge';
 import type { ClientCompat, User } from '@/datastore/types';
 import {
   Button,
@@ -68,7 +68,7 @@ export const LiveRace: React.FC<{ data: LiveRaceData }> = ({ data }) => {
         </Text>
       </Table.Td>
       <Table.Td>
-        <StatusBadge status={preem.status ?? 'Open'} />
+        <PreemStatusBadge status={preem.status ?? 'Open'} />
       </Table.Td>
       <Table.Td>
         <Group justify="flex-end">

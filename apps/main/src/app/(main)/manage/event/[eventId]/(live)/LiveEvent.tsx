@@ -1,6 +1,6 @@
 'use client';
 
-import RaceCard from '@/components/RaceCard';
+import RaceCard from '@/components/cards/RaceCard';
 import { EventWithRaces } from '@/datastore/firestore';
 import type { ClientCompat } from '@/datastore/types';
 import {
@@ -74,8 +74,9 @@ export default function LiveEvent({ data }: Props) {
                 href={`/manage/race/${race.id}`}
                 fullWidth
                 mt="md"
+                variant="outline"
               >
-                Manage
+                Live
               </Button>
             </RaceCard>
           ))}
