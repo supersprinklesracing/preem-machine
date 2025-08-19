@@ -1,21 +1,28 @@
 'use client';
 
+import { seriesPath } from '@/datastore/paths';
+import type { ClientCompat, Series } from '@/datastore/types';
+import { getISODateFromDate } from '@/firebase-client/dates';
 import {
   Button,
   Card,
+  Container,
+  Grid,
   Group,
   Stack,
   Text,
   TextInput,
   Title,
 } from '@mantine/core';
+import { DatePicker } from '@mantine/dates';
 import { useForm } from '@mantine/form';
 import { useRouter } from 'next/navigation';
-import * as React from 'react';
+import { useState } from 'react';
 import { UpdateSeriesOptions } from './update-series-action';
-import type { ClientCompat, Series } from '@/datastore/types';
 
-type FormValues = Partial<Series>;
+type FormValues = Partial<Omit<Series, 'startDate' | 'endDate'>> & {
+  dateRange: [Date | null, Date | null];
+};
 
 export function EditSeries({
   updateSeriesAction,
@@ -27,16 +34,18 @@ export function EditSeries({
   series: ClientCompat<Series>;
 }) {
   const router = useRouter();
-  const [isLoading, setIsLoading] = React.useState(false);
-  const [submissionError, setSubmissionError] = React.useState<string | null>(
-    null
-  );
+  const [isLoading, setIsLoading] = useState(false);
+  const [submissionError, setSubmissionError] = useState<string | null>(null);
 
   const form = useForm<FormValues>({
     initialValues: {
       name: series.name,
-      region: series.region,
-      website: series.website,
+      location: series.location ?? '',
+      website: series.website ?? '',
+      dateRange: [
+        series.startDate ? new Date(series.startDate) : null,
+        series.endDate ? new Date(series.endDate) : null,
+      ],
     },
     validate: {
       name: (value) =>
@@ -50,11 +59,34 @@ export function EditSeries({
     setIsLoading(true);
     setSubmissionError(null);
 
+    const [startDate, endDate] = values.dateRange.map((d) =>
+      d ? new Date(d) : null
+    );
+
     try {
-      const result = await updateSeriesAction({ series: values });
+      if (!series.id || !series.organizationBrief?.id) {
+        throw new Error('Missing ID');
+      }
+      const path = seriesPath({
+        id: series.id,
+        organizationBrief: {
+          id: series.organizationBrief.id,
+        },
+      });
+      const result = await updateSeriesAction({
+        path,
+        series: {
+          name: values.name,
+          location: values.location,
+          website: values.website,
+          startDate: getISODateFromDate(startDate),
+          endDate: getISODateFromDate(
+            endDate ? endDate : startDate ? startDate : undefined
+          ),
+        },
+      });
       if (result.ok) {
         router.refresh();
-        router.push(`/manage/${series.organizationBrief?.id}`);
       } else {
         setSubmissionError(result.error || 'An unknown error occurred.');
       }
@@ -69,29 +101,61 @@ export function EditSeries({
   };
 
   return (
-    <Stack>
-      <Title order={1}>Edit Series</Title>
-      <Card withBorder>
-        <Stack>
-          <TextInput
-            label="Series Name"
-            required
-            {...form.getInputProps('name')}
-          />
-          <TextInput label="Region" {...form.getInputProps('region')} />
-          <TextInput label="Website" {...form.getInputProps('website')} />
-          <Group justify="right">
-            <Button
-              onClick={() => handleSubmit(form.values)}
-              loading={isLoading}
-              disabled={!form.isValid()}
-            >
-              Save Changes
-            </Button>
-          </Group>
-          {submissionError && <Text c="red">{submissionError}</Text>}
-        </Stack>
-      </Card>
-    </Stack>
+    <Container size="sm">
+      <Stack>
+        <Title order={1}>Edit Series</Title>
+        <Card withBorder>
+          <Stack>
+            <Grid>
+              <Grid.Col span={{ base: 12, md: 6 }}>
+                <Card withBorder p="sm" h="100%">
+                  <Stack>
+                    <TextInput
+                      label="Series Name"
+                      required
+                      {...form.getInputProps('name')}
+                    />
+                    <TextInput
+                      label="Location"
+                      {...form.getInputProps('location')}
+                    />
+                    <TextInput
+                      label="Website"
+                      {...form.getInputProps('website')}
+                    />
+                  </Stack>
+                </Card>
+              </Grid.Col>
+              <Grid.Col span={{ base: 12, md: 6 }}>
+                <Card withBorder p="sm" h="100%">
+                  <Stack>
+                    <Title order={5}>Series Dates</Title>
+                    <DatePicker
+                      type="range"
+                      {...form.getInputProps('dateRange')}
+                      defaultDate={
+                        series.startDate
+                          ? new Date(series.startDate)
+                          : undefined
+                      }
+                    />
+                  </Stack>
+                </Card>
+              </Grid.Col>
+            </Grid>
+            <Group justify="right">
+              <Button
+                onClick={() => handleSubmit(form.values)}
+                loading={isLoading}
+                disabled={!form.isValid()}
+              >
+                Save Changes
+              </Button>
+            </Group>
+            {submissionError && <Text c="red">{submissionError}</Text>}
+          </Stack>
+        </Card>
+      </Stack>
+    </Container>
   );
 }

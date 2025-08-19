@@ -1,33 +1,20 @@
 'use server';
 
-import { getAuthUserFromCookies } from '@/auth/user';
+import { verifyAuthUser } from '@/auth/user';
+import { updateUser } from '@/datastore/mutations';
 import type { User } from '@/datastore/types';
-import { getFirestore } from '@/firebase-admin/firebase-admin';
 
 export interface UpdateUserOptions {
-  user?: Partial<User>;
+  path: string;
+  user: Partial<User>;
 }
 
 export async function updateUserAction(
-  updateUser: UpdateUserOptions
+  options: UpdateUserOptions
 ): Promise<{ ok: boolean; error?: string }> {
   try {
-    const authUser = await getAuthUserFromCookies();
-    if (!authUser) {
-      return { ok: false, error: 'Authentication required.' };
-    }
-
-    if (updateUser.user) {
-      const db = await getFirestore();
-      const userRef = db.collection('users').doc(authUser.uid);
-      const userDoc = await userRef.get();
-
-      if (!userDoc.exists) {
-        return { ok: false, error: 'User profile does not exist.' };
-      }
-
-      await userRef.update(updateUser.user);
-    }
+    const authUser = await verifyAuthUser();
+    await updateUser(options.path, options.user, authUser);
 
     return { ok: true };
   } catch (error) {

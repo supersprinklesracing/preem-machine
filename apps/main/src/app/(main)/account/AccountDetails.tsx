@@ -21,8 +21,8 @@ import { useForm } from '@mantine/form';
 import { useDebouncedValue } from '@mantine/hooks';
 import { signOut } from 'firebase/auth';
 import Link from 'next/link';
-import { useRouter } from 'next/navigation';
-import * as React from 'react';
+import { unauthorized, useRouter } from 'next/navigation';
+import { ReactNode, useEffect, useState } from 'react';
 import { useLoadingCallback } from 'react-loading-hook';
 import { PreferencesPanel } from './PreferencesPanel';
 import { UpdateUserOptions } from './update-user-action';
@@ -37,19 +37,23 @@ export function AccountDetails({
   const router = useRouter();
   const { authUser } = useAuth();
   const { currentUser } = useCurrentUser();
-  const [hasLoggedOut, setHasLoggedOut] = React.useState(false);
-  const [isLoading, setIsLoading] = React.useState(false);
-  const [submissionError, setSubmissionError] = React.useState<string | null>(
-    null
-  );
-  const [debouncedNameError, setDebouncedNameError] =
-    React.useState<React.ReactNode>(null);
+  const [hasLoggedOut, setHasLoggedOut] = useState(false);
+  const [isLoading, setIsLoading] = useState(false);
+  const [submissionError, setSubmissionError] = useState<string | null>(null);
+  const [debouncedNameError, setDebouncedNameError] = useState<ReactNode>(null);
+
+  if (!currentUser) {
+    unauthorized();
+  }
 
   const form = useForm<FormValues>({
     initialValues: {
       name: currentUser?.name ?? authUser?.displayName ?? '',
       email: authUser?.email ?? '',
       avatarUrl: currentUser?.avatarUrl ?? authUser?.photoURL ?? '',
+      affiliation: currentUser?.affiliation ?? '',
+      raceLicenseId: currentUser?.raceLicenseId ?? '',
+      address: currentUser?.address ?? '',
       termsAccepted: true,
     },
     validateInputOnChange: false,
@@ -63,7 +67,7 @@ export function AccountDetails({
 
   const [debouncedName] = useDebouncedValue(form.values.name, 500);
 
-  React.useEffect(() => {
+  useEffect(() => {
     const result = form.validateField('name');
     setDebouncedNameError(result.error);
   }, [debouncedName, form]);
@@ -72,24 +76,25 @@ export function AccountDetails({
     setIsLoading(true);
     setSubmissionError(null);
 
-    const userUpdate: Partial<User> = {
+    const user: Partial<User> = {
       name: values.name,
       email: values.email,
       avatarUrl: values.avatarUrl,
     };
 
     if (values.affiliation) {
-      userUpdate.affiliation = values.affiliation;
+      user.affiliation = values.affiliation;
     }
     if (values.raceLicenseId) {
-      userUpdate.raceLicenseId = values.raceLicenseId;
+      user.raceLicenseId = values.raceLicenseId;
     }
     if (values.address) {
-      userUpdate.address = values.address;
+      user.address = values.address;
     }
 
     try {
-      const result = await updateUserAction({ user: userUpdate });
+      const path = `users/${currentUser.id}`;
+      const result = await updateUserAction({ path, user });
       if (result.ok) {
         router.refresh();
       } else {

@@ -53,7 +53,7 @@ export default function LiveEvent({ data }: Props) {
         hosted by{' '}
         <Anchor
           component={Link}
-          href={`/manage/${event.seriesBrief?.organizationBrief?.id}`}
+          href={`/manage/organization/${event.seriesBrief?.organizationBrief?.id}/edit`}
         >
           {organization?.name}
         </Anchor>

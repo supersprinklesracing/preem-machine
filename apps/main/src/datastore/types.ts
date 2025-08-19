@@ -73,6 +73,7 @@ export interface Organization {
   metadata?: Metadata;
 
   name?: string;
+  website?: string;
   memberRefs?: DocumentReference<User>[];
   stripe: {
     connectAccountId?: string;
@@ -178,7 +179,7 @@ export interface Series {
   metadata?: Metadata;
 
   name?: string;
-  region?: string;
+  location?: string;
   website?: string;
   startDate?: Timestamp;
   endDate?: Timestamp;

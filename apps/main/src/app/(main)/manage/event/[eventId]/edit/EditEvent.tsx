@@ -1,22 +1,31 @@
 'use client';
 
+import { eventPath } from '@/datastore/paths';
 import type { ClientCompat, Event } from '@/datastore/types';
+import { getISODateFromDate } from '@/firebase-client/dates';
 import {
   Button,
   Card,
+  Container,
+  Grid,
   Group,
   Stack,
   Text,
   TextInput,
   Title,
 } from '@mantine/core';
+import { DatePicker } from '@mantine/dates';
 import { useForm } from '@mantine/form';
 import { useRouter } from 'next/navigation';
-import * as React from 'react';
+import { useState } from 'react';
 import { UpdateEventOptions } from './update-event-action';
 
-// eslint-disable-next-line @typescript-eslint/no-empty-object-type, @typescript-eslint/no-empty-interface
-interface FormValues extends Partial<Event> {}
+interface FormValues {
+  name?: string;
+  location?: string;
+  website?: string;
+  date?: Date | null;
+}
 
 export function EditEvent({
   updateEventAction,
@@ -28,16 +37,15 @@ export function EditEvent({
   event: ClientCompat<Event>;
 }) {
   const router = useRouter();
-  const [isLoading, setIsLoading] = React.useState(false);
-  const [submissionError, setSubmissionError] = React.useState<string | null>(
-    null
-  );
+  const [isLoading, setIsLoading] = useState(false);
+  const [submissionError, setSubmissionError] = useState<string | null>(null);
 
   const form = useForm<FormValues>({
     initialValues: {
       name: event.name,
       location: event.location,
       website: event.website,
+      date: event.startDate ? new Date(event.startDate) : null,
     },
     validate: {
       name: (value) =>
@@ -51,11 +59,37 @@ export function EditEvent({
     setIsLoading(true);
     setSubmissionError(null);
 
+    const date = values.date ? new Date(values.date) : null;
+
     try {
-      const result = await updateEventAction({ event: values });
+      if (
+        !event.id ||
+        !event.seriesBrief?.id ||
+        !event.seriesBrief?.organizationBrief?.id
+      ) {
+        throw new Error('Missing ID');
+      }
+      const path = eventPath({
+        id: event.id,
+        seriesBrief: {
+          id: event.seriesBrief.id,
+          organizationBrief: {
+            id: event.seriesBrief.organizationBrief.id,
+          },
+        },
+      });
+      const result = await updateEventAction({
+        path,
+        event: {
+          name: values.name,
+          location: values.location,
+          website: values.website,
+          startDate: getISODateFromDate(date),
+          endDate: getISODateFromDate(date),
+        },
+      });
       if (result.ok) {
         router.refresh();
-        router.push(`/manage/event/${event.id}`);
       } else {
         setSubmissionError(result.error || 'An unknown error occurred.');
       }
@@ -70,29 +104,58 @@ export function EditEvent({
   };
 
   return (
-    <Stack>
-      <Title order={1}>Edit Event</Title>
-      <Card withBorder>
-        <Stack>
-          <TextInput
-            label="Event Name"
-            required
-            {...form.getInputProps('name')}
-          />
-          <TextInput label="Location" {...form.getInputProps('location')} />
-          <TextInput label="Website" {...form.getInputProps('website')} />
-          <Group justify="right">
-            <Button
-              onClick={() => handleSubmit(form.values)}
-              loading={isLoading}
-              disabled={!form.isValid()}
-            >
-              Save Changes
-            </Button>
-          </Group>
-          {submissionError && <Text c="red">{submissionError}</Text>}
-        </Stack>
-      </Card>
-    </Stack>
+    <Container size="sm">
+      <Stack>
+        <Title order={1}>Edit Event</Title>
+        <Card withBorder>
+          <Stack>
+            <Grid>
+              <Grid.Col span={{ base: 12, md: 6 }}>
+                <Card withBorder p="sm" h="100%">
+                  <Stack>
+                    <TextInput
+                      label="Event Name"
+                      required
+                      {...form.getInputProps('name')}
+                    />
+                    <TextInput
+                      label="Location"
+                      {...form.getInputProps('location')}
+                    />
+                    <TextInput
+                      label="Website"
+                      {...form.getInputProps('website')}
+                    />
+                  </Stack>
+                </Card>
+              </Grid.Col>
+              <Grid.Col span={{ base: 12, md: 6 }}>
+                <Card withBorder p="sm" h="100%">
+                  <Stack>
+                    <Title order={5}>Event Date</Title>
+                    <DatePicker
+                      {...form.getInputProps('date')}
+                      defaultDate={
+                        event.startDate ? new Date(event.startDate) : undefined
+                      }
+                    />
+                  </Stack>
+                </Card>
+              </Grid.Col>
+            </Grid>
+            <Group justify="right">
+              <Button
+                onClick={() => handleSubmit(form.values)}
+                loading={isLoading}
+                disabled={!form.isValid()}
+              >
+                Save Changes
+              </Button>
+            </Group>
+            {submissionError && <Text c="red">{submissionError}</Text>}
+          </Stack>
+        </Card>
+      </Stack>
+    </Container>
   );
 }

@@ -1,36 +1,26 @@
 'use server';
 
-import { getAuthUserFromCookies } from '@/auth/user';
-import type { Event } from '@/datastore/types';
-import { getFirestore } from '@/firebase-admin/firebase-admin';
+import { verifyAuthUser } from '@/auth/user';
+import { updateEvent } from '@/datastore/mutations';
 
 export interface UpdateEventOptions {
-  event?: Partial<Event>;
+  path: string;
+  event: {
+    name?: string;
+    location?: string;
+    website?: string;
+    startDate?: string;
+    endDate?: string;
+  };
 }
 
-export async function updateEventAction(
-  eventId: string,
-  updateEvent: UpdateEventOptions
-): Promise<{ ok: boolean; error?: string }> {
+export async function updateEventAction({
+  path,
+  event,
+}: UpdateEventOptions): Promise<{ ok: boolean; error?: string }> {
   try {
-    const authUser = await getAuthUserFromCookies();
-    if (!authUser) {
-      return { ok: false, error: 'Authentication required.' };
-    }
-
-    if (updateEvent.event) {
-      const db = await getFirestore();
-      // Note: This assumes a top-level 'events' collection.
-      // You may need to adjust the collection path based on your Firestore structure.
-      const eventRef = db.collection('events').doc(eventId);
-      const eventDoc = await eventRef.get();
-
-      if (!eventDoc.exists) {
-        return { ok: false, error: 'Event does not exist.' };
-      }
-
-      await eventRef.update(updateEvent.event);
-    }
+    const authUser = await verifyAuthUser();
+    await updateEvent(path, event, authUser);
 
     return { ok: true };
   } catch (error) {

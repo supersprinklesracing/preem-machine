@@ -40,7 +40,7 @@ export default function SeriesCard({ series, children }: SeriesCardProps) {
               </Text>
             </Group>
             <Text size="sm" c="dimmed">
-              {series.region}
+              {series.location}
             </Text>
           </Stack>
         </Grid.Col>

@@ -3,6 +3,7 @@ import { authConfigFn } from '@/firebase-admin/config';
 import { getTokens, Tokens } from 'next-firebase-auth-edge';
 import { filterStandardClaims } from 'next-firebase-auth-edge/lib/auth/claims';
 import { cookies } from 'next/headers';
+import { unauthorized } from 'next/navigation';
 
 export const toAuthContextUser = ({
   token,
@@ -47,4 +48,12 @@ export const getAuthUserFromCookies = async () => {
   }
 
   return toAuthContextUser(tokens);
+};
+
+export const verifyAuthUser = async (): Promise<AuthContextUser> => {
+  const authUser = await getAuthUserFromCookies();
+  if (!authUser) {
+    unauthorized();
+  }
+  return authUser;
 };

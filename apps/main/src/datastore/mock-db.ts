@@ -174,7 +174,12 @@ export const createMockDb = (firestore: Firestore): DatabaseCollections =>
       {
         id: 'org-super-sprinkles',
         name: 'Super Sprinkles Racing',
-        memberRefs: [createDocRef(firestore, 'users', 'user-test-admin')],
+        memberRefs: [
+          // test-user@example.com
+          createDocRef(firestore, 'users', 'BFGvWNXZoCWayJa0pNEL4bfhtUC3'),
+          // jlapenna.test.1@gmail.com
+          createDocRef(firestore, 'users', '5URlCEB3ACVgem9RAdWudjRURpl2'),
+        ],
         metadata: createMetadata(firestore, '2025-01-15T12:00:00Z'),
         _collections: {
           series: [

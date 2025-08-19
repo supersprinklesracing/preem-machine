@@ -8,23 +8,19 @@ import { updateOrganizationAction } from './update-organization-action';
 export default async function EditOrganizationPage({
   params,
 }: {
-  params: { orgId: string };
+  params: Promise<{ orgId: string }>;
 }) {
-  const organization = await getOrganizationById(params.orgId);
+  const { orgId } = await params;
+  const organization = await getOrganizationById(orgId);
 
   if (!organization) {
     notFound();
   }
 
-  const boundUpdateOrganizationAction = updateOrganizationAction.bind(
-    null,
-    params.orgId
-  );
-
   return (
     <EditOrganization
       organization={organization}
-      updateOrganizationAction={boundUpdateOrganizationAction}
+      updateOrganizationAction={updateOrganizationAction}
     />
   );
 }
