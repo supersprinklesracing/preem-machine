@@ -2,7 +2,7 @@
 
 import { getAuthUserFromCookies } from '@/auth/user';
 import { ActionIcon, Avatar, Group } from '@mantine/core';
-import { IconBell, IconSearch } from '@tabler/icons-react';
+import { IconBell } from '@tabler/icons-react';
 import Link from 'next/link';
 import 'server-only';
 
@@ -11,12 +11,14 @@ export default async function Header() {
 
   return (
     <Group>
-      <ActionIcon variant="outline" size="lg" radius="xl">
-        <IconSearch size={18} />
-      </ActionIcon>
-      <ActionIcon variant="outline" size="lg" radius="xl">
-        <IconBell size={18} />
-      </ActionIcon>
+      {
+        /* eslint-disable-next-line no-constant-binary-expression */
+        false && (
+          <ActionIcon variant="outline" size="lg" radius="xl">
+            <IconBell size={18} />
+          </ActionIcon>
+        )
+      }
       {authUser && (
         <Link href="/account">
           <Avatar
