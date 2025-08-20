@@ -1,5 +1,13 @@
 import { EventWithRaces } from '@/datastore/firestore';
-import { Card, Grid, Group, Stack, Text, Title } from '@mantine/core';
+import {
+  Card,
+  Grid,
+  Group,
+  Stack,
+  Text,
+  Title,
+  TitleOrder,
+} from '@mantine/core';
 import { IconCurrencyDollar, IconUsers } from '@tabler/icons-react';
 import { DateLocationDetail } from './DateLocationDetail';
 import { MetadataItem, MetadataRow } from './MetadataRow';
@@ -7,9 +15,16 @@ import { MetadataItem, MetadataRow } from './MetadataRow';
 export interface EventCardProps {
   event: EventWithRaces;
   children?: React.ReactNode;
+  withBorder?: boolean;
+  titleOrder?: TitleOrder;
 }
 
-export default function EventCard({ event, children }: EventCardProps) {
+export default function EventCard({
+  event,
+  children,
+  withBorder = true,
+  titleOrder = 3,
+}: EventCardProps) {
   const totalCollected = (event.races ?? []).reduce(
     (sum, race) =>
       sum +
@@ -46,7 +61,7 @@ export default function EventCard({ event, children }: EventCardProps) {
 
   return (
     <Card
-      withBorder
+      withBorder={withBorder}
       padding="lg"
       radius="md"
       style={{
@@ -59,7 +74,7 @@ export default function EventCard({ event, children }: EventCardProps) {
         <Grid.Col span={{ base: 12, lg: 9 }}>
           <Stack justify="space-between" style={{ height: '100%' }}>
             <div>
-              <Title order={3}>{event.name}</Title>
+              <Title order={titleOrder}>{event.name}</Title>
               <Group mt="md" mb="md" hiddenFrom="lg">
                 {dateLocationDetailContent}
               </Group>

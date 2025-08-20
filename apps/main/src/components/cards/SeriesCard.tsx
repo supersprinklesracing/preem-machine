@@ -1,14 +1,21 @@
 import { SeriesWithEvents } from '@/datastore/firestore';
-import { Card, Grid, Group, Stack, Title } from '@mantine/core';
+import { Card, Grid, Group, Stack, Title, TitleOrder } from '@mantine/core';
 import React from 'react';
 import { DateLocationDetail } from './DateLocationDetail';
 
 interface SeriesCardProps {
   series: SeriesWithEvents;
   children?: React.ReactNode;
+  withBorder?: boolean;
+  titleOrder?: TitleOrder;
 }
 
-export default function SeriesCard({ series, children }: SeriesCardProps) {
+export default function SeriesCard({
+  series,
+  children,
+  withBorder = true,
+  titleOrder = 3,
+}: SeriesCardProps) {
   const dateLocationDetailContent = (
     <DateLocationDetail
       startDate={series.startDate}
@@ -19,7 +26,7 @@ export default function SeriesCard({ series, children }: SeriesCardProps) {
 
   return (
     <Card
-      withBorder
+      withBorder={withBorder}
       padding="lg"
       radius="md"
       style={{
@@ -35,7 +42,7 @@ export default function SeriesCard({ series, children }: SeriesCardProps) {
               <Group justify="space-between" align="flex-start">
                 <div>
                   <Title
-                    order={3}
+                    order={titleOrder}
                     ff="Space Grotesk, var(--mantine-font-family)"
                   >
                     {series.name}

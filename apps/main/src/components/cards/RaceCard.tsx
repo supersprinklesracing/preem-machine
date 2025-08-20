@@ -1,6 +1,14 @@
 import { RaceWithPreems } from '@/datastore/firestore';
 import type { ClientCompat } from '@/datastore/types';
-import { Card, Grid, Group, Stack, Text, Title } from '@mantine/core';
+import {
+  Card,
+  Grid,
+  Group,
+  Stack,
+  Text,
+  Title,
+  TitleOrder,
+} from '@mantine/core';
 import {
   IconAward,
   IconClock,
@@ -18,9 +26,17 @@ interface RaceCardProps {
   race: ClientCompat<RaceWithPreems>;
   children?: React.ReactNode;
   style?: React.CSSProperties;
+  withBorder?: boolean;
+  titleOrder?: TitleOrder;
 }
 
-const RaceCard: React.FC<RaceCardProps> = ({ race, children, style }) => {
+const RaceCard: React.FC<RaceCardProps> = ({
+  race,
+  children,
+  style,
+  withBorder = true,
+  titleOrder = 3,
+}) => {
   const totalPrizePool = (race.preems ?? []).reduce(
     (sum, preem) => sum + (preem.prizePool ?? 0),
     0
@@ -84,7 +100,7 @@ const RaceCard: React.FC<RaceCardProps> = ({ race, children, style }) => {
 
   return (
     <Card
-      withBorder
+      withBorder={withBorder}
       padding="lg"
       radius="md"
       style={{
@@ -101,7 +117,7 @@ const RaceCard: React.FC<RaceCardProps> = ({ race, children, style }) => {
               <Group justify="space-between" align="flex-start">
                 <div>
                   <Group align="center" gap="md">
-                    <Title order={3}>{race.name}</Title>
+                    <Title order={titleOrder}>{race.name}</Title>
                     <DateStatusBadge {...race} />
                   </Group>
                   <Text c="dimmed">
