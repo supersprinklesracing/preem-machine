@@ -11,6 +11,7 @@ import type { PreemPageData } from '../app/(main)/preem/[id]/Preem';
 import type { RacePageData } from '../app/(main)/race/[id]/Race';
 import type { SeriesPageData } from '../app/(main)/series/[id]/Series';
 import type { UserPageData } from '../app/(main)/user/[[...id]]/User';
+import { getAuthUserFromCookies } from '../auth/user';
 import { genericConverter } from './converters';
 import type {
   ClientCompat,
@@ -479,19 +480,6 @@ export const getRenderableUserDataForPage = cache(
   }
 );
 
-export const getRenderableHubDataForPage = cache(
-  async (organizationId: string): Promise<HubPageData> => {
-    const db = await getFirestore();
-    const seriesSnap = await db
-      .collection(`organizations/${organizationId}/series`)
-      .withConverter(genericConverter<Series>())
-      .get();
-    const serieses = await Promise.all(seriesSnap.docs.map(getEventsForSeries));
-
-    return { serieses };
-  }
-);
-
 export const getRenderableAdminDataForPage = cache(
   async (): Promise<AdminPageData> => {
     const users = await getUsers();
@@ -506,3 +494,158 @@ export const anonymousUser = () => ({
   name: 'Anonymous',
   avatarUrl: 'https://placehold.co/100x100.png',
 });
+
+
+export const getRaceWithUsers = cache(
+  async (
+    raceId: string
+  ): Promise<
+    | { race: ClientCompat<RaceWithPreems>; users: ClientCompat<User>[] }
+    | undefined
+  > => {
+    const raceData = await getRenderableRaceDataForPage(raceId);
+    if (!raceData) {
+      return undefined;
+    }
+    const { race } = raceData;
+
+    const contributorIds =
+      race.preems
+        ?.flatMap((p) => p.contributions?.map((c) => c.contributor?.id))
+        .filter((id): id is string => !!id) ?? [];
+
+    const uniqueUserIds = [...new Set(contributorIds)];
+    const users =
+      uniqueUserIds.length > 0 ? await getUsersByIds(uniqueUserIds) : [];
+
+    return {
+      race: race as ClientCompat<RaceWithPreems>,
+      users: users as ClientCompat<User>[],
+    };
+  }
+);
+
+export const getSeriesForOrganization = cache(
+  async (organizationId: string): Promise<ClientCompat<Series>[]> => {
+    const db = await getFirestore();
+    const seriesSnap = await db
+      .collection(`organizations/${organizationId}/series`)
+      .withConverter(genericConverter<Series>())
+      .get();
+    return seriesSnap.docs.map((doc) => doc.data());
+  }
+);
+
+export const getRacesForEventId = cache(
+  async (eventId: string): Promise<ClientCompat<Race>[]> => {
+    const db = await getFirestore();
+    const eventSnap = await db
+      .collectionGroup('events')
+      .where('id', '==', eventId)
+      .limit(1)
+      .get();
+    if (eventSnap.empty) {
+      return [];
+    }
+    const racesSnap = await eventSnap.docs[0].ref
+      .collection('races')
+      .withConverter(genericConverter<Race>())
+      .get();
+    return racesSnap.docs.map((doc) => doc.data());
+  }
+);
+
+export const getPreemsForRaceId = cache(
+  async (raceId: string): Promise<ClientCompat<Preem>[]> => {
+    const db = await getFirestore();
+    const raceSnap = await db
+      .collectionGroup('races')
+      .where('id', '==', raceId)
+      .limit(1)
+      .get();
+    if (raceSnap.empty) {
+      return [];
+    }
+    const preemsSnap = await raceSnap.docs[0].ref
+      .collection('preems')
+      .withConverter(genericConverter<Preem>())
+      .get();
+    return preemsSnap.docs.map((doc) => doc.data());
+  }
+);
+
+export const getContributionsForPreemId = cache(
+  async (preemId: string): Promise<ClientCompat<Contribution>[]> => {
+    const db = await getFirestore();
+    const preemSnap = await db
+      .collectionGroup('preems')
+      .where('id', '==', preemId)
+      .limit(1)
+      .get();
+    if (preemSnap.empty) {
+      return [];
+    }
+    const contributionsSnap = await preemSnap.docs[0].ref
+      .collection('contributions')
+      .withConverter(genericConverter<Contribution>())
+      .get();
+    return contributionsSnap.docs.map((doc) => doc.data());
+  }
+);
+
+export const getOrganizationsForUser = cache(
+  async (userId: string): Promise<ClientCompat<Organization>[]> => {
+    const user = await getUserById(userId);
+    if (!user || !user.organizationRefs) {
+      return [];
+    }
+    const orgs = await Promise.all(
+      user.organizationRefs.map((ref) => getOrganizationById(ref.id))
+    );
+    return orgs.filter((org): org is ClientCompat<Organization> => !!org);
+  }
+);
+
+export const getHubPageData = cache(
+  async (): Promise<HubPageData> => {
+    const authUser = await getAuthUserFromCookies();
+    if (!authUser) {
+      return { organizations: [] };
+    }
+
+    const organizations = await getOrganizationsForUser(authUser.id);
+
+    const organizationsWithSeries = await Promise.all(
+      organizations.map(async (org) => {
+        const serieses = await getSeriesForOrganization(org.id);
+        const seriesesWithEvents = await Promise.all(
+          serieses.map(async (series) => {
+            const seriesDocSnap = await (
+              await getFirestore()
+            )
+              .collection(`organizations/${org.id}/series`)
+              .doc(series.id)
+              .withConverter(genericConverter<Series>())
+              .get();
+            if (seriesDocSnap.exists) {
+              return getEventsForSeries(
+                seriesDocSnap as firestore.QueryDocumentSnapshot<
+                  ClientCompat<Series>
+                >
+              );
+            }
+            return null;
+          })
+        );
+        return {
+          ...org,
+          serieses: seriesesWithEvents.filter(
+            (s): s is ClientCompat<SeriesWithEvents> => s !== null
+          ),
+        };
+      })
+    );
+
+    return { organizations: organizationsWithSeries };
+  }
+);
