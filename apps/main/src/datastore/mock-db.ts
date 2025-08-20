@@ -233,7 +233,7 @@ export const createMockDb = (firestore: Firestore): DatabaseCollections =>
                               {
                                 id: 'preem-giro-sf-2025-masters-women-first-lap',
                                 name: 'First Lap Leader',
-                                type: 'One-Shot',
+                                type: 'Pooled',
                                 status: 'Awarded',
                                 prizePool: 100,
                                 metadata: createMetadata(
@@ -348,8 +348,8 @@ export const createMockDb = (firestore: Firestore): DatabaseCollections =>
                               },
                               {
                                 id: 'preem-giro-sf-2025-masters-women-final-lap',
-                                name: 'Final Lap Leader',
-                                type: 'Pooled',
+                                name: 'Sponsored by Bicycle Law!',
+                                type: 'One-Shot',
                                 status: 'Open',
                                 prizePool: 75,
                                 minimumThreshold: 150,
