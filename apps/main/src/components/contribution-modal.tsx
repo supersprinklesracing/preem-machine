@@ -25,13 +25,22 @@ interface ContributionModalProps {
 const ContributionForm = ({
   preem,
   onClose,
+  amount,
+  setAmount,
+  isAnonymous,
+  setIsAnonymous,
+  message,
+  setMessage,
 }: {
   preem: { id: string; path: string; name: string };
   onClose: () => void;
+  amount: number | '';
+  setAmount: (value: number | '') => void;
+  isAnonymous: boolean;
+  setIsAnonymous: (value: boolean) => void;
+  message: string;
+  setMessage: (value: string) => void;
 }) => {
-  const [amount, setAmount] = useState<number | ''>(5);
-  const [isAnonymous, setIsAnonymous] = useState(false);
-  const [message, setMessage] = useState('');
   const { handleContribute, isProcessing } = useContribution();
 
   const handleSubmit = (event: React.FormEvent<HTMLFormElement>) => {
@@ -79,7 +88,7 @@ const ContributionForm = ({
             Cancel
           </Button>
           <Button type="submit" disabled={isProcessing}>
-            {isProcessing ? 'Processing...' : `Contribute ${amount}`}
+            {isProcessing ? 'Processing...' : `Contribute $${amount}`}
           </Button>
         </Group>
       </Stack>
@@ -92,6 +101,19 @@ const ContributionModal: React.FC<ContributionModalProps> = ({
   onClose,
   preem,
 }) => {
+  const [amount, setAmount] = useState<number | ''>(5);
+  const [isAnonymous, setIsAnonymous] = useState(false);
+  const [message, setMessage] = useState('');
+
+  const options = {
+    mode: 'payment' as const,
+    amount: (typeof amount === 'number' ? amount : 0) * 100,
+    currency: 'usd',
+    appearance: {
+      theme: 'stripe' as const,
+    },
+  };
+
   return (
     <Modal
       opened={isOpen}
@@ -99,8 +121,17 @@ const ContributionModal: React.FC<ContributionModalProps> = ({
       title={`Contribute to ${preem.name}`}
       centered
     >
-      <Elements stripe={stripePromise}>
-        <ContributionForm preem={preem} onClose={onClose} />
+      <Elements stripe={stripePromise} options={options}>
+        <ContributionForm
+          preem={preem}
+          onClose={onClose}
+          amount={amount}
+          setAmount={setAmount}
+          isAnonymous={isAnonymous}
+          setIsAnonymous={setIsAnonymous}
+          message={message}
+          setMessage={setMessage}
+        />
       </Elements>
     </Modal>
   );

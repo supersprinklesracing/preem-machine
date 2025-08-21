@@ -58,6 +58,7 @@ export async function processContribution(paymentIntent: Stripe.PaymentIntent) {
         {
           id: paymentIntent.id,
           amount,
+          date: FieldValue.serverTimestamp(),
           status: 'confirmed',
           contributor: userRef, // This assumes the contribution is not anonymous
           stripe: {
