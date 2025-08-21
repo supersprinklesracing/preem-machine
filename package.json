@@ -15,7 +15,7 @@
     "@mantine/hooks": "^8.2.4",
     "@mantine/notifications": "^8.2.4",
     "@stripe/react-stripe-js": "^3.9.1",
-    "@stripe/stripe-js": "^3.5.0",
+    "@stripe/stripe-js": "^7.0.0",
     "@tabler/icons-react": "^3.34.1",
     "@types/yargs": "^17.0.33",
     "firebase": "^12.1.0",
