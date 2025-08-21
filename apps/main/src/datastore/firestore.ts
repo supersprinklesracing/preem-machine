@@ -649,3 +649,15 @@ export const getHubPageData = cache(
     return { organizations: organizationsWithSeries };
   }
 );
+
+export const getOrganizationFromPreemPath = cache(
+  async (preemPath: string): Promise<ClientCompat<Organization> | undefined> => {
+    const pathParts = preemPath.split('/');
+    if (pathParts.length < 2 || pathParts[0] !== 'organizations') {
+      console.error('Invalid preem path for getting organization:', preemPath);
+      return undefined;
+    }
+    const organizationId = pathParts[1];
+    return getOrganizationById(organizationId);
+  }
+);
