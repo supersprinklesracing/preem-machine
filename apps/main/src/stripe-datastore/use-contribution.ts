@@ -36,20 +36,26 @@ export const useContribution = () => {
     onSuccess,
   }: ContributionDetails) => {
     if (!stripe || !elements || !authUser) {
+      console.error('Stripe, Elements, or Auth User not available');
       return;
     }
 
     setIsProcessing(true);
 
     try {
-      // 1. Create Payment Intent
-      const { clientSecret } = await createPaymentIntent(amount, preem.path);
+      // 1. Trigger client-side validation and gather details from the Payment Element.
+      const { error: submitError } = await elements.submit();
+      if (submitError) {
+        throw new Error(submitError.message);
+      }
 
+      // 2. Create the PaymentIntent on the server.
+      const { clientSecret } = await createPaymentIntent(amount, preem.path);
       if (!clientSecret) {
         throw new Error('Failed to create payment intent.');
       }
 
-      // 2. Confirm Payment
+      // 3. Confirm the payment with the client secret.
       const { error, paymentIntent } = await stripe.confirmPayment({
         elements,
         clientSecret,
@@ -63,14 +69,13 @@ export const useContribution = () => {
         throw new Error(error.message);
       }
 
-      // 3. Optimistic Write
+      // 4. Fire-and-forget the optimistic database update.
       if (paymentIntent && paymentIntent.status === 'succeeded') {
-        // Fire-and-forget the optimistic confirmation
         confirmContributionOptimistically(paymentIntent.id);
 
         toast({
           title: 'Contribution Successful!',
-          description: `You've contributed ${amount} to "${preem.name}".`,
+          description: `You've contributed $${amount} to "${preem.name}".`,
         });
         onSuccess();
       } else {
