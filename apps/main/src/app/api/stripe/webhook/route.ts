@@ -1,5 +1,6 @@
 import { getOrganizationByStripeConnectAccountId } from '@/datastore/firestore';
 import { updateOrganizationStripeConnectAccountForWebhook } from '@/datastore/mutations';
+import { processContribution } from '@/stripe-datastore/contributions';
 import { stripe } from '@/stripe/server';
 import { headers } from 'next/headers';
 import { NextResponse } from 'next/server';
@@ -38,11 +39,20 @@ export async function POST(req: Request) {
     case 'account.updated':
       await handleAccountUpdated(event.data.object as Stripe.Account);
       break;
+    case 'payment_intent.succeeded':
+      await handlePaymentIntentSucceeded(
+        event.data.object as Stripe.PaymentIntent
+      );
+      break;
     default:
       console.log(`Unhandled event type ${event.type}`);
   }
 
   return NextResponse.json({ received: true });
+}
+
+async function handlePaymentIntentSucceeded(paymentIntent: Stripe.PaymentIntent) {
+  await processContribution(paymentIntent);
 }
 
 async function handleAccountUpdated(account: Stripe.Account) {
