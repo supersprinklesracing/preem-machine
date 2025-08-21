@@ -2,8 +2,10 @@
 
 import { useToast } from '@/app/shared/use-toast';
 import { useAuth } from '@/auth/AuthContext';
-import { createPendingContribution } from '@/datastore/mutations';
-import { createPaymentIntent } from '@/stripe/actions';
+import {
+  confirmContributionOptimistically,
+  createPaymentIntent,
+} from '@/stripe/actions';
 import { useElements, useStripe } from '@stripe/react-stripe-js';
 import { useState } from 'react';
 
@@ -63,11 +65,9 @@ export const useContribution = () => {
 
       // 3. Optimistic Write
       if (paymentIntent && paymentIntent.status === 'succeeded') {
-        await createPendingContribution(
-          preem.path,
-          { amount, message, isAnonymous },
-          authUser
-        );
+        // Fire-and-forget the optimistic confirmation
+        confirmContributionOptimistically(paymentIntent.id);
+
         toast({
           title: 'Contribution Successful!',
           description: `You've contributed ${amount} to "${preem.name}".`,

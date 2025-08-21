@@ -2,6 +2,7 @@
 
 import { getAuthUserFromCookies } from '@/auth/user';
 import { getOrganizationFromPreemPath } from '@/datastore/firestore';
+import { processContribution } from '@/stripe-datastore/contributions';
 import { stripe } from './server';
 
 export async function createPaymentIntent(
@@ -30,9 +31,30 @@ export async function createPaymentIntent(
     transfer_data: {
       destination: connectAccountId,
     },
+    metadata: {
+      preemPath,
+      userId: authUser.id,
+    },
   });
 
   return {
     clientSecret: paymentIntent.client_secret,
   };
+}
+
+export async function confirmContributionOptimistically(
+  paymentIntentId: string
+) {
+  try {
+    const paymentIntent = await stripe.paymentIntents.retrieve(paymentIntentId);
+    if (paymentIntent.status === 'succeeded') {
+      // No need to await this, let it run in the background
+      processContribution(paymentIntent);
+    }
+  } catch (error) {
+    console.error(
+      `Error retrieving PaymentIntent ${paymentIntentId} for optimistic confirmation:`,
+      error
+    );
+  }
 }
