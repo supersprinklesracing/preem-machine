@@ -12,7 +12,7 @@ import Stripe from 'stripe';
  * @param paymentIntent The Stripe PaymentIntent object.
  */
 export async function processContribution(paymentIntent: Stripe.PaymentIntent) {
-  const { preemPath, userId } = paymentIntent.metadata;
+  const { preemPath, userId, isAnonymous } = paymentIntent.metadata;
 
   if (!preemPath || !userId) {
     console.error(
@@ -49,7 +49,23 @@ export async function processContribution(paymentIntent: Stripe.PaymentIntent) {
         throw new Error(`Preem not found at path: ${preemPath}`);
       }
 
+      // Always fetch the user and create a brief
       const userRef = db.collection('users').doc(userId);
+      const userDoc = await transaction.get(userRef);
+      let contributor: {
+        id: string;
+        name?: string;
+        avatarUrl?: string;
+      } | null = null;
+      if (userDoc.exists) {
+        const userData = userDoc.data();
+        contributor = {
+          id: userDoc.id,
+          name: userData?.name,
+          avatarUrl: userData?.avatarUrl,
+        };
+      }
+
       const amount = paymentIntent.amount / 100; // Convert from cents
 
       // Create or update the contribution document
@@ -60,7 +76,8 @@ export async function processContribution(paymentIntent: Stripe.PaymentIntent) {
           amount,
           date: FieldValue.serverTimestamp(),
           status: 'confirmed',
-          contributor: userRef, // This assumes the contribution is not anonymous
+          contributor,
+          isAnonymous: isAnonymous === 'true',
           stripe: {
             paymentIntent: JSON.parse(JSON.stringify(paymentIntent)),
           },

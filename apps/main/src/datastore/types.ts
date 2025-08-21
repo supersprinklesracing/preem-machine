@@ -96,6 +96,7 @@ export interface Contribution {
   amount?: number;
   date?: Timestamp;
   message?: string;
+  isAnonymous?: boolean;
   stripe?: {
     paymentIntent: Stripe.PaymentIntent;
   };

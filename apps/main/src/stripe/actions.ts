@@ -7,7 +7,8 @@ import { stripe } from './server';
 
 export async function createPaymentIntent(
   amount: number,
-  preemPath: string
+  preemPath: string,
+  isAnonymous: boolean
 ): Promise<{ clientSecret: string | null }> {
   const authUser = await getAuthUserFromCookies();
   if (!authUser) {
@@ -34,6 +35,7 @@ export async function createPaymentIntent(
     metadata: {
       preemPath,
       userId: authUser.id,
+      isAnonymous: String(isAnonymous),
     },
   });
 
