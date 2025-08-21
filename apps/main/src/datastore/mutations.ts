@@ -127,3 +127,33 @@ export const updateOrganizationStripeConnectAccountForWebhook = async (
     'metadata.lastModified': FieldValue.serverTimestamp(),
   });
 };
+
+export const createPendingContribution = async (
+  preemPath: string,
+  {
+    amount,
+    message,
+    isAnonymous,
+  }: { amount: number; message: string; isAnonymous: boolean },
+  authUser: AuthContextUser
+) => {
+  if (!authUser.uid) {
+    unauthorized();
+  }
+
+  const db = await getFirestore();
+  const preemRef = db.doc(preemPath);
+  const contributionsRef = preemRef.collection('contributions');
+  const userRef = db.collection('users').doc(authUser.uid);
+
+  await contributionsRef.add({
+    amount,
+    message,
+    status: 'pending',
+    contributor: isAnonymous ? null : userRef,
+    'metadata.created': FieldValue.serverTimestamp(),
+    'metadata.createdBy': userRef,
+    'metadata.lastModified': FieldValue.serverTimestamp(),
+    'metadata.lastModifiedBy': userRef,
+  });
+};

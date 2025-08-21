@@ -1,6 +1,7 @@
 'use client';
 
-import { useToast } from '@/app/shared/use-toast';
+import { useContribution } from '@/stripe-datastore/use-contribution';
+import { stripePromise } from '@/stripe/client';
 import {
   Button,
   Checkbox,
@@ -11,52 +12,43 @@ import {
   Text,
   TextInput,
 } from '@mantine/core';
+import { Elements, PaymentElement } from '@stripe/react-stripe-js';
 import { IconCurrencyDollar } from '@tabler/icons-react';
-import React from 'react';
+import React, { useState } from 'react';
 
 interface ContributionModalProps {
   isOpen: boolean;
   onClose: () => void;
-  preem: { name: string };
+  preem: { id: string; path: string; name: string };
 }
 
-const ContributionModal: React.FC<ContributionModalProps> = ({
-  isOpen,
-  onClose,
+const ContributionForm = ({
   preem,
+  onClose,
+}: {
+  preem: { id: string; path: string; name: string };
+  onClose: () => void;
 }) => {
-  const { toast } = useToast();
-  const [amount, setAmount] = React.useState<number | ''>('');
-  const [isAnonymous, setIsAnonymous] = React.useState(false);
-  const [message, setMessage] = React.useState('');
+  const [amount, setAmount] = useState<number | ''>(5);
+  const [isAnonymous, setIsAnonymous] = useState(false);
+  const [message, setMessage] = useState('');
+  const { handleContribute, isProcessing } = useContribution();
 
-  const handleContribute = () => {
-    if (!amount || Number(amount) <= 0) {
-      toast({
-        variant: 'destructive',
-        title: 'Invalid Amount',
-        description: 'Please enter a valid contribution amount.',
-      });
-      return;
-    }
+  const handleSubmit = (event: React.FormEvent<HTMLFormElement>) => {
+    event.preventDefault();
+    if (typeof amount !== 'number') return;
 
-    toast({
-      title: 'Contribution Successful!',
-      description: `You've contributed ${amount} to "${preem.name}".`,
+    handleContribute({
+      amount,
+      message,
+      isAnonymous,
+      preem,
+      onSuccess: onClose,
     });
-    onClose();
-    setAmount('');
-    setIsAnonymous(false);
-    setMessage('');
   };
 
   return (
-    <Modal
-      opened={isOpen}
-      onClose={onClose}
-      title={`Contribute to ${preem.name}`}
-      centered
-    >
+    <form onSubmit={handleSubmit}>
       <Stack gap="md">
         <Text size="sm" c="dimmed">
           Your support fuels the excitement of the race!
@@ -81,13 +73,35 @@ const ContributionModal: React.FC<ContributionModalProps> = ({
           checked={isAnonymous}
           onChange={(event) => setIsAnonymous(event.currentTarget.checked)}
         />
+        <PaymentElement id="payment-element" />
         <Group justify="flex-end" mt="md">
           <Button variant="default" onClick={onClose}>
             Cancel
           </Button>
-          <Button onClick={handleContribute}>Confirm Contribution</Button>
+          <Button type="submit" disabled={isProcessing}>
+            {isProcessing ? 'Processing...' : `Contribute ${amount}`}
+          </Button>
         </Group>
       </Stack>
+    </form>
+  );
+};
+
+const ContributionModal: React.FC<ContributionModalProps> = ({
+  isOpen,
+  onClose,
+  preem,
+}) => {
+  return (
+    <Modal
+      opened={isOpen}
+      onClose={onClose}
+      title={`Contribute to ${preem.name}`}
+      centered
+    >
+      <Elements stripe={stripePromise}>
+        <ContributionForm preem={preem} onClose={onClose} />
+      </Elements>
     </Modal>
   );
 };

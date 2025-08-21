@@ -152,7 +152,7 @@ The pipeline will be implemented using **GitHub Actions** and connected to **Nx 
 
 ### 5.2. Environment Variables
 
-- **Cloud Run (`apps/main`):** Will require public environment variables like `NEXT_PUBLIC_STRIPE_PUBLISHABLE_KEY` and secrets like `STRIPE_API_KEY` managed by Google Secret Manager.
+- **Cloud Run (`apps/main`):** Will require public environment variables like `NEXT_PUBLIC_STRIPE_API_KEY` and secrets like `STRIPE_API_KEY` managed by Google Secret Manager.
 
 ## 6. Security
 
@@ -272,29 +272,28 @@ The process begins when the user is ready to pay. We will use a Server Action to
 
   - **Return Value:** The action will return the `clientSecret` to the client.
 
-### Phase 2: The Optimistic UI Flow (Client-Side)
+### Phase 2: The Optimistic UI Flow (Client-Side with Custom Hook)
 
-This phase ensures the user gets immediate feedback after payment confirmation.
+To ensure the client-side logic is clean, reusable, and efficient, the entire contribution flow is encapsulated within a custom React hook: `useContribution`.
 
-- **Call Server Action & Confirm Payment:**
+- **Location:** `apps/main/src/stripe-datastore/use-contribution.ts`
 
-  - The frontend calls the `createPaymentIntent` Server Action.
+- **Core Logic:** This hook abstracts the entire payment and data submission process. It exposes:
 
-  - Upon receiving the `clientSecret`, it calls `stripe.confirmPayment()`.
+  - A single function: `handleContribute(contributionDetails)`.
+  - A loading state: `isProcessing`.
 
-- **Perform the Optimistic Write:**
+- **Workflow:**
 
-  - Immediately upon a successful response from `stripe.confirmPayment()`, the client performs a write directly to Firestore.
+  1.  **Initiation:** The UI component (e.g., `ContributionModal`) calls `handleContribute` with the amount, message, preem details, etc., when the user clicks the final confirmation button.
+  2.  **Create Payment Intent:** The hook is responsible for calling the `createPaymentIntent` Server Action to get the `clientSecret` from Stripe.
+  3.  **Confirm Payment:** It then uses the `clientSecret` to call `stripe.confirmPayment()`.
+  4.  **Perform Optimistic Write:** Upon successful payment confirmation, the hook calls the `createPendingContribution` server action to write a 'pending' contribution document to Firestore.
 
-  - **Logic:**
-
-    - It creates a **new document** in the appropriate `contributions` sub-collection.
-
-    - It sets a `status` field on this document to `'pending'`.
-
-    - It includes all other relevant data (amount, contributorRef, etc.).
-
-  - **User Experience:** The UI updates instantly, showing the new (pending) contribution. The official `prizePool` is **not** updated at this stage.
+- **Component-Side Implementation:**
+  - The `ContributionModal` component is wrapped in the Stripe `Elements` provider.
+  - It uses the `useContribution` hook to get the `handleContribute` function and the `isProcessing` state.
+  - The form's submit handler simply calls `handleContribute`. This keeps the component clean and focused on UI presentation.
 
 ### Phase 3: The Centralized `processContribution` Function
 
