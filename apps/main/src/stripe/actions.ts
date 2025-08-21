@@ -1,18 +1,14 @@
 'use server';
 
-import { firestore } from '@/firebase-admin';
-import { getDoc, doc } from 'firebase-admin/firestore';
-import { cookies } from 'next/headers';
-import { getAuthUserFromCookies } from 'next-firebase-auth-edge/lib/next/cookies';
-import { stripe } from './server';
-import { Organization } from '@/datastore/types';
+import { getAuthUserFromCookies } from '@/auth/user';
 import { getOrganizationFromPreemPath } from '@/datastore/firestore';
+import { stripe } from './server';
 
 export async function createPaymentIntent(
   amount: number,
   preemPath: string
 ): Promise<{ clientSecret: string | null }> {
-  const authUser = await getAuthUserFromCookies({ cookies });
+  const authUser = await getAuthUserFromCookies();
   if (!authUser) {
     throw new Error('User not authenticated');
   }

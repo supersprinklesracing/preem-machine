@@ -5,6 +5,7 @@ export const dynamic = 'force-dynamic';
 import AnimatedNumber from '@/components/animated-number';
 import ContributionModal from '@/components/contribution-modal';
 import PreemStatusBadge from '@/components/PreemStatusBadge';
+import { preemPath } from '@/datastore/paths';
 import { PreemWithContributions } from '@/datastore/firestore';
 import type { ClientCompat } from '@/datastore/types';
 import {
@@ -187,7 +188,11 @@ export const Preem: React.FC<Props> = ({ data }) => {
       <ContributionModal
         isOpen={isModalOpen}
         onClose={() => setIsModalOpen(false)}
-        preem={{ name: preem.name ?? '' }}
+        preem={{
+          id: preem.id ?? '',
+          path: preemPath(preem),
+          name: preem.name ?? '',
+        }}
       />
     </Stack>
   );
