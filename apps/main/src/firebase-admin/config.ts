@@ -14,7 +14,7 @@ export async function serverConfigFn() {
           clientEmail: process.env.SERVICE_ACCOUNT_CLIENT_EMAIL!,
           privateKey: process.env.SERVICE_ACCOUNT_PRIVATE_KEY.replace(
             /\\n/g,
-            '\n'
+            '\n',
           ),
         }
       : undefined,
@@ -42,7 +42,7 @@ export async function authConfigFn() {
     enableMultipleCookies: true,
     // Set to false if you're not planning to use `signInWithCustomToken` Firebase Client SDK method
     enableCustomToken: true,
-    experimental_enableTokenRefreshOnExpiredKidHeader: true,
+    enableTokenRefreshOnExpiredKidHeader: true,
     debug: true,
     tenantId: clientConfig.tenantId,
   };
