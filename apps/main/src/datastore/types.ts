@@ -90,11 +90,15 @@ export interface OrganizationBrief extends Partial<Organization> {
 export interface Contribution {
   id: string;
   metadata?: Metadata;
+  status?: 'pending' | 'confirmed' | 'failed';
 
   contributor?: Partial<User>;
   amount?: number;
   date?: Timestamp;
   message?: string;
+  stripe?: {
+    paymentIntent: Stripe.PaymentIntent;
+  };
 
   preemBrief?: PreemBrief;
 }
