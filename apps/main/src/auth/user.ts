@@ -6,6 +6,8 @@ import { cookies } from 'next/headers';
 import { NextRequest } from 'next/server';
 import { unauthorized } from 'next/navigation';
 
+export type AuthUserBrief = Partial<AuthContextUser> & { id: string };
+
 export const toAuthContextUser = ({
   token,
   customToken,

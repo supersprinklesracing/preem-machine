@@ -50,7 +50,11 @@ export const useContribution = () => {
       }
 
       // 2. Create the PaymentIntent on the server.
-      const { clientSecret } = await createPaymentIntent(amount, preem.path);
+      const { clientSecret } = await createPaymentIntent(
+        amount,
+        preem.path,
+        isAnonymous
+      );
       if (!clientSecret) {
         throw new Error('Failed to create payment intent.');
       }
