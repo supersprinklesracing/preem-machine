@@ -38,7 +38,9 @@ export default function Series({ data }: Props) {
       </Text>
       <Text c="dimmed">
         {series.location} |{' '}
+        {/* eslint-disable-next-line @typescript-eslint/no-non-null-assertion */}
         {series.startDate ? format(new Date(series.startDate!), 'PP') : ''} -{' '}
+        {/* eslint-disable-next-line @typescript-eslint/no-non-null-assertion */}
         {series.endDate ? format(new Date(series.endDate!), 'PP') : ''}
       </Text>
       <Stack>
@@ -58,6 +60,7 @@ export default function Series({ data }: Props) {
           </Stack>
         </Group>
         <SimpleGrid cols={{ base: 1, md: 2 }}>
+          {/* eslint-disable-next-line @typescript-eslint/no-non-null-assertion */}
           {series.events!.map((event) => (
             <EventCard key={event.id} event={event}>
               <Button

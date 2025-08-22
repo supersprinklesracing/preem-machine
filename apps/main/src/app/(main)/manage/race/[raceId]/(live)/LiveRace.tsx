@@ -51,7 +51,7 @@ export const LiveRace: React.FC<{ data: LiveRaceData }> = ({ data }) => {
       return {
         ...prevRace,
         preems: prevRace.preems?.map((p) =>
-          p.id === preemId ? { ...p, status: 'Awarded' } : p
+          p.id === preemId ? { ...p, status: 'Awarded' } : p,
         ),
       };
     });
@@ -110,6 +110,7 @@ export const LiveRace: React.FC<{ data: LiveRaceData }> = ({ data }) => {
             <Group gap="xs" mt="sm">
               <IconClock size={16} />
               <Text size="sm" c="dimmed">
+                {/* eslint-disable-next-line @typescript-eslint/no-non-null-assertion */}
                 Live for {formatDistanceToNow(new Date(race.startDate!))}
               </Text>
             </Group>

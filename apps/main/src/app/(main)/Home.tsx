@@ -44,6 +44,7 @@ export default function Home({ data }: Props) {
                         {event.name}
                       </Text>
                       <Text size="sm" c="dimmed">
+                        {/* eslint-disable-next-line @typescript-eslint/no-non-null-assertion */}
                         {format(new Date(event.startDate!), 'PPP')}
                       </Text>
                       <Text size="sm" c="dimmed">
@@ -60,6 +61,7 @@ export default function Home({ data }: Props) {
                           style={{ textDecoration: 'none', color: 'inherit' }}
                         >
                           <Text size="sm">
+                            {/* eslint-disable-next-line @typescript-eslint/no-non-null-assertion */}
                             {format(new Date(race.startDate!), 'p')} -{' '}
                             {race.name} ({race.category})
                           </Text>

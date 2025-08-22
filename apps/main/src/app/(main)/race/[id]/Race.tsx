@@ -2,8 +2,8 @@
 
 export const dynamic = 'force-dynamic';
 
-import RaceCard from '@/components/cards/RaceCard';
 import AnimatedNumber from '@/components/animated-number';
+import RaceCard from '@/components/cards/RaceCard';
 import ContributionModal from '@/components/contribution-modal';
 import PreemStatusBadge from '@/components/PreemStatusBadge';
 import { PreemWithContributions, RaceWithPreems } from '@/datastore/firestore';
@@ -34,6 +34,7 @@ interface Props {
 
 export const Race: React.FC<Props> = ({ data }) => {
   const { race } = data;
+  // eslint-disable-next-line @typescript-eslint/no-explicit-any
   const [selectedPreem, setSelectedPreem] = useState<any | null>(null);
 
   if (!race) {
@@ -54,8 +55,9 @@ export const Race: React.FC<Props> = ({ data }) => {
         ...c,
         preemName: p.name,
         preemId: p.id,
-      }))
+      })),
     )
+    // eslint-disable-next-line @typescript-eslint/no-non-null-assertion
     .sort((a, b) => new Date(b.date!).getTime() - new Date(a.date!).getTime());
 
   const preemRows = (race.preems || []).map((preem) => (
