@@ -34,10 +34,11 @@ const User: React.FC<Props> = ({ data }) => {
 
   const totalContributed = contributions.reduce(
     (sum, c) => sum + (c.amount ?? 0),
-    0
+    0,
   );
 
   const contributionRows = contributions
+    // eslint-disable-next-line @typescript-eslint/no-non-null-assertion
     .sort((a, b) => new Date(b.date!).getTime() - new Date(a.date!).getTime())
     .map((c) => (
       <Table.Tr key={c.id}>

@@ -10,6 +10,7 @@ export default [
   {
     files: ['**/*.ts', '**/*.tsx', '**/*.js', '**/*.jsx'],
     rules: {
+      '@typescript-eslint/triple-slash-reference': 'off',
       '@nx/enforce-module-boundaries': [
         'error',
         {
