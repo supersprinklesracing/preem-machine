@@ -5,19 +5,13 @@ const createJestConfig = nextJest({
   dir: './',
 });
 
-// Array of ESM modules that need to be transformed by Jest
-const esmModules = ['node-fetch'];
-
-const config: Config = {
+// Your custom config (without transformIgnorePatterns)
+const customJestConfig: Config = {
   displayName: '@preem-machine/main',
   preset: '../../jest.preset.js',
   transform: {
     '^(?!.*\\.(js|jsx|ts|tsx|css|json)$)': '@nx/react/plugins/jest',
   },
-  // The ignore pattern is now built dynamically from the array above
-  transformIgnorePatterns: [
-    `/node_modules/(?!(${esmModules.join('|')}))/`
-  ],
   moduleFileExtensions: ['ts', 'tsx', 'js', 'jsx'],
   coverageDirectory: '../../coverage/apps/main',
   testEnvironment: 'jsdom',
@@ -27,4 +21,19 @@ const config: Config = {
   },
 };
 
-export default createJestConfig(config);
+// Export an async function to modify the final config
+export default async () => {
+  // Get the base config from next/jest
+  const config = await createJestConfig(customJestConfig)();
+
+  // Array of ESM modules that need to be transformed
+  const esmModules = ['node-fetch'].join('|');
+
+  // Modify the transformIgnorePatterns to include your modules
+  config.transformIgnorePatterns = [
+    `/node_modules/(?!(${esmModules}))/`,
+    '^.+\\.module\\.(css|sass|scss)$',
+  ];
+
+  return config;
+};
