@@ -19,6 +19,7 @@
   "tui": {
     "enabled": false
   },
+  "defaultProject": "apps/main",
   "plugins": [
     {
       "plugin": "@nx/js/typescript",
