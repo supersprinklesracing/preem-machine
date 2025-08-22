@@ -1,16 +1,19 @@
 #!/bin/bash
 
-# A reusable script to push secrets from a specified .env file to a specific GitHub environment.
+# A reusable script to push secrets from a specified .env file to GitHub and Google Cloud.
+
+set -eo pipefail
 
 # --- Usage function ---
 usage() {
-    echo "This script pushes variables from a .env file to GitHub Actions secrets for a specific environment."
+    echo "This script pushes variables from a .env file to GitHub Actions and Google Secret Manager."
     echo ""
-    echo "Usage: $0 -e <environment> -f <file> [--dry-run]"
+    echo "Usage: $0 -e <environment> -f <file> -p <project-id> [--dry-run]"
     echo ""
     echo "Options:"
-    echo "  -e, --environment    (Required) The name of the GitHub Actions environment (e.g., 'production')."
+    echo "  -e, --environment    (Required) The name of the GitHub Actions environment."
     echo "  -f, --file           (Required) The path to the .env file containing the secrets."
+    echo "  -p, --project        (Required) The Google Cloud Project ID."
     echo "  -d, --dry-run        (Optional) Perform a dry run without actually setting the secrets."
     echo ""
     exit 1
@@ -20,6 +23,7 @@ usage() {
 dry_run=false
 environment_name=""
 env_file=""
+project_id=""
 
 # --- Parse command-line flags ---
 while [[ $# -gt 0 ]]; do
@@ -42,6 +46,15 @@ while [[ $# -gt 0 ]]; do
                 usage
             fi
             } ;;
+        -p|--project) {
+            if [[ -n "$2" && "$2" != -* ]]; then
+                project_id="$2"
+                shift 2
+            else
+                echo "Error: Missing value for --project flag" >&2
+                usage
+            fi
+            } ;;
         -d|--dry-run|--dryrun) {
             dry_run=true
             shift
@@ -54,8 +67,8 @@ while [[ $# -gt 0 ]]; do
 done
 
 # --- Validate inputs ---
-if [ -z "${environment_name}" ] || [ -z "${env_file}" ]; then
-    echo "Error: Both --environment and --file flags are required." >&2
+if [ -z "${environment_name}" ] || [ -z "${env_file}" ] || [ -z "${project_id}" ]; then
+    echo "Error: --environment, --file, and --project flags are all required." >&2
     usage
 fi
 
@@ -64,33 +77,79 @@ if [ ! -f "$env_file" ]; then
     exit 1
 fi
 
+# --- Prerequisite Checks ---
+if ! gh auth status &>/dev/null; then
+    echo "Authentication Error: Not logged into the GitHub CLI. Please run 'gh auth login'." >&2
+    exit 1
+fi
+
+if ! gcloud config get-value account &>/dev/null; then
+    echo "Authentication Error: Not logged into the Google Cloud CLI. Please run 'gcloud auth login'." >&2
+    exit 1
+fi
+
 # --- Main script logic ---
 if [ "$dry_run" = true ]; then
     echo "--- DRY RUN MODE ---" >&2
 fi
 echo "Reading secrets from '$env_file' for environment '$environment_name'." >&2
+
+# --- GitHub Section ---
+echo "" >&2
+echo "--- GitHub: (ci.yaml snippet) ---" >&2
+echo "------------------------------------------------------------------" >&2
+# Loop once to generate the YAML snippet
+sed 's/\r$//' "$env_file" | grep -vE '^\s*(#|$)' | while IFS= read -r line || [[ -n "$line" ]]; do
+    key="${line%%=*}"
+    echo "          $key: \${{ secrets.$key }}"
+done
 echo "------------------------------------------------------------------" >&2
 
-grep -v '^#' "$env_file" | grep -v '^$' | while IFS= read -r line ; do
-    key=$(echo "$line" | cut -d '=' -f 1)
-    value=$(echo "$line" | cut -d '=' -f 2-)
+# Use a single command to set all GitHub secrets at once
+if [ "$dry_run" = false ]; then
+    echo "Setting all GitHub secrets from '$env_file'..." >&2
+    gh secret set -f "$env_file" --env "$environment_name"
+else
+    echo "(Dry Run) Would set all GitHub secrets from '$env_file'." >&2
+fi
+
+
+# --- Google Cloud Section ---
+echo "" >&2
+echo "--- Firebase: (apphosting.yaml) ---" >&2
+echo "------------------------------------------------------------------" >&2
+# This loop remains the same, as gcloud doesn't have a bulk-from-file command
+sed 's/\r$//' "$env_file" | grep -vE '^\s*(#|$)' | while IFS= read -r line || [[ -n "$line" ]]; do
+    key="${line%%=*}"
+    value="${line#*=}"
 
     if [ -z "$value" ]; then
         continue
     fi
 
-    echo "          $key: \${{ secrets.$key }}"
+    echo -e "  - variable: $key\n    secret: $key"
 
     if [ "$dry_run" = false ]; then
-        echo "$value" | gh secret set "$key" --env "$environment_name"
+        if ! gcloud secrets describe "$key" --project="$project_id" &>/dev/null; then
+            echo "Creating GCP secret for '$key'..." >&2
+            gcloud secrets create "$key" --project="$project_id" --data-file=- --replication-policy="automatic" >&2 <<< "$value"
+        else
+            current_value=$(gcloud secrets versions access latest --secret="$key" --project="$project_id")
+            if [[ "$current_value" == "$value" ]]; then
+                echo "GCP secret for '$key' is already up-to-date. Skipping." >&2
+            else
+                echo "Updating existing GCP secret for '$key'..." >&2
+                gcloud secrets versions add "$key" --project="$project_id" --data-file=- >&2 <<< "$value"
+            fi
+        fi
     fi
 done
-
 echo "------------------------------------------------------------------" >&2
 
+# --- Final Status ---
+echo "" >&2
 if [ "$dry_run" = true ]; then
-    # Redirect final status to stderr
     echo "Dry run complete. No secrets were changed." >&2
 else
-    echo "All non-empty secrets from '$env_file' have been pushed to the '$environment_name' environment." >&2
+    echo "All non-empty secrets from '$env_file' have been pushed." >&2
 fi
