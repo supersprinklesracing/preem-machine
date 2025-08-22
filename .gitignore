@@ -50,5 +50,5 @@ out
 test-output
 
 # Env (may have secrets).
-.env.local
-.env.development
+.env
+.env.*
