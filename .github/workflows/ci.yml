@@ -13,6 +13,8 @@ permissions:
 jobs:
   main:
     runs-on: ubuntu-latest
+    environment:
+      name: ci
     steps:
       - uses: actions/checkout@v5
         with:
@@ -34,10 +36,38 @@ jobs:
       - run: npm ci --legacy-peer-deps
       - run: npx playwright install --with-deps
 
-      # Prepend any command with "nx-cloud record --" to record its logs to Nx Cloud
-      # - run: npx nx-cloud record -- echo Hello World
-      # When you enable task distribution, run the e2e-ci task instead of e2e
-      - run: npx nx run-many -t lint test build e2e
-      # Nx Cloud recommends fixes for failures to help you get CI green faster. Learn more: https://nx.dev/ci/features/self-healing-ci
+      - name: Build
+        env:
+          NEXT_PUBLIC_FIREBASE_API_KEY: ${{ secrets.NEXT_PUBLIC_FIREBASE_API_KEY }}
+          NEXT_PUBLIC_FIREBASE_APP_ID: ${{ secrets.NEXT_PUBLIC_FIREBASE_APP_ID }}
+          NEXT_PUBLIC_FIREBASE_AUTH_DOMAIN: ${{ secrets.NEXT_PUBLIC_FIREBASE_AUTH_DOMAIN }}
+          NEXT_PUBLIC_FIREBASE_DATABASE_URL: ${{ secrets.NEXT_PUBLIC_FIREBASE_DATABASE_URL }}
+          NEXT_PUBLIC_FIREBASE_MESSAGING_SENDER_ID: ${{ secrets.NEXT_PUBLIC_FIREBASE_MESSAGING_SENDER_ID }}
+          NEXT_PUBLIC_FIREBASE_PROJECT_ID: ${{ secrets.NEXT_PUBLIC_FIREBASE_PROJECT_ID }}
+          NEXT_PUBLIC_DISABLE_HTTPS: ${{ secrets.NEXT_PUBLIC_DISABLE_HTTPS }}
+          NEXT_PUBLIC_STRIPE_API_KEY: ${{ secrets.NEXT_PUBLIC_STRIPE_API_KEY }}
+
+        run: npx nx run-many -t build
+
+      - name: Test
+        env:
+          SERVICE_ACCOUNT_CLIENT_EMAIL: ${{ secrets.SERVICE_ACCOUNT_CLIENT_EMAIL }}
+          SERVICE_ACCOUNT_PRIVATE_KEY: ${{ secrets.SERVICE_ACCOUNT_PRIVATE_KEY }}
+          DISABLE_HTTPS: ${{ secrets.DISABLE_HTTPS }}
+          AUTH_COOKIE_NAME: ${{ secrets.AUTH_COOKIE_NAME }}
+          AUTH_COOKIE_SIGNATURE_KEY_CURRENT: ${{ secrets.AUTH_COOKIE_SIGNATURE_KEY_CURRENT }}
+          AUTH_COOKIE_SIGNATURE_KEY_PREVIOUS: ${{ secrets.AUTH_COOKIE_SIGNATURE_KEY_PREVIOUS }}
+          STRIPE_API_KEY: ${{ secrets.STRIPE_API_KEY }}
+          STRIPE_API_VERSION: ${{ secrets.STRIPE_API_VERSION }}
+          NEXT_PUBLIC_FIREBASE_API_KEY: ${{ secrets.NEXT_PUBLIC_FIREBASE_API_KEY }}
+          NEXT_PUBLIC_FIREBASE_APP_ID: ${{ secrets.NEXT_PUBLIC_FIREBASE_APP_ID }}
+          NEXT_PUBLIC_FIREBASE_AUTH_DOMAIN: ${{ secrets.NEXT_PUBLIC_FIREBASE_AUTH_DOMAIN }}
+          NEXT_PUBLIC_FIREBASE_DATABASE_URL: ${{ secrets.NEXT_PUBLIC_FIREBASE_DATABASE_URL }}
+          NEXT_PUBLIC_FIREBASE_MESSAGING_SENDER_ID: ${{ secrets.NEXT_PUBLIC_FIREBASE_MESSAGING_SENDER_ID }}
+          NEXT_PUBLIC_FIREBASE_PROJECT_ID: ${{ secrets.NEXT_PUBLIC_FIREBASE_PROJECT_ID }}
+          NEXT_PUBLIC_DISABLE_HTTPS: ${{ secrets.NEXT_PUBLIC_DISABLE_HTTPS }}
+          NEXT_PUBLIC_STRIPE_API_KEY: ${{ secrets.NEXT_PUBLIC_STRIPE_API_KEY }}
+        run: npx nx run-many -t lint test e2e
+
       - run: npx nx fix-ci
         if: always()
