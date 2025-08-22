@@ -5,6 +5,7 @@ if (!process.env.STRIPE_API_KEY) {
 }
 
 export const stripe = new Stripe(process.env.STRIPE_API_KEY ?? '', {
-  apiVersion: '2023-08-16',
+  // @ts-expect-error We specify the version in the environment.
+  apiVersion: process.env.STRIPE_API_VERSION ?? null,
   typescript: true,
 });
