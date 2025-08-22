@@ -17,7 +17,7 @@ export function getOrInitializeAppCheck(app: FirebaseApp): AppCheck {
   if (process.env.NODE_ENV !== 'production') {
     Object.assign(window, {
       FIREBASE_APPCHECK_DEBUG_TOKEN:
-        process.env.NEXT_PUBLIC_APP_CHECK_DEBUG_TOKEN,
+        process.env.NEXT_PUBLIC_FIREBASE_APP_CHECK_DEBUG_TOKEN,
     });
   }
 
