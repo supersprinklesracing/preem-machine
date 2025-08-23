@@ -1,25 +1,28 @@
 'use server';
 
+import { authConfigFn } from '@/firebase-admin/config';
+import { getFirebaseAuth } from '@/firebase-client';
 import { signInWithEmailAndPassword } from 'firebase/auth';
 import { refreshCookiesWithIdToken } from 'next-firebase-auth-edge/lib/next/cookies';
-import { getFirebaseAuth } from '@/firebase-client';
 import { cookies, headers } from 'next/headers';
-import { authConfigFn } from '@/firebase-admin/config';
 import { redirect } from 'next/navigation';
 
 export async function loginAction(username: string, password: string) {
   const credential = await signInWithEmailAndPassword(
     getFirebaseAuth(),
     username,
-    password
+    password,
   );
+  console.log('Able to get credential', credential);
 
   const idToken = await credential.user.getIdToken();
+  console.log('Able to get id Token', idToken);
   await refreshCookiesWithIdToken(
     idToken,
     await headers(),
     await cookies(),
-    await authConfigFn()
+    await authConfigFn(),
   );
+  console.log('Able to refresh cookies');
   redirect('/');
 }
