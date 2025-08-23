@@ -8,14 +8,13 @@ set -eo pipefail
 usage() {
     echo "This script pushes variables from a .env file to GitHub Actions and Google Secret Manager."
     echo ""
-    echo "Usage: $0 -e <environment> -f <file> -p <project-id> [-g <principals>] [--dry-run]"
+    echo "Usage: $0 -f <file> -p <project-id> [-e <environment>] [--dry-run]"
     echo ""
     echo "Options:"
-    echo "  -e, --environment     (Required) The name of the GitHub Actions environment."
-    echo "  -f, --file            (Required) The path to the .env file containing the secrets."
-    echo "  -p, --project         (Required) The Google Cloud Project ID."
-    echo "  -g, --grant-access    (Optional) A comma-separated list of principals (e.g., service accounts) to grant access to."
-    echo "  -d, --dry-run         (Optional) Perform a dry run without actually setting the secrets."
+    echo "  -f, --file           (Required) The path to the .env file containing the secrets."
+    echo "  -p, --project        (Required) The Google Cloud Project ID."
+    echo "  -e, --environment    (Optional) The name of the GitHub Actions environment. If omitted, secrets are set at the repository level."
+    echo "  -d, --dry-run        (Optional) Perform a dry run without actually setting the secrets."
     echo ""
     exit 1
 }
@@ -58,15 +57,6 @@ while [[ $# -gt 0 ]]; do
                 usage
             fi
             } ;;
-        -g|--grant-access) {
-             if [[ -n "$2" && "$2" != -* ]]; then
-                grant_access_list="$2"
-                shift 2
-            else
-                echo "Error: Missing value for --grant-access flag" >&2
-                usage
-            fi
-            } ;;
         -d|--dry-run|--dryrun) {
             dry_run=true
             shift
@@ -79,8 +69,8 @@ while [[ $# -gt 0 ]]; do
 done
 
 # --- Validate inputs ---
-if [ -z "${environment_name}" ] || [ -z "${env_file}" ] || [ -z "${project_id}" ]; then
-    echo "Error: --environment, --file, and --project flags are all required." >&2
+if [ -z "${env_file}" ] || [ -z "${project_id}" ]; then
+    echo "Error: --file and --project flags are required." >&2
     usage
 fi
 
@@ -101,7 +91,7 @@ if ! gcloud config get-value account &>/dev/null; then
 fi
 
 if [ -n "$grant_access_list" ] && ! command -v firebase &> /dev/null; then
-    echo "Dependency Error: Firebase CLI is required for --grant-access. Please install it ('npm install -g firebase-tools')." >&2
+    echo "Dependency Error: Firebase CLI is required for grantaccess. Please install it ('npm install -g firebase-tools')." >&2
     exit 1
 fi
 
@@ -111,19 +101,26 @@ if [ "$dry_run" = true ]; then
 fi
 echo "Reading secrets from '$env_file' for environment '$environment_name'." >&2
 
+
 # --- GitHub Section ---
 echo "" >&2
 echo "--- GitHub: (ci.yaml snippet) ---" >&2
 echo "------------------------------------------------------------------" >&2
-sed 's/\r$//' "$env_file" | grep -vE '^\s*(#|$)' | while IFS= read -r line || [[ -n "$line" ]]; do
+while IFS= read -r line || [[ -n "$line" ]]; do
     key="${line%%=*}"
     echo "                $key: \${{ secrets.$key }}"
-done
+done < <(sed 's/\r$//' "$env_file" | grep -vE '^\s*(#|$)')
 echo "------------------------------------------------------------------" >&2
+
+# Prepare conditional arguments for the gh secret set command
+declare -a gh_args=()
+if [ -n "${environment_name}" ]; then
+    gh_args=("--env" "$environment_name")
+fi
 
 if [ "$dry_run" = false ]; then
     echo "Setting all GitHub secrets from '$env_file'..." >&2
-    gh secret set -f "$env_file" --env "$environment_name"
+    gh secret set -f "$env_file" "${gh_args[@]}"
 else
     echo "(Dry Run) Would set all GitHub secrets from '$env_file'." >&2
 fi
@@ -133,9 +130,14 @@ echo "" >&2
 echo "--- Firebase: (apphosting.yaml snippet) ---" >&2
 echo "------------------------------------------------------------------" >&2
 # This loop handles GCP secret creation/updates and collects secret keys
-sed 's/\r$//' "$env_file" | grep -vE '^\s*(#|$)' | while IFS= read -r line || [[ -n "$line" ]]; do
+while IFS= read -r line || [[ -n "$line" ]]; do
     key="${line%%=*}"
     value="${line#*=}"
+
+    # Remove enclosing quotes from the secret value, if they exist.
+    if [[ "$value" == \"*\" || "$value" == \'*\' ]]; then
+        value="${value:1:-1}"
+    fi
 
     if [ -z "$value" ]; then
         continue
@@ -160,7 +162,7 @@ sed 's/\r$//' "$env_file" | grep -vE '^\s*(#|$)' | while IFS= read -r line || [[
             fi
         fi
     fi
-done
+done < <(sed 's/\r$//' "$env_file" | grep -vE '^\s*(#|$)')
 
 echo "------------------------------------------------------------------" >&2
 
@@ -170,8 +172,13 @@ secrets_to_grant="${secret_keys[*]}"
 unset IFS
 
 if [ "$dry_run" = false ]; then
-    echo "Granting principals access to secrets..." >&2
-    firebase apphosting:secrets:grantaccess --project "$project_id" --backend "main" "$secrets_to_grant"
+    # Only run if there are secrets to grant
+    if [ -n "$secrets_to_grant" ]; then
+        echo "Granting principals access to secrets..." >&2
+        firebase apphosting:secrets:grantaccess --project "$project_id" --backend "main" "$secrets_to_grant"
+    else
+        echo "No non-empty secrets found to grant access to." >&2
+    fi
 fi
 echo "------------------------------------------------------------------" >&2
 
