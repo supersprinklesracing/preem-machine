@@ -1,10 +1,12 @@
 import { AuthContextUser } from '@/auth/AuthContext';
 import { authConfigFn } from '@/firebase-admin/config';
+import { getFirebaseAuth } from '@/firebase-admin/firebase-admin';
 import { getTokens, Tokens } from 'next-firebase-auth-edge';
+import type { Auth } from 'next-firebase-auth-edge/auth';
 import { filterStandardClaims } from 'next-firebase-auth-edge/lib/auth/claims';
 import { cookies } from 'next/headers';
-import { NextRequest } from 'next/server';
 import { unauthorized } from 'next/navigation';
+import { NextRequest } from 'next/server';
 
 export type AuthUserBrief = Partial<AuthContextUser> & { id: string };
 
@@ -67,5 +69,37 @@ export async function getUserFromRequest(request: NextRequest) {
   if (!tokens) {
     throw new Error('Unauthenticated');
   }
-  return toAuthContextUser(tokens);
+
+  const auth: Auth = await getFirebaseAuth();
+  const { getUser } = auth;
+  const userRecord = await getUser(tokens.decodedToken.uid);
+  return toUserFromUserRecord(userRecord);
+}
+// eslint-disable-next-line @typescript-eslint/no-explicit-any
+export function toUserFromUserRecord(userRecord: any): AuthContextUser {
+  const {
+    uid,
+    email,
+    photoURL,
+    emailVerified,
+    phoneNumber,
+    displayName,
+    providerId,
+  } = userRecord;
+
+  const customClaims = userRecord.customClaims;
+
+  return {
+    id: uid,
+    uid,
+    email: email ?? null,
+    displayName: displayName ?? null,
+    photoURL: photoURL ?? null,
+    phoneNumber: phoneNumber ?? null,
+    emailVerified: emailVerified ?? false,
+    providerId: providerId,
+    customClaims,
+    idToken: '', // This will not be available from a UserRecord
+    customToken: undefined, // This will not be available from a UserRecord
+  };
 }
