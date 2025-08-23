@@ -1,13 +1,14 @@
 'use server';
 
-import { ENV_USES_HTTPS as ENV_USE_HTTPS } from '@/env/env';
 /* eslint-disable @typescript-eslint/no-non-null-assertion */
+
+import { ENV_AUTH_DEBUG, ENV_USE_HTTPS, orThrow } from '@/env/env';
 import { clientConfig } from '../firebase-client/config';
 
 export async function serverConfigFn() {
   return {
     useSecureCookies: ENV_USE_HTTPS,
-    firebaseApiKey: process.env.NEXT_PUBLIC_FIREBASE_API_KEY!,
+    firebaseApiKey: orThrow(process.env.NEXT_PUBLIC_FIREBASE_API_KEY),
     serviceAccount: process.env.SERVICE_ACCOUNT_PRIVATE_KEY
       ? {
           projectId: process.env.NEXT_PUBLIC_FIREBASE_PROJECT_ID!,
@@ -25,10 +26,10 @@ export async function authConfigFn() {
   const serverConfig = await serverConfigFn();
   return {
     apiKey: serverConfig.firebaseApiKey,
-    cookieName: process.env.AUTH_COOKIE_NAME!,
+    cookieName: orThrow(process.env.AUTH_COOKIE_NAME),
     cookieSignatureKeys: [
-      process.env.AUTH_COOKIE_SIGNATURE_KEY_CURRENT!,
-      process.env.AUTH_COOKIE_SIGNATURE_KEY_PREVIOUS!,
+      orThrow(process.env.AUTH_COOKIE_SIGNATURE_KEY_CURRENT),
+      orThrow(process.env.AUTH_COOKIE_SIGNATURE_KEY_PREVIOUS),
     ],
     cookieSerializeOptions: {
       path: '/',
@@ -39,11 +40,11 @@ export async function authConfigFn() {
     },
     serviceAccount: serverConfig.serviceAccount!,
     // Set to false in Firebase Hosting environment due to https://stackoverflow.com/questions/44929653/firebase-cloud-function-wont-store-cookie-named-other-than-session
-    enableMultipleCookies: true,
+    enableMultipleCookies: false,
     // Set to false if you're not planning to use `signInWithCustomToken` Firebase Client SDK method
-    enableCustomToken: true,
+    enableCustomToken: false,
     enableTokenRefreshOnExpiredKidHeader: true,
-    debug: true,
+    debug: ENV_AUTH_DEBUG,
     tenantId: clientConfig.tenantId,
   };
 }
