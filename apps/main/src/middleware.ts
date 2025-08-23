@@ -11,7 +11,7 @@ const LOGGED_OUT_ONLY = ['/register', '/login', '/reset-password'];
 
 export async function middleware(request: NextRequest) {
   const authConfig = await authConfigFn();
-  return authMiddleware(request, {
+  const config = {
     loginPath: '/api/login',
     logoutPath: '/api/logout',
     refreshTokenPath: '/api/refresh-token',
@@ -26,7 +26,12 @@ export async function middleware(request: NextRequest) {
     enableTokenRefreshOnExpiredKidHeader:
       authConfig.enableTokenRefreshOnExpiredKidHeader,
     tenantId: authConfig.tenantId,
-    dynamicCustomClaimsKeys: ['someCustomClaim'],
+  };
+  console.log('authConfig', authConfig);
+  console.log('config', config);
+
+  return authMiddleware(request, {
+    ...config,
     handleValidToken: async ({ token, decodedToken, customToken }, headers) => {
       // Authenticated user should not be able to access /login, /register and /reset-password routes
       if (LOGGED_OUT_ONLY.includes(request.nextUrl.pathname)) {

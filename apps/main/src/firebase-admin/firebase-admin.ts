@@ -1,6 +1,8 @@
 'use server-only';
 
 import admin from 'firebase-admin';
+import { getFirebaseAuth as getFirebaseAuthNext } from 'next-firebase-auth-edge';
+import type { Auth } from 'next-firebase-auth-edge/auth';
 import { authConfigFn } from './config';
 
 const initializeApp = async () => {
@@ -31,4 +33,14 @@ export const getFirebaseAdminApp = async () => {
 
 export const getFirestore = async () => {
   return (await getFirebaseAdminApp()).firestore();
+};
+
+export const getFirebaseAuth = async (): Promise<Auth> => {
+  const authConfig = await authConfigFn();
+  return getFirebaseAuthNext({
+    serviceAccount: authConfig.serviceAccount,
+    apiKey: authConfig.apiKey,
+    tenantId: authConfig.tenantId,
+    enableCustomToken: authConfig.enableCustomToken,
+  });
 };
