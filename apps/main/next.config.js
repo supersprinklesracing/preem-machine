@@ -12,6 +12,7 @@ const nextConfig = {
   experimental: {
     authInterrupts: true,
   },
+  productionBrowserSourceMaps: true,
   webpack: (config, { isServer, webpack }) => {
     // This rule uses null-loader to fix the "require.extensions" error.
     config.module.rules.push({
