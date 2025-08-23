@@ -4,7 +4,6 @@ import { getFirebaseAuth } from '@/firebase-admin/firebase-admin';
 import { getTokens, Tokens } from 'next-firebase-auth-edge';
 import type { Auth } from 'next-firebase-auth-edge/auth';
 import { filterStandardClaims } from 'next-firebase-auth-edge/lib/auth/claims';
-import type { UserRecord } from 'next-firebase-auth-edge/lib/auth/user-record';
 import { cookies } from 'next/headers';
 import { unauthorized } from 'next/navigation';
 import { NextRequest } from 'next/server';
@@ -73,11 +72,11 @@ export async function getUserFromRequest(request: NextRequest) {
 
   const auth: Auth = await getFirebaseAuth();
   const { getUser } = auth;
-  const userRecord: UserRecord = await getUser(tokens.decodedToken.uid);
-  // return toAuthContextUser(tokens);
+  const userRecord = await getUser(tokens.decodedToken.uid);
   return toUserFromUserRecord(userRecord);
 }
-export function toUserFromUserRecord(userRecord: UserRecord): AuthContextUser {
+// eslint-disable-next-line @typescript-eslint/no-explicit-any
+export function toUserFromUserRecord(userRecord: any): AuthContextUser {
   const {
     uid,
     email,
