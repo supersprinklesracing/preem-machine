@@ -126,7 +126,7 @@ fi
 # --- GitHub Section ---
 echo "" >&2
 echo "--- GitHub: Syncing secrets... ---" >&2
-echo "------------------------------------------------------------------" >&2
+# (Operational logs will appear here)
 
 # Prepare conditional arguments for GitHub CLI commands
 declare -a gh_env_args=()
@@ -135,14 +135,16 @@ if [ -n "${environment_name}" ]; then
 fi
 
 # Get the list of existing GitHub secrets
-echo "Fetching existing GitHub secrets..." >&2
 mapfile -t remote_gh_secrets < <(gh secret list "${gh_env_args[@]}" --json name -q '.[].name')
 
-# Create or update secrets from the local file
+# Populate the list of keys from the local file
 while IFS= read -r line || [[ -n "$line" ]]; do
+    # Skip commented out or empty lines
+    [[ "$line" =~ ^\s*(#|$) ]] && continue
     key="${line%%=*}"
-    secret_keys+=("$key") # Add key to our list of local keys
-done < <(sed 's/\r$//' "$env_file" | grep -vE '^\s*(#|$)')
+    secret_keys+=("$key")
+done < <(sed 's/\r$//' "$env_file")
+
 
 if [ "$dry_run" = false ]; then
     echo "Setting all GitHub secrets from '$env_file'..." >&2
@@ -152,7 +154,6 @@ else
 fi
 
 # Remove secrets from GitHub that are not in the local file or allowlist
-echo "Checking for stale GitHub secrets to remove..." >&2
 for secret in "${remote_gh_secrets[@]}"; do
     if ! containsElement "$secret" "${secret_keys[@]}" && ! containsElement "$secret" "${allow_unlisted_keys[@]}"; then
         if [ "$dry_run" = false ]; then
@@ -163,30 +164,27 @@ for secret in "${remote_gh_secrets[@]}"; do
         fi
     fi
 done
-echo "------------------------------------------------------------------" >&2
 
 
 # --- Google Cloud Section ---
 echo "" >&2
 echo "--- Google Cloud: Syncing secrets... ---" >&2
-echo "------------------------------------------------------------------" >&2
+# (Operational logs will appear here)
 
 # Get the list of existing GCP secrets managed by this script
-echo "Fetching existing Google Cloud secrets with 'dotenv=managed' label..." >&2
 mapfile -t remote_gcp_secrets < <(gcloud secrets list --project="$project_id" --filter="labels.dotenv=managed" --format="value(name)")
 
 # Create or update secrets from the local file
 while IFS= read -r line || [[ -n "$line" ]]; do
+    # Skip commented out or empty lines
+    [[ "$line" =~ ^\s*(#|$) ]] && continue
+
     key="${line%%=*}"
     value="${line#*=}"
 
     # Remove enclosing quotes from the secret value, if they exist.
     if [[ "$value" == \"*\" || "$value" == \'*\' ]]; then
         value="${value:1:-1}"
-    fi
-
-    if [ -z "$value" ]; then
-        continue
     fi
 
     if [ "$dry_run" = false ]; then
@@ -210,10 +208,9 @@ while IFS= read -r line || [[ -n "$line" ]]; do
     else
         echo "(Dry Run) Would create or update GCP secret for '$key' with label 'dotenv=managed'." >&2
     fi
-done < <(sed 's/\r$//' "$env_file" | grep -vE '^\s*(#|$)')
+done < <(sed 's/\r$//' "$env_file")
 
 # Remove secrets from GCP that are not in the local file or allowlist
-echo "Checking for stale Google Cloud secrets to remove..." >&2
 for secret in "${remote_gcp_secrets[@]}"; do
     if ! containsElement "$secret" "${secret_keys[@]}" && ! containsElement "$secret" "${allow_unlisted_keys[@]}"; then
         if [ "$dry_run" = false ]; then
@@ -237,14 +234,34 @@ if [ ${#all_secrets_to_grant[@]} -gt 0 ]; then
 
     if [ "$dry_run" = false ]; then
         echo "Granting App Hosting backend access to secrets..." >&2
-        firebase apphosting:secrets:grantaccess --project "$project_id" --backend "main" "$secrets_to_grant_str"
+        firebase apphosting:secrets:grantaccess --project "$project_id" --backend "main" "$secrets_to_grant_str" || echo "Warning: Failed to grant access to some secrets. This can happen if secrets were recently deleted or permissions are insufficient. Continuing..." >&2
     else
         echo "(Dry Run) Would grant App Hosting access to: $secrets_to_grant_str" >&2
     fi
 else
     echo "No secrets to grant access to." >&2
 fi
-echo "------------------------------------------------------------------" >&2
+
+# --- YAML Configuration Snippets ---
+echo ""
+echo "--- GitHub Actions YAML (ci.yaml) ---"
+echo "------------------------------------------------------------------"
+echo "    secrets:"
+for key in "${all_secrets_to_grant[@]}"; do
+    echo "      $key: \${{ secrets.$key }}"
+done
+echo "------------------------------------------------------------------"
+
+echo ""
+echo "--- Google App Hosting YAML (apphosting.yaml) ---"
+echo "------------------------------------------------------------------"
+echo "secrets:"
+for key in "${all_secrets_to_grant[@]}"; do
+    echo "  - variable: $key"
+    echo "    secret: $key"
+done
+echo "------------------------------------------------------------------"
+
 
 # --- Final Status ---
 echo "" >&2
