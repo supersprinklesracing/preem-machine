@@ -9,16 +9,14 @@ export async function serverConfigFn() {
   return {
     useSecureCookies: ENV_USE_HTTPS,
     firebaseApiKey: orThrow(process.env.NEXT_PUBLIC_FIREBASE_API_KEY),
-    serviceAccount: process.env.SERVICE_ACCOUNT_PRIVATE_KEY
-      ? {
-          projectId: process.env.NEXT_PUBLIC_FIREBASE_PROJECT_ID!,
-          clientEmail: process.env.SERVICE_ACCOUNT_CLIENT_EMAIL!,
-          privateKey: process.env.SERVICE_ACCOUNT_PRIVATE_KEY.replace(
-            /\\n/g,
-            '\n',
-          ),
-        }
-      : undefined,
+    serviceAccount: {
+      projectId: orThrow(process.env.NEXT_PUBLIC_FIREBASE_PROJECT_ID),
+      clientEmail: orThrow(process.env.SERVICE_ACCOUNT_CLIENT_EMAIL),
+      privateKey: orThrow(process.env.SERVICE_ACCOUNT_PRIVATE_KEY).replace(
+        /\\n/g,
+        '\n',
+      ),
+    },
   };
 }
 
