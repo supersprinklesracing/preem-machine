@@ -1,1 +1,1 @@
-nx affected --target=test --fix=false --passWithNoTests
+npx nx --tuiAutoExit --outputStyle=static affected --target=test --fix=false
