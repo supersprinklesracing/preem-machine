@@ -208,7 +208,7 @@ while IFS= read -r line || [[ -n "$line" ]]; do
 
     # --- Set GitHub Secret ---
     if [ "$dry_run" = false ]; then
-        echo -n "$processed_value" | gh secret set "$key" --body - "${gh_env_args[@]}"
+        printf "%s" "$processed_value" | gh secret set "$key" --body - "${gh_env_args[@]}"
     else
         echo "(Dry Run) Would set GitHub secret for '$key'." >&2
     fi
