@@ -13,16 +13,13 @@ export async function loginAction(username: string, password: string) {
     username,
     password,
   );
-  console.log('Able to get credential', credential);
 
   const idToken = await credential.user.getIdToken();
-  console.log('Able to get id Token', idToken);
   await refreshCookiesWithIdToken(
     idToken,
     await headers(),
     await cookies(),
     await authConfigFn(),
   );
-  console.log('Able to refresh cookies');
   redirect('/');
 }
