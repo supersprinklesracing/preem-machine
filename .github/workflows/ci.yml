@@ -55,10 +55,10 @@ jobs:
       - run: npx playwright install --with-deps
 
       - name: Build
-        run: npx nx run-many -t build
+        run: npx nx --tuiAutoExit --outputStyle=static run-many -t build
 
       - name: Test
-        run: npx nx run-many -t lint test e2e
+        run: npx nx --tuiAutoExit --outputStyle=static run-many -t lint test e2e
 
-      - run: npx nx fix-ci
+      - run: npx nx --tuiAutoExit --outputStyle=static fix-ci
         if: always()
