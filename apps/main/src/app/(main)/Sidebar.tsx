@@ -1,7 +1,7 @@
 'use client';
 
 import type { ClientCompat, Event } from '@/datastore/types';
-import { Box, Divider, NavLink, Stack } from '@mantine/core';
+import { Box, Divider, NavLink, ScrollArea, Stack } from '@mantine/core';
 import {
   IconBike,
   IconBug,
@@ -25,7 +25,8 @@ const Sidebar: React.FC<SidebarProps> = ({ data }) => {
   const pathname = usePathname();
 
   return (
-    <Stack justify="space-between" style={{ height: '100%' }}>
+    <ScrollArea h="100%">
+      <Stack justify="space-between" style={{ minHeight: '100%' }}>
       <div>
         <NavLink
           href="/"
@@ -145,6 +146,7 @@ const Sidebar: React.FC<SidebarProps> = ({ data }) => {
         </Box>
       </div>
     </Stack>
+    </ScrollArea>
   );
 };
 
