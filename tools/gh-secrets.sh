@@ -10,13 +10,14 @@ usage() {
     echo "This script pushes variables from a .env file to GitHub Actions and Google Secret Manager."
     echo "It can also remove remote secrets that are not present in the local file."
     echo ""
-    echo "Usage: $0 -f <file> -p <project-id> [-e <environment>] [-a <keys>] [--dry-run]"
+    echo "Usage: $0 -f <file> -p <project-id> [-e <environment>] [-a <keys>] [--force-gcp-secrets] [--dry-run]"
     echo ""
     echo "Options:"
     echo "  -f, --file                 (Required) The path to the .env file containing the secrets."
     echo "  -p, --project              (Required) The Google Cloud Project ID."
     echo "  -e, --environment          (Optional) The name of the GitHub Actions environment. If omitted, secrets are set at the repository level."
     echo "  -a, --allow-unlisted-keys  (Optional) Comma-separated list of secret keys to NOT remove, even if they are not in the .env file."
+    echo "      --force-gcp-secrets    (Optional) Force a new secret version to be written in GCP, even if the value is unchanged."
     echo "  -d, --dry-run              (Optional) Perform a dry run without actually setting the secrets."
     echo ""
     exit 1
@@ -37,6 +38,7 @@ environment_name=""
 env_file=""
 project_id=""
 allow_unlisted_keys_str=""
+force_gcp_secrets=false
 declare -a secret_keys=() # Array to store keys from the .env file
 declare -a allow_unlisted_keys=() # Array to store keys from the allowlist
 
@@ -78,6 +80,10 @@ while [[ $# -gt 0 ]]; do
                 echo "Error: Missing value for --allow-unlisted-keys flag" >&2
                 usage
             fi
+            } ;;
+        --force-gcp-secrets) {
+            force_gcp_secrets=true
+            shift
             } ;;
         -d|--dry-run|--dryrun) {
             dry_run=true
@@ -123,10 +129,19 @@ if [ -n "$allow_unlisted_keys_str" ]; then
     IFS=',' read -r -a allow_unlisted_keys <<< "$allow_unlisted_keys_str"
 fi
 
+# --- Populate secret keys from file ---
+# This loop runs first to build a complete list of keys for deletion checks.
+while IFS= read -r line || [[ -n "$line" ]]; do
+    # Skip commented out or empty lines
+    [[ "$line" =~ ^\s*(#|$) ]] && continue
+    key="${line%%=*}"
+    secret_keys+=("$key")
+done < <(sed 's/\r$//' "$env_file")
+
+
 # --- GitHub Section ---
 echo "" >&2
 echo "--- GitHub: Syncing secrets... ---" >&2
-# (Operational logs will appear here)
 
 # Prepare conditional arguments for GitHub CLI commands
 declare -a gh_env_args=()
@@ -137,30 +152,15 @@ fi
 # Get the list of existing GitHub secrets
 mapfile -t remote_gh_secrets < <(gh secret list "${gh_env_args[@]}" --json name -q '.[].name')
 
-# Populate the list of keys from the local file
-while IFS= read -r line || [[ -n "$line" ]]; do
-    # Skip commented out or empty lines
-    [[ "$line" =~ ^\s*(#|$) ]] && continue
-    key="${line%%=*}"
-    secret_keys+=("$key")
-done < <(sed 's/\r$//' "$env_file")
-
-
-if [ "$dry_run" = false ]; then
-    echo "Setting all GitHub secrets from '$env_file'..." >&2
-    gh secret set -f "$env_file" "${gh_env_args[@]}"
-else
-    echo "(Dry Run) Would set all GitHub secrets from '$env_file'." >&2
-fi
-
 # Remove secrets from GitHub that are not in the local file or allowlist
 for secret in "${remote_gh_secrets[@]}"; do
-    if ! containsElement "$secret" "${secret_keys[@]}" && ! containsElement "$secret" "${allow_unlisted_keys[@]}"; then
+    # Only remove stale secrets that are all upper-case
+    if [[ "$secret" =~ ^[A-Z0-9_]+$ ]] && ! containsElement "$secret" "${secret_keys[@]}" && ! containsElement "$secret" "${allow_unlisted_keys[@]}"; then
         if [ "$dry_run" = false ]; then
-            echo "Removing stale GitHub secret: $secret" >&2
+            echo "Removing stale, upper-case GitHub secret: $secret" >&2
             gh secret delete "$secret" "${gh_env_args[@]}"
         else
-            echo "(Dry Run) Would remove stale GitHub secret: $secret" >&2
+            echo "(Dry Run) Would remove stale, upper-case GitHub secret: $secret" >&2
         fi
     fi
 done
@@ -169,12 +169,27 @@ done
 # --- Google Cloud Section ---
 echo "" >&2
 echo "--- Google Cloud: Syncing secrets... ---" >&2
-# (Operational logs will appear here)
 
 # Get the list of existing GCP secrets managed by this script
 mapfile -t remote_gcp_secrets < <(gcloud secrets list --project="$project_id" --filter="labels.dotenv=managed" --format="value(name)")
 
-# Create or update secrets from the local file
+# Remove secrets from GCP that are not in the local file or allowlist
+for secret in "${remote_gcp_secrets[@]}"; do
+    # Only remove stale secrets that are all upper-case
+    if [[ "$secret" =~ ^[A-Z0-9_]+$ ]] && ! containsElement "$secret" "${secret_keys[@]}" && ! containsElement "$secret" "${allow_unlisted_keys[@]}"; then
+        if [ "$dry_run" = false ]; then
+            echo "Removing stale, upper-case GCP secret: $secret" >&2
+            gcloud secrets delete "$secret" --project="$project_id" --quiet
+        else
+            echo "(Dry Run) Would remove stale, upper-case GCP secret: $secret" >&2
+        fi
+    fi
+done
+
+# --- Create and Update Secrets Section ---
+echo "" >&2
+echo "--- Setting secrets on GitHub and Google Cloud... ---" >&2
+# This single loop processes each secret for both services.
 while IFS= read -r line || [[ -n "$line" ]]; do
     # Skip commented out or empty lines
     [[ "$line" =~ ^\s*(#|$) ]] && continue
@@ -182,21 +197,33 @@ while IFS= read -r line || [[ -n "$line" ]]; do
     key="${line%%=*}"
     value="${line#*=}"
 
-    # Remove enclosing quotes from the secret value, if they exist.
-    if [[ "$value" == \"*\" || "$value" == \'*\' ]]; then
-        value="${value:1:-1}"
+    # --- Process value for both services ---
+    # Trim leading and trailing whitespace
+    processed_value="${value#"${value%%[![:space:]]*}"}"
+    processed_value="${processed_value%"${processed_value##*[![:space:]]}"}"
+    # Remove enclosing quotes
+    if [[ "$processed_value" == \"*\" || "$processed_value" == \'*\' ]]; then
+        processed_value="${processed_value:1:-1}"
     fi
 
+    # --- Set GitHub Secret ---
+    if [ "$dry_run" = false ]; then
+        echo -n "$processed_value" | gh secret set "$key" --body - "${gh_env_args[@]}"
+    else
+        echo "(Dry Run) Would set GitHub secret for '$key'." >&2
+    fi
+
+    # --- Set Google Cloud Secret ---
     if [ "$dry_run" = false ]; then
         if ! gcloud secrets describe "$key" --project="$project_id" &>/dev/null; then
             echo "Creating GCP secret for '$key' with label 'dotenv=managed'..." >&2
-            gcloud secrets create "$key" --project="$project_id" --data-file=- --replication-policy="automatic" --labels="dotenv=managed" >&2 <<< "$value"
+            printf "%s" "$processed_value" | gcloud secrets create "$key" --project="$project_id" --data-file=- --replication-policy="automatic" --labels="dotenv=managed" >&2
         else
             # Secret exists, check value and labels
             current_value=$(gcloud secrets versions access latest --secret="$key" --project="$project_id")
-            if [[ "$current_value" != "$value" ]]; then
+            if [[ "$force_gcp_secrets" = true || "$current_value" != "$processed_value" ]]; then
                 echo "Updating existing GCP secret for '$key'..." >&2
-                gcloud secrets versions add "$key" --project="$project_id" --data-file=- >&2 <<< "$value"
+                printf "%s" "$processed_value" | gcloud secrets versions add "$key" --project="$project_id" --data-file=- >&2
             fi
             # Ensure the label is present
             current_label=$(gcloud secrets describe "$key" --project="$project_id" --format="value(labels.dotenv)")
@@ -210,18 +237,8 @@ while IFS= read -r line || [[ -n "$line" ]]; do
     fi
 done < <(sed 's/\r$//' "$env_file")
 
-# Remove secrets from GCP that are not in the local file or allowlist
-for secret in "${remote_gcp_secrets[@]}"; do
-    if ! containsElement "$secret" "${secret_keys[@]}" && ! containsElement "$secret" "${allow_unlisted_keys[@]}"; then
-        if [ "$dry_run" = false ]; then
-            echo "Removing stale GCP secret: $secret" >&2
-            gcloud secrets delete "$secret" --project="$project_id" --quiet
-        else
-            echo "(Dry Run) Would remove stale GCP secret: $secret" >&2
-        fi
-    fi
-done
 
+# --- Grant Access & Output YAML ---
 # Grant access for all secrets that should exist (local + allowlist)
 all_secrets_to_grant=("${secret_keys[@]}" "${allow_unlisted_keys[@]}")
 # Remove duplicates
