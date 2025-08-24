@@ -26,6 +26,7 @@ export async function middleware(request: NextRequest) {
     enableTokenRefreshOnExpiredKidHeader:
       authConfig.enableTokenRefreshOnExpiredKidHeader,
     tenantId: authConfig.tenantId,
+    dynamicCustomClaimsKeys: ['roles'],
     handleValidToken: async ({ token, decodedToken, customToken }, headers) => {
       // Authenticated user should not be able to access /login, /register and /reset-password routes
       if (LOGGED_OUT_ONLY.includes(request.nextUrl.pathname)) {
