@@ -8,7 +8,7 @@ import { stripe } from './server';
 export async function createPaymentIntent(
   amount: number,
   preemPath: string,
-  isAnonymous: boolean
+  isAnonymous: boolean,
 ): Promise<{ clientSecret: string | null }> {
   const authUser = await getAuthUserFromCookies();
   if (!authUser) {
@@ -45,7 +45,7 @@ export async function createPaymentIntent(
 }
 
 export async function confirmContributionOptimistically(
-  paymentIntentId: string
+  paymentIntentId: string,
 ) {
   try {
     const paymentIntent = await stripe.paymentIntents.retrieve(paymentIntentId);
@@ -56,7 +56,7 @@ export async function confirmContributionOptimistically(
   } catch (error) {
     console.error(
       `Error retrieving PaymentIntent ${paymentIntentId} for optimistic confirmation:`,
-      error
+      error,
     );
   }
 }

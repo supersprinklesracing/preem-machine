@@ -17,7 +17,7 @@ export async function processContribution(paymentIntent: Stripe.PaymentIntent) {
   if (!preemPath || !userId) {
     console.error(
       'PaymentIntent metadata is missing preemPath or userId',
-      paymentIntent.id
+      paymentIntent.id,
     );
     return;
   }
@@ -38,7 +38,7 @@ export async function processContribution(paymentIntent: Stripe.PaymentIntent) {
         existingContribution.data()?.status === 'confirmed'
       ) {
         console.log(
-          `Contribution ${paymentIntent.id} has already been processed.`
+          `Contribution ${paymentIntent.id} has already been processed.`,
         );
         return;
       }
@@ -88,7 +88,7 @@ export async function processContribution(paymentIntent: Stripe.PaymentIntent) {
             lastModifiedBy: userRef,
           },
         },
-        { merge: true }
+        { merge: true },
       );
 
       // Atomically increment the prize pool
@@ -98,12 +98,12 @@ export async function processContribution(paymentIntent: Stripe.PaymentIntent) {
     });
 
     console.log(
-      `Successfully processed contribution for PaymentIntent ${paymentIntent.id}`
+      `Successfully processed contribution for PaymentIntent ${paymentIntent.id}`,
     );
   } catch (error) {
     console.error(
       `Error processing contribution for PaymentIntent ${paymentIntent.id}:`,
-      error
+      error,
     );
   }
 }

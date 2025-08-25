@@ -31,7 +31,7 @@ interface BigScreenProps {
 
 const BigScreen: React.FC<BigScreenProps> = ({ data, users }) => {
   const [race, setRace] = useState<ClientCompat<RaceWithPreems> | undefined>(
-    data.race
+    data.race,
   );
   const [liveContributions, setLiveContributions] = useState<
     (ClientCompat<Contribution> & { preemName: string })[]
@@ -43,7 +43,7 @@ const BigScreen: React.FC<BigScreenProps> = ({ data, users }) => {
     const allInitialContributions =
       data.race.preems
         ?.flatMap((p) =>
-          p.contributions?.map((c) => ({ ...c, preemName: p.name ?? '' }))
+          p.contributions?.map((c) => ({ ...c, preemName: p.name ?? '' })),
         )
         .filter((c): c is NonNullable<typeof c> => !!c) ?? [];
     allInitialContributions.sort((a, b) => {
@@ -76,8 +76,8 @@ const BigScreen: React.FC<BigScreenProps> = ({ data, users }) => {
             setLiveContributions((prev) =>
               [{ ...newContribution, preemName: p.name ?? '' }, ...prev].slice(
                 0,
-                10
-              )
+                10,
+              ),
             );
             return {
               ...p,
@@ -95,7 +95,7 @@ const BigScreen: React.FC<BigScreenProps> = ({ data, users }) => {
   }, [data, users]);
 
   const getContributor = (
-    contribution: ClientCompat<Contribution>
+    contribution: ClientCompat<Contribution>,
   ): { name: string; avatarUrl: string } => {
     if (!contribution.contributor?.id) {
       return {
@@ -117,14 +117,14 @@ const BigScreen: React.FC<BigScreenProps> = ({ data, users }) => {
 
   const nextPreem =
     race.preems?.find(
-      (p) => p.status === 'Minimum Met' || p.status === 'Open'
+      (p) => p.status === 'Minimum Met' || p.status === 'Open',
     ) ||
     race.preems
       ?.filter((p) => p.timeLimit)
       .sort(
         (a, b) =>
           new Date(b.timeLimit ?? 0).getTime() -
-          new Date(a.timeLimit ?? 0).getTime()
+          new Date(a.timeLimit ?? 0).getTime(),
       )[0];
 
   if (!nextPreem) {

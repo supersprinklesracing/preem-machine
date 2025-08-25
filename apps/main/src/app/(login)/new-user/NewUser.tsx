@@ -23,7 +23,7 @@ import type { NewUserOptions } from './new-user-action';
 
 interface Props {
   newUserAction: (
-    options: NewUserOptions
+    options: NewUserOptions,
   ) => Promise<{ ok: boolean; error?: string }>;
 }
 
@@ -95,7 +95,7 @@ const NewUser: React.FC<Props> = ({ newUserAction }: Props) => {
     } catch (error) {
       console.error('Failed to save user data:', error);
       setSubmissionError(
-        error instanceof Error ? error.message : 'An unknown error occurred.'
+        error instanceof Error ? error.message : 'An unknown error occurred.',
       );
       setIsLoading(false);
     }

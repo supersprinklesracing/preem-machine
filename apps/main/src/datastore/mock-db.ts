@@ -28,7 +28,7 @@ interface DatabaseCollections {
 const createDocRef = <T>(
   firestore: Firestore,
   collection: string,
-  id: string
+  id: string,
 ): DocumentReference<T> => {
   return firestore.doc(`${collection}/${id}`) as DocumentReference<T>;
 };
@@ -219,14 +219,14 @@ export const createMockDb = (firestore: Firestore): DatabaseCollections =>
                           podiums: 3,
                           sponsors: [],
                           startDate: getTimestampFromISODate(
-                            '2025-09-01T08:00:00Z'
+                            '2025-09-01T08:00:00Z',
                           ),
                           endDate: getTimestampFromISODate(
-                            '2025-09-01T08:00:00Z'
+                            '2025-09-01T08:00:00Z',
                           ),
                           metadata: createMetadata(
                             firestore,
-                            '2025-01-15T12:03:00Z'
+                            '2025-01-15T12:03:00Z',
                           ),
                           _collections: {
                             preems: [
@@ -238,7 +238,7 @@ export const createMockDb = (firestore: Firestore): DatabaseCollections =>
                                 prizePool: 100,
                                 metadata: createMetadata(
                                   firestore,
-                                  '2025-01-15T12:04:00Z'
+                                  '2025-01-15T12:04:00Z',
                                 ),
                                 _collections: {
                                   contributions: [
@@ -252,12 +252,12 @@ export const createMockDb = (firestore: Firestore): DatabaseCollections =>
                                       },
                                       amount: 100,
                                       date: getTimestampFromISODate(
-                                        '2024-07-09T18:05:00Z'
+                                        '2024-07-09T18:05:00Z',
                                       ),
                                       message: 'Good luck racers!',
                                       metadata: createMetadata(
                                         firestore,
-                                        '2024-07-09T18:05:00Z'
+                                        '2024-07-09T18:05:00Z',
                                       ),
                                     },
                                   ],
@@ -271,11 +271,11 @@ export const createMockDb = (firestore: Firestore): DatabaseCollections =>
                                 prizePool: 255,
                                 minimumThreshold: 200,
                                 timeLimit: getTimestampFromISODate(
-                                  '2024-07-09T19:30:00Z'
+                                  '2024-07-09T19:30:00Z',
                                 ),
                                 metadata: createMetadata(
                                   firestore,
-                                  '2025-01-15T12:05:00Z'
+                                  '2025-01-15T12:05:00Z',
                                 ),
                                 _collections: {
                                   contributions: [
@@ -289,11 +289,11 @@ export const createMockDb = (firestore: Firestore): DatabaseCollections =>
                                       },
                                       amount: 50,
                                       date: getTimestampFromISODate(
-                                        '2024-07-09T18:10:00Z'
+                                        '2024-07-09T18:10:00Z',
                                       ),
                                       metadata: createMetadata(
                                         firestore,
-                                        '2024-07-09T18:10:00Z'
+                                        '2024-07-09T18:10:00Z',
                                       ),
                                     },
                                     {
@@ -306,23 +306,23 @@ export const createMockDb = (firestore: Firestore): DatabaseCollections =>
                                       },
                                       amount: 75,
                                       date: getTimestampFromISODate(
-                                        '2024-07-09T18:12:00Z'
+                                        '2024-07-09T18:12:00Z',
                                       ),
                                       message: 'Lets go!',
                                       metadata: createMetadata(
                                         firestore,
-                                        '2024-07-09T18:12:00Z'
+                                        '2024-07-09T18:12:00Z',
                                       ),
                                     },
                                     {
                                       id: 'contrib-4',
                                       amount: 30,
                                       date: getTimestampFromISODate(
-                                        '2024-07-09T18:15:00Z'
+                                        '2024-07-09T18:15:00Z',
                                       ),
                                       metadata: createMetadata(
                                         firestore,
-                                        '2024-07-09T18:15:00Z'
+                                        '2024-07-09T18:15:00Z',
                                       ),
                                     },
                                     {
@@ -335,12 +335,12 @@ export const createMockDb = (firestore: Firestore): DatabaseCollections =>
                                       },
                                       amount: 100,
                                       date: getTimestampFromISODate(
-                                        '2024-07-09T18:20:00Z'
+                                        '2024-07-09T18:20:00Z',
                                       ),
                                       message: 'Making it spicy!',
                                       metadata: createMetadata(
                                         firestore,
-                                        '2024-07-09T18:20:00Z'
+                                        '2024-07-09T18:20:00Z',
                                       ),
                                     },
                                   ],
@@ -355,7 +355,7 @@ export const createMockDb = (firestore: Firestore): DatabaseCollections =>
                                 minimumThreshold: 150,
                                 metadata: createMetadata(
                                   firestore,
-                                  '2025-01-15T12:06:00Z'
+                                  '2025-01-15T12:06:00Z',
                                 ),
                                 _collections: {
                                   contributions: [
@@ -369,11 +369,11 @@ export const createMockDb = (firestore: Firestore): DatabaseCollections =>
                                       },
                                       amount: 75,
                                       date: getTimestampFromISODate(
-                                        '2024-07-09T18:25:00Z'
+                                        '2024-07-09T18:25:00Z',
                                       ),
                                       metadata: createMetadata(
                                         firestore,
-                                        '2024-07-09T18:25:00Z'
+                                        '2024-07-09T18:25:00Z',
                                       ),
                                     },
                                   ],
@@ -398,14 +398,14 @@ export const createMockDb = (firestore: Firestore): DatabaseCollections =>
                           podiums: 3,
                           sponsors: [],
                           startDate: getTimestampFromISODate(
-                            '2025-09-01T08:45:00Z'
+                            '2025-09-01T08:45:00Z',
                           ),
                           endDate: getTimestampFromISODate(
-                            '2025-09-01T08:45:00Z'
+                            '2025-09-01T08:45:00Z',
                           ),
                           metadata: createMetadata(
                             firestore,
-                            '2025-01-15T12:07:00Z'
+                            '2025-01-15T12:07:00Z',
                           ),
                           _collections: { preems: [] },
                         },
@@ -464,14 +464,14 @@ export const createMockDb = (firestore: Firestore): DatabaseCollections =>
                           podiums: 3,
                           sponsors: [],
                           startDate: getTimestampFromISODate(
-                            '2026-07-17T10:00:00Z'
+                            '2026-07-17T10:00:00Z',
                           ),
                           endDate: getTimestampFromISODate(
-                            '2026-07-17T10:00:00Z'
+                            '2026-07-17T10:00:00Z',
                           ),
                           metadata: createMetadata(
                             firestore,
-                            '2026-01-01T09:03:00Z'
+                            '2026-01-01T09:03:00Z',
                           ),
                           _collections: { preems: [] },
                         },
@@ -492,14 +492,14 @@ export const createMockDb = (firestore: Firestore): DatabaseCollections =>
                           podiums: 3,
                           sponsors: [],
                           startDate: getTimestampFromISODate(
-                            '2026-07-17T11:00:00Z'
+                            '2026-07-17T11:00:00Z',
                           ),
                           endDate: getTimestampFromISODate(
-                            '2026-07-17T11:00:00Z'
+                            '2026-07-17T11:00:00Z',
                           ),
                           metadata: createMetadata(
                             firestore,
-                            '2026-01-01T09:04:00Z'
+                            '2026-01-01T09:04:00Z',
                           ),
                           _collections: { preems: [] },
                         },
@@ -533,14 +533,14 @@ export const createMockDb = (firestore: Firestore): DatabaseCollections =>
                           podiums: 3,
                           sponsors: [],
                           startDate: getTimestampFromISODate(
-                            '2026-07-25T10:00:00Z'
+                            '2026-07-25T10:00:00Z',
                           ),
                           endDate: getTimestampFromISODate(
-                            '2026-07-25T10:00:00Z'
+                            '2026-07-25T10:00:00Z',
                           ),
                           metadata: createMetadata(
                             firestore,
-                            '2026-01-01T09:06:00Z'
+                            '2026-01-01T09:06:00Z',
                           ),
                           _collections: { preems: [] },
                         },
@@ -561,14 +561,14 @@ export const createMockDb = (firestore: Firestore): DatabaseCollections =>
                           podiums: 3,
                           sponsors: [],
                           startDate: getTimestampFromISODate(
-                            '2026-07-25T11:00:00Z'
+                            '2026-07-25T11:00:00Z',
                           ),
                           endDate: getTimestampFromISODate(
-                            '2026-07-25T11:00:00Z'
+                            '2026-07-25T11:00:00Z',
                           ),
                           metadata: createMetadata(
                             firestore,
-                            '2026-01-01T09:07:00Z'
+                            '2026-01-01T09:07:00Z',
                           ),
                           _collections: { preems: [] },
                         },
@@ -602,14 +602,14 @@ export const createMockDb = (firestore: Firestore): DatabaseCollections =>
                           podiums: 3,
                           sponsors: [],
                           startDate: getTimestampFromISODate(
-                            '2026-07-26T16:55:00Z'
+                            '2026-07-26T16:55:00Z',
                           ),
                           endDate: getTimestampFromISODate(
-                            '2026-07-26T16:55:00Z'
+                            '2026-07-26T16:55:00Z',
                           ),
                           metadata: createMetadata(
                             firestore,
-                            '2026-01-01T09:09:00Z'
+                            '2026-01-01T09:09:00Z',
                           ),
                           _collections: { preems: [] },
                         },
@@ -630,14 +630,14 @@ export const createMockDb = (firestore: Firestore): DatabaseCollections =>
                           podiums: 3,
                           sponsors: [],
                           startDate: getTimestampFromISODate(
-                            '2026-07-26T15:30:00Z'
+                            '2026-07-26T15:30:00Z',
                           ),
                           endDate: getTimestampFromISODate(
-                            '2026-07-26T15:30:00Z'
+                            '2026-07-26T15:30:00Z',
                           ),
                           metadata: createMetadata(
                             firestore,
-                            '2026-01-01T09:10:00Z'
+                            '2026-01-01T09:10:00Z',
                           ),
                           _collections: { preems: [] },
                         },

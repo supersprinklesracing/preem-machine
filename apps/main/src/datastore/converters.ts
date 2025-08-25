@@ -14,7 +14,7 @@ import type { ClientCompat } from './types';
  * @returns A new, fully serializable object or array.
  */
 function serializeFirestoreData(
-  data: DocumentData
+  data: DocumentData,
 ): ClientCompat<DocumentData> {
   if (data === null || data === undefined) {
     return data;

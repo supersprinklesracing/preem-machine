@@ -8,7 +8,7 @@ type MockDbObject = { [key: string]: any };
 async function seedCollection(
   db: FirebaseFirestore.Firestore,
   collectionPath: string,
-  collectionData: MockDbObject
+  collectionData: MockDbObject,
 ) {
   const collectionRef = db.collection(collectionPath);
   const promises: Promise<unknown>[] = [];
@@ -28,8 +28,8 @@ async function seedCollection(
           seedCollection(
             db,
             `${collectionPath}/${id}/${subCollectionId}`,
-            _collections[subCollectionId]
-          )
+            _collections[subCollectionId],
+          ),
         );
       }
     }

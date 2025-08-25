@@ -32,7 +32,7 @@ export function EditEvent({
   event,
 }: {
   updateEventAction: (
-    options: UpdateEventOptions
+    options: UpdateEventOptions,
   ) => Promise<{ ok: boolean; error?: string }>;
   event: ClientCompat<Event>;
 }) {
@@ -96,7 +96,7 @@ export function EditEvent({
     } catch (error) {
       console.error('Failed to save event data:', error);
       setSubmissionError(
-        error instanceof Error ? error.message : 'An unknown error occurred.'
+        error instanceof Error ? error.message : 'An unknown error occurred.',
       );
     } finally {
       setIsLoading(false);

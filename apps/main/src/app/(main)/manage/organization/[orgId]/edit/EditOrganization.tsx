@@ -26,7 +26,7 @@ export function EditOrganization({
   stripeError,
 }: {
   updateOrganizationAction: (
-    options: UpdateOrganizationOptions
+    options: UpdateOrganizationOptions,
   ) => Promise<{ ok: boolean; error?: string }>;
   organization: ClientCompat<Organization>;
   stripeError?: string;
@@ -66,7 +66,7 @@ export function EditOrganization({
     } catch (error) {
       console.error('Failed to save organization data:', error);
       setSubmissionError(
-        error instanceof Error ? error.message : 'An unknown error occurred.'
+        error instanceof Error ? error.message : 'An unknown error occurred.',
       );
     } finally {
       setIsLoading(false);

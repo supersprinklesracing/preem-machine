@@ -7,7 +7,7 @@ import { doc, getDoc, setDoc, updateDoc } from 'firebase/firestore';
 const auth = getFirebaseAuth();
 
 export async function incrementCounterUsingClientFirestore(
-  serverCustomToken: string
+  serverCustomToken: string,
 ) {
   // We use `getValidCustomToken` to fetch fresh `customToken` using /api/refresh-token endpoint if original custom token has expired.
   // This ensures custom token is valid, even in long-running client sessions

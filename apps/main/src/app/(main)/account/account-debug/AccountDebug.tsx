@@ -49,7 +49,7 @@ export function AccountDebug({ count, incrementCounter }: AccountDebugProps) {
     if (response.ok) {
       console.info(
         'Successfully verified App Check token',
-        await response.json()
+        await response.json(),
       );
     } else {
       console.error('Could not verify App Check token', await response.json());
@@ -76,7 +76,7 @@ export function AccountDebug({ count, incrementCounter }: AccountDebugProps) {
         await incrementCounterUsingClientFirestore(authUser.customToken);
       } else {
         console.warn(
-          'Custom token is not present. Have you set `enableCustomToken` option to `true` in `authMiddleware`?'
+          'Custom token is not present. Have you set `enableCustomToken` option to `true` in `authMiddleware`?',
         );
       }
 

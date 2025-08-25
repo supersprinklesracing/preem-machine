@@ -38,7 +38,7 @@ export async function POST(request: NextRequest) {
     {
       status: 200,
       headers,
-    }
+    },
   );
 
   return refreshNextResponseCookies(request, response, authConfig);

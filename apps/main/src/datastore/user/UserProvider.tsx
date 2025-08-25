@@ -13,12 +13,12 @@ export const CurrentUserProvider: FunctionComponent<UserProviderProps> = ({
   children,
 }) => {
   return (
-    <CurrentUserContext.Provider
+    <CurrentUserContext
       value={{
         currentUser,
       }}
     >
       {children}
-    </CurrentUserContext.Provider>
+    </CurrentUserContext>
   );
 };

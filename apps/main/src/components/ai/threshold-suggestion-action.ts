@@ -7,7 +7,7 @@ import {
 } from '@/ai/flows/threshold-assistant';
 
 export async function getThresholdSuggestion(
-  input: SuggestThresholdInput
+  input: SuggestThresholdInput,
 ): Promise<SuggestThresholdOutput | { error: string }> {
   try {
     const result = await suggestThreshold(input);

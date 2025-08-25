@@ -35,12 +35,12 @@ export const getGoogleProvider = (auth: Auth) => {
 
 export const loginWithProvider = async (
   auth: Auth,
-  provider: AuthProvider
+  provider: AuthProvider,
 ): Promise<UserCredential> => {
   const result = await signInWithPopup(
     auth,
     provider,
-    browserPopupRedirectResolver
+    browserPopupRedirectResolver,
   );
 
   return result;
@@ -48,7 +48,7 @@ export const loginWithProvider = async (
 
 export const loginWithProviderUsingRedirect = async (
   auth: Auth,
-  provider: AuthProvider
+  provider: AuthProvider,
 ): Promise<void> => {
   await signInWithRedirect(auth, provider);
 };

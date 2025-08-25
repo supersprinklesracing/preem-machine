@@ -40,7 +40,7 @@ export type PreemWithContributions = ClientCompat<
 >;
 
 const getContributionsForPreem = async (
-  preemDoc: firestore.QueryDocumentSnapshot<ClientCompat<Preem>>
+  preemDoc: firestore.QueryDocumentSnapshot<ClientCompat<Preem>>,
 ): Promise<PreemWithContributions> => {
   const preem = preemDoc.data();
   const contributionsSnap = await preemDoc.ref
@@ -52,7 +52,7 @@ const getContributionsForPreem = async (
 };
 
 const getPreemsForRace = async (
-  raceDoc: firestore.QueryDocumentSnapshot<ClientCompat<Race>>
+  raceDoc: firestore.QueryDocumentSnapshot<ClientCompat<Race>>,
 ): Promise<RaceWithPreems> => {
   const race = raceDoc.data();
   const preemsSnap = await raceDoc.ref
@@ -60,13 +60,13 @@ const getPreemsForRace = async (
     .withConverter(genericConverter<Preem>())
     .get();
   const preems = await Promise.all(
-    preemsSnap.docs.map(getContributionsForPreem)
+    preemsSnap.docs.map(getContributionsForPreem),
   );
   return { ...race, preems };
 };
 
 const getRacesForEvent = async (
-  eventDoc: firestore.QueryDocumentSnapshot<ClientCompat<Event>>
+  eventDoc: firestore.QueryDocumentSnapshot<ClientCompat<Event>>,
 ): Promise<EventWithRaces> => {
   const event = eventDoc.data();
   const racesSnap = await eventDoc.ref
@@ -78,7 +78,7 @@ const getRacesForEvent = async (
 };
 
 const getEventsForSeries = async (
-  seriesDoc: firestore.QueryDocumentSnapshot<ClientCompat<Series>>
+  seriesDoc: firestore.QueryDocumentSnapshot<ClientCompat<Series>>,
 ): Promise<ClientCompat<SeriesWithEvents>> => {
   const series = seriesDoc.data();
   const eventsSnap = await seriesDoc.ref
@@ -110,7 +110,7 @@ export const getUserById = cache(
       .withConverter(genericConverter<User>())
       .get();
     return docSnap.data();
-  }
+  },
 );
 
 export const getOrganizationById = cache(
@@ -122,7 +122,7 @@ export const getOrganizationById = cache(
       .withConverter(genericConverter<Organization>())
       .get();
     return docSnap.data();
-  }
+  },
 );
 
 export const getSeriesById = cache(
@@ -138,7 +138,7 @@ export const getSeriesById = cache(
       return undefined;
     }
     return seriesSnap.docs[0].data();
-  }
+  },
 );
 
 export const getEventById = cache(
@@ -154,11 +154,11 @@ export const getEventById = cache(
       return undefined;
     }
     return eventSnap.docs[0].data();
-  }
+  },
 );
 
 export const getOrganizationByStripeConnectAccountId = async (
-  accountId: string
+  accountId: string,
 ): Promise<
   firestore.QueryDocumentSnapshot<ClientCompat<Organization>> | undefined
 > => {
@@ -189,7 +189,7 @@ export const getUsersByIds = cache(
       .withConverter(genericConverter<User>())
       .get();
     return usersSnap.docs.map((doc) => doc.data());
-  }
+  },
 );
 
 export const getAllRaces = cache(async (): Promise<ClientCompat<Race>[]> => {
@@ -220,10 +220,10 @@ export const getEventsForOrganizations = cache(
       .get();
     console.log(
       'Events',
-      eventsSnap.docs.map((doc) => doc.data())
+      eventsSnap.docs.map((doc) => doc.data()),
     );
     return eventsSnap.docs.map((doc) => doc.data());
-  }
+  },
 );
 
 export const getEventsForUser = cache(
@@ -235,7 +235,7 @@ export const getEventsForUser = cache(
       user?.organizationRefs?.map((ref) => ref.id).filter((id) => !!id) ?? [];
     console.log('Organization IDs', organizationIds);
     return getEventsForOrganizations(organizationIds);
-  }
+  },
 );
 
 export const getRenderablePreemDataForPage = cache(
@@ -256,7 +256,7 @@ export const getRenderablePreemDataForPage = cache(
     return {
       preem: preem as unknown as PreemPageData['preem'],
     };
-  }
+  },
 );
 
 export const getRenderableRaceDataForPage = cache(
@@ -277,12 +277,12 @@ export const getRenderableRaceDataForPage = cache(
     return {
       race: race as unknown as RacePageData['race'],
     };
-  }
+  },
 );
 
 export const getRacePageDataWithUsers = cache(
   async (
-    id: string
+    id: string,
   ): Promise<
     { race: RaceWithPreems; users: ClientCompat<User>[] } | undefined
   > => {
@@ -305,7 +305,7 @@ export const getRacePageDataWithUsers = cache(
       race: race as RaceWithPreems,
       users: users as ClientCompat<User>[],
     };
-  }
+  },
 );
 
 export const getRenderableOrganizationDataForPage = cache(
@@ -343,7 +343,7 @@ export const getRenderableOrganizationDataForPage = cache(
       serieses: series as unknown as OrganizationPageData['serieses'],
       members: members as unknown as OrganizationPageData['members'],
     };
-  }
+  },
 );
 
 export const getRenderableSeriesDataForPage = cache(
@@ -364,7 +364,7 @@ export const getRenderableSeriesDataForPage = cache(
     return {
       series: series as unknown as SeriesPageData['series'],
     };
-  }
+  },
 );
 
 import type { LiveEventPageData } from '../app/(main)/manage/event/[eventId]/(live)/LiveEvent';
@@ -387,7 +387,7 @@ export const getRenderableEventDataForPage = cache(
     return {
       event: event as unknown as LiveEventPageData['event'],
     };
-  }
+  },
 );
 
 export const getRenderableHomeDataForPage = cache(
@@ -409,14 +409,14 @@ export const getRenderableHomeDataForPage = cache(
       .limit(20)
       .get();
     const recentContributionsRaw = contributionsSnap.docs.map((doc) =>
-      doc.data()
+      doc.data(),
     );
 
     const preemIds = [
       ...new Set(
         recentContributionsRaw
           .map((c) => c.preemBrief?.id)
-          .filter((id): id is string => !!id)
+          .filter((id): id is string => !!id),
       ),
     ];
 
@@ -431,10 +431,13 @@ export const getRenderableHomeDataForPage = cache(
           ).docs.map((d) => d.data())
         : [];
 
-    const preemsMap = preems.reduce((acc, preem) => {
-      acc[preem.id] = preem;
-      return acc;
-    }, {} as Record<string, ClientCompat<Preem>>);
+    const preemsMap = preems.reduce(
+      (acc, preem) => {
+        acc[preem.id] = preem;
+        return acc;
+      },
+      {} as Record<string, ClientCompat<Preem>>,
+    );
 
     const recentContributions = recentContributionsRaw.map((c) => {
       const fullPreem = c.preemBrief?.id
@@ -447,14 +450,14 @@ export const getRenderableHomeDataForPage = cache(
     });
 
     const upcomingEvents = await Promise.all(
-      eventsSnap.docs.map(getRacesForEvent)
+      eventsSnap.docs.map(getRacesForEvent),
     );
 
     return {
       upcomingEvents: upcomingEvents,
       contributions: recentContributions,
     };
-  }
+  },
 );
 
 export const getRenderableUserDataForPage = cache(
@@ -477,7 +480,7 @@ export const getRenderableUserDataForPage = cache(
       user: user as unknown as UserPageData['user'],
       contributions: contributions as unknown as UserPageData['contributions'],
     };
-  }
+  },
 );
 
 export const getRenderableAdminDataForPage = cache(
@@ -486,7 +489,7 @@ export const getRenderableAdminDataForPage = cache(
     return {
       users: users as unknown as AdminPageData['users'],
     };
-  }
+  },
 );
 
 export const anonymousUser = () => ({
@@ -495,10 +498,9 @@ export const anonymousUser = () => ({
   avatarUrl: 'https://placehold.co/100x100.png',
 });
 
-
 export const getRaceWithUsers = cache(
   async (
-    raceId: string
+    raceId: string,
   ): Promise<
     | { race: ClientCompat<RaceWithPreems>; users: ClientCompat<User>[] }
     | undefined
@@ -522,7 +524,7 @@ export const getRaceWithUsers = cache(
       race: race as ClientCompat<RaceWithPreems>,
       users: users as ClientCompat<User>[],
     };
-  }
+  },
 );
 
 export const getSeriesForOrganization = cache(
@@ -533,7 +535,7 @@ export const getSeriesForOrganization = cache(
       .withConverter(genericConverter<Series>())
       .get();
     return seriesSnap.docs.map((doc) => doc.data());
-  }
+  },
 );
 
 export const getRacesForEventId = cache(
@@ -552,7 +554,7 @@ export const getRacesForEventId = cache(
       .withConverter(genericConverter<Race>())
       .get();
     return racesSnap.docs.map((doc) => doc.data());
-  }
+  },
 );
 
 export const getPreemsForRaceId = cache(
@@ -571,7 +573,7 @@ export const getPreemsForRaceId = cache(
       .withConverter(genericConverter<Preem>())
       .get();
     return preemsSnap.docs.map((doc) => doc.data());
-  }
+  },
 );
 
 export const getContributionsForPreemId = cache(
@@ -590,7 +592,7 @@ export const getContributionsForPreemId = cache(
       .withConverter(genericConverter<Contribution>())
       .get();
     return contributionsSnap.docs.map((doc) => doc.data());
-  }
+  },
 );
 
 export const getOrganizationsForUser = cache(
@@ -600,58 +602,56 @@ export const getOrganizationsForUser = cache(
       return [];
     }
     const orgs = await Promise.all(
-      user.organizationRefs.map((ref) => getOrganizationById(ref.id))
+      user.organizationRefs.map((ref) => getOrganizationById(ref.id)),
     );
     return orgs.filter((org): org is ClientCompat<Organization> => !!org);
-  }
+  },
 );
 
-export const getHubPageData = cache(
-  async (): Promise<HubPageData> => {
-    const authUser = await getAuthUserFromCookies();
-    if (!authUser) {
-      return { organizations: [] };
-    }
-
-    const organizations = await getOrganizationsForUser(authUser.id);
-
-    const organizationsWithSeries = await Promise.all(
-      organizations.map(async (org) => {
-        const serieses = await getSeriesForOrganization(org.id);
-        const seriesesWithEvents = await Promise.all(
-          serieses.map(async (series) => {
-            const seriesDocSnap = await (
-              await getFirestore()
-            )
-              .collection(`organizations/${org.id}/series`)
-              .doc(series.id)
-              .withConverter(genericConverter<Series>())
-              .get();
-            if (seriesDocSnap.exists) {
-              return getEventsForSeries(
-                seriesDocSnap as firestore.QueryDocumentSnapshot<
-                  ClientCompat<Series>
-                >
-              );
-            }
-            return null;
-          })
-        );
-        return {
-          ...org,
-          serieses: seriesesWithEvents.filter(
-            (s): s is ClientCompat<SeriesWithEvents> => s !== null
-          ),
-        };
-      })
-    );
-
-    return { organizations: organizationsWithSeries };
+export const getHubPageData = cache(async (): Promise<HubPageData> => {
+  const authUser = await getAuthUserFromCookies();
+  if (!authUser) {
+    return { organizations: [] };
   }
-);
+
+  const organizations = await getOrganizationsForUser(authUser.id);
+
+  const organizationsWithSeries = await Promise.all(
+    organizations.map(async (org) => {
+      const serieses = await getSeriesForOrganization(org.id);
+      const seriesesWithEvents = await Promise.all(
+        serieses.map(async (series) => {
+          const seriesDocSnap = await (await getFirestore())
+            .collection(`organizations/${org.id}/series`)
+            .doc(series.id)
+            .withConverter(genericConverter<Series>())
+            .get();
+          if (seriesDocSnap.exists) {
+            return getEventsForSeries(
+              seriesDocSnap as firestore.QueryDocumentSnapshot<
+                ClientCompat<Series>
+              >,
+            );
+          }
+          return null;
+        }),
+      );
+      return {
+        ...org,
+        serieses: seriesesWithEvents.filter(
+          (s): s is ClientCompat<SeriesWithEvents> => s !== null,
+        ),
+      };
+    }),
+  );
+
+  return { organizations: organizationsWithSeries };
+});
 
 export const getOrganizationFromPreemPath = cache(
-  async (preemPath: string): Promise<ClientCompat<Organization> | undefined> => {
+  async (
+    preemPath: string,
+  ): Promise<ClientCompat<Organization> | undefined> => {
     const pathParts = preemPath.split('/');
     if (pathParts.length < 2 || pathParts[0] !== 'organizations') {
       console.error('Invalid preem path for getting organization:', preemPath);
@@ -659,5 +659,5 @@ export const getOrganizationFromPreemPath = cache(
     }
     const organizationId = pathParts[1];
     return getOrganizationById(organizationId);
-  }
+  },
 );

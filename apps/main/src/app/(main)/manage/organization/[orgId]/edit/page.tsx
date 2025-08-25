@@ -11,9 +11,8 @@ export default async function EditOrganizationPage({
   params: Promise<{ orgId: string }>;
 }) {
   const { orgId } = await params;
-  const { organization, error } = await getOrganizationAndRefreshStripeAccount(
-    orgId
-  );
+  const { organization, error } =
+    await getOrganizationAndRefreshStripeAccount(orgId);
 
   if (!organization) {
     notFound();

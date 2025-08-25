@@ -15,7 +15,7 @@ export class AuthError extends Error {
 }
 
 export async function verifyUserRole(
-  requiredRole: string
+  requiredRole: string,
 ): Promise<AuthContextUser> {
   const authConfig = await authConfigFn();
   const tokens = await getTokens(await cookies(), authConfig);
@@ -40,7 +40,7 @@ export async function verifyUserRole(
   if (!Array.isArray(roles) || !roles.includes(requiredRole)) {
     throw new AuthError(
       `Forbidden: User does not have the '${requiredRole}' role.`,
-      403
+      403,
     );
   }
 

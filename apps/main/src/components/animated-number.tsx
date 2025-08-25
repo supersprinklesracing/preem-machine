@@ -16,7 +16,7 @@ const AnimatedNumber = ({ value }: { value: number }) => {
       if (!startTime) startTime = timestamp;
       const progress = Math.min((timestamp - startTime) / duration, 1);
       const nextValue = Math.floor(
-        startValue + (endValue - startValue) * progress
+        startValue + (endValue - startValue) * progress,
       );
       setCurrentValue(nextValue);
 

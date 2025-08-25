@@ -7,7 +7,7 @@ import { cache } from 'react';
 
 export const getOrganizationAndRefreshStripeAccount = cache(
   async (
-    id: string
+    id: string,
   ): Promise<{
     organization?: ClientCompat<Organization>;
     error?: string;
@@ -21,7 +21,7 @@ export const getOrganizationAndRefreshStripeAccount = cache(
     if (organization.stripe?.connectAccountId) {
       try {
         const account = await stripe.accounts.retrieve(
-          organization.stripe.connectAccountId
+          organization.stripe.connectAccountId,
         );
         // Convert the Stripe Account object to a plain JSON object to pass to client components.
         organization.stripe.account = JSON.parse(JSON.stringify(account));
@@ -32,12 +32,12 @@ export const getOrganizationAndRefreshStripeAccount = cache(
             : 'An unknown error occurred while fetching Stripe account details.';
         console.error(
           `Failed to retrieve Stripe account for organization ${id}:`,
-          error
+          error,
         );
         return { organization, error: errorMessage };
       }
     }
 
     return { organization };
-  }
+  },
 );

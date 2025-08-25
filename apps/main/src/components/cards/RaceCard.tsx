@@ -39,7 +39,7 @@ const RaceCard: React.FC<RaceCardProps> = ({
 }) => {
   const totalPrizePool = (race.preems ?? []).reduce(
     (sum, preem) => sum + (preem.prizePool ?? 0),
-    0
+    0,
   );
 
   const dateLocationDetailContent = (

@@ -31,7 +31,7 @@ export function AccountDetails({
   updateUserAction,
 }: {
   updateUserAction: (
-    options: UpdateUserOptions
+    options: UpdateUserOptions,
   ) => Promise<{ ok: boolean; error?: string }>;
 }) {
   const router = useRouter();
@@ -103,7 +103,7 @@ export function AccountDetails({
     } catch (error) {
       console.error('Failed to save user data:', error);
       setSubmissionError(
-        error instanceof Error ? error.message : 'An unknown error occurred.'
+        error instanceof Error ? error.message : 'An unknown error occurred.',
       );
     } finally {
       setIsLoading(false);

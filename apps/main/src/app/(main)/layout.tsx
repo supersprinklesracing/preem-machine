@@ -16,7 +16,7 @@ export interface MainProps {
 export default async function Layout({ children }: MainProps) {
   const authUser = await getAuthUserFromCookies();
   const currentUser = authUser
-    ? (await getUserById(authUser.uid)) ?? null
+    ? ((await getUserById(authUser.uid)) ?? null)
     : null;
   if (!currentUser) {
     unauthorized();

@@ -47,7 +47,7 @@ export const Preem: React.FC<Props> = ({ data }) => {
   const contributionRows = [...(preem.contributions || [])]
     .sort(
       (a, b) =>
-        new Date(b.date ?? 0).getTime() - new Date(a.date ?? 0).getTime()
+        new Date(b.date ?? 0).getTime() - new Date(a.date ?? 0).getTime(),
     )
     .map((contribution) => {
       console.log(contribution);

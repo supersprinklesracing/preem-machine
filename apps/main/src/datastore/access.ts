@@ -7,22 +7,22 @@ import type { Organization, User } from './types';
 
 export async function isUserAuthorized(
   authUser: AuthContextUser,
-  path: string
+  path: string,
 ): Promise<boolean>;
 export async function isUserAuthorized(
   authUser: AuthContextUser,
-  docRef: firestore.DocumentReference
+  docRef: firestore.DocumentReference,
 ): Promise<boolean>;
 export async function isUserAuthorized(
   authUser: AuthContextUser,
-  docRefOrPath: firestore.DocumentReference | string
+  docRefOrPath: firestore.DocumentReference | string,
 ): Promise<boolean> {
   const db = await getFirestore();
   const docRef =
     typeof docRefOrPath === 'string' ? db.doc(docRefOrPath) : docRefOrPath;
 
   console.debug(
-    `isUserAuthorizedToEdit: Checking ${authUser.uid} editing ${docRef.path}...`
+    `isUserAuthorizedToEdit: Checking ${authUser.uid} editing ${docRef.path}...`,
   );
 
   const doc = await docRef.get();

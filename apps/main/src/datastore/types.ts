@@ -15,10 +15,10 @@ import type Stripe from 'stripe';
 type RecursiveReplace<T, X, Y> = T extends X
   ? Y // If T is the type we're looking for, replace it with Y.
   : T extends (infer A)[]
-  ? RecursiveReplace<A, X, Y>[] // If T is an array, recurse on its element type.
-  : T extends object
-  ? { [P in keyof T]: RecursiveReplace<T[P], X, Y> } // If T is an object, recurse on its properties.
-  : T; // Otherwise, leave the type as is.
+    ? RecursiveReplace<A, X, Y>[] // If T is an array, recurse on its element type.
+    : T extends object
+      ? { [P in keyof T]: RecursiveReplace<T[P], X, Y> } // If T is an object, recurse on its properties.
+      : T; // Otherwise, leave the type as is.
 
 type ForClient<T> = RecursiveReplace<
   RecursiveReplace<T, Timestamp, string>,
@@ -33,8 +33,8 @@ type DeepPartial<T> =
     [P in Exclude<keyof T, 'id'>]?: T[P] extends (infer U)[]
       ? DeepPartial<U>[] // Recurse with the same "skip id" logic
       : T[P] extends object
-      ? DeepPartial<T[P]> // Recurse with the same "skip id" logic
-      : T[P];
+        ? DeepPartial<T[P]> // Recurse with the same "skip id" logic
+        : T[P];
   };
 
 export type ClientCompat<T> = DeepPartial<ForClient<T>>;
