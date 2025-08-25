@@ -2,7 +2,11 @@
 
 import { AuthContextUser } from '@/auth/AuthContext';
 import { getFirestore } from '@/firebase-admin/firebase-admin';
-import { FieldValue, Firestore, Transaction } from 'firebase-admin/firestore';
+import {
+  FieldValue,
+  Firestore,
+  Transaction,
+} from 'firebase-admin/firestore';
 import { unauthorized } from 'next/navigation';
 import Stripe from 'stripe';
 import { getTimestampFromISODate } from '../firebase-admin/dates';
@@ -21,7 +25,7 @@ import type {
 // TODO: Move this to a shared location.
 const updateDoc = (
   userRef: FirebaseFirestore.DocumentReference<FirebaseFirestore.DocumentData>,
-  doc: any,
+  doc: any
 ) => ({
   ...doc,
   'metadata.lastModified': FieldValue.serverTimestamp(),
@@ -31,7 +35,7 @@ const updateDoc = (
 export const updateUser = async (
   path: string,
   user: Partial<User>,
-  authUser: AuthContextUser,
+  authUser: AuthContextUser
 ) => {
   if (!(await isUserAuthorized(authUser, path))) {
     unauthorized();
@@ -46,7 +50,7 @@ export const updateUser = async (
 export const updateOrganization = async (
   path: string,
   organization: Partial<Organization>,
-  authUser: AuthContextUser,
+  authUser: AuthContextUser
 ) => {
   if (!(await isUserAuthorized(authUser, path))) {
     unauthorized();
@@ -64,7 +68,7 @@ export const updateSeries = async (
     startDate?: string;
     endDate?: string;
   },
-  authUser: AuthContextUser,
+  authUser: AuthContextUser
 ) => {
   if (!(await isUserAuthorized(authUser, path))) {
     unauthorized();
@@ -81,17 +85,13 @@ export const updateSeries = async (
       throw new Error(`Series with path ${path} does not exist.`);
     }
 
-    const eventsQuery = db
-      .collectionGroup('events')
-      .where('seriesBrief.id', '==', seriesRef.id);
+    const eventsQuery = db.collectionGroup('events').where('seriesBrief.id', '==', seriesRef.id);
     const eventsSnapshot = await transaction.get(eventsQuery);
     const eventDocs = eventsSnapshot.docs;
 
     const raceDocsByEvent: { [key: string]: any[] } = {};
     for (const eventDoc of eventDocs) {
-      const racesQuery = db
-        .collectionGroup('races')
-        .where('eventBrief.id', '==', eventDoc.id);
+      const racesQuery = db.collectionGroup('races').where('eventBrief.id', '==', eventDoc.id);
       const racesSnapshot = await transaction.get(racesQuery);
       raceDocsByEvent[eventDoc.id] = racesSnapshot.docs;
     }
@@ -99,9 +99,7 @@ export const updateSeries = async (
     const preemDocsByRace: { [key: string]: any[] } = {};
     for (const eventId in raceDocsByEvent) {
       for (const raceDoc of raceDocsByEvent[eventId]) {
-        const preemsQuery = db
-          .collectionGroup('preems')
-          .where('raceBrief.id', '==', raceDoc.id);
+        const preemsQuery = db.collectionGroup('preems').where('raceBrief.id', '==', raceDoc.id);
         const preemsSnapshot = await transaction.get(preemsQuery);
         preemDocsByRace[raceDoc.id] = preemsSnapshot.docs;
       }
@@ -110,21 +108,14 @@ export const updateSeries = async (
     const contributionDocsByPreem: { [key: string]: any[] } = {};
     for (const raceId in preemDocsByRace) {
       for (const preemDoc of preemDocsByRace[raceId]) {
-        const contributionsQuery = db
-          .collectionGroup('contributions')
-          .where('preemBrief.id', '==', preemDoc.id);
+        const contributionsQuery = db.collectionGroup('contributions').where('preemBrief.id', '==', preemDoc.id);
         const contributionsSnapshot = await transaction.get(contributionsQuery);
         contributionDocsByPreem[preemDoc.id] = contributionsSnapshot.docs;
       }
     }
 
     // Write phase
-    const updatedSeriesData = {
-      ...seriesDoc.data(),
-      ...series,
-      startDate: getTimestampFromISODate(series.startDate),
-      endDate: getTimestampFromISODate(series.endDate),
-    } as Series;
+    const updatedSeriesData = { ...seriesDoc.data(), ...series, startDate: getTimestampFromISODate(series.startDate), endDate: getTimestampFromISODate(series.endDate) } as Series;
     transaction.update(seriesRef, updateDoc(userRef, updatedSeriesData));
 
     const seriesBrief = briefs.series(updatedSeriesData);
@@ -155,7 +146,7 @@ export const updateEvent = async (
     startDate?: string;
     endDate?: string;
   },
-  authUser: AuthContextUser,
+  authUser: AuthContextUser
 ) => {
   if (!(await isUserAuthorized(authUser, path))) {
     unauthorized();
@@ -172,17 +163,13 @@ export const updateEvent = async (
       throw new Error(`Event with path ${path} does not exist.`);
     }
 
-    const racesQuery = db
-      .collectionGroup('races')
-      .where('eventBrief.id', '==', eventRef.id);
+    const racesQuery = db.collectionGroup('races').where('eventBrief.id', '==', eventRef.id);
     const racesSnapshot = await transaction.get(racesQuery);
     const raceDocs = racesSnapshot.docs;
 
     const preemDocsByRace: { [key: string]: any[] } = {};
     for (const raceDoc of raceDocs) {
-      const preemsQuery = db
-        .collectionGroup('preems')
-        .where('raceBrief.id', '==', raceDoc.id);
+      const preemsQuery = db.collectionGroup('preems').where('raceBrief.id', '==', raceDoc.id);
       const preemsSnapshot = await transaction.get(preemsQuery);
       preemDocsByRace[raceDoc.id] = preemsSnapshot.docs;
     }
@@ -190,21 +177,14 @@ export const updateEvent = async (
     const contributionDocsByPreem: { [key: string]: any[] } = {};
     for (const raceId in preemDocsByRace) {
       for (const preemDoc of preemDocsByRace[raceId]) {
-        const contributionsQuery = db
-          .collectionGroup('contributions')
-          .where('preemBrief.id', '==', preemDoc.id);
+        const contributionsQuery = db.collectionGroup('contributions').where('preemBrief.id', '==', preemDoc.id);
         const contributionsSnapshot = await transaction.get(contributionsQuery);
         contributionDocsByPreem[preemDoc.id] = contributionsSnapshot.docs;
       }
     }
 
     // Write phase
-    const updatedEventData = {
-      ...eventDoc.data(),
-      ...event,
-      startDate: getTimestampFromISODate(event.startDate),
-      endDate: getTimestampFromISODate(event.endDate),
-    } as Event;
+    const updatedEventData = { ...eventDoc.data(), ...event, startDate: getTimestampFromISODate(event.startDate), endDate: getTimestampFromISODate(event.endDate) } as Event;
     transaction.update(eventRef, updateDoc(userRef, updatedEventData));
 
     const eventBrief = briefs.event(updatedEventData);
@@ -230,7 +210,7 @@ export const updateRace = async (
     startDate?: string;
     endDate?: string;
   },
-  authUser: AuthContextUser,
+  authUser: AuthContextUser
 ) => {
   if (!(await isUserAuthorized(authUser, path))) {
     unauthorized();
@@ -247,28 +227,19 @@ export const updateRace = async (
       throw new Error(`Race with path ${path} does not exist.`);
     }
 
-    const preemsQuery = db
-      .collectionGroup('preems')
-      .where('raceBrief.id', '==', raceRef.id);
+    const preemsQuery = db.collectionGroup('preems').where('raceBrief.id', '==', raceRef.id);
     const preemsSnapshot = await transaction.get(preemsQuery);
     const preemDocs = preemsSnapshot.docs;
 
     const contributionDocsByPreem: { [key: string]: any[] } = {};
     for (const preemDoc of preemDocs) {
-      const contributionsQuery = db
-        .collectionGroup('contributions')
-        .where('preemBrief.id', '==', preemDoc.id);
+      const contributionsQuery = db.collectionGroup('contributions').where('preemBrief.id', '==', preemDoc.id);
       const contributionsSnapshot = await transaction.get(contributionsQuery);
       contributionDocsByPreem[preemDoc.id] = contributionsSnapshot.docs;
     }
 
     // Write phase
-    const updatedRaceData = {
-      ...raceDoc.data(),
-      ...race,
-      startDate: getTimestampFromISODate(race.startDate),
-      endDate: getTimestampFromISODate(race.endDate),
-    } as Race;
+    const updatedRaceData = { ...raceDoc.data(), ...race, startDate: getTimestampFromISODate(race.startDate), endDate: getTimestampFromISODate(race.endDate) } as Race;
     transaction.update(raceRef, updateDoc(userRef, updatedRaceData));
 
     const raceBrief = briefs.race(updatedRaceData);
@@ -286,7 +257,7 @@ export const updateRace = async (
 export const updatePreem = async (
   path: string,
   preem: Partial<Preem>,
-  authUser: AuthContextUser,
+  authUser: AuthContextUser
 ) => {
   if (!(await isUserAuthorized(authUser, path))) {
     unauthorized();
@@ -303,9 +274,7 @@ export const updatePreem = async (
       throw new Error(`Preem with path ${path} does not exist.`);
     }
 
-    const contributionsQuery = db
-      .collectionGroup('contributions')
-      .where('preemBrief.id', '==', preemRef.id);
+    const contributionsQuery = db.collectionGroup('contributions').where('preemBrief.id', '==', preemRef.id);
     const contributionsSnapshot = await transaction.get(contributionsQuery);
     const contributionDocs = contributionsSnapshot.docs;
 
@@ -323,7 +292,7 @@ export const updatePreem = async (
 export const updateOrganizationStripeConnectAccount = async (
   organizationId: string,
   account: Stripe.Account,
-  authUser: AuthContextUser,
+  authUser: AuthContextUser
 ) => {
   const path = `organizations/${organizationId}`;
   if (!(await isUserAuthorized(authUser, path))) {
@@ -343,7 +312,7 @@ export const updateOrganizationStripeConnectAccount = async (
 
 export const updateOrganizationStripeConnectAccountForWebhook = async (
   organizationId: string,
-  account: Stripe.Account,
+  account: Stripe.Account
 ) => {
   const db = await getFirestore();
   const orgRef = db.doc(`organizations/${organizationId}`);
@@ -361,7 +330,7 @@ export const createPendingContribution = async (
     message,
     isAnonymous,
   }: { amount: number; message: string; isAnonymous: boolean },
-  authUser: AuthContextUser,
+  authUser: AuthContextUser
 ) => {
   if (!authUser.uid) {
     unauthorized();

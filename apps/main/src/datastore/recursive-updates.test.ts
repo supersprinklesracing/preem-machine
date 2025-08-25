@@ -18,14 +18,17 @@ process.env.NEXT_PUBLIC_FIREBASE_MESSAGING_SENDER_ID = 'test';
 process.env.AUTH_COOKIE_NAME = 'test';
 process.env.AUTH_COOKIE_SIGNATURE_KEY_CURRENT = 'test';
 process.env.AUTH_COOKIE_SIGNATURE_KEY_PREVIOUS = 'test';
+process.env.SERVICE_ACCOUNT_CLIENT_EMAIL = 'test@example.com';
+process.env.SERVICE_ACCOUNT_PRIVATE_KEY = '-----BEGIN PRIVATE KEY-----\\nFAKE_KEY\\n-----END PRIVATE KEY-----\\n';
 
-const MOCK_USER: User = { id: 'user-test-admin', name: 'Test User' };
+
+const MOCK_USER: User = { id: 'BFGvWNXZoCWayJa0pNEL4bfhtUC3', name: 'Test User' };
 
 jest.mock('@/firebase-admin', () => ({
-  getFirestore: () => {
-    const { Firestore } = require('@google-cloud/firestore');
-    return new Firestore();
-  },
+    getFirestore: () => {
+        const { Firestore } = require('@google-cloud/firestore');
+        return new Firestore();
+    }
 }));
 
 describe('Recursive Updates', () => {
