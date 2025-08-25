@@ -29,7 +29,7 @@ export function EditSeries({
   series,
 }: {
   updateSeriesAction: (
-    options: UpdateSeriesOptions
+    options: UpdateSeriesOptions,
   ) => Promise<{ ok: boolean; error?: string }>;
   series: ClientCompat<Series>;
 }) {
@@ -60,7 +60,7 @@ export function EditSeries({
     setSubmissionError(null);
 
     const [startDate, endDate] = values.dateRange.map((d) =>
-      d ? new Date(d) : null
+      d ? new Date(d) : null,
     );
 
     try {
@@ -81,7 +81,7 @@ export function EditSeries({
           website: values.website,
           startDate: getISODateFromDate(startDate),
           endDate: getISODateFromDate(
-            endDate ? endDate : startDate ? startDate : undefined
+            endDate ? endDate : startDate ? startDate : undefined,
           ),
         },
       });
@@ -93,7 +93,7 @@ export function EditSeries({
     } catch (error) {
       console.error('Failed to save series data:', error);
       setSubmissionError(
-        error instanceof Error ? error.message : 'An unknown error occurred.'
+        error instanceof Error ? error.message : 'An unknown error occurred.',
       );
     } finally {
       setIsLoading(false);

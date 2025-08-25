@@ -24,7 +24,10 @@
       "collectionGroup": "events",
       "queryScope": "COLLECTION_GROUP",
       "fields": [
-        { "fieldPath": "seriesBrief.organizationBrief.id", "arrayConfig": "CONTAINS" },
+        {
+          "fieldPath": "seriesBrief.organizationBrief.id",
+          "arrayConfig": "CONTAINS"
+        },
         { "fieldPath": "endDate", "order": "ASCENDING" }
       ]
     },
@@ -37,9 +40,7 @@
     {
       "collectionGroup": "events",
       "queryScope": "COLLECTION_GROUP",
-      "fields": [
-        { "fieldPath": "startDate", "order": "ASCENDING" }
-      ]
+      "fields": [{ "fieldPath": "startDate", "order": "ASCENDING" }]
     },
     {
       "collectionGroup": "preems",

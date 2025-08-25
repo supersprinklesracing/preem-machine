@@ -1,4 +1,4 @@
-import { createContext, useContext } from 'react';
+import { createContext, use } from 'react';
 import { User as BaseUser, ClientCompat } from '../types';
 
 export interface CurrentUser extends ClientCompat<BaseUser> {
@@ -14,4 +14,4 @@ export const CurrentUserContext = createContext<CurrentUserContextValue>({
   currentUser: null,
 });
 
-export const useCurrentUser = () => useContext(CurrentUserContext);
+export const useCurrentUser = () => use(CurrentUserContext);

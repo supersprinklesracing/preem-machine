@@ -56,7 +56,7 @@ export function Login({
       await loginWithCredential(credential);
       redirectAfterLogin();
     },
-    [redirectAfterLogin]
+    [redirectAfterLogin],
   );
 
   const [handleLoginWithEmailAndPassword, isEmailLoading, emailPasswordError] =
@@ -71,7 +71,7 @@ export function Login({
         startTransition(() => loginAction(email, password));
       } else {
         await handleLogin(
-          await signInWithEmailAndPassword(auth, email, password)
+          await signInWithEmailAndPassword(auth, email, password),
         );
 
         setHasLogged(true);
@@ -150,7 +150,7 @@ export function Login({
     setHasLogged(false);
 
     await handleLogin(
-      await signInWithEmailLink(auth, email, window.location.href)
+      await signInWithEmailLink(auth, email, window.location.href),
     );
     window.localStorage.removeItem('emailForSignIn');
 

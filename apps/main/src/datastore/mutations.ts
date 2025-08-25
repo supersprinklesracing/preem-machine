@@ -12,7 +12,7 @@ import type { Event, Organization, Series, User } from './types';
 export const updateUser = async (
   path: string,
   user: Partial<User>,
-  authUser: AuthContextUser
+  authUser: AuthContextUser,
 ) => {
   if (!(await isUserAuthorized(authUser, path))) {
     unauthorized();
@@ -30,7 +30,7 @@ export const updateUser = async (
 export const updateOrganization = async (
   path: string,
   organization: Partial<Organization>,
-  authUser: AuthContextUser
+  authUser: AuthContextUser,
 ) => {
   if (!(await isUserAuthorized(authUser, path))) {
     unauthorized();
@@ -52,7 +52,7 @@ export const updateSeries = async (
     startDate?: string;
     endDate?: string;
   },
-  authUser: AuthContextUser
+  authUser: AuthContextUser,
 ) => {
   if (!(await isUserAuthorized(authUser, path))) {
     unauthorized();
@@ -76,7 +76,7 @@ export const updateEvent = async (
     startDate?: string;
     endDate?: string;
   },
-  authUser: AuthContextUser
+  authUser: AuthContextUser,
 ) => {
   if (!(await isUserAuthorized(authUser, path))) {
     unauthorized();
@@ -97,7 +97,7 @@ export const updateEvent = async (
 export const updateOrganizationStripeConnectAccount = async (
   organizationId: string,
   account: Stripe.Account,
-  authUser: AuthContextUser
+  authUser: AuthContextUser,
 ) => {
   const path = `organizations/${organizationId}`;
   if (!(await isUserAuthorized(authUser, path))) {
@@ -117,7 +117,7 @@ export const updateOrganizationStripeConnectAccount = async (
 
 export const updateOrganizationStripeConnectAccountForWebhook = async (
   organizationId: string,
-  account: Stripe.Account
+  account: Stripe.Account,
 ) => {
   const db = await getFirestore();
   const orgRef = db.doc(`organizations/${organizationId}`);
@@ -135,7 +135,7 @@ export const createPendingContribution = async (
     message,
     isAnonymous,
   }: { amount: number; message: string; isAnonymous: boolean },
-  authUser: AuthContextUser
+  authUser: AuthContextUser,
 ) => {
   if (!authUser.uid) {
     unauthorized();
