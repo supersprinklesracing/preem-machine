@@ -1,8 +1,8 @@
 module.exports = {
   // prettier-ignore
   '*': (files) => [
-    'nx affected:lint --fix --files',
-    `nx format:write --files='${files.join(',')}'`,
+    'npx nx --tuiAutoExit --outputStyle=static affected:lint --fix --files',
+    `npx nx --tuiAutoExit --outputStyle=static format:write --files='${files.join(',')}'`,
   ],
   // prettier-ignore
   '*.scss': [
