@@ -9,9 +9,7 @@ export const isTrue = (value: string | undefined): boolean => {
   return value?.toLowerCase() === 'true';
 };
 
-export const ENV_USE_HTTPS = ![process.env.NEXT_PUBLIC_DISABLE_HTTPS].includes(
-  'true',
-);
+export const ENV_USE_HTTPS = isTrue(process.env.NEXT_PUBLIC_USE_HTTPS);
 
 export const ENV_URL_PREFIX = ENV_USE_HTTPS
   ? `https//${process.env.NEXT_PUBLIC_ORIGIN}`
