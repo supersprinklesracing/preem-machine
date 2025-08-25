@@ -32,8 +32,19 @@ jobs:
       SERVICE_ACCOUNT_PRIVATE_KEY: ${{ secrets.SERVICE_ACCOUNT_PRIVATE_KEY }}
       STRIPE_API_KEY: ${{ secrets.STRIPE_API_KEY }}
       STRIPE_API_VERSION: ${{ secrets.STRIPE_API_VERSION }}
-      FIRESTORE_EMULATOR_HOST: "localhost:8080"
-      FIREBASE_AUTH_EMULATOR_HOST: "localhost:9099"
+
+      # The following environment variables are used to configure the Firebase emulators.
+      # They are managed as secrets to keep all environment configurations in one place.
+      # Expected value: "localhost:8080"
+      FIRESTORE_EMULATOR_HOST: ${{ secrets.FIRESTORE_EMULATOR_HOST }}
+      # Expected value: "localhost:9099"
+      FIREBASE_AUTH_EMULATOR_HOST: ${{ secrets.FIREBASE_AUTH_EMULATOR_HOST }}
+      # Expected value: "localhost:8080"
+      NEXT_PUBLIC_FIRESTORE_EMULATOR_HOST: ${{ secrets.NEXT_PUBLIC_FIRESTORE_EMULATOR_HOST }}
+      # Expected value: "localhost:9099"
+      NEXT_PUBLIC_AUTH_EMULATOR_HOST: ${{ secrets.NEXT_PUBLIC_AUTH_EMULATOR_HOST }}
+      # Expected value: "preem-machine-ci"
+      GCLOUD_PROJECT: ${{ secrets.GCLOUD_PROJECT }}
 
     steps:
       - uses: actions/checkout@v5
@@ -41,28 +52,40 @@ jobs:
           filter: tree:0
           fetch-depth: 0
 
-      # This enables task distribution via Nx Cloud.
-      # Replace this with your own Nx Cloud token.
+      # Nx Cloud is disabled due to lack of quota.
+      # To enable it, uncomment the following lines and add your NX_CLOUD_AUTH_TOKEN as a secret.
       # - run: npx nx-cloud start-ci-run --distribute-on="3 linux-medium-js" --stop-agents-after="e2e-ci"
       #   env:
       #     NX_CLOUD_AUTH_TOKEN: ${{ secrets.NX_CLOUD_AUTH_TOKEN }}
 
-      # Cache node_modules
-      - uses: actions/setup-node@v4
+      - name: Setup Node.js
+        uses: actions/setup-node@v4
         with:
           node-version: 22
           cache: 'npm'
 
-      - run: npm ci --legacy-peer-deps
-      - run: npx playwright install --with-deps
+      - name: Install dependencies
+        run: |
+          npm ci --legacy-peer-deps
+          npx playwright install --with-deps
 
       - name: Start Firebase emulators
         run: |
-          npx firebase emulators:start --project=preem-machine-ci --only firestore,auth > firebase-emulator.log &
-          timeout 60s grep -q "All emulators ready" <(tail -f firebase-emulator.log)
+          npx firebase emulators:start --project=${{ secrets.GCLOUD_PROJECT }} --only firestore,auth > firebase-emulator.log &
 
-      # Run tests for affected projects. `nx affected` is more efficient than
-      # `nx run-many` because it only runs tests for projects that have changed.
+          echo "Waiting for emulators to start..."
+          timeout 60s bash -c '
+            while ! curl -s http://localhost:8080 > /dev/null; do
+              echo "Waiting for Firestore emulator..."
+              sleep 1
+            done
+            while ! curl -s http://localhost:9099 > /dev/null; do
+              echo "Waiting for Auth emulator..."
+              sleep 1
+            done
+          '
+          echo "Emulators are up and running."
+
       - name: Run affected tests
         run: npx nx affected -t lint,test,e2e --parallel=3
 
