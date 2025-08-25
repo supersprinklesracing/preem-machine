@@ -12,18 +12,16 @@ export default function MainAppShell({
   sidebar,
 }: {
   children: React.ReactNode;
-  header?: React.ReactNode;
-  sidebar?: React.ReactNode;
+  header?: React.ReactElement<{ opened?: boolean; toggle?: () => void }>;
+  sidebar?: React.ReactElement<{ onLinkClick?: () => void }>;
 }) {
   const [opened, { toggle }] = useDisclosure();
 
   const headerElement =
-    header &&
-    React.cloneElement(header as React.ReactElement, { opened, toggle });
+    header && React.cloneElement(header, { opened, toggle });
 
   const sidebarElement =
-    sidebar &&
-    React.cloneElement(sidebar as React.ReactElement, { onLinkClick: toggle });
+    sidebar && React.cloneElement(sidebar, { onLinkClick: toggle });
 
   return (
     <AppShell

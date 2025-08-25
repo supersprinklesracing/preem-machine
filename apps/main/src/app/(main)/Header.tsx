@@ -8,7 +8,8 @@ import {
 } from '@mantine/core';
 import { IconBell } from '@tabler/icons-react';
 import Link from 'next/link';
-import { useAuth } from '../../auth/AuthProvider';
+import { useContext } from 'react';
+import { AuthContext } from '../../auth/AuthContext';
 
 interface HeaderProps {
   opened?: boolean;
@@ -16,7 +17,7 @@ interface HeaderProps {
 }
 
 export default function Header({ opened, toggle }: HeaderProps) {
-  const auth = useAuth();
+  const auth = useContext(AuthContext);
 
   return (
     <Group justify="space-between" h="100%">
@@ -30,11 +31,11 @@ export default function Header({ opened, toggle }: HeaderProps) {
             </ActionIcon>
           )
         }
-        {auth.user && (
+        {auth.authUser && (
           <Link href="/account">
             <Avatar
-              src={auth.user.photoURL ?? 'https://placehold.co/40x40.png'}
-              alt={auth.user.displayName ?? 'User'}
+              src={auth.authUser.photoURL ?? 'https://placehold.co/40x40.png'}
+              alt={auth.authUser.displayName ?? 'User'}
               radius="xl"
             />
           </Link>
