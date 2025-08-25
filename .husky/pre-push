@@ -1,1 +1,2 @@
-npx nx --tuiAutoExit --outputStyle=static affected --target=test --fix=false
+npx nx --tuiAutoExit --outputStyle=static run-many -t build
+npx nx --tuiAutoExit --outputStyle=static run-many -t test --forceExit
