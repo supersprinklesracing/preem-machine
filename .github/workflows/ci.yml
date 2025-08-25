@@ -33,32 +33,63 @@ jobs:
       STRIPE_API_KEY: ${{ secrets.STRIPE_API_KEY }}
       STRIPE_API_VERSION: ${{ secrets.STRIPE_API_VERSION }}
 
+      # The following environment variables are used to configure the Firebase emulators.
+      # They are managed as secrets to keep all environment configurations in one place.
+      # Expected value: "localhost:8080"
+      FIRESTORE_EMULATOR_HOST: ${{ secrets.FIRESTORE_EMULATOR_HOST }}
+      # Expected value: "localhost:9099"
+      FIREBASE_AUTH_EMULATOR_HOST: ${{ secrets.FIREBASE_AUTH_EMULATOR_HOST }}
+      # Expected value: "localhost:8080"
+      NEXT_PUBLIC_FIRESTORE_EMULATOR_HOST: ${{ secrets.NEXT_PUBLIC_FIRESTORE_EMULATOR_HOST }}
+      # Expected value: "localhost:9099"
+      NEXT_PUBLIC_AUTH_EMULATOR_HOST: ${{ secrets.NEXT_PUBLIC_AUTH_EMULATOR_HOST }}
+      # Expected value: "preem-machine-ci"
+      GCLOUD_PROJECT: ${{ secrets.GCLOUD_PROJECT }}
+
     steps:
       - uses: actions/checkout@v5
         with:
           filter: tree:0
           fetch-depth: 0
 
-      # This enables task distribution via Nx Cloud
-      # Run this command as early as possible, before dependencies are installed
-      # Learn more at https://nx.dev/ci/reference/nx-cloud-cli#npx-nxcloud-startcirun
-      # Uncomment this line to enable task distribution
-      # - run: npx nx start-ci-run --distribute-on="3 linux-medium-js" --stop-agents-after="e2e-ci"
+      # Nx Cloud is disabled due to lack of quota.
+      # To enable it, uncomment the following lines and add your NX_CLOUD_AUTH_TOKEN as a secret.
+      # - run: npx nx-cloud start-ci-run --distribute-on="3 linux-medium-js" --stop-agents-after="e2e-ci"
+      #   env:
+      #     NX_CLOUD_AUTH_TOKEN: ${{ secrets.NX_CLOUD_AUTH_TOKEN }}
 
-      # Cache node_modules
-      - uses: actions/setup-node@v4
+      - name: Setup Node.js
+        uses: actions/setup-node@v4
         with:
           node-version: 22
           cache: 'npm'
 
-      - run: npm ci --legacy-peer-deps
-      - run: npx playwright install --with-deps
+      - name: Install dependencies
+        run: |
+          npm ci --legacy-peer-deps
+          npx playwright install --with-deps
 
-      - name: Build
-        run: npx nx --tuiAutoExit --outputStyle=static run-many -t build
+      - name: Start Firebase emulators
+        run: |
+          npx firebase emulators:start --project=${{ secrets.GCLOUD_PROJECT }} --only firestore,auth > firebase-emulator.log &
 
-      - name: Test
-        run: npx nx --tuiAutoExit --outputStyle=static run-many -t lint test e2e
+          echo "Waiting for emulators to start..."
+          timeout 60s bash -c '
+            while ! curl -s http://localhost:8080 > /dev/null; do
+              echo "Waiting for Firestore emulator..."
+              sleep 1
+            done
+            while ! curl -s http://localhost:9099 > /dev/null; do
+              echo "Waiting for Auth emulator..."
+              sleep 1
+            done
+          '
+          echo "Emulators are up and running."
 
-      # - run: npx nx --tuiAutoExit --outputStyle=static fix-ci
-      #   if: always()
+      - name: Run affected tests
+        run: npx nx affected -t lint,test,e2e --parallel=3
+
+      - name: Stop Firebase emulators
+        if: always()
+        run: |
+          kill $(jobs -p) || true
