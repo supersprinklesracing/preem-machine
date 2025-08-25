@@ -23,7 +23,7 @@ export async function GET(_request: NextRequest) {
     {
       status: 200,
       headers,
-    }
+    },
   );
 
   return response;

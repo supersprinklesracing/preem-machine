@@ -43,7 +43,7 @@ const Admin: React.FC<Props> = ({ data }) => {
     ? users.filter(
         (u) =>
           u.name?.toLowerCase().includes(search.toLowerCase()) ||
-          u.email?.toLowerCase().includes(search.toLowerCase())
+          u.email?.toLowerCase().includes(search.toLowerCase()),
       )
     : [];
 

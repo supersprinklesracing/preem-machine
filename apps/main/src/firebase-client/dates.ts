@@ -13,7 +13,7 @@ export const LONG_FORMATTER = new Intl.DateTimeFormat('en-US', {
 
 export function getDateFromTimestamp(value: Timestamp): Date;
 export function getDateFromTimestamp(
-  value: Timestamp | undefined
+  value: Timestamp | undefined,
 ): Date | undefined;
 export function getDateFromTimestamp(value: Timestamp | undefined) {
   return value ? value.toDate() : undefined;
@@ -21,7 +21,7 @@ export function getDateFromTimestamp(value: Timestamp | undefined) {
 
 export function getTimestampFromDate(value: Date): Timestamp;
 export function getTimestampFromDate(
-  value: Date | undefined
+  value: Date | undefined,
 ): Timestamp | undefined;
 export function getTimestampFromDate(value: Date | undefined) {
   return value ? Timestamp.fromDate(value) : undefined;
@@ -29,7 +29,7 @@ export function getTimestampFromDate(value: Date | undefined) {
 
 export function getTimestampFromISODate(value: string): Timestamp;
 export function getTimestampFromISODate(
-  value: string | undefined
+  value: string | undefined,
 ): Timestamp | undefined;
 export function getTimestampFromISODate(value: string | undefined) {
   return value ? Timestamp.fromDate(new Date(value)) : undefined;
@@ -37,15 +37,15 @@ export function getTimestampFromISODate(value: string | undefined) {
 
 export function getTimestampFromISOLocalDate(
   value: string,
-  timezone: string
+  timezone: string,
 ): Timestamp;
 export function getTimestampFromISOLocalDate(
   value: string | undefined,
-  timezone: string
+  timezone: string,
 ): Timestamp | undefined;
 export function getTimestampFromISOLocalDate(
   value: string | undefined,
-  timezone: string
+  timezone: string,
 ) {
   return value ? Timestamp.fromDate(fromZonedTime(value, timezone)) : undefined;
 }
@@ -66,7 +66,7 @@ export function getDayTimestamp(year: number, month: number, day: number) {
 
 export function formatTimestampAsDate(value: Timestamp): string;
 export function formatTimestampAsDate(
-  value: Timestamp | undefined
+  value: Timestamp | undefined,
 ): string | undefined;
 export function formatTimestampAsDate(value: Timestamp | undefined) {
   return value ? format(value.toDate(), 'yyyy-MM-dd') : undefined;

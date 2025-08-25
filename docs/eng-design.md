@@ -185,15 +185,12 @@ This plan outlines the implementation of Stripe Connect for organizer onboarding
 ### Phase 1: Backend Foundation (Stripe SDK & Server Actions)
 
 - **Stripe SDK Initialization:**
-
   - **Action:** Ensure `apps/main/src/stripe/server.ts` initializes a server-side instance of the Stripe Node.js SDK.
 
 - **Create Server Action for Account Creation:**
-
   - **Action:** Create `apps/main/src/app/(main)/manage/organization/[orgId]/edit/actions.ts`.
 
   - **Logic:**
-
     - The `createStripeConnectAccount` action will accept the `organizationId`.
 
     - **Authorization:** It will get the `authUser` via `getAuthUserFromCookies()` and verify their membership in the organization.
@@ -203,11 +200,9 @@ This plan outlines the implementation of Stripe Connect for organizer onboarding
     - It will then call `revalidatePath`.
 
 - **Create Server Action for Onboarding Link:**
-
   - **Action:** Create a `createStripeAccountLink` Server Action.
 
   - **Logic:**
-
     - This action will accept `accountId` and `organizationId`.
 
     - **Authorization:** It will verify the user is a member of the organization.
@@ -217,17 +212,14 @@ This plan outlines the implementation of Stripe Connect for organizer onboarding
 ### Phase 2: Data Layer & UI Integration
 
 - **Update Organization Data Type:**
-
   - **Action:** Modify the `Organization` interface in `apps/main/src/datastore/types.ts` to include a nested `stripe` object with `connectAccountId?: string;` and `account?: Stripe.Account;`.
 
 - **Split Data Fetching Logic:**
-
   - **Action:** In `apps/main/src/datastore/firestore.ts`, create a new function `getManagedOrganizationById`.
 
   - **Logic:** This function will fetch the core `Organization` data from Firestore and then enrich it with the full Stripe `Account` object via the API, populating the `organization.stripe.account` field.
 
 - **Integrate into the Frontend:**
-
   - **Action (Data Fetching):** The page at `.../manage/organization/[orgId]/edit/page.tsx` will call `getManagedOrganizationById`.
 
   - **Action (New Component):** Create a `StripeConnectCard.tsx` component to handle all UI and client-side logic for the onboarding flow.
@@ -235,11 +227,9 @@ This plan outlines the implementation of Stripe Connect for organizer onboarding
 ### Phase 3: Stripe Webhook Integration
 
 - **Update the Webhook Handler:**
-
   - **Action:** In `apps/main/src/app/api/stripe/webhook/route.ts`, add a `case` for the `account.updated` event.
 
   - **Logic:**
-
     - When this event is received, the handler will check if `payouts_enabled` has changed and update the corresponding `Organization` document in Firestore.
 
 ## 9. Stripe Payments & Contribution Plan
@@ -257,13 +247,11 @@ The UI lives in `apps/main/src/components/contribution-modal.tsx`.
 The process begins when the user is ready to pay. We will use a Server Action to securely create the Payment Intent.
 
 - **Define the Server Action:**
-
   - **Location:** `apps/main/src/stripe/actions.ts`
 
   - **Action:** Create a `createPaymentIntent` Server Action that accepts `amount` and `preemId`.
 
 - **Action Logic:**
-
   - **Authorization:** The action will get the authenticated user.
 
   - **Data Fetching:** It will get the `preem` document to find the parent `organizationId` from its path and then fetch the `Organization` to get its `stripe.connectAccountId`.
@@ -279,12 +267,10 @@ To ensure the client-side logic is clean, reusable, and efficient, the entire co
 - **Location:** `apps/main/src/stripe-datastore/use-contribution.ts`
 
 - **Core Logic:** This hook abstracts the entire payment and data submission process. It exposes:
-
   - A single function: `handleContribute(contributionDetails)`.
   - A loading state: `isProcessing`.
 
 - **Workflow:**
-
   1.  **Initiation:** The UI component (e.g., `ContributionModal`) calls `handleContribute` with the amount, message, preem details, etc., when the user clicks the final confirmation button.
   2.  **Create Payment Intent:** The hook is responsible for calling the `createPaymentIntent` Server Action to get the `clientSecret` from Stripe.
   3.  **Confirm Payment:** It then uses the `clientSecret` to call `stripe.confirmPayment()`.
@@ -304,7 +290,6 @@ We will create one primary function that handles the entire logic of recording a
 - **Function Signature**: `async function processContribution(paymentIntent: Stripe.PaymentIntent)`
 
 - **Logic**: This function will contain the **Firestore transaction** responsible for:
-
   1. Reading the `Preem` document and the corresponding `Contribution` document.
 
   2. Checking if a "pending" contribution already exists.
@@ -318,7 +303,6 @@ We will create one primary function that handles the entire logic of recording a
 Both the Server Action and the Webhook will import and call this single function, making the core logic DRY (Don't Repeat Yourself) and easy to maintain.
 
 - **Server Action (`apps/main/src/stripe/actions.ts`)**:
-
   - After the client-side `stripe.confirmPayment()` succeeds, the frontend will call a new Server Action, let's call it `confirmContributionOptimistically`.
 
   - This Server Action will retrieve the `PaymentIntent` from Stripe using its ID.
@@ -326,7 +310,6 @@ Both the Server Action and the Webhook will import and call this single function
   - It will then call `await processContribution(paymentIntent)`.
 
 - **Stripe Webhook (`apps/main/src/app/api/stripe/webhook/route.ts`)**:
-
   - When the webhook handler receives a `payment_intent.succeeded` event, it will extract the `PaymentIntent` object from the event payload.
 
   - It will then call `await processContribution(paymentIntent)`.
@@ -338,7 +321,6 @@ This structure ensures that the exact same transactional logic runs whether it's
 This is the final, guaranteed step that ensures data integrity and handles any client-side failures.
 
 - **Receive the Webhook:**
-
   - The `POST /api/stripe/webhook` API Route listens for the `payment_intent.succeeded` event.
 
 - **Execute the centralized `processContribution` Function**
@@ -352,7 +334,6 @@ This appendix details the structure of the Firestore database. This hierarchical
 - **Collection Path:** `/users`
 
 - **Document Structure:**
-
   - `id`: string
 
   - `metadata`: Metadata (object)
@@ -380,7 +361,6 @@ This appendix details the structure of the Firestore database. This hierarchical
 - **Collection Path:** `/organizations`
 
 - **Document Structure:**
-
   - `id`: string
 
   - `metadata`: Metadata (object)
@@ -392,7 +372,6 @@ This appendix details the structure of the Firestore database. This hierarchical
   - `memberRefs`: array of DocumentReferences (`/users/{userId}`)
 
   - `stripe`: object
-
     - `connectAccountId`: string
 
 ### Race Series
@@ -400,7 +379,6 @@ This appendix details the structure of the Firestore database. This hierarchical
 - **Collection Path:** `/organizations/{orgId}/series`
 
 - **Document Structure:**
-
   - `id`: string
 
   - `metadata`: Metadata (object)
@@ -422,7 +400,6 @@ This appendix details the structure of the Firestore database. This hierarchical
 - **Collection Path:** `/organizations/{orgId}/series/{seriesId}/events`
 
 - **Document Structure:**
-
   - `id`: string
 
   - `metadata`: Metadata (object)
@@ -444,7 +421,6 @@ This appendix details the structure of the Firestore database. This hierarchical
 - **Collection Path:** `/organizations/{orgId}/series/{seriesId}/events/{eventId}/races`
 
 - **Document Structure:**
-
   - `id`: string
 
   - `metadata`: Metadata (object)
@@ -484,7 +460,6 @@ This appendix details the structure of the Firestore database. This hierarchical
 - **Collection Path:** `/organizations/{orgId}/series/{seriesId}/events/{eventId}/races/{raceId}/preems`
 
 - **Document Structure:**
-
   - `id`: string
 
   - `metadata`: Metadata (object)
@@ -508,7 +483,6 @@ This appendix details the structure of the Firestore database. This hierarchical
 - **Collection Path:** `/organizations/{orgId}/series/{seriesId}/events/{eventId}/races/{raceId}/preems/{preemId}/contributions`
 
 - **Document Structure:**
-
   - `id`: string
 
   - `metadata`: Metadata (object)

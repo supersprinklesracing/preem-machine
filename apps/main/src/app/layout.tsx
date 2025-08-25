@@ -21,7 +21,7 @@ export default async function RootLayout({
 }) {
   const authUser = await getAuthUserFromCookies();
   const currentUser = authUser
-    ? (await getUserById(authUser.uid)) ?? null
+    ? ((await getUserById(authUser.uid)) ?? null)
     : null;
 
   const colorScheme = ((await cookies()).get('mantine-color-scheme')?.value ||

@@ -105,11 +105,11 @@ const Hub: React.FC<Props> = ({ data }) => {
             const now = new Date();
             const upcomingEvents =
               series.events?.filter(
-                (event) => event.endDate && new Date(event.endDate) > now
+                (event) => event.endDate && new Date(event.endDate) > now,
               ) ?? [];
             const pastEvents =
               series.events?.filter(
-                (event) => event.endDate && new Date(event.endDate) <= now
+                (event) => event.endDate && new Date(event.endDate) <= now,
               ) ?? [];
 
             return (
@@ -209,7 +209,7 @@ const Hub: React.FC<Props> = ({ data }) => {
                 )}
               </React.Fragment>
             );
-          })
+          }),
         )}
       </Grid>
 

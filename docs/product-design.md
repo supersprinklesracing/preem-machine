@@ -312,7 +312,7 @@ The admin interface provides complete oversight and control.
 - **Direct Management Tables:** Separate pages with tables for managing all Users, Organizations, Races, and Preems.
   - **User Management:** In the table of all users, an admin can change a user's `role` via a dropdown in the user's row with the options "Contributor", "Organizer", and "Admin".
 
-----
+---
 
 #### 4.1.3 Organizer's Creation Flow
 

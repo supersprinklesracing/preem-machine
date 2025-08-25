@@ -23,7 +23,7 @@ export function ResetPasswordPage() {
       await sendPasswordResetEmail(auth, email);
       setEmail('');
       setIsSent(true);
-    }
+    },
   );
 
   return (

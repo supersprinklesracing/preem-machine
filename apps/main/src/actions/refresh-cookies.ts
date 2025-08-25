@@ -16,6 +16,6 @@ export async function refreshCookies() {
   await refreshServerCookies(
     await cookies(),
     new Headers(await headers()),
-    authConfig
+    authConfig,
   );
 }

@@ -23,7 +23,7 @@ const customRender = (
   ui: React.ReactElement,
   options?: Omit<RenderOptions, 'wrapper'> & {
     authUser?: AuthContextUser | null;
-  }
+  },
 ) => {
   const { authUser, ...renderOptions } = options || {};
   return render(ui, {

@@ -29,15 +29,15 @@ export default function EventCard({
     (sum, race) =>
       sum +
       (race.preems ?? []).reduce((pSum, p) => pSum + (p.prizePool ?? 0), 0),
-    0
+    0,
   );
 
   const totalContributors = new Set(
     (event.races ?? []).flatMap((r) =>
       (r.preems ?? []).flatMap((p) =>
-        (p.contributions ?? []).map((c) => c.contributor?.id).filter(Boolean)
-      )
-    )
+        (p.contributions ?? []).map((c) => c.contributor?.id).filter(Boolean),
+      ),
+    ),
   ).size;
 
   const dateLocationDetailContent = (
