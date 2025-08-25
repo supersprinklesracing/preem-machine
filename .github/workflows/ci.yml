@@ -60,5 +60,5 @@ jobs:
       - name: Test
         run: npx nx --tuiAutoExit --outputStyle=static run-many -t lint test e2e
 
-      - run: npx nx --tuiAutoExit --outputStyle=static fix-ci
-        if: always()
+      # - run: npx nx --tuiAutoExit --outputStyle=static fix-ci
+      #   if: always()
