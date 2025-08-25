@@ -82,7 +82,7 @@ export const updateSeries = async (
     }
 
     const eventsQuery = db
-      .collection('events')
+      .collectionGroup('events')
       .where('seriesBrief.id', '==', seriesRef.id);
     const eventsSnapshot = await transaction.get(eventsQuery);
     const eventDocs = eventsSnapshot.docs;
@@ -90,7 +90,7 @@ export const updateSeries = async (
     const raceDocsByEvent: { [key: string]: any[] } = {};
     for (const eventDoc of eventDocs) {
       const racesQuery = db
-        .collection('races')
+        .collectionGroup('races')
         .where('eventBrief.id', '==', eventDoc.id);
       const racesSnapshot = await transaction.get(racesQuery);
       raceDocsByEvent[eventDoc.id] = racesSnapshot.docs;
@@ -100,7 +100,7 @@ export const updateSeries = async (
     for (const eventId in raceDocsByEvent) {
       for (const raceDoc of raceDocsByEvent[eventId]) {
         const preemsQuery = db
-          .collection('preems')
+          .collectionGroup('preems')
           .where('raceBrief.id', '==', raceDoc.id);
         const preemsSnapshot = await transaction.get(preemsQuery);
         preemDocsByRace[raceDoc.id] = preemsSnapshot.docs;
@@ -111,7 +111,7 @@ export const updateSeries = async (
     for (const raceId in preemDocsByRace) {
       for (const preemDoc of preemDocsByRace[raceId]) {
         const contributionsQuery = db
-          .collection('contributions')
+          .collectionGroup('contributions')
           .where('preemBrief.id', '==', preemDoc.id);
         const contributionsSnapshot = await transaction.get(contributionsQuery);
         contributionDocsByPreem[preemDoc.id] = contributionsSnapshot.docs;
@@ -173,7 +173,7 @@ export const updateEvent = async (
     }
 
     const racesQuery = db
-      .collection('races')
+      .collectionGroup('races')
       .where('eventBrief.id', '==', eventRef.id);
     const racesSnapshot = await transaction.get(racesQuery);
     const raceDocs = racesSnapshot.docs;
@@ -181,7 +181,7 @@ export const updateEvent = async (
     const preemDocsByRace: { [key: string]: any[] } = {};
     for (const raceDoc of raceDocs) {
       const preemsQuery = db
-        .collection('preems')
+        .collectionGroup('preems')
         .where('raceBrief.id', '==', raceDoc.id);
       const preemsSnapshot = await transaction.get(preemsQuery);
       preemDocsByRace[raceDoc.id] = preemsSnapshot.docs;
@@ -191,7 +191,7 @@ export const updateEvent = async (
     for (const raceId in preemDocsByRace) {
       for (const preemDoc of preemDocsByRace[raceId]) {
         const contributionsQuery = db
-          .collection('contributions')
+          .collectionGroup('contributions')
           .where('preemBrief.id', '==', preemDoc.id);
         const contributionsSnapshot = await transaction.get(contributionsQuery);
         contributionDocsByPreem[preemDoc.id] = contributionsSnapshot.docs;
@@ -248,7 +248,7 @@ export const updateRace = async (
     }
 
     const preemsQuery = db
-      .collection('preems')
+      .collectionGroup('preems')
       .where('raceBrief.id', '==', raceRef.id);
     const preemsSnapshot = await transaction.get(preemsQuery);
     const preemDocs = preemsSnapshot.docs;
@@ -256,7 +256,7 @@ export const updateRace = async (
     const contributionDocsByPreem: { [key: string]: any[] } = {};
     for (const preemDoc of preemDocs) {
       const contributionsQuery = db
-        .collection('contributions')
+        .collectionGroup('contributions')
         .where('preemBrief.id', '==', preemDoc.id);
       const contributionsSnapshot = await transaction.get(contributionsQuery);
       contributionDocsByPreem[preemDoc.id] = contributionsSnapshot.docs;
@@ -304,7 +304,7 @@ export const updatePreem = async (
     }
 
     const contributionsQuery = db
-      .collection('contributions')
+      .collectionGroup('contributions')
       .where('preemBrief.id', '==', preemRef.id);
     const contributionsSnapshot = await transaction.get(contributionsQuery);
     const contributionDocs = contributionsSnapshot.docs;
