@@ -1,10 +1,5 @@
 {
   "name": "@preem-machine/main",
   "version": "0.0.1",
-  "private": true,
-  "dependencies": {
-    "date-fns": "^4.1.0",
-    "date-fns-tz": "^3.2.0",
-    "react-loading-hook": "^1.1.2"
-  }
+  "private": true
 }
