@@ -15,7 +15,6 @@
     ],
     "sharedGlobals": ["{workspaceRoot}/.github/workflows/ci.yml"]
   },
-  /* "nxCloudId": "6894ea55a67e1f155b0c3c90", */
   "tui": {
     "enabled": false
   },
@@ -73,6 +72,19 @@
       "cache": true,
       "dependsOn": ["^build"],
       "inputs": ["production", "^production"]
+    },
+    "@nx/next:build": {
+      "configurations": {
+        "verify": {},
+        "ci": {}
+      }
+    },
+    "@nx/jest:jest": {
+      "configurations": {
+        "ci": {
+          "ci": true
+        }
+      }
     }
   },
   "generators": {
