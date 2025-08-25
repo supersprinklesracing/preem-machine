@@ -32,6 +32,8 @@ jobs:
       SERVICE_ACCOUNT_PRIVATE_KEY: ${{ secrets.SERVICE_ACCOUNT_PRIVATE_KEY }}
       STRIPE_API_KEY: ${{ secrets.STRIPE_API_KEY }}
       STRIPE_API_VERSION: ${{ secrets.STRIPE_API_VERSION }}
+      FIRESTORE_EMULATOR_HOST: "localhost:8080"
+      FIREBASE_AUTH_EMULATOR_HOST: "localhost:9099"
 
     steps:
       - uses: actions/checkout@v5
@@ -39,11 +41,11 @@ jobs:
           filter: tree:0
           fetch-depth: 0
 
-      # This enables task distribution via Nx Cloud
-      # Run this command as early as possible, before dependencies are installed
-      # Learn more at https://nx.dev/ci/reference/nx-cloud-cli#npx-nxcloud-startcirun
-      # Uncomment this line to enable task distribution
-      # - run: npx nx start-ci-run --distribute-on="3 linux-medium-js" --stop-agents-after="e2e-ci"
+      # This enables task distribution via Nx Cloud.
+      # Replace this with your own Nx Cloud token.
+      # - run: npx nx-cloud start-ci-run --distribute-on="3 linux-medium-js" --stop-agents-after="e2e-ci"
+      #   env:
+      #     NX_CLOUD_AUTH_TOKEN: ${{ secrets.NX_CLOUD_AUTH_TOKEN }}
 
       # Cache node_modules
       - uses: actions/setup-node@v4
@@ -54,11 +56,17 @@ jobs:
       - run: npm ci --legacy-peer-deps
       - run: npx playwright install --with-deps
 
-      - name: Build
-        run: npx nx --tuiAutoExit --outputStyle=static run-many -t build
+      - name: Start Firebase emulators
+        run: |
+          npx firebase emulators:start --project=preem-machine-ci --only firestore,auth > firebase-emulator.log &
+          timeout 60s grep -q "All emulators ready" <(tail -f firebase-emulator.log)
 
-      - name: Test
-        run: npx nx --tuiAutoExit --outputStyle=static run-many -t lint test e2e
+      # Run tests for affected projects. `nx affected` is more efficient than
+      # `nx run-many` because it only runs tests for projects that have changed.
+      - name: Run affected tests
+        run: npx nx affected -t lint,test,e2e --parallel=3
 
-      # - run: npx nx --tuiAutoExit --outputStyle=static fix-ci
-      #   if: always()
+      - name: Stop Firebase emulators
+        if: always()
+        run: |
+          kill $(jobs -p) || true
