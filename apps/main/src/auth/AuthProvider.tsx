@@ -13,12 +13,12 @@ export const AuthProvider: FunctionComponent<AuthProviderProps> = ({
   children,
 }) => {
   return (
-    <AuthContext.Provider
+    <AuthContext
       value={{
         authUser,
       }}
     >
       {children}
-    </AuthContext.Provider>
+    </AuthContext>
   );
 };

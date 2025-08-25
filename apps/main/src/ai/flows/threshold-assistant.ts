@@ -21,7 +21,7 @@ const SuggestThresholdInputSchema = z.object({
     .number()
     .describe('The number of contributors for previous races.'),
   preemFrequency: z.string().describe(
-    'The desired frequency of preem awards (e.g., frequently, occasionally, rarely).'
+    'The desired frequency of preem awards (e.g., frequently, occasionally, rarely).',
     /*
      *  Options:
      *  - "frequently": Award preems often to keep racers and contributors engaged.
@@ -32,7 +32,7 @@ const SuggestThresholdInputSchema = z.object({
   historicalWeatherData: z
     .string()
     .describe(
-      'The historical weather data for the race location to consider any impact of weather.'
+      'The historical weather data for the race location to consider any impact of weather.',
     ),
 });
 export type SuggestThresholdInput = z.infer<typeof SuggestThresholdInputSchema>;
@@ -41,7 +41,7 @@ const SuggestThresholdOutputSchema = z.object({
   suggestedThreshold: z
     .number()
     .describe(
-      'The suggested minimum threshold amount for the preem, based on the input data.'
+      'The suggested minimum threshold amount for the preem, based on the input data.',
     ),
   reasoning: z
     .string()
@@ -52,7 +52,7 @@ export type SuggestThresholdOutput = z.infer<
 >;
 
 export async function suggestThreshold(
-  input: SuggestThresholdInput
+  input: SuggestThresholdInput,
 ): Promise<SuggestThresholdOutput> {
   return suggestThresholdFlow(input);
 }
@@ -91,5 +91,5 @@ const suggestThresholdFlow = ai.defineFlow(
       throw new Error('The AI model did not return a response.');
     }
     return output;
-  }
+  },
 );

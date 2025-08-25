@@ -53,7 +53,7 @@ export const useContribution = () => {
       const { clientSecret } = await createPaymentIntent(
         amount,
         preem.path,
-        isAnonymous
+        isAnonymous,
       );
       if (!clientSecret) {
         throw new Error('Failed to create payment intent.');

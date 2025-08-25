@@ -10,7 +10,7 @@ export interface UpdateUserOptions {
 }
 
 export async function updateUserAction(
-  options: UpdateUserOptions
+  options: UpdateUserOptions,
 ): Promise<{ ok: boolean; error?: string }> {
   try {
     const authUser = await verifyAuthUser();

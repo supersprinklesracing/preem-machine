@@ -24,7 +24,7 @@ export function getOrInitializeAppCheck(app: FirebaseApp): AppCheck {
   return (appCheck = initializeAppCheck(app, {
     provider: new ReCaptchaEnterpriseProvider(
       // eslint-disable-next-line @typescript-eslint/no-non-null-assertion
-      process.env.NEXT_PUBLIC_FIREBASE_APP_CHECK_KEY!
+      process.env.NEXT_PUBLIC_FIREBASE_APP_CHECK_KEY!,
     ),
     isTokenAutoRefreshEnabled: true, // Set to true to allow auto-refresh.
   }));

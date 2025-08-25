@@ -27,7 +27,7 @@ export function useStripeConnect({ organization }: UseStripeConnectProps) {
       }
     } catch (e) {
       setError(
-        e instanceof Error ? e.message : 'An unexpected error occurred.'
+        e instanceof Error ? e.message : 'An unexpected error occurred.',
       );
     } finally {
       setIsCreatingAccount(false);
@@ -44,7 +44,7 @@ export function useStripeConnect({ organization }: UseStripeConnectProps) {
     try {
       const result = await createDashboardLink(
         organization.stripe.connectAccountId,
-        organization.id
+        organization.id,
       );
 
       if (result.success && result.url) {
@@ -54,7 +54,7 @@ export function useStripeConnect({ organization }: UseStripeConnectProps) {
       }
     } catch (e) {
       setError(
-        e instanceof Error ? e.message : 'An unexpected error occurred.'
+        e instanceof Error ? e.message : 'An unexpected error occurred.',
       );
     } finally {
       setIsCreatingLink(false);
@@ -71,7 +71,7 @@ export function useStripeConnect({ organization }: UseStripeConnectProps) {
     try {
       const result = await createOnboardingLink(
         organization.stripe.connectAccountId,
-        organization.id
+        organization.id,
       );
 
       if (result.success && result.url) {
@@ -81,7 +81,7 @@ export function useStripeConnect({ organization }: UseStripeConnectProps) {
       }
     } catch (e) {
       setError(
-        e instanceof Error ? e.message : 'An unexpected error occurred.'
+        e instanceof Error ? e.message : 'An unexpected error occurred.',
       );
     } finally {
       setIsCreatingLink(false);

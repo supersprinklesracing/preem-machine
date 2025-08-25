@@ -1,14 +1,9 @@
 'use client';
 
-import {
-  ActionIcon,
-  Avatar,
-  Burger,
-  Group,
-} from '@mantine/core';
+import { ActionIcon, Avatar, Burger, Group } from '@mantine/core';
 import { IconBell } from '@tabler/icons-react';
 import Link from 'next/link';
-import { useContext } from 'react';
+import { use } from 'react';
 import { AuthContext } from '../../auth/AuthContext';
 
 interface HeaderProps {
@@ -17,7 +12,7 @@ interface HeaderProps {
 }
 
 export default function Header({ opened, toggle }: HeaderProps) {
-  const auth = useContext(AuthContext);
+  const auth = use(AuthContext);
 
   return (
     <Group justify="space-between" h="100%">

@@ -10,7 +10,7 @@ export async function POST(request: NextRequest) {
     if (!accountId || !organizationId) {
       return NextResponse.json(
         { error: 'accountId and organizationId are required.' },
-        { status: 400 }
+        { status: 400 },
       );
     }
 

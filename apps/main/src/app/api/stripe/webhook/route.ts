@@ -13,7 +13,7 @@ export async function POST(req: Request) {
     console.error('STRIPE_WEBHOOK_SECRET is not set.');
     return NextResponse.json(
       { error: 'Webhook secret not configured' },
-      { status: 500 }
+      { status: 500 },
     );
   }
 
@@ -31,7 +31,7 @@ export async function POST(req: Request) {
     console.error(`Webhook signature verification failed: ${errorMessage}`);
     return NextResponse.json(
       { error: `Webhook Error: ${errorMessage}` },
-      { status: 400 }
+      { status: 400 },
     );
   }
 
@@ -41,7 +41,7 @@ export async function POST(req: Request) {
       break;
     case 'payment_intent.succeeded':
       await handlePaymentIntentSucceeded(
-        event.data.object as Stripe.PaymentIntent
+        event.data.object as Stripe.PaymentIntent,
       );
       break;
     default:
@@ -51,7 +51,9 @@ export async function POST(req: Request) {
   return NextResponse.json({ received: true });
 }
 
-async function handlePaymentIntentSucceeded(paymentIntent: Stripe.PaymentIntent) {
+async function handlePaymentIntentSucceeded(
+  paymentIntent: Stripe.PaymentIntent,
+) {
   await processContribution(paymentIntent);
 }
 

@@ -40,7 +40,7 @@ export function Register() {
       const credential = await createUserWithEmailAndPassword(
         auth,
         email,
-        password
+        password,
       );
 
       await loginWithCredential(credential);

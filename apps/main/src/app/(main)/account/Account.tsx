@@ -6,7 +6,7 @@ import { UpdateUserOptions } from './update-user-action';
 export interface AccountDetailsProps {
   debugProps: AccountDebugProps;
   updateUserAction: (
-    options: UpdateUserOptions
+    options: UpdateUserOptions,
   ) => Promise<{ ok: boolean; error?: string }>;
 }
 

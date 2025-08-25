@@ -48,7 +48,7 @@ async function handleSetClaims(argv: ArgumentsCamelCase<UidArgs & ClaimsArgs>) {
 }
 
 async function handleUpdateClaims(
-  argv: ArgumentsCamelCase<UidArgs & ClaimsArgs>
+  argv: ArgumentsCamelCase<UidArgs & ClaimsArgs>,
 ) {
   try {
     const existingClaims = await getClaims(argv.uid);
@@ -57,7 +57,7 @@ async function handleUpdateClaims(
     await setClaims(argv.uid, mergedClaims);
     console.log(
       `Successfully updated claims for user ${argv.uid}:`,
-      mergedClaims
+      mergedClaims,
     );
   } catch (error) {
     console.error('Error updating custom claims:', error);
@@ -96,19 +96,19 @@ async function main() {
           'get',
           'Get custom claims for a Firebase user',
           () => {},
-          handleGetClaims
+          handleGetClaims,
         )
         .command(
           'set',
           'Overwrite all custom claims for a Firebase user',
           (yargs: Argv) => yargs.demandOption('claims'),
-          handleSetClaims
+          handleSetClaims,
         )
         .command(
           'update',
           'Merge new claims with existing custom claims for a Firebase user',
           (yargs: Argv) => yargs.demandOption('claims'),
-          handleUpdateClaims
+          handleUpdateClaims,
         );
     })
     .demandCommand(1, 'You need at least one command before moving on')
