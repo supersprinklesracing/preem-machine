@@ -7,13 +7,7 @@ export default [
   ...nx.configs['flat/typescript'],
   ...nx.configs['flat/javascript'],
   {
-    plugins: {
-      json,
-      markdown,
-    },
-  },
-  {
-    ignores: ['**/dist'],
+    ignores: ['**/dist', '**/next-env.d.ts'],
   },
   {
     files: ['**/*.ts', '**/*.tsx', '**/*.js', '**/*.jsx'],
@@ -35,15 +29,19 @@ export default [
     },
   },
   {
+    plugins: {
+      json,
+    },
     files: ['**/*.json'],
+    ignores: ['package-lock.json'],
     language: 'json/json',
     rules: {},
   },
   {
-    files: ['**/*.md'],
     plugins: {
       markdown,
     },
+    files: ['**/*.md'],
     language: 'markdown/commonmark',
     rules: {},
   },
