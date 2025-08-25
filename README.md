@@ -37,6 +37,11 @@ npx nx --tuiAutoExit --outputStyle=static show project main
 
 The project enforces a consistent code style using ESLint, Prettier, and Stylelint. Configuration files are located at the root of the workspace (`eslint.config.mjs`, `.prettierrc`, `.stylelintrc.json`).
 
+- **Lint (and fix) all affected files:** `npx nx --tuiAutoExit --outputStyle=static affected:lint --fix`
+- **Lint (and fix) a single file:** `npx eslint --fix ${FILE}`
+- **Format all affected files:**  `npx nx --tuiAutoExit --outputStyle=static format:write`
+- **Format a single file:** `npx nx --tuiAutoExit --outputStyle=static format:write --files=${FILE}`
+
 ### Typescript
 
 - Avoid casting to `any`.

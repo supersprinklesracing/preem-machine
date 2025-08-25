@@ -1,3 +1,5 @@
+import json from '@eslint/json';
+import markdown from '@eslint/markdown';
 import nx from '@nx/eslint-plugin';
 
 export default [
@@ -5,7 +7,7 @@ export default [
   ...nx.configs['flat/typescript'],
   ...nx.configs['flat/javascript'],
   {
-    ignores: ['**/dist'],
+    ignores: ['**/dist', '**/next-env.d.ts'],
   },
   {
     files: ['**/*.ts', '**/*.tsx', '**/*.js', '**/*.jsx'],
@@ -25,6 +27,23 @@ export default [
         },
       ],
     },
+  },
+  {
+    files: ['**/*.json'],
+    plugins: {
+      json,
+    },
+    ignores: ['package-lock.json'],
+    language: 'json/json',
+    rules: {},
+  },
+  {
+    files: ['**/*.md'],
+    plugins: {
+      markdown,
+    },
+    language: 'markdown/commonmark',
+    rules: {},
   },
   {
     files: [
