@@ -21,7 +21,12 @@ export default function Header({ opened, toggle }: HeaderProps) {
 
   return (
     <Group justify="space-between" h="100%">
-      <Burger opened={opened!} onClick={toggle} hiddenFrom="sm" size="sm" />
+      <Burger
+        opened={opened ?? false}
+        onClick={toggle}
+        hiddenFrom="sm"
+        size="sm"
+      />
       <Group>
         {
           /* eslint-disable-next-line no-constant-binary-expression */
