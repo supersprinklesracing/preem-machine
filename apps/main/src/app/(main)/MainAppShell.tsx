@@ -1,6 +1,6 @@
 'use client';
 
-import { AppShell, Burger, Group, Title } from '@mantine/core';
+import { AppShell, Group, Title } from '@mantine/core';
 import { useDisclosure } from '@mantine/hooks';
 import { Notifications } from '@mantine/notifications';
 import Link from 'next/link';
@@ -17,32 +17,38 @@ export default function MainAppShell({
 }) {
   const [opened, { toggle }] = useDisclosure();
 
+  const headerElement =
+    header &&
+    React.cloneElement(header as React.ReactElement, { opened, toggle });
+
+  const sidebarElement =
+    sidebar &&
+    React.cloneElement(sidebar as React.ReactElement, { onLinkClick: toggle });
+
   return (
     <AppShell
       header={{ height: 60 }}
-      navbar={{ width: 250, breakpoint: 'sm', collapsed: { mobile: !opened } }}
+      navbar={{
+        width: 250,
+        breakpoint: 'sm',
+        collapsed: { mobile: !opened, desktop: false },
+      }}
       padding="md"
     >
       <Notifications />
       <AppShell.Header>
         <Group h="100%" px="md" justify="space-between">
           <Group>
-            <Burger
-              opened={opened}
-              onClick={toggle}
-              hiddenFrom="sm"
-              size="sm"
-            />
             <Link href="/" style={{ textDecoration: 'none', color: 'inherit' }}>
               <Title order={3} ff="Space Grotesk, var(--mantine-font-family)">
                 Preem Machine
               </Title>
             </Link>
           </Group>
-          {header}
+          {headerElement}
         </Group>
       </AppShell.Header>
-      <AppShell.Navbar p="md">{sidebar}</AppShell.Navbar>
+      <AppShell.Navbar p="md">{sidebarElement}</AppShell.Navbar>
       <AppShell.Main>{children}</AppShell.Main>
     </AppShell>
   );
