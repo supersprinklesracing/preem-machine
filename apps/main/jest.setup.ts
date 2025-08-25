@@ -1,7 +1,3 @@
-import { loadEnvConfig } from '@next/env';
-
-loadEnvConfig(process.cwd());
-
 import '@testing-library/jest-dom';
 import { Headers, Request, Response } from 'node-fetch';
 import { TextDecoder, TextEncoder } from 'util';
