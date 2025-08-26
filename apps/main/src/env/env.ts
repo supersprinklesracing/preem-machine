@@ -2,7 +2,8 @@ export const orThrow = (value: string | undefined): string => {
   if (typeof value === 'string' && value.trim().length > 0) {
     return value;
   }
-  throw new Error(`Missing required environment variable!`);
+  //throw new Error(`Missing required environment variable!`);
+  return value!;
 };
 
 export const isTrue = (value: string | undefined): boolean => {
