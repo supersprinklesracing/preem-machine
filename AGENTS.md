@@ -55,6 +55,14 @@ git rebase origin/main
 - Use Git Hub Pull Requests in order to merge changes to the **main** branch.
 - After a Pull Request is merged, you can sync the repo to get the latest changes.
 
+### Project Quality Tooling: husky, lint-staged
+
+The project uses `husky` and `lint-staged` to ensure code quality commits.
+
+- It is possible to disable pre-commit hooks: `git config --unset core.hooksPath`.
+- Do not push branches upstream without restoring hooks: `git config core.hooksPath "./husky/_"`.
+
+
 ### Typescript
 
 - Avoid casting to `any`.
@@ -67,8 +75,6 @@ git rebase origin/main
 ### Nx Generators
 
 The workspace is set up to use Nx generators for creating new applications and libraries, streamlining the development process.
-
-## Specific issues
 
 ## Jest Behaviors and Practices
 
