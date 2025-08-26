@@ -7,6 +7,7 @@ This document provides context for the Gemini Code Assistant to understand the s
 # Key Documentation
 
 @docs/eng-design.md
+
 @docs/product-design.md
 
 ---
