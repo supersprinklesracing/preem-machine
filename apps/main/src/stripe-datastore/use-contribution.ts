@@ -1,6 +1,6 @@
 'use client';
 
-import { useToast } from '@/app/shared/use-toast';
+import { createToast } from '@/app/shared/use-toast';
 import { useAuth } from '@/auth/AuthContext';
 import {
   confirmContributionOptimistically,
@@ -24,7 +24,7 @@ interface ContributionDetails {
 export const useContribution = () => {
   const stripe = useStripe();
   const elements = useElements();
-  const { toast } = useToast();
+  const { toast } = createToast();
   const { authUser } = useAuth();
   const [isProcessing, setIsProcessing] = useState(false);
 

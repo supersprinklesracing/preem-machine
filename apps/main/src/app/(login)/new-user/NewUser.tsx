@@ -144,7 +144,7 @@ const NewUser: React.FC<Props> = ({ newUserAction }: Props) => {
             </Stack>
           </Grid.Col>
           <Grid.Col span={{ lg: 8 }} visibleFrom="lg">
-            <FormFields form={form} nameError={debouncedNameError} />
+            <FormFields form={form} nameError={form.errors.name} />
           </Grid.Col>
         </Grid>
       </form>

@@ -1,6 +1,6 @@
 'use client';
 
-import { useToast } from '@/app/shared/use-toast';
+import { createToast } from '@/app/shared/use-toast';
 import type { ClientCompat, User } from '@/datastore/types';
 import {
   Box,
@@ -27,7 +27,7 @@ interface Props {
 const Admin: React.FC<Props> = ({ data }) => {
   const { users } = data;
   const [search, setSearch] = useState('');
-  const { toast } = useToast();
+  const { toast } = createToast();
 
   const handleImpersonate = (user: ClientCompat<User>) => {
     if (!user.name) {

@@ -1,7 +1,7 @@
 'use client';
 
 import { getThresholdSuggestion } from './threshold-suggestion-action';
-import { useToast } from '@/app/shared/use-toast';
+import { createToast } from '@/app/shared/use-toast';
 import {
   Button,
   Card,
@@ -33,7 +33,7 @@ const ThresholdAssistantModal: React.FC<ThresholdAssistantModalProps> = ({
   onClose,
   raceId,
 }) => {
-  const { toast } = useToast();
+  const { toast } = createToast();
   const [formData, setFormData] = useState({
     averageContributionAmount: 50,
     numberOfContributors: 15,
