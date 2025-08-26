@@ -12,7 +12,7 @@ export async function serverConfigFn() {
     serviceAccount: {
       projectId: orThrow(process.env.NEXT_PUBLIC_FIREBASE_PROJECT_ID),
       clientEmail: orThrow(process.env.SERVICE_ACCOUNT_CLIENT_EMAIL),
-      privateKey: orThrow(process.env.SERVICE_ACCOUNT_PRIVATE_KEY).replace(
+      privateKey: orThrow(process.env.SERVICE_ACCOUNT_PRIVATE_KEY)?.replace(
         /\\n/g,
         '\n',
       ),
