@@ -1,6 +1,6 @@
 'use server';
 
-import { getAuthUserFromCookies } from '@/auth/user';
+import { verifyAuthUser } from '@/auth/user';
 import { getOrganizationFromPreemPath } from '@/datastore/firestore';
 import { processContribution } from '@/stripe-datastore/contributions';
 import { stripe } from './server';
@@ -10,10 +10,7 @@ export async function createPaymentIntent(
   preemPath: string,
   isAnonymous: boolean,
 ): Promise<{ clientSecret: string | null }> {
-  const authUser = await getAuthUserFromCookies();
-  if (!authUser) {
-    throw new Error('User not authenticated');
-  }
+  const authUser = await verifyAuthUser();
 
   const organization = await getOrganizationFromPreemPath(preemPath);
   if (!organization?.stripe?.connectAccountId) {
