@@ -46,6 +46,7 @@ export default function EventCard({
 
   const metadataItems: MetadataItem[] = [
     {
+      key: 'total-collected',
       icon: <IconCurrencyDollar size={16} />,
       label: (
         <Text size="sm" c="green" fw={600}>
@@ -54,6 +55,7 @@ export default function EventCard({
       ),
     },
     {
+      key: 'total-contributors',
       icon: <IconUsers size={16} />,
       label: <Text size="sm">{totalContributors} Contributors</Text>,
     },

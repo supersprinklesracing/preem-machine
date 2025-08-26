@@ -2,6 +2,7 @@ import { Grid, Group } from '@mantine/core';
 import React from 'react';
 
 export interface MetadataItem {
+  key: string;
   icon: React.ReactNode;
   label: React.ReactNode;
 }
@@ -13,8 +14,8 @@ interface MetadataRowProps {
 export const MetadataRow: React.FC<MetadataRowProps> = ({ items }) => {
   return (
     <Grid>
-      {items.map((item, index) => (
-        <Grid.Col span="auto" key={index}>
+      {items.map((item) => (
+        <Grid.Col span="auto" key={item.key}>
           <Group gap="xs" wrap="nowrap">
             {item.icon}
             {item.label}
