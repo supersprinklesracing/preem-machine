@@ -44,8 +44,9 @@ git rebase origin/main
 ```
 
 ### Tools & Shell Commands
-
+- Use `git ls-files` to list files and `git grep` to search for strings within them. This is preferable to using general-purpose search tools as it automatically ignores build artifacts.
 - Always quote filenames: e.g. "apps/main/src/app/(main)/layout.tsx" _not_ apps/main/src/app/(main)/layout.tsx
+- Use `git ls-files` and `git grep` to find files or strings; this avoids searching build artifacts.
 
 ## Development Processes
 
