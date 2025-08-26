@@ -1,7 +1,7 @@
 import { getOrganizationByStripeConnectAccountId } from '@/datastore/firestore';
 import { updateOrganizationStripeConnectAccountForWebhook } from '@/datastore/mutations';
 import { processContribution } from '@/stripe-datastore/contributions';
-import { stripe } from '@/stripe/server';
+import { getStripeServer } from '@/stripe/server';
 import { headers } from 'next/headers';
 import { NextResponse } from 'next/server';
 import type Stripe from 'stripe';
@@ -25,7 +25,11 @@ export async function POST(req: Request) {
   let event: Stripe.Event;
   try {
     const body = await req.text();
-    event = stripe.webhooks.constructEvent(body, signature, webhookSecret);
+    event = getStripeServer().webhooks.constructEvent(
+      body,
+      signature,
+      webhookSecret,
+    );
   } catch (err) {
     const errorMessage = err instanceof Error ? err.message : 'Unknown error';
     console.error(`Webhook signature verification failed: ${errorMessage}`);

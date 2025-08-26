@@ -2,7 +2,7 @@ import 'server-only';
 
 import { getOrganizationById } from '@/datastore/firestore';
 import { ClientCompat, Organization } from '@/datastore/types';
-import { stripe } from '@/stripe/server';
+import { getStripeServer } from '@/stripe/server';
 import { cache } from 'react';
 
 export const getOrganizationAndRefreshStripeAccount = cache(
@@ -20,7 +20,7 @@ export const getOrganizationAndRefreshStripeAccount = cache(
     // Enrich with Stripe data if a connect account exists.
     if (organization.stripe?.connectAccountId) {
       try {
-        const account = await stripe.accounts.retrieve(
+        const account = await getStripeServer().accounts.retrieve(
           organization.stripe.connectAccountId,
         );
         // Convert the Stripe Account object to a plain JSON object to pass to client components.
