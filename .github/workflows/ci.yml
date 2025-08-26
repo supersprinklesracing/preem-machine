@@ -52,13 +52,20 @@ jobs:
           cache: 'npm'
 
       - run: npm ci --legacy-peer-deps
-      - run: npx playwright install --with-deps
 
       - name: Build
         run: npx nx --tuiAutoExit --outputStyle=static run-many -t build
 
+      - name: Lint
+        run: npx nx --tuiAutoExit --outputStyle=static run-many -t lint
+
       - name: Test
-        run: npx nx --tuiAutoExit --outputStyle=static run-many -t lint test e2e
+        run: npx nx --tuiAutoExit --outputStyle=static run-many -t test
+
+      - name: E2E
+        run: |
+          npx playwright install --with-deps
+          npx nx --tuiAutoExit --outputStyle=static run-many -t e2e
 
       # - run: npx nx --tuiAutoExit --outputStyle=static fix-ci
       #   if: always()
