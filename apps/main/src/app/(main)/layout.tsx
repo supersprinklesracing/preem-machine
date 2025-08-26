@@ -1,7 +1,7 @@
 'use server';
 
 import { getAuthUserFromCookies } from '@/auth/user';
-import { getEventsForUser, getUserById } from '@/datastore/firestore';
+import { getEventsForUser } from '@/datastore/firestore';
 import { CurrentUser } from '@/datastore/user/UserContext';
 import { unauthorized } from 'next/navigation';
 import Header from './Header';
@@ -15,14 +15,11 @@ export interface MainProps {
 
 export default async function Layout({ children }: MainProps) {
   const authUser = await getAuthUserFromCookies();
-  const currentUser = authUser
-    ? ((await getUserById(authUser.uid)) ?? null)
-    : null;
-  if (!currentUser) {
+  if (!authUser) {
     unauthorized();
   }
 
-  const events = authUser ? await getEventsForUser(authUser.uid) : [];
+  const events = await getEventsForUser(authUser.uid);
 
   return (
     <MainAppShell
