@@ -14,10 +14,19 @@ The following commands are used to build, run, and test the project.
 - **Run unit tests:** `npx nx --tuiAutoExit --outputStyle=static test main --forceExit`
 - **Run a single unit tests:** `npx nx --tuiAutoExit --outputStyle=static run main:test --forceExit --testFile=${TEST_FILE}`
 - **Run end-to-end tests:** `npx nx --tuiAutoExit --outputStyle=static e2e e2e-main`
-
 - **See all available targets for main:** `npx nx --tuiAutoExit --outputStyle=static show project main`
 
 Always pass recommended flags to commands: `npx nx --tuiAutoExit --outputStyle=static command`
+
+## Syncing Repos
+
+It may be necessary to rebase to the latest main branch. When asked, you can
+proceed as follows:
+
+```shell
+git fetch origin
+git rebase origin/main
+```
 
 ## Development Conventions
 
