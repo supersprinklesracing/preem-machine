@@ -4,7 +4,9 @@
 
 Use `npm ci` to initialize the repo.
 
-## Building and Running
+## Commands
+
+### Building and Running
 
 The following commands are used to build, run, and test the project.
 
@@ -18,18 +20,6 @@ The following commands are used to build, run, and test the project.
 
 Always pass recommended flags to commands: `npx nx --tuiAutoExit --outputStyle=static command`
 
-## Syncing Repos
-
-It may be necessary to rebase to the latest main branch. When asked, you can
-proceed as follows:
-
-```shell
-git fetch origin
-git rebase origin/main
-```
-
-## Development Conventions
-
 ### Code Style
 
 The project enforces a consistent code style using ESLint, Prettier, and Stylelint. Configuration files are located at the root of the workspace (`eslint.config.mjs`, `.prettierrc`, `.stylelintrc.json`).
@@ -39,6 +29,27 @@ The project enforces a consistent code style using ESLint, Prettier, and Styleli
 - **Format all affected files:** `npx nx --tuiAutoExit --outputStyle=static format:write`
 - **Format a single file:** `npx nx --tuiAutoExit --outputStyle=static format:write --files=${FILE}`
 
+### Syncing Repos & Branches
+
+You can rebase a branch with the latest main:
+
+```shell
+git fetch origin
+git rebase origin/main
+```
+
+### Tools & Shell Commands
+
+- Always quote filenames: e.g. "apps/main/src/app/(main)/layout.tsx" _not_ apps/main/src/app/(main)/layout.tsx
+
+## Development Processes
+
+### Feature Branches
+
+- Always use **feature branches** when changing the code in a repository.
+- Use Git Hub Pull Requests in order to merge changes to the **main** branch.
+- After a Pull Request is merged, you can sync the repo to get the latest changes.
+
 ### Typescript
 
 - Avoid casting to `any`.
@@ -47,10 +58,6 @@ The project enforces a consistent code style using ESLint, Prettier, and Styleli
 
 - **Unit Testing:** Jest is used for unit testing, with tests (`*.spec.ts`) located in `apps/main/src`.
 - **End-to-End Testing:** Playwright is used for E2E testing, with tests located in `apps/e2e-main/src`.
-
-### Commits
-
-The project uses `husky` and `lint-staged` to run pre-commit hooks that lint and format staged files, ensuring code quality before commits.
 
 ### Nx Generators
 
