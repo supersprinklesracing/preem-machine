@@ -1,6 +1,6 @@
 'use client';
 
-import { FunctionComponent, ReactNode } from 'react';
+import { FunctionComponent, ReactNode, useMemo } from 'react';
 import { CurrentUser, CurrentUserContext } from './UserContext';
 
 export interface UserProviderProps {
@@ -12,13 +12,6 @@ export const CurrentUserProvider: FunctionComponent<UserProviderProps> = ({
   currentUser,
   children,
 }) => {
-  return (
-    <CurrentUserContext
-      value={{
-        currentUser,
-      }}
-    >
-      {children}
-    </CurrentUserContext>
-  );
+  const value = useMemo(() => ({ currentUser }), [currentUser]);
+  return <CurrentUserContext value={value}>{children}</CurrentUserContext>;
 };

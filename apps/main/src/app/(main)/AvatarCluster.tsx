@@ -6,7 +6,7 @@ import Link from 'next/link';
 import { use } from 'react';
 import { AuthContext } from '../../auth/AuthContext';
 
-export default function Header() {
+export default function AvatarCluster() {
   const auth = use(AuthContext);
 
   return (

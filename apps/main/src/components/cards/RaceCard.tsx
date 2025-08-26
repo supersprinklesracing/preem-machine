@@ -52,6 +52,7 @@ const RaceCard: React.FC<RaceCardProps> = ({
   const metadataItems: MetadataItem[] = [];
   if (totalPrizePool > 0) {
     metadataItems.push({
+      key: 'preems',
       icon: (
         <IconSparkles
           size={18}
@@ -74,6 +75,7 @@ const RaceCard: React.FC<RaceCardProps> = ({
     });
   }
   metadataItems.push({
+    key: 'racers',
     icon: <IconUsers size={18} />,
     label: (
       <Text size="sm" fw={500}>
@@ -82,6 +84,7 @@ const RaceCard: React.FC<RaceCardProps> = ({
     ),
   });
   metadataItems.push({
+    key: 'duration',
     icon: <IconClock size={18} />,
     label: (
       <Text size="sm" fw={500}>
@@ -90,6 +93,7 @@ const RaceCard: React.FC<RaceCardProps> = ({
     ),
   });
   metadataItems.push({
+    key: 'laps',
     icon: <IconAward size={18} />,
     label: (
       <Text size="sm" fw={500}>

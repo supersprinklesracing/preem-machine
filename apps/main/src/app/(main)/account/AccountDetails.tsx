@@ -22,7 +22,7 @@ import { useDebouncedValue } from '@mantine/hooks';
 import { signOut } from 'firebase/auth';
 import Link from 'next/link';
 import { unauthorized, useRouter } from 'next/navigation';
-import { ReactNode, useEffect, useState } from 'react';
+import { useState } from 'react';
 import { useLoadingCallback } from 'react-loading-hook';
 import { PreferencesPanel } from './PreferencesPanel';
 import { UpdateUserOptions } from './update-user-action';
@@ -40,7 +40,6 @@ export function AccountDetails({
   const [hasLoggedOut, setHasLoggedOut] = useState(false);
   const [isLoading, setIsLoading] = useState(false);
   const [submissionError, setSubmissionError] = useState<string | null>(null);
-  const [debouncedNameError, setDebouncedNameError] = useState<ReactNode>(null);
 
   if (!currentUser) {
     unauthorized();
@@ -66,11 +65,6 @@ export function AccountDetails({
   });
 
   const [debouncedName] = useDebouncedValue(form.values.name, 500);
-
-  useEffect(() => {
-    const result = form.validateField('name');
-    setDebouncedNameError(result.error);
-  }, [debouncedName, form]);
 
   const handleSubmit = async (values: FormValues) => {
     setIsLoading(true);
@@ -183,10 +177,7 @@ export function AccountDetails({
               )}
             </Stack>
             <Stack>
-              <UserProfileFormFields
-                form={form}
-                nameError={debouncedNameError}
-              />
+              <UserProfileFormFields form={form} nameError={form.errors.name} />
             </Stack>
           </SimpleGrid>
           <PreferencesPanel />

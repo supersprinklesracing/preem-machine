@@ -18,7 +18,7 @@ import {
 } from '@mantine/core';
 import { IconArrowLeft } from '@tabler/icons-react';
 import Link from 'next/link';
-import React, { useEffect, useState } from 'react';
+import React, { useEffect, useMemo, useState } from 'react';
 
 export interface BigScreenData {
   race: ClientCompat<RaceWithPreems>;
@@ -33,13 +33,7 @@ const BigScreen: React.FC<BigScreenProps> = ({ data, users }) => {
   const [race, setRace] = useState<ClientCompat<RaceWithPreems> | undefined>(
     data.race,
   );
-  const [liveContributions, setLiveContributions] = useState<
-    (ClientCompat<Contribution> & { preemName: string })[]
-  >([]);
-
-  useEffect(() => {
-    if (!data) return;
-
+  const [liveContributions, setLiveContributions] = useState(() => {
     const allInitialContributions =
       data.race.preems
         ?.flatMap((p) =>
@@ -52,8 +46,10 @@ const BigScreen: React.FC<BigScreenProps> = ({ data, users }) => {
       }
       return new Date(b.date ?? 0).getTime() - new Date(a.date ?? 0).getTime();
     });
-    setLiveContributions(allInitialContributions.slice(0, 5));
+    return allInitialContributions.slice(0, 5);
+  });
 
+  useEffect(() => {
     const interval = setInterval(() => {
       setRace((prevRace) => {
         if (!prevRace) return undefined;
@@ -92,24 +88,58 @@ const BigScreen: React.FC<BigScreenProps> = ({ data, users }) => {
     }, 4000);
 
     return () => clearInterval(interval);
-  }, [data, users]);
+  }, [users]);
 
-  const getContributor = (
-    contribution: ClientCompat<Contribution>,
-  ): { name: string; avatarUrl: string } => {
-    if (!contribution.contributor?.id) {
+  const contributionCards = useMemo(() => {
+    const getContributor = (
+      contribution: ClientCompat<Contribution>,
+    ): { name: string; avatarUrl: string } => {
+      if (!contribution.contributor?.id) {
+        return {
+          name: 'Anonymous',
+          avatarUrl: 'https://placehold.co/100x100.png',
+        };
+      }
       return {
-        name: 'Anonymous',
-        avatarUrl: 'https://placehold.co/100x100.png',
+        name: contribution.contributor.name ?? 'A Fan',
+        avatarUrl:
+          contribution.contributor.avatarUrl ??
+          'https://placehold.co/100x100.png',
       };
-    }
-    return {
-      name: contribution.contributor.name ?? 'A Fan',
-      avatarUrl:
-        contribution.contributor.avatarUrl ??
-        'https://placehold.co/100x100.png',
     };
-  };
+
+    return liveContributions.map((c) => {
+      const contributor = getContributor(c);
+      return (
+        <Card key={c.id} p="sm" radius="md" bg="dark.7">
+          <Group>
+            <Avatar
+              src={contributor.avatarUrl}
+              alt={contributor.name}
+              radius="xl"
+              size="lg"
+            />
+            <div>
+              <Text>
+                <Text span c="yellow" fw={700}>
+                  ${c.amount}
+                </Text>{' '}
+                from{' '}
+                <Text span fw={700}>
+                  {contributor.name}
+                </Text>
+              </Text>
+              {c.message && (
+                <Text size="sm" fs="italic" c="dimmed">
+                  &quot;{c.message}&quot;
+                </Text>
+              )}
+            </div>
+          </Group>
+        </Card>
+      );
+    });
+  }, [liveContributions]);
 
   if (!race) {
     return <div>Race not found</div>;
@@ -144,38 +174,6 @@ const BigScreen: React.FC<BigScreenProps> = ({ data, users }) => {
       </Box>
     );
   }
-
-  const contributionCards = liveContributions.map((c) => {
-    const contributor = getContributor(c);
-    return (
-      <Card key={c.id} p="sm" radius="md" bg="dark.7">
-        <Group>
-          <Avatar
-            src={contributor.avatarUrl}
-            alt={contributor.name}
-            radius="xl"
-            size="lg"
-          />
-          <div>
-            <Text>
-              <Text span c="yellow" fw={700}>
-                ${c.amount}
-              </Text>{' '}
-              from{' '}
-              <Text span fw={700}>
-                {contributor.name}
-              </Text>
-            </Text>
-            {c.message && (
-              <Text size="sm" fs="italic" c="dimmed">
-                &quot;{c.message}&quot;
-              </Text>
-            )}
-          </div>
-        </Group>
-      </Card>
-    );
-  });
 
   return (
     <Box

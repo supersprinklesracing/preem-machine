@@ -1,6 +1,6 @@
 'use client';
 
-import { FunctionComponent, ReactNode } from 'react';
+import { FunctionComponent, ReactNode, useMemo } from 'react';
 import { AuthContext, AuthContextUser } from './AuthContext';
 
 export interface AuthProviderProps {
@@ -12,13 +12,6 @@ export const AuthProvider: FunctionComponent<AuthProviderProps> = ({
   authUser,
   children,
 }) => {
-  return (
-    <AuthContext
-      value={{
-        authUser,
-      }}
-    >
-      {children}
-    </AuthContext>
-  );
+  const value = useMemo(() => ({ authUser }), [authUser]);
+  return <AuthContext value={value}>{children}</AuthContext>;
 };

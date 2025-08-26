@@ -13,5 +13,5 @@ export default async function BigScreenPage({
     return <div>Race not found</div>;
   }
 
-  return <BigScreen data={data} users={users} />;
+  return <BigScreen key={data.race.id} data={data} users={users} />;
 }
