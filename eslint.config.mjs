@@ -1,6 +1,7 @@
 import json from '@eslint/json';
 import markdown from '@eslint/markdown';
 import nx from '@nx/eslint-plugin';
+import unusedImports from 'eslint-plugin-unused-imports';
 
 export default [
   ...nx.configs['flat/base'],
@@ -28,6 +29,34 @@ export default [
       ],
     },
   },
+  // unusedImports: Start
+  // Overriding teslint no-unsed-vars rule.
+  // Per: https://www.npmjs.com/package/eslint-plugin-unused-imports
+  {
+    files: ['**/*.ts', '**/*.tsx', '**/*.js', '**/*.jsx'],
+    plugins: {
+      'unused-imports': unusedImports,
+    },
+    rules: {
+      '@typescript-eslint/no-unused-vars': 'off',
+      'unused-imports/no-unused-imports': 'warn',
+      'unused-imports/no-unused-vars': [
+        'warn',
+        {
+          // Options based on https://typescript-eslint.io/rules/no-unused-vars/
+          args: 'all',
+          argsIgnorePattern: '^_',
+          caughtErrors: 'all',
+          caughtErrorsIgnorePattern: '^_',
+          destructuredArrayIgnorePattern: '^_',
+          varsIgnorePattern: '^_',
+          ignoreRestSiblings: true,
+        },
+      ],
+    },
+  },
+  // unusedImports: End
+
   {
     files: ['**/*.json'],
     plugins: {
