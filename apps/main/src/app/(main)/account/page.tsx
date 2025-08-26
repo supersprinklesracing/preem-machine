@@ -1,11 +1,11 @@
 import { incrementCounter } from '@/actions/user-counters';
-import { getAuthUserFromCookies } from '@/auth/user';
+import { verifyAuthUser } from '@/auth/user';
 import { getFirestore } from '@/firebase-admin/firebase-admin';
 import Account from './Account';
 import { updateUserAction } from './update-user-action';
 
 async function getUserCounter(): Promise<number> {
-  const authUser = await getAuthUserFromCookies();
+  const authUser = await verifyAuthUser();
   const db = await getFirestore();
 
   if (!authUser) {
