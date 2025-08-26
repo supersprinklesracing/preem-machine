@@ -46,6 +46,7 @@ git rebase origin/main
 ### Tools & Shell Commands
 
 - Always quote filenames: e.g. "apps/main/src/app/(main)/layout.tsx" _not_ apps/main/src/app/(main)/layout.tsx
+- Use `git ls-files` and `git grep` to find files or strings; this avoids searching build artifacts.
 
 ## Development Processes
 
