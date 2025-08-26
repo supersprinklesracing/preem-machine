@@ -1,5 +1,10 @@
 # AGENTS.md
 
+## Key documentation
+
+- [Eng Design](docs/eng-design.md)
+- [Product Design](docs/product-design.md)
+
 ## Initialization
 
 Use `npm ci` to initialize the repo.
@@ -63,7 +68,42 @@ git rebase origin/main
 
 The workspace is set up to use Nx generators for creating new applications and libraries, streamlining the development process.
 
-## Key documentation
+## Specific issues
 
-- [Eng Design](docs/eng-design.md)
-- [Product Design](docs/product-design.md)
+## Jest Behaviors and Practices
+
+### Mocking `window.matchMedia()`
+
+https://jestjs.io/docs/manual-mocks#mocking-methods-which-are-not-implemented-in-jsdom
+
+If some code uses a method which JSDOM (the DOM implementation used by Jest) hasn't implemented yet, testing it is not easily possible. This is e.g. the case with window.matchMedia(). Jest returns TypeError: window.matchMedia is not a function and doesn't properly execute the test.
+
+In this case, mocking matchMedia in the test file should solve the issue:
+
+
+```
+Object.defineProperty(window, 'matchMedia', {
+  writable: true,
+  value: jest.fn().mockImplementation(query => ({
+    matches: false,
+    media: query,
+    onchange: null,
+    addListener: jest.fn(), // deprecated
+    removeListener: jest.fn(), // deprecated
+    addEventListener: jest.fn(),
+    removeEventListener: jest.fn(),
+    dispatchEvent: jest.fn(),
+  })),
+});
+```
+
+This works if window.matchMedia() is used in a function (or method) which is invoked in the test. If window.matchMedia() is executed directly in the tested file, Jest reports the same error. In this case, the solution is to move the manual mock into a separate file and include this one in the test before the tested file:
+
+```
+import './matchMedia.mock'; // Must be imported before the tested file
+import {myMethod} from './file-to-test';
+
+describe('myMethod()', () => {
+  // Test the method here...
+});
+```
