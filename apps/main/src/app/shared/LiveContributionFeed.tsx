@@ -1,8 +1,18 @@
 'use client';
 
 import type { Contribution, ClientCompat } from '@/datastore/types';
-import { Avatar, Card, Group, Stack, Text, Title } from '@mantine/core';
+import {
+  Avatar,
+  Card,
+  Group,
+  Stack,
+  Text,
+  Title,
+  useMantineTheme,
+} from '@mantine/core';
+import { useMediaQuery } from '@mantine/hooks';
 import Link from 'next/link';
+import { CSSProperties } from 'react';
 
 export interface LiveContributionFeedData {
   contributions: ClientCompat<Contribution>[];
@@ -15,6 +25,21 @@ interface LiveContributionFeedProps {
 export default function LiveContributionFeed({
   data,
 }: LiveContributionFeedProps) {
+  const theme = useMantineTheme();
+  const isLargeScreen = useMediaQuery(`(min-width: ${theme.breakpoints.lg})`);
+
+  const cardStyle: CSSProperties = isLargeScreen
+    ? {
+        position: 'sticky',
+        top: '80px',
+        height: 'calc(100vh - 180px)',
+      }
+    : {};
+
+  const stackStyle: CSSProperties = isLargeScreen
+    ? { flexGrow: 1, overflowY: 'auto', height: '100%' }
+    : {};
+
   const contributionFeed = data.contributions.map((c) => {
     const contributor = c.contributor;
     return (
@@ -72,21 +97,12 @@ export default function LiveContributionFeed({
   });
 
   return (
-    <Card
-      withBorder
-      padding="lg"
-      radius="md"
-      style={{
-        position: 'sticky',
-        top: '80px',
-        height: 'calc(100vh - 180px)',
-      }}
-    >
+    <Card withBorder padding="lg" radius="md" style={cardStyle}>
       <Title order={3}>Live Contribution Feed</Title>
       <Text size="sm" c="dimmed">
         Real-time contributions as they happen.
       </Text>
-      <Stack mt="md" style={{ flexGrow: 1, overflowY: 'auto', height: '100%' }}>
+      <Stack mt="md" style={stackStyle}>
         {data.contributions.length === 0 ? (
           <Text c="dimmed" ta="center" py="xl">
             Waiting for contributions...
