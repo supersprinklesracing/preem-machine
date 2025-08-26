@@ -1,3 +1,7 @@
+import {
+  ENV_FIREBASE_AUTH_EMULATOR_HOST,
+  ENV_FIRESTORE_EMULATOR_HOST,
+} from '@/env/env';
 import { getApp, getApps, initializeApp } from 'firebase/app';
 import {
   connectAuthEmulator,
@@ -33,17 +37,13 @@ export function getFirebaseAuth() {
   // See: https://github.com/awinogrodzki/next-firebase-auth-edge/issues/143
   setPersistence(auth, inMemoryPersistence);
 
-  if (process.env.NEXT_PUBLIC_AUTH_EMULATOR_HOST) {
+  if (ENV_FIREBASE_AUTH_EMULATOR_HOST) {
     // https://stackoverflow.com/questions/73605307/firebase-auth-emulator-fails-intermittently-with-auth-emulator-config-failed
     // eslint-disable-next-line @typescript-eslint/no-explicit-any
     (auth as unknown as any)._canInitEmulator = true;
-    connectAuthEmulator(
-      auth,
-      `http://${process.env.NEXT_PUBLIC_AUTH_EMULATOR_HOST}`,
-      {
-        disableWarnings: true,
-      },
-    );
+    connectAuthEmulator(auth, `http://${ENV_FIREBASE_AUTH_EMULATOR_HOST}`, {
+      disableWarnings: true,
+    });
   }
 
   if (clientConfig.tenantId) {
@@ -57,10 +57,9 @@ let emulatorConnected = false;
 export function getFirestore() {
   // Use together with Firestore Emulator https://cloud.google.com/firestore/docs/emulator#android_apple_platforms_and_web_sdks
   const db = getFirestoreClient(getFirebaseApp());
-  if (!emulatorConnected && process.env.NEXT_PUBLIC_FIRESTORE_EMULATOR_HOST) {
+  if (!emulatorConnected && ENV_FIRESTORE_EMULATOR_HOST) {
     emulatorConnected = true;
-    const [host, port] =
-      process.env.NEXT_PUBLIC_FIRESTORE_EMULATOR_HOST.split(':');
+    const [host, port] = ENV_FIRESTORE_EMULATOR_HOST.split(':');
     connectFirestoreEmulator(db, host, Number(port));
   }
   return db;

@@ -1,5 +1,6 @@
 'use server-only';
 
+import { ENV_FIREBASE_AUTH_EMULATOR_HOST } from '@/env/env';
 import admin from 'firebase-admin';
 import { getFirebaseAuth as getFirebaseAuthNext } from 'next-firebase-auth-edge';
 import type { Auth } from 'next-firebase-auth-edge/auth';
@@ -12,7 +13,7 @@ const initializeApp = async () => {
   }
 
   // Don't use real credentials with Firebase Emulator https://firebase.google.com/docs/emulator-suite/connect_auth#admin_sdks
-  if (process.env.FIREBASE_AUTH_EMULATOR_HOST) {
+  if (ENV_FIREBASE_AUTH_EMULATOR_HOST) {
     return admin.initializeApp({
       projectId: authConfig.serviceAccount.projectId,
     });
