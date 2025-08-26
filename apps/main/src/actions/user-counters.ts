@@ -1,11 +1,11 @@
 'use server';
 
-import { getAuthUserFromCookies } from '@/auth/user';
+import { verifyAuthUser } from '@/auth/user';
 import { getFirestore } from '@/firebase-admin/firebase-admin';
 import { revalidatePath } from 'next/cache';
 
 export async function incrementCounter() {
-  const authUser = await getAuthUserFromCookies();
+  const authUser = await verifyAuthUser();
 
   if (!authUser) {
     throw new Error('Cannot update counter of unauthenticated user');

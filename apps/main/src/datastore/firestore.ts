@@ -11,7 +11,7 @@ import type { PreemPageData } from '../app/(main)/preem/[id]/Preem';
 import type { RacePageData } from '../app/(main)/race/[id]/Race';
 import type { SeriesPageData } from '../app/(main)/series/[id]/Series';
 import type { UserPageData } from '../app/(main)/user/[[...id]]/User';
-import { getAuthUserFromCookies } from '../auth/user';
+import { verifyAuthUser } from '../auth/user';
 import { genericConverter } from './converters';
 import type {
   ClientCompat,
@@ -609,10 +609,7 @@ export const getOrganizationsForUser = cache(
 );
 
 export const getHubPageData = cache(async (): Promise<HubPageData> => {
-  const authUser = await getAuthUserFromCookies();
-  if (!authUser) {
-    return { organizations: [] };
-  }
+  const authUser = await verifyAuthUser();
 
   const organizations = await getOrganizationsForUser(authUser.id);
 
