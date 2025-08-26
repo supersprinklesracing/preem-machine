@@ -1,14 +1,26 @@
 {
   "$schema": "https://docs.renovatebot.com/renovate-schema.json",
   "extends": ["config:recommended"],
+  "schedule": ["before 10am on Tuesday"],
+  "platformAutomerge": true,
+  "semanticCommits": "enabled",
+  "semanticCommitType": "chore",
+  "labels": ["dependencies"],
+  "prBodyNotes": [
+    "Release notes:\n\n{{#if releaseNotes}}{{{{releaseNotes}}}}{{else}}*None*{{/if}}"
+  ],
+  "vulnerabilityAlerts": {
+    "enabled": true,
+    "automerge": true
+  },
   "lockFileMaintenance": {
     "enabled": true,
     "automerge": true
   },
   "packageRules": [
     {
-      "groupName": "Mend: high confidence minor and patch dependency updates",
-      "matchUpdateTypes": ["minor", "patch"]
+      "groupName": "all non-major dependencies",
+      "matchUpdateTypes": ["minor", "patch", "pin", "digest"]
     },
     {
       "matchDepTypes": ["devDependencies"],
