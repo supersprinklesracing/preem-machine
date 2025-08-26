@@ -279,6 +279,37 @@ for key in "${all_secrets_to_grant[@]}"; do
 done
 echo "------------------------------------------------------------------"
 
+# --- Local .env File Generation Script ---
+echo ""
+echo "--- Script to generate a local .env file ---"
+echo "------------------------------------------------------------------"
+echo "#!/bin/bash"
+echo "# Run this script to create a .env.local file with the secrets."
+echo "cat << EOF > .env.local"
+# This loop generates the content for the here-document
+while IFS= read -r line || [[ -n "$line" ]]; do
+    # Skip commented out or empty lines
+    [[ "$line" =~ ^\s*(#|$) ]] && continue
+
+    key="${line%%=*}"
+    value="${line#*=}"
+
+    # Process the value just like in the main loop
+    processed_value="${value#"${value%%[![:space:]]*}"}"
+    processed_value="${processed_value%"${processed_value##*[![:space:]]}"}"
+    if [[ "$processed_value" == \"*\" || "$processed_value" == \'*\' ]]; then
+        processed_value="${processed_value:1:-1}"
+    fi
+    
+    # Escape characters that have special meaning inside a here-document, including double quotes
+    value_for_heredoc=$(printf '%s\n' "$processed_value" | sed -e 's/\\/\\\\/g' -e 's/\$/\\$/g' -e 's/`/\\`/g' -e 's/"/\\"/g')
+
+    echo "$key=\"$value_for_heredoc\""
+done < <(sed 's/\r$//' "$env_file")
+echo "EOF"
+echo "echo '.env.local file created successfully.'"
+echo "------------------------------------------------------------------"
+
 
 # --- Final Status ---
 echo "" >&2
