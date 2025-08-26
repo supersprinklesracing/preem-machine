@@ -8,9 +8,6 @@ import type { NextRequest } from 'next/server';
 import { NextResponse } from 'next/server';
 
 const LOGGED_OUT_ONLY = ['/register', '/login', '/reset-password'];
-const PUBLIC_PATHS = [
-  /^\/(big-screen|organization|series|event|race|preem|user)\/.*/,
-];
 
 export async function middleware(request: NextRequest) {
   const authConfig = await authConfigFn();
@@ -43,10 +40,9 @@ export async function middleware(request: NextRequest) {
       });
     },
     handleInvalidToken: async (_reason) => {
-      // TODO: If a user's credentials are invalid; we should try to refresh them, if we can?
       return redirectToLogin(request, {
         path: '/login',
-        publicPaths: PUBLIC_PATHS,
+        publicPaths: LOGGED_OUT_ONLY,
       });
     },
     handleError: async (error) => {
@@ -54,7 +50,7 @@ export async function middleware(request: NextRequest) {
 
       return redirectToLogin(request, {
         path: '/login',
-        publicPaths: PUBLIC_PATHS,
+        publicPaths: LOGGED_OUT_ONLY,
       });
     },
   });
@@ -67,5 +63,8 @@ export const config = {
     '/api/login',
     '/api/logout',
     '/api/refresh-token',
+    // App-specific
+    '/(manage|account|admin|event|organizatoin|preem|race|series|user)',
+    '/api/stripe',
   ],
 };
