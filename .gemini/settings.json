@@ -6,5 +6,6 @@
       "command": "npx",
       "args": ["nx-mcp@latest"]
     }
-  }
+  },
+  "contextFileName": ["AGENTS.md"]
 }
