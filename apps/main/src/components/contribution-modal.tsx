@@ -1,7 +1,7 @@
 'use client';
 
 import { useContribution } from '@/stripe-datastore/use-contribution';
-import { stripePromise } from '@/stripe/client';
+import { getStripeClient } from '@/stripe/client';
 import {
   Button,
   Checkbox,
@@ -114,6 +114,7 @@ const ContributionModal: React.FC<ContributionModalProps> = ({
     },
   };
 
+  const stripePromise = getStripeClient();
   return (
     <Modal
       opened={isOpen}

@@ -3,7 +3,7 @@
 import { verifyAuthUser } from '@/auth/user';
 import { getOrganizationFromPreemPath } from '@/datastore/firestore';
 import { processContribution } from '@/stripe-datastore/contributions';
-import { stripe } from './server';
+import { getStripeServer } from './server';
 
 export async function createPaymentIntent(
   amount: number,
@@ -20,7 +20,7 @@ export async function createPaymentIntent(
   const connectAccountId = organization.stripe.connectAccountId;
 
   // Create a PaymentIntent with the order amount and currency
-  const paymentIntent = await stripe.paymentIntents.create({
+  const paymentIntent = await getStripeServer().paymentIntents.create({
     amount: amount * 100, // amount in cents
     currency: 'usd',
     automatic_payment_methods: {
@@ -45,7 +45,8 @@ export async function confirmContributionOptimistically(
   paymentIntentId: string,
 ) {
   try {
-    const paymentIntent = await stripe.paymentIntents.retrieve(paymentIntentId);
+    const paymentIntent =
+      await getStripeServer().paymentIntents.retrieve(paymentIntentId);
     if (paymentIntent.status === 'succeeded') {
       // No need to await this, let it run in the background
       processContribution(paymentIntent);
