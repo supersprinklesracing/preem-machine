@@ -20,7 +20,6 @@ import {
 import { usePathname } from 'next/navigation';
 import React from 'react';
 import { useMediaQuery } from '@mantine/hooks';
-import { useAppShell } from './AppShellContext';
 import Link from 'next/link';
 
 interface SidebarData {
@@ -29,10 +28,10 @@ interface SidebarData {
 
 interface SidebarProps {
   data: SidebarData;
+  onLinkClick?: () => void;
 }
 
-const Sidebar: React.FC<SidebarProps> = ({ data }) => {
-  const { onLinkClick } = useAppShell();
+const Sidebar: React.FC<SidebarProps> = ({ data, onLinkClick }) => {
   const pathname = usePathname();
   const theme = useMantineTheme();
   const isMobile = useMediaQuery(`(max-width: ${theme.breakpoints.sm})`);
