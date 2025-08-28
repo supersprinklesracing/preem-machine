@@ -9,6 +9,7 @@ mockGoogleCloudFirestore(
 );
 
 // Polyfill TextEncoder and TextDecoder for Jest
+// @ts-expect-error: JSDOM does not have TextEncoder
 global.TextEncoder = TextEncoder;
 // @ts-expect-error: JSDOM does not have TextDecoder
 global.TextDecoder = TextDecoder;

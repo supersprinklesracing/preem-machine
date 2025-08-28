@@ -2,11 +2,11 @@ import { refreshNextResponseCookies } from 'next-firebase-auth-edge/lib/next/coo
 import { getTokens } from 'next-firebase-auth-edge/lib/next/tokens';
 import { NextResponse } from 'next/server';
 import type { NextRequest } from 'next/server';
-import { authConfigFn } from '@/firebase-admin/config';
+import { serverConfigFn } from '@/firebase-admin/config';
 
 export async function GET(request: NextRequest) {
-  const authConfig = await authConfigFn();
-  const tokens = await getTokens(request.cookies, authConfig);
+  const serverconfig = await serverConfigFn();
+  const tokens = await getTokens(request.cookies, serverconfig);
 
   if (!tokens) {
     throw new Error('Cannot refresh tokens of unauthenticated user');
@@ -26,5 +26,5 @@ export async function GET(request: NextRequest) {
     },
   );
 
-  return refreshNextResponseCookies(request, response, authConfig);
+  return refreshNextResponseCookies(request, response, serverconfig);
 }

@@ -1,25 +1,31 @@
 'use server-only';
 
+import { isServiceAccount } from '@/secrets/service-account-secret';
 import admin from 'firebase-admin';
 import { getFirebaseAuth as getFirebaseAuthNext } from 'next-firebase-auth-edge';
 import type { Auth } from 'next-firebase-auth-edge/auth';
-import { authConfigFn } from './config';
+import { serverConfigFn } from './config';
+import { ENV_FIREBASE_AUTH_EMULATOR_HOST } from '@/env/env';
 
 const initializeApp = async () => {
-  const authConfig = await authConfigFn();
-  if (!authConfig.serviceAccount) {
-    return admin.initializeApp();
+  const serverConfig = await serverConfigFn();
+  if (!serverConfig.serviceAccount) {
+    throw new Error('No service account provided!');
   }
 
   // Don't use real credentials with Firebase Emulator https://firebase.google.com/docs/emulator-suite/connect_auth#admin_sdks
-  if (process.env.FIREBASE_AUTH_EMULATOR_HOST) {
+  if (ENV_FIREBASE_AUTH_EMULATOR_HOST) {
     return admin.initializeApp({
-      projectId: authConfig.serviceAccount.projectId,
+      projectId: serverConfig.serviceAccount.projectId,
     });
   }
 
+  if (!isServiceAccount(serverConfig.serviceAccount)) {
+    throw new Error(`Invalid service account: ${serverConfig.serviceAccount}`);
+  }
+
   return admin.initializeApp({
-    credential: admin.credential.cert(authConfig.serviceAccount),
+    credential: admin.credential.cert(serverConfig.serviceAccount),
   });
 };
 
@@ -36,11 +42,14 @@ export const getFirestore = async () => {
 };
 
 export const getFirebaseAuth = async (): Promise<Auth> => {
-  const authConfig = await authConfigFn();
+  const serverConfig = await serverConfigFn();
+  if (!isServiceAccount(serverConfig.serviceAccount)) {
+    throw new Error(`Invalid service account: ${serverConfig.serviceAccount}`);
+  }
   return getFirebaseAuthNext({
-    serviceAccount: authConfig.serviceAccount,
-    apiKey: authConfig.apiKey,
-    tenantId: authConfig.tenantId,
-    enableCustomToken: authConfig.enableCustomToken,
+    serviceAccount: serverConfig.serviceAccount,
+    apiKey: serverConfig.apiKey,
+    // serviceAccountId: ??
+    enableCustomToken: serverConfig.enableCustomToken,
   });
 };

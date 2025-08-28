@@ -1,4 +1,4 @@
-import { authConfigFn } from '@/firebase-admin/config';
+import { serverConfigFn } from '@/firebase-admin/config';
 import {
   authMiddleware,
   redirectToHome,
@@ -10,24 +10,11 @@ import { NextResponse } from 'next/server';
 const LOGGED_OUT_ONLY = ['/register', '/login', '/reset-password'];
 
 export async function middleware(request: NextRequest) {
-  const authConfig = await authConfigFn();
+  const serverConfig = await serverConfigFn();
   return authMiddleware(request, {
-    loginPath: '/api/login',
-    logoutPath: '/api/logout',
-    refreshTokenPath: '/api/refresh-token',
-    debug: authConfig.debug,
-    enableMultipleCookies: authConfig.enableMultipleCookies,
-    enableCustomToken: authConfig.enableCustomToken,
-    apiKey: authConfig.apiKey,
-    cookieName: authConfig.cookieName,
-    cookieSerializeOptions: authConfig.cookieSerializeOptions,
-    cookieSignatureKeys: authConfig.cookieSignatureKeys,
-    serviceAccount: authConfig.serviceAccount,
-    enableTokenRefreshOnExpiredKidHeader:
-      authConfig.enableTokenRefreshOnExpiredKidHeader,
-    tenantId: authConfig.tenantId,
-    dynamicCustomClaimsKeys: ['roles'],
-    handleValidToken: async ({ token, decodedToken, customToken }, headers) => {
+    ...serverConfig,
+
+    handleValidToken: async (_tokens, headers) => {
       // Authenticated user should not be able to access /login, /register and /reset-password routes
       if (LOGGED_OUT_ONLY.includes(request.nextUrl.pathname)) {
         return redirectToHome(request);
@@ -57,6 +44,7 @@ export async function middleware(request: NextRequest) {
 }
 
 export const config = {
+  runtime: 'nodejs',
   matcher: [
     '/',
     '/((?!_next|favicon.ico|__/auth|__/firebase|api|.*\\.).*)',

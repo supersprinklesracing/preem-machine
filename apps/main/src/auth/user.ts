@@ -1,5 +1,5 @@
 import { AuthContextUser } from '@/auth/AuthContext';
-import { authConfigFn } from '@/firebase-admin/config';
+import { serverConfigFn } from '@/firebase-admin/config';
 import { getFirebaseAuth } from '@/firebase-admin/firebase-admin';
 import { getTokens, Tokens } from 'next-firebase-auth-edge';
 import type { Auth } from 'next-firebase-auth-edge/auth';
@@ -43,9 +43,9 @@ export const toAuthContextUser = ({
 };
 
 export const getAuthUserFromCookies = async () => {
-  const authConfig = await authConfigFn();
+  const serverConfig = await serverConfigFn();
   const tokens = await getTokens(await cookies(), {
-    ...authConfig,
+    ...serverConfig,
   });
 
   if (!tokens) {
@@ -64,8 +64,8 @@ export const verifyAuthUser = async (): Promise<AuthContextUser> => {
 };
 
 export async function getUserFromRequest(request: NextRequest) {
-  const authConfig = await authConfigFn();
-  const tokens = await getTokens(request.cookies, authConfig);
+  const serverConfig = await serverConfigFn();
+  const tokens = await getTokens(request.cookies, serverConfig);
   if (!tokens) {
     throw new Error('Unauthenticated');
   }

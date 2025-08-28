@@ -1,6 +1,6 @@
 'use server';
 
-import { authConfigFn } from '@/firebase-admin/config';
+import { serverConfigFn } from '@/firebase-admin/config';
 import { getFirebaseAuth } from '@/firebase-client';
 import { signInWithEmailAndPassword } from 'firebase/auth';
 import { refreshCookiesWithIdToken } from 'next-firebase-auth-edge/lib/next/cookies';
@@ -19,7 +19,7 @@ export async function loginAction(username: string, password: string) {
     idToken,
     await headers(),
     await cookies(),
-    await authConfigFn(),
+    await serverConfigFn(),
   );
   redirect('/');
 }
