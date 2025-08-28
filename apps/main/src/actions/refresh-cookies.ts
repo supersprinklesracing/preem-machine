@@ -3,11 +3,11 @@
 import { cookies, headers } from 'next/headers';
 import { getTokens } from 'next-firebase-auth-edge';
 import { refreshServerCookies } from 'next-firebase-auth-edge/lib/next/cookies';
-import { authConfigFn } from '@/firebase-admin/config';
+import { serverConfigFn } from '@/firebase-admin/config';
 
 export async function refreshCookies() {
-  const authConfig = await authConfigFn();
-  const tokens = await getTokens(await cookies(), authConfig);
+  const serverconfig = await serverConfigFn();
+  const tokens = await getTokens(await cookies(), serverconfig);
 
   if (!tokens) {
     throw new Error('Unauthenticated');
@@ -16,6 +16,6 @@ export async function refreshCookies() {
   await refreshServerCookies(
     await cookies(),
     new Headers(await headers()),
-    authConfig,
+    serverconfig,
   );
 }

@@ -20,7 +20,8 @@ export async function createPaymentIntent(
   const connectAccountId = organization.stripe.connectAccountId;
 
   // Create a PaymentIntent with the order amount and currency
-  const paymentIntent = await getStripeServer().paymentIntents.create({
+  const stripe = await getStripeServer();
+  const paymentIntent = await stripe.paymentIntents.create({
     amount: amount * 100, // amount in cents
     currency: 'usd',
     automatic_payment_methods: {
@@ -45,8 +46,8 @@ export async function confirmContributionOptimistically(
   paymentIntentId: string,
 ) {
   try {
-    const paymentIntent =
-      await getStripeServer().paymentIntents.retrieve(paymentIntentId);
+    const stripe = await getStripeServer();
+    const paymentIntent = await stripe.paymentIntents.retrieve(paymentIntentId);
     if (paymentIntent.status === 'succeeded') {
       // No need to await this, let it run in the background
       processContribution(paymentIntent);
