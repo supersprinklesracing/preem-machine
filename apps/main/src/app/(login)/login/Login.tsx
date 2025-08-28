@@ -34,6 +34,7 @@ import {
   loginWithProvider,
   loginWithProviderUsingRedirect,
 } from './firebase';
+import { ENV_URL_PREFIX } from '@/env/env';
 
 const auth = getFirebaseAuth();
 
@@ -127,7 +128,7 @@ export function Login({
       window.localStorage.setItem('emailForSignIn', email);
 
       await sendSignInLinkToEmail(auth, email, {
-        url: process.env.NEXT_PUBLIC_ORIGIN + '/login',
+        url: `${ENV_URL_PREFIX}/login`,
         handleCodeInApp: true,
       });
     });
