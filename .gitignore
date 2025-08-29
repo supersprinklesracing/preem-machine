@@ -53,3 +53,8 @@ test-output
 .env
 .env.*
 !.env.test
+
+.gemini/
+!.gemini/settings.json
+
+gha-creds-*.json
