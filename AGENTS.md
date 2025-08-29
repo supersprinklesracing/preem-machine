@@ -77,6 +77,49 @@ The project uses `husky` and `lint-staged` to ensure code quality commits.
 
 The workspace is set up to use Nx generators for creating new applications and libraries, streamlining the development process.
 
+## Component Unit Testing Patterns
+
+The following guidelines should be followed when writing unit tests for components.
+
+### File Discovery and Search
+
+- **File Discovery:** To locate all `.tsx` component files that require testing, use the command `git ls-files 'apps/main/src/app/**/*.tsx'`. This is preferable to standard shell commands as it automatically respects the project's `.gitignore` file, ensuring that only tracked files are included.
+- **Code Search:** When you need to search for specific code patterns or text within the codebase to understand component behavior, use `git grep` instead of other search tools.
+
+### Client Components (`"use client"`)
+
+- **Reference File:** `apps/main/src/components/cards/RaceCard.test.tsx`
+- **Procedure:**
+    1.  Import `render` and `screen` from the project's test utility: `import { render, screen } from '@/test-utils';`.
+    2.  Import the component you are testing.
+    3.  Create mock data for any props required by the component. The data structures can be found in `apps/main/src/datastore/types.ts`.
+    4.  Write a simple "smoke test" that renders the component with its required props.
+    5.  Assert that a key piece of text or an element rendered by the component is present in the document. Example: `expect(screen.getByText('Some Text')).toBeInTheDocument();`.
+
+### Server Components (No `"use client"` directive)
+
+- **Reference File:** `apps/main/src/datastore/mock-db.test.ts`
+- **Concept:** Server components often fetch data. The testing strategy is to mock the Firestore database, render the component, and verify that it displays the mock data correctly.
+- **Procedure:**
+    1.  Import `createMockDb` from `@/datastore/mock-db`.
+    2.  Import the real Firestore instance using `getFirestore` from `@/firebase-admin`.
+    3.  In a `beforeAll` or `beforeEach` block, create and inject the mock database:
+        ```typescript
+        import { createMockDb } from '@/datastore/mock-db';
+        import { getFirestore } from '@/firebase-admin';
+        import type { Firestore } from 'firebase-admin/firestore';
+
+        let firestore: Firestore;
+        beforeAll(async () => {
+          firestore = await getFirestore();
+          (firestore as any).database = createMockDb(firestore);
+          // Seed the mock database with any data needed for the test
+        });
+        ```
+    4.  Since Server Components can be asynchronous, your test function must be `async`.
+    5.  Render the component. Note that React Testing Library's `render` function will wait for the async component to resolve.
+    6.  Use `screen.findByText(...)` (which returns a promise) or `await screen.findByText(...)` to assert that the content derived from your mock data is present.
+
 ## Jest Behaviors and Practices
 
 ### Mocking `window.matchMedia()`
