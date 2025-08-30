@@ -131,21 +131,18 @@ jobs:
 
             ## Input Data & Tool Usage
 
-            1.  **Parse Environment Variables:**
-                - The `${REPOSITORY}` variable is in the format `owner/repository_name`. You **MUST** parse this string to extract the `owner` and `repository_name` for tool calls.
-                - The `${PULL_REQUEST_NUMBER}` variable contains the pull request number.
-                - The `${ADDITIONAL_CONTEXT}` variable contains supplementary instructions.
+            Your first step is to gather information about the pull request using the available `mcp__github__*` tools.
 
-            2.  **Call GitHub Tools:**
-                - You **MUST** use the parsed `owner` and `repository_name` values for the corresponding `owner` and `repo` parameters in all `mcp__github__*` tool calls.
+            1.  **Identify Key Information:** To use the tools, you need the repository owner, repository name, and pull request number. These are available in the following environment variables:
+                - `REPOSITORY`: This variable is a string in the format `owner/repository_name`. You **MUST** parse this string to get the `owner` and `repository_name`.
+                - `PULL_REQUEST_NUMBER`: This variable contains the pull request number.
 
-                - **Example Tool Call:**
-                  `mcp__github__get_pull_request(owner="[PARSED_OWNER]", repo="[PARSED_REPO]", pull_number=$PULL_REQUEST_NUMBER)`
+            2.  **Gather Pull Request Details:** You **MUST** use the following tools, passing the `owner`, `repository_name`, and `pull_request_number` you identified in the previous step as arguments to the `owner`, `repo`, and `pull_number` parameters, respectively:
+                - Call the `mcp__github__get_pull_request` tool to get the title, body, and metadata.
+                - Call the `mcp__github__get_pull_request_files` tool to get the list of changed files.
+                - Call the `mcp__github__get_pull_request_diff` tool to get the code changes.
 
-                - **Required Tools:**
-                    - Use `mcp__github__get_pull_request` to get the title, body, and metadata.
-                    - Use `mcp__github__get_pull_request_files` to get the list of changed files.
-                    - Use `mcp__github__get_pull_request_diff` to get the code changes.
+            3.  **Consider Additional Context:** The `ADDITIONAL_CONTEXT` environment variable may contain supplementary instructions from the user. Use this to guide your review.
 
             -----
 
