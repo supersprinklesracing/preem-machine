@@ -1,7 +1,7 @@
 'use server';
 
 import { verifyAuthUser } from '@/auth/user';
-import { updateSeries } from '@/datastore/mutations';
+import { updateSeries } from '@/datastore/update';
 
 export interface UpdateSeriesOptions {
   path: string;

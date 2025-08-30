@@ -1,7 +1,7 @@
 'use server';
 
 import { verifyAuthUser } from '@/auth/user';
-import { updateOrganization } from '@/datastore/mutations';
+import { updateOrganization } from '@/datastore/update';
 import type { Organization } from '@/datastore/types';
 
 export interface UpdateOrganizationOptions {

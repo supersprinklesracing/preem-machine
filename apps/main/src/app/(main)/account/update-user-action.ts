@@ -1,7 +1,7 @@
 'use server';
 
 import { verifyAuthUser } from '@/auth/user';
-import { updateUser } from '@/datastore/mutations';
+import { updateUser } from '@/datastore/update';
 import type { User } from '@/datastore/types';
 
 export interface UpdateUserOptions {

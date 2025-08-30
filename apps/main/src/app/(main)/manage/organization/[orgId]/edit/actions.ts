@@ -2,7 +2,7 @@
 
 import { getAuthUserFromCookies } from '@/auth/user';
 import { isUserAuthorized } from '@/datastore/access';
-import { updateOrganizationStripeConnectAccount } from '@/datastore/mutations';
+import { updateOrganizationStripeConnectAccount } from '@/datastore/update';
 import { ENV_URL_PREFIX } from '@/env/env';
 import { getStripeServer } from '@/stripe/server';
 import { revalidatePath } from 'next/cache';

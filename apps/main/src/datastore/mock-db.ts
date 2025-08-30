@@ -50,6 +50,7 @@ const postProcessDatabase = (db: DatabaseCollections): DatabaseCollections => {
     return db;
   }
   organizations.forEach((organization) => {
+    organization.path = `organizations/${organization.id}`;
     const organizationBrief: OrganizationBrief = {
       id: organization.id,
       name: organization.name,
@@ -59,6 +60,7 @@ const postProcessDatabase = (db: DatabaseCollections): DatabaseCollections => {
     if (!series) return;
 
     series.forEach((series) => {
+      series.path = `${organization.path}/series/${series.id}`;
       series.organizationBrief = organizationBrief;
       const seriesBrief: SeriesBrief = {
         id: series.id,
@@ -72,6 +74,7 @@ const postProcessDatabase = (db: DatabaseCollections): DatabaseCollections => {
       if (!events) return;
 
       events.forEach((event) => {
+        event.path = `${series.path}/events/${event.id}`;
         event.seriesBrief = seriesBrief;
         const eventBrief: EventBrief = {
           id: event.id,
@@ -85,6 +88,7 @@ const postProcessDatabase = (db: DatabaseCollections): DatabaseCollections => {
         if (!races) return;
 
         races.forEach((race) => {
+          race.path = `${event.path}/races/${race.id}`;
           race.eventBrief = eventBrief;
           const raceBrief: RaceBrief = {
             id: race.id,
@@ -98,6 +102,7 @@ const postProcessDatabase = (db: DatabaseCollections): DatabaseCollections => {
           if (!preems) return;
 
           preems.forEach((preem) => {
+            preem.path = `${race.path}/preems/${preem.id}`;
             preem.raceBrief = raceBrief;
             const preemBrief: PreemBrief = {
               id: preem.id,
@@ -109,6 +114,7 @@ const postProcessDatabase = (db: DatabaseCollections): DatabaseCollections => {
             if (!contributions) return;
 
             contributions.forEach((contribution) => {
+              contribution.path = `${preem.path}/contributions/${contribution.id}`;
               contribution.preemBrief = preemBrief;
             });
           });

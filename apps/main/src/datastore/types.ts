@@ -48,6 +48,7 @@ export interface Metadata {
 
 export interface User {
   id: string;
+  path: string;
   metadata?: Metadata;
 
   termsAccepted?: boolean;
@@ -71,6 +72,7 @@ export interface UserBrief extends Partial<User> {
 
 export interface Organization {
   id: string;
+  path: string;
   metadata?: Metadata;
 
   name?: string;
@@ -89,6 +91,7 @@ export interface OrganizationBrief extends Partial<Organization> {
 
 export interface Contribution {
   id: string;
+  path: string;
   metadata?: Metadata;
   status?: 'pending' | 'confirmed' | 'failed';
 
@@ -114,6 +117,7 @@ export interface ContributionBrief extends Partial<Contribution> {
 
 export interface Preem {
   id: string;
+  path: string;
   metadata?: Metadata;
 
   name?: string;
@@ -133,6 +137,7 @@ export interface PreemBrief extends Partial<Preem> {
 
 export interface Race {
   id: string;
+  path: string;
   metadata?: Metadata;
 
   name?: string;
@@ -162,6 +167,7 @@ export interface RaceBrief extends Partial<Race> {
 
 export interface Event {
   id: string;
+  path: string;
   metadata?: Metadata;
 
   name?: string;
@@ -183,6 +189,7 @@ export interface EventBrief extends Partial<Event> {
 
 export interface Series {
   id: string;
+  path: string;
   metadata?: Metadata;
 
   name?: string;
