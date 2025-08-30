@@ -149,11 +149,7 @@ describe('create mutations', () => {
         isAnonymous: false,
       };
       await expect(
-        createPendingContribution(
-          'preem-path',
-          contribution,
-          {} as any,
-        ),
+        createPendingContribution('preem-path', contribution, {} as any),
       ).rejects.toThrow('Unauthorized');
     });
   });
