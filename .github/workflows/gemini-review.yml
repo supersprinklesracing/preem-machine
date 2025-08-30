@@ -134,8 +134,9 @@ jobs:
             Your first step is to gather information about the pull request using the available `mcp__github__*` tools.
 
             1.  **Identify Key Information:** To use the tools, you need the repository owner, repository name, and pull request number. These are available in the following environment variables:
-                - `REPOSITORY`: This variable is a string in the format `owner/repository_name`. You **MUST** parse this string to get the `owner` and `repository_name`.
-                - `PULL_REQUEST_NUMBER`: This variable contains the pull request number.
+                - Retrieve the GitHub repository name from the environment variable "${REPOSITORY}". This variable is a string in the format `owner/repository_name`. You **MUST** parse this string to get the `owner` and `repository_name`.
+                - Retrieve the GitHub pull request number from the environment variable "${PULL_REQUEST_NUMBER}".
+                - Retrieve the additional user instructions and context from the environment variable "${ADDITIONAL_CONTEXT}".
 
             2.  **Gather Pull Request Details:** You **MUST** use the following tools, passing the `owner`, `repository_name`, and `pull_request_number` you identified in the previous step as arguments to the `owner`, `repo`, and `pull_number` parameters, respectively:
                 - Call the `mcp__github__get_pull_request` tool to get the title, body, and metadata.
