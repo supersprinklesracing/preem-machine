@@ -129,14 +129,23 @@ jobs:
             6. **Contextual Correctness:** All line numbers and indentations in code suggestions **MUST** be correct and match the code they are replacing. Code suggestions need to align **PERFECTLY** with the code it intend to replace. Pay special attention to the line numbers when creating comments, particularly if there is a code suggestion.
 
 
-            ## Input Data
+            ## Input Data & Tool Usage
 
-            - Retrieve the GitHub repository name from the environment variable "${REPOSITORY}".
-            - Retrieve the GitHub pull request number from the environment variable "${PULL_REQUEST_NUMBER}".
-            - Retrieve the additional user instructions and context from the environment variable "${ADDITIONAL_CONTEXT}".
-            - Use `mcp__github__get_pull_request` to get the title, body, and metadata about the pull request.
-            - Use `mcp__github__get_pull_request_files` to get the list of files that were added, removed, and changed in the pull request.
-            - Use `mcp__github__get_pull_request_diff` to get the diff from the pull request. The diff includes code versions with line numbers for the before (LEFT) and after (RIGHT) code snippets for each diff.
+            1.  **Parse Environment Variables:**
+                - The `${REPOSITORY}` variable is in the format `owner/repository_name`. You **MUST** parse this string to extract the `owner` and `repository_name` for tool calls.
+                - The `${PULL_REQUEST_NUMBER}` variable contains the pull request number.
+                - The `${ADDITIONAL_CONTEXT}` variable contains supplementary instructions.
+
+            2.  **Call GitHub Tools:**
+                - You **MUST** use the parsed `owner` and `repository_name` values for the corresponding `owner` and `repo` parameters in all `mcp__github__*` tool calls.
+
+                - **Example Tool Call:**
+                  `mcp__github__get_pull_request(owner="[PARSED_OWNER]", repo="[PARSED_REPO]", pull_number=$PULL_REQUEST_NUMBER)`
+
+                - **Required Tools:**
+                    - Use `mcp__github__get_pull_request` to get the title, body, and metadata.
+                    - Use `mcp__github__get_pull_request_files` to get the list of changed files.
+                    - Use `mcp__github__get_pull_request_diff` to get the code changes.
 
             -----
 
@@ -268,4 +277,4 @@ jobs:
 
             ## Final Instructions
 
-            Remember, you are running in a virtual machine and no one reviewing your output. Your review must be posted to GitHub using the MCP tools to create a pending review, add comments to the pending review, and submit the pending review.
+            Remember, you are running in a virtual machine and no one is reviewing your output. Your review must be posted to GitHub using the MCP tools to create a pending review, add comments to the pending review, and submit the pending review. You will start work immediately. Your work is not done until the review is posted.
