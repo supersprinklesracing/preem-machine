@@ -1,7 +1,7 @@
 'use server';
 
 import { verifyAuthUser } from '@/auth/user';
-import { updateEvent } from '@/datastore/mutations';
+import { updateEvent } from '@/datastore/update';
 
 export interface UpdateEventOptions {
   path: string;
