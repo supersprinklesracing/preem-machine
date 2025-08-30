@@ -40,33 +40,33 @@ This project uses `husky` and `lint-staged` to enforce code quality standards on
 
 ## 4. Commands
 
-**Recommended Flags:** Always pass `--tuiAutoExit --outputStyle=static` to `npx nx` commands for optimal performance in this environment.
+**Recommended Flags:** You **must** pass `--tuiAutoExit --outputStyle=stream` to `npx nx` commands for optimal performance in this environment.
 
 ### Building & Running
 
-- **Run Dev Server:** `npx nx --tuiAutoExit --outputStyle=static dev main`
-- **Verify Build:** `npx nx --tuiAutoExit --outputStyle=static run @preem-machine/main:build:verify`
-- **Production Bundle:** `npx nx --tuiAutoExit --outputStyle=static run @preem-machine/main:build:production`
-- **Run All Unit Tests:** `npx nx --tuiAutoExit --outputStyle=static test main --forceExit`
-- **Run Single Unit Test:** `npx nx --tuiAutoExit --outputStyle=static run main:test --forceExit --testFile=${TEST_FILE}`
-- **Run E2E Tests:** `npx nx --tuiAutoExit --outputStyle=static e2e e2e-main`
-- **List Project Targets:** `npx nx --tuiAutoExit --outputStyle=static show project main`
+- **Run Dev Server:** `npx nx --tuiAutoExit --outputStyle=stream dev main --no-color`
+- **Verify Build:** `npx nx --tuiAutoExit --outputStyle=stream run @preem-machine/main:build:verify --no-color`
+- **Production Bundle:** `npx nx --tuiAutoExit --outputStyle=stream run @preem-machine/main:build:production --no-color`
+- **Run All Unit Tests:** `npx nx --tuiAutoExit --outputStyle=stream test main --no-color --forceExit`
+- **Run Single Unit Test:** `npx nx --tuiAutoExit --outputStyle=stream run main:test --no-color --forceExit --testFile="${TEST_FILE}"`
+- **Run E2E Tests:** `npx nx --tuiAutoExit --outputStyle=stream e2e e2e-main --no-color`
+- **List Project Targets:** `npx nx --tuiAutoExit --outputStyle=stream show --no-web project main --no-color`
 
 ### Code Style & Formatting
 
 ESLint, Prettier, and Stylelint are used to maintain a consistent code style.
 
-- **Lint & Fix All Files:** `npx nx --tuiAutoExit --outputStyle=static affected:lint --fix`
-- **Lint & Fix Single File:** `npx eslint --fix ${FILE}`
-- **Format All Files:** `npx nx --tuiAutoExit --outputStyle=static format:write`
-- **Format Single File:** `npx nx --tuiAutoExit --outputStyle=static format:write --files=${FILE}`
+- **Lint & Fix All Files:** `npx nx --tuiAutoExit --outputStyle=stream affected:lint --fix`
+- **Lint & Fix Single File:** `npx eslint --fix "${FILE}"`
+- **Format All Files:** `npx nx --tuiAutoExit --outputStyle=stream format:write`
+- **Format Single File:** `npx nx --tuiAutoExit --outputStyle=stream format:write --files="${FILE}"`
 
 ### File System & Search Tools
 
 - **Use Git-based commands** for file operations to automatically ignore build artifacts and other non-project files.
-- **List Files:** `git ls-files`
-- **Search Content:** `git grep`
-- **Quoting:** Always quote filenames to handle special characters, e.g., `"apps/main/src/app/(main)/layout.tsx"`.
+  - **List Files:** `git ls-files`
+  - **Search Content:** `git grep`
+- **Quoting:** You **MUST ALWAYS** quote filenames in shell commands. This is not optional. It is required to prevent errors with file paths that contain special characters. Example: `"apps/main/src/app/(main)/layout.tsx"`.
 
 ## 5. Testing Guide
 
@@ -91,13 +91,20 @@ Before writing a test, always inspect the component's props (its TypeScript inte
 
 - **Reference:** `apps/main/src/components/cards/RaceCard.test.tsx`
 - **Procedure:**
-    1.  Import `render` and `screen` from `@/test-utils`.
-    2.  Import the component to be tested.
-    3.  Create mock data for the component's props (see `apps/main/src/datastore/types.ts`).
-    4.  Write a simple "smoke test" to ensure the component renders without errors.
-    5.  Assert that a key piece of text or an element is present in the document. Example: `expect(screen.getByText('Some Text')).toBeInTheDocument();`.
+  1.  Import `render` and `screen` from `@/test-utils`.
+  2.  Import the component to be tested.
+  3.  Create mock data for the component's props (see `apps/main/src/datastore/types.ts`).
+  4.  Write a simple "smoke test" to ensure the component renders without errors.
+  5.  Assert that a key piece of text or an element is present in the document. Example: `expect(screen.getByText('Some Text')).toBeInTheDocument();`.
 
 #### Server Components (No `"use client"` directive)
+
+- **Reference:** `apps/main/src/datastore/mock-db.test.ts`
+- **Procedure:**
+  1.  Follow the detailed procedure in the **Mocking `firestore`** section below to set up a mock database.
+  2.  Your test function **must** be `async`.
+  3.  Render the component. React Testing Library's `render` function will correctly handle and wait for the async component to resolve.
+  4.  Use `await screen.findByText(...)` to assert that the content derived from your mock data is present in the document.
 
 For server components that interact with Firestore, refer to the **Mocking `firestore`** section below.
 
@@ -108,26 +115,29 @@ For server components that interact with Firestore, refer to the **Mocking `fire
 - **Reference:** `apps/main/src/datastore/mock-db.test.ts`
 - **Concept:** The testing strategy is to mock the entire Firestore database, render the component, and verify that it displays the mock data correctly.
 - **Procedure:**
-    1.  Import `createMockDb` from `@/datastore/mock-db`.
-    2.  Import the real Firestore instance using `getFirestore` from `@/firebase-admin`.
-    3.  In a `beforeAll` or `beforeEach` block, create and inject the mock database:
-        ```typescript
-        import { createMockDb } from '@/datastore/mock-db';
-        import { getFirestore } from '@/firebase-admin';
-        import type { Firestore } from 'firebase-admin/firestore';
+  1.  Import `createMockDb` from `@/datastore/mock-db`.
+  2.  Import the real Firestore instance using `getFirestore` from `@/firebase-admin`.
+  3.  In a `beforeAll` or `beforeEach` block, create and inject the mock database:
 
-        let firestore: Firestore;
-        beforeAll(async () => {
-          firestore = await getFirestore();
-          (firestore as any).database = createMockDb(firestore);
-          // Seed the mock database with any data needed for the test
-        });
-        ```
-    4.  Since Server Components can be asynchronous, your test function must be `async`.
-    5.  Render the component. React Testing Library's `render` function will wait for the async component to resolve.
-    6.  Use `screen.findByText(...)` to assert that the content derived from your mock data is present.
+      ```typescript
+      import { createMockDb } from '@/datastore/mock-db';
+      import { getFirestore } from '@/firebase-admin';
+      import type { Firestore } from 'firebase-admin/firestore';
+
+      let firestore: Firestore;
+      beforeAll(async () => {
+        firestore = await getFirestore();
+        (firestore as any).database = createMockDb(firestore);
+        // Seed the mock database with any data needed for the test
+      });
+      ```
+
+  4.  Since Server Components can be asynchronous, your test function must be `async`.
+  5.  Render the component. React Testing Library's `render` function will wait for the async component to resolve.
+  6.  Use `screen.findByText(...)` to assert that the content derived from your mock data is present.
 
 > **Important:**
+>
 > - You should not need to modify `mock-db.ts`; the existing data is sufficient for testing.
 > - **Never** access the mock database directly in your tests.
 > - Do not mock individual Firestore functions (e.g., `(firestore.getRenderableRaceDataForPage as jest.Mock).mockResolvedValue(...)`). This approach is incorrect and will not work with the Firestore instance. You **must** follow the procedure above by creating a mock database with `createMockDb` and seeding it with test data.
@@ -161,7 +171,34 @@ import { MyComponent } from './MyComponent';
 // ...
 ```
 
-## 6. Coding Conventions
+## 6. Forms
+
+This project uses a standardized approach to form handling to ensure consistency, reliability, and a good user experience.
+
+### Core Technologies
+
+- **State Management:** Mantine Form (`@mantine/form`) is used for managing form state, including values, validation, and submission.
+- **Debouncing:** The `useDebouncedValue` hook from Mantine Hooks (`@mantine/hooks`) is used to delay updates from user input.
+
+### Implementation Guide
+
+#### State Management and Validation
+
+- **State Management:** Use the `useForm` hook from `@mantine/form` to manage form state.
+- **Validation:** Validation is handled directly within the `useForm` hook using inline functions.
+- **Reference:** For a clear example of this pattern, see `apps/main/src/app/(main)/manage/series/[seriesId]/edit/EditSeries.tsx`.
+
+#### Debouncing
+
+To improve user experience, especially for inputs that provide a live preview (like a user profile card), input values should be debounced.
+
+- **Reference:** `apps/main/src/app/(main)/account/AccountDetails.tsx`
+- **Procedure:**
+  1.  Use the `useDebouncedValue` hook from `@mantine/hooks` to get a debounced version of the form field's value.
+  2.  Use the debounced value for previews or other actions that should not run on every keystroke.
+  3.  The save button should be disabled until the debounced value matches the current form value to prevent saving partial input.
+
+## 7. Coding Conventions
 
 - **TypeScript:** Avoid casting to `any`.
 - **Nx Generators:** Use Nx generators to create new applications and libraries.
