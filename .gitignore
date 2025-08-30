@@ -52,3 +52,9 @@ test-output
 # Env (may have secrets).
 .env
 .env.*
+!.env.test
+
+.gemini/
+!.gemini/settings.json
+
+gha-creds-*.json

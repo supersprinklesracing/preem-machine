@@ -17,10 +17,10 @@ import {
   IconHome,
   IconUser,
 } from '@tabler/icons-react';
-import Link from 'next/link';
 import { usePathname } from 'next/navigation';
 import React from 'react';
 import { useMediaQuery } from '@mantine/hooks';
+import Link from 'next/link';
 
 interface SidebarData {
   events: ClientCompat<Event>[];

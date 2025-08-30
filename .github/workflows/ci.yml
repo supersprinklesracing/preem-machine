@@ -16,22 +16,21 @@ jobs:
     environment:
       name: ci
     env:
-      AUTH_COOKIE_NAME: ${{ secrets.AUTH_COOKIE_NAME }}
       AUTH_COOKIE_SIGNATURE_KEY_CURRENT: ${{ secrets.AUTH_COOKIE_SIGNATURE_KEY_CURRENT }}
       AUTH_COOKIE_SIGNATURE_KEY_PREVIOUS: ${{ secrets.AUTH_COOKIE_SIGNATURE_KEY_PREVIOUS }}
-      NEXT_PUBLIC_AUTH_DEBUG: ${{ secrets.NEXT_PUBLIC_AUTH_DEBUG }}
-      NEXT_PUBLIC_DISABLE_HTTPS: ${{ secrets.NEXT_PUBLIC_DISABLE_HTTPS }}
+      DOTENV_SECRETS: ${{ secrets.DOTENV_SECRETS }}
+      NEXT_PUBLIC_DEBUG_AUTH: ${{ secrets.NEXT_PUBLIC_DEBUG_AUTH }}
       NEXT_PUBLIC_FIREBASE_API_KEY: ${{ secrets.NEXT_PUBLIC_FIREBASE_API_KEY }}
       NEXT_PUBLIC_FIREBASE_APP_ID: ${{ secrets.NEXT_PUBLIC_FIREBASE_APP_ID }}
       NEXT_PUBLIC_FIREBASE_AUTH_DOMAIN: ${{ secrets.NEXT_PUBLIC_FIREBASE_AUTH_DOMAIN }}
       NEXT_PUBLIC_FIREBASE_DATABASE_URL: ${{ secrets.NEXT_PUBLIC_FIREBASE_DATABASE_URL }}
       NEXT_PUBLIC_FIREBASE_MESSAGING_SENDER_ID: ${{ secrets.NEXT_PUBLIC_FIREBASE_MESSAGING_SENDER_ID }}
-      NEXT_PUBLIC_FIREBASE_PROJECT_ID: ${{ secrets.NEXT_PUBLIC_FIREBASE_PROJECT_ID }}
+      NEXT_PUBLIC_PROJECT_ID: ${{ secrets.NEXT_PUBLIC_PROJECT_ID }}
       NEXT_PUBLIC_STRIPE_API_KEY: ${{ secrets.NEXT_PUBLIC_STRIPE_API_KEY }}
+      NEXT_PUBLIC_USE_HTTPS: ${{ secrets.NEXT_PUBLIC_USE_HTTPS }}
       SERVICE_ACCOUNT_CLIENT_EMAIL: ${{ secrets.SERVICE_ACCOUNT_CLIENT_EMAIL }}
       SERVICE_ACCOUNT_PRIVATE_KEY: ${{ secrets.SERVICE_ACCOUNT_PRIVATE_KEY }}
       STRIPE_API_KEY: ${{ secrets.STRIPE_API_KEY }}
-      STRIPE_API_VERSION: ${{ secrets.STRIPE_API_VERSION }}
 
     steps:
       - uses: actions/checkout@v5
@@ -51,14 +50,23 @@ jobs:
           node-version: 22
           cache: 'npm'
 
-      - run: npm ci --legacy-peer-deps
-      - run: npx playwright install --with-deps
+      - name: NPM CI
+        run: npm ci --legacy-peer-deps
 
       - name: Build
         run: npx nx --tuiAutoExit --outputStyle=static run-many -t build
 
+      - name: Lint
+        run: npx nx --tuiAutoExit --outputStyle=static run-many -t lint
+
       - name: Test
-        run: npx nx --tuiAutoExit --outputStyle=static run-many -t lint test e2e
+        run: npx nx --tuiAutoExit --outputStyle=static run-many -t test
+
+      - name: E2E Deps
+        run: npx playwright install --with-deps
+
+      - name: E2E
+        run: npx nx --tuiAutoExit --outputStyle=static run-many -t e2e
 
       # - run: npx nx --tuiAutoExit --outputStyle=static fix-ci
       #   if: always()

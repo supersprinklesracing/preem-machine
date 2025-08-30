@@ -2,7 +2,7 @@
 
 import { getAuthUserFromCookies } from '@/auth/user';
 import { isUserAuthorized } from '@/datastore/access';
-import { updateOrganizationStripeConnectAccount } from '@/datastore/mutations';
+import { updateOrganizationStripeConnectAccount } from '@/datastore/update';
 import { ENV_URL_PREFIX } from '@/env/env';
 import { getStripeServer } from '@/stripe/server';
 import { revalidatePath } from 'next/cache';
@@ -32,7 +32,8 @@ export async function createStripeConnectAccount(
   }
 
   try {
-    const account = await getStripeServer().accounts.create({
+    const stripe = await getStripeServer();
+    const account = await stripe.accounts.create({
       type: 'express',
     });
 
@@ -83,8 +84,8 @@ export async function createDashboardLink(
   }
 
   try {
-    const loginLink =
-      await getStripeServer().accounts.createLoginLink(accountId);
+    const stripe = await getStripeServer();
+    const loginLink = await stripe.accounts.createLoginLink(accountId);
     return { success: true, url: loginLink.url };
   } catch (error) {
     console.error('Stripe dashboard link creation failed:', error);
@@ -118,7 +119,8 @@ export async function createOnboardingLink(
       return_url: `${ENV_URL_PREFIX}/manage/organization/${organizationId}/edit`,
       type: 'account_onboarding',
     };
-    const accountLink = await getStripeServer().accountLinks.create(params);
+    const stripe = await getStripeServer();
+    const accountLink = await stripe.accountLinks.create(params);
     return { success: true, url: accountLink.url };
   } catch (error) {
     console.error('Stripe onboarding link creation failed:', error);

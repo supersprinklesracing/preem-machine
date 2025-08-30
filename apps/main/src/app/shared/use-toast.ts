@@ -8,7 +8,7 @@ type ToastProps = {
   variant?: 'default' | 'destructive';
 };
 
-export function useToast() {
+export function createToast() {
   const toast = ({ title, description, variant }: ToastProps) => {
     const color = variant === 'destructive' ? 'red' : undefined;
     notifications.show({

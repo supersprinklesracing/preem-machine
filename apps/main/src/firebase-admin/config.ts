@@ -1,48 +1,68 @@
 'use server';
 
-/* eslint-disable @typescript-eslint/no-non-null-assertion */
-
-import { ENV_AUTH_DEBUG, ENV_USE_HTTPS, orThrow } from '@/env/env';
+import { ENV_DEBUG_AUTH, ENV_USE_HTTPS } from '@/env/env';
+import { getSecrets } from '@/secrets';
+import type { ServiceAccount } from 'firebase-admin';
+import type { AuthMiddlewareOptions } from 'next-firebase-auth-edge/next/middleware';
 import { clientConfig } from '../firebase-client/config';
 
-export async function serverConfigFn() {
-  return {
-    useSecureCookies: ENV_USE_HTTPS,
-    firebaseApiKey: orThrow(process.env.NEXT_PUBLIC_FIREBASE_API_KEY),
-    serviceAccount: {
-      projectId: orThrow(process.env.NEXT_PUBLIC_FIREBASE_PROJECT_ID),
-      clientEmail: orThrow(process.env.SERVICE_ACCOUNT_CLIENT_EMAIL),
-      privateKey: orThrow(process.env.SERVICE_ACCOUNT_PRIVATE_KEY)?.replace(
-        /\\n/g,
-        '\n',
-      ),
-    },
-  };
+let serviceAccount: ServiceAccount | null = null;
+async function serviceAccountFn() {
+  if (serviceAccount) {
+    return serviceAccount;
+  }
+  const serviceAccountKey = (await getSecrets()).serviceAccountSecret;
+
+  serviceAccount = {
+    projectId: serviceAccountKey.project_id,
+    privateKey: serviceAccountKey.private_key,
+    clientEmail: serviceAccountKey.client_email,
+    toString: () =>
+      JSON.stringify({
+        projectId: serviceAccountKey.project_id?.length > 0,
+        privateKey: serviceAccountKey.private_key?.length > 0,
+        clientEmail: serviceAccountKey.client_email?.length > 0,
+      }),
+  } as ServiceAccount;
+  return serviceAccount;
 }
 
-export async function authConfigFn() {
-  const serverConfig = await serverConfigFn();
-  return {
-    apiKey: serverConfig.firebaseApiKey,
-    cookieName: orThrow(process.env.AUTH_COOKIE_NAME),
-    cookieSignatureKeys: [
-      orThrow(process.env.AUTH_COOKIE_SIGNATURE_KEY_CURRENT),
-      orThrow(process.env.AUTH_COOKIE_SIGNATURE_KEY_PREVIOUS),
-    ],
+let cookieSecrets: { cookieSignatureKeys: string[] } | null = null;
+async function cookieSecretsFn() {
+  if (cookieSecrets) {
+    return cookieSecrets;
+  }
+  cookieSecrets = await (await getSecrets()).cookieSecrets;
+  return cookieSecrets;
+}
+
+export async function serverConfigFn(): Promise<AuthMiddlewareOptions<object>> {
+  if (!serviceAccount) {
+    serviceAccount = await serviceAccountFn();
+  }
+  const cookieConfig = await cookieSecretsFn();
+  const config: AuthMiddlewareOptions<object> = {
+    apiKey: clientConfig.apiKey,
+    cookieName: '__session',
+    cookieSignatureKeys: cookieConfig.cookieSignatureKeys,
     cookieSerializeOptions: {
       path: '/',
       httpOnly: true,
-      secure: serverConfig.useSecureCookies, // Set this to true on HTTPS environments
+      secure: ENV_USE_HTTPS,
       sameSite: 'lax' as const,
       maxAge: 12 * 60 * 60 * 24, // twelve days
     },
-    serviceAccount: serverConfig.serviceAccount!,
-    // Set to false in Firebase Hosting environment due to https://stackoverflow.com/questions/44929653/firebase-cloud-function-wont-store-cookie-named-other-than-session
-    enableMultipleCookies: false,
+    debug: ENV_DEBUG_AUTH,
+    dynamicCustomClaimsKeys: ['roles'],
+    loginPath: '/api/login',
+    logoutPath: '/api/logout',
     // Set to false if you're not planning to use `signInWithCustomToken` Firebase Client SDK method
     enableCustomToken: false,
+    // Set to false in Firebase Hosting environment due to https://stackoverflow.com/questions/44929653/firebase-cloud-function-wont-store-cookie-named-other-than-session
+    enableMultipleCookies: false,
     enableTokenRefreshOnExpiredKidHeader: true,
-    debug: ENV_AUTH_DEBUG,
-    tenantId: clientConfig.tenantId,
+    refreshTokenPath: '/api/refresh-token',
+    serviceAccount: serviceAccount as Required<ServiceAccount>,
   };
+  return config;
 }

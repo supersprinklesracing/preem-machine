@@ -1,16 +1,15 @@
 import { getOrganizationByStripeConnectAccountId } from '@/datastore/firestore';
-import { updateOrganizationStripeConnectAccountForWebhook } from '@/datastore/mutations';
+import { updateOrganizationStripeConnectAccountForWebhook } from '@/datastore/update';
+import { getStripeSecrets } from '@/secrets/secrets-env';
 import { processContribution } from '@/stripe-datastore/contributions';
 import { getStripeServer } from '@/stripe/server';
 import { headers } from 'next/headers';
 import { NextResponse } from 'next/server';
 import type Stripe from 'stripe';
 
-const webhookSecret = process.env.STRIPE_WEBHOOK_SECRET;
-
 export async function POST(req: Request) {
+  const webhookSecret = (await getStripeSecrets()).webhookSecret;
   if (!webhookSecret) {
-    console.error('STRIPE_WEBHOOK_SECRET is not set.');
     return NextResponse.json(
       { error: 'Webhook secret not configured' },
       { status: 500 },
@@ -25,11 +24,8 @@ export async function POST(req: Request) {
   let event: Stripe.Event;
   try {
     const body = await req.text();
-    event = getStripeServer().webhooks.constructEvent(
-      body,
-      signature,
-      webhookSecret,
-    );
+    const stripe = await getStripeServer();
+    event = stripe.webhooks.constructEvent(body, signature, webhookSecret);
   } catch (err) {
     const errorMessage = err instanceof Error ? err.message : 'Unknown error';
     console.error(`Webhook signature verification failed: ${errorMessage}`);

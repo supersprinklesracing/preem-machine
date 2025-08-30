@@ -1,27 +1,34 @@
 'use client';
 
-import { AppShell, Group, Title } from '@mantine/core';
-import { useDisclosure } from '@mantine/hooks';
+import { AppShell, Burger, Group, Title } from '@mantine/core';
+import { useDisclosure, useMediaQuery } from '@mantine/hooks';
 import { Notifications } from '@mantine/notifications';
 import Link from 'next/link';
 import React from 'react';
+import type { ComponentProps } from 'react';
+import Sidebar from './Sidebar';
 
 export default function MainAppShell({
   children,
-  header,
+  avatarCluster: header,
   sidebar,
 }: {
   children: React.ReactNode;
-  header?: React.ReactElement<{ opened?: boolean; toggle?: () => void }>;
-  sidebar?: React.ReactElement<{ onLinkClick?: () => void }>;
+  avatarCluster?: React.ReactElement;
+  sidebar?: React.ReactElement<ComponentProps<typeof Sidebar>>;
 }) {
   const [opened, { toggle }] = useDisclosure();
+  const isMobile = useMediaQuery('(max-width: 768px)');
 
-  const headerElement =
-    header && React.cloneElement(header, { opened, toggle });
+  const handleLinkClick = () => {
+    if (isMobile) {
+      toggle();
+    }
+  };
 
-  const sidebarElement =
-    sidebar && React.cloneElement(sidebar, { onLinkClick: toggle });
+  const sidebarWithClickHandler = sidebar
+    ? React.cloneElement(sidebar, { onLinkClick: handleLinkClick })
+    : null;
 
   return (
     <AppShell
@@ -37,16 +44,28 @@ export default function MainAppShell({
       <AppShell.Header>
         <Group h="100%" px="md" justify="space-between">
           <Group>
-            <Link href="/" style={{ textDecoration: 'none', color: 'inherit' }}>
+            <Burger
+              opened={opened}
+              onClick={toggle}
+              hiddenFrom="sm"
+              size="sm"
+              title="Open navigation"
+              data-testid="sidebar-burger"
+              aria-expanded={opened}
+            />
+            <Link
+              href="/"
+              style={{ textDecoration: 'none', color: 'inherit' }}
+            >
               <Title order={3} ff="Space Grotesk, var(--mantine-font-family)">
                 Preem Machine
               </Title>
             </Link>
           </Group>
-          {headerElement}
+          {header}
         </Group>
       </AppShell.Header>
-      <AppShell.Navbar p="md">{sidebarElement}</AppShell.Navbar>
+      <AppShell.Navbar p="md">{sidebarWithClickHandler}</AppShell.Navbar>
       <AppShell.Main>{children}</AppShell.Main>
     </AppShell>
   );

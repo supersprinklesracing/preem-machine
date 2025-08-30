@@ -1,9 +1,9 @@
 'use server';
 
-import { getAuthUserFromCookies } from '@/auth/user';
+import { verifyAuthUser } from '@/auth/user';
 import { getEventsForUser } from '@/datastore/firestore';
 import { CurrentUser } from '@/datastore/user/UserContext';
-import Header from './Header';
+import AvatarCluster from './AvatarCluster';
 import MainAppShell from './MainAppShell';
 import Sidebar from './Sidebar';
 
@@ -13,12 +13,12 @@ export interface MainProps {
 }
 
 export default async function Layout({ children }: MainProps) {
-  const authUser = await getAuthUserFromCookies();
-  const events = authUser ? await getEventsForUser(authUser.uid) : [];
+  const authUser = await verifyAuthUser();
+  const events = await getEventsForUser(authUser.uid);
 
   return (
     <MainAppShell
-      header={<Header />}
+      avatarCluster={<AvatarCluster />}
       sidebar={<Sidebar data={{ events: events }} />}
     >
       {children}

@@ -4,7 +4,7 @@ import type {
   QueryDocumentSnapshot,
 } from 'firebase-admin/firestore';
 import { DocumentReference, Timestamp } from 'firebase-admin/firestore';
-import type { ClientCompat } from './types';
+import type { ClientCompat, Event, Preem, Race, Series } from './types';
 
 /**
  * Recursively finds and converts all complex Firestore objects (Timestamp, DocumentReference)
@@ -66,3 +66,39 @@ export const genericConverter = <T>(): FirestoreDataConverter<
     } as unknown as ClientCompat<T>;
   },
 });
+
+export const preemConverter: FirestoreDataConverter<Preem> = {
+  toFirestore(preem: Preem): DocumentData {
+    return preem;
+  },
+  fromFirestore(snapshot: QueryDocumentSnapshot): Preem {
+    return snapshot.data() as Preem;
+  },
+};
+
+export const raceConverter: FirestoreDataConverter<Race> = {
+  toFirestore(race: Race): DocumentData {
+    return race;
+  },
+  fromFirestore(snapshot: QueryDocumentSnapshot): Race {
+    return snapshot.data() as Race;
+  },
+};
+
+export const eventConverter: FirestoreDataConverter<Event> = {
+  toFirestore(event: Event): DocumentData {
+    return event;
+  },
+  fromFirestore(snapshot: QueryDocumentSnapshot): Event {
+    return snapshot.data() as Event;
+  },
+};
+
+export const seriesConverter: FirestoreDataConverter<Series> = {
+  toFirestore(series: Series): DocumentData {
+    return series;
+  },
+  fromFirestore(snapshot: QueryDocumentSnapshot): Series {
+    return snapshot.data() as Series;
+  },
+};

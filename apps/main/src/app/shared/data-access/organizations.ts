@@ -20,7 +20,8 @@ export const getOrganizationAndRefreshStripeAccount = cache(
     // Enrich with Stripe data if a connect account exists.
     if (organization.stripe?.connectAccountId) {
       try {
-        const account = await getStripeServer().accounts.retrieve(
+        const stripe = await getStripeServer();
+        const account = await stripe.accounts.retrieve(
           organization.stripe.connectAccountId,
         );
         // Convert the Stripe Account object to a plain JSON object to pass to client components.
