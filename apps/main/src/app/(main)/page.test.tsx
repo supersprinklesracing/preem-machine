@@ -1,0 +1,34 @@
+import { render, screen } from '@/test-utils';
+import React from 'react';
+import Page from './page';
+import * as firestore from '@/datastore/firestore';
+import Home from './Home';
+import '../../matchMedia.mock';
+
+// Mock dependencies
+jest.mock('./Home', () => ({
+  __esModule: true,
+  default: jest.fn(() => <div>Mock Home</div>),
+}));
+jest.mock('@/datastore/firestore');
+
+const mockHomeData = {
+  upcomingEvents: [],
+  contributions: [],
+};
+
+describe('Page component', () => {
+  it('should fetch home page data and render the Home component', async () => {
+    // Mock the return value of the data fetching function
+    (firestore.getRenderableHomeDataForPage as jest.Mock).mockResolvedValue(
+      mockHomeData,
+    );
+
+    const PageComponent = await Page();
+    render(PageComponent);
+
+    expect(screen.getByText('Mock Home')).toBeInTheDocument();
+
+    expect(Home).toHaveBeenCalled();
+  });
+});

@@ -28,12 +28,10 @@ describe('MainAppShell', () => {
 
     render(
       <MantineProvider theme={theme}>
-        <MainAppShell
-          sidebar={<Sidebar data={{ events: [] }} />}
-        >
+        <MainAppShell sidebar={<Sidebar data={{ events: [] }} />}>
           <div>Page content</div>
         </MainAppShell>
-      </MantineProvider>
+      </MantineProvider>,
     );
 
     // Find the burger button
