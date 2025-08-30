@@ -1,4 +1,8 @@
 import '@testing-library/jest-dom';
+
+import fetchMock from 'jest-fetch-mock';
+fetchMock.enableMocks();
+
 import { Headers, Request, Response } from 'node-fetch';
 import { TextDecoder, TextEncoder } from 'util';
 
@@ -7,6 +11,24 @@ mockGoogleCloudFirestore(
   {},
   { includeIdsInData: true, mutable: true, simulateQueryFilters: true },
 );
+
+jest.mock('firebase/auth', () => ({
+  getAuth: jest.fn(() => ({
+    onAuthStateChanged: jest.fn(),
+  })),
+  signInWithEmailAndPassword: jest.fn(),
+  signInWithPopup: jest.fn(),
+  GoogleAuthProvider: jest.fn(),
+  signOut: jest.fn(),
+  onAuthStateChanged: jest.fn(),
+  getRedirectResult: jest.fn(),
+  isSignInWithEmailLink: jest.fn(),
+  sendSignInLinkToEmail: jest.fn(),
+  signInWithEmailLink: jest.fn(),
+  setPersistence: jest.fn(),
+  inMemoryPersistence: jest.fn(),
+  connectAuthEmulator: jest.fn(),
+}));
 
 // Polyfill TextEncoder and TextDecoder for Jest
 // @ts-expect-error: JSDOM does not have TextEncoder
