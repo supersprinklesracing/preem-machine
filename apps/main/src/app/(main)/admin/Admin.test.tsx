@@ -1,9 +1,8 @@
-import { render, screen, fireEvent } from '@/test-utils';
-import React from 'react';
-import Admin from './Admin';
-import type { AdminPageData } from './Admin';
 import { createToast } from '@/app/shared/use-toast';
-import '../../../matchMedia.mock';
+import '@/matchMedia.mock';
+import { fireEvent, render, screen } from '@/test-utils';
+import type { AdminPageData } from './Admin';
+import Admin from './Admin';
 
 // Mock the toast hook
 jest.mock('@/app/shared/use-toast');
@@ -13,8 +12,18 @@ const mockToast = jest.fn();
 
 const mockData: AdminPageData = {
   users: [
-    { id: 'user-1', name: 'Alice', email: 'alice@example.com' },
-    { id: 'user-2', name: 'Bob', email: 'bob@example.com' },
+    {
+      id: 'user-1',
+      path: 'users/user-1',
+      name: 'Alice',
+      email: 'alice@example.com',
+    },
+    {
+      id: 'user-2',
+      path: 'users/user-2',
+      name: 'Bob',
+      email: 'bob@example.com',
+    },
   ],
 };
 
@@ -24,7 +33,7 @@ describe('Admin component', () => {
   });
 
   it('should filter users based on search and allow impersonation', () => {
-    render(<Admin data={mockData} />);
+    render(<Admin {...mockData} />);
 
     // Search for a user
     const searchInput = screen.getByPlaceholderText(

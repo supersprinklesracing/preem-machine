@@ -2,7 +2,7 @@ import { incrementCounter } from '@/actions/user-counters';
 import { verifyAuthUser } from '@/auth/user';
 import { getFirestore } from '@/firebase-admin/firebase-admin';
 import Account from './Account';
-import { updateUserAction } from './update-user-action';
+import { editUserAction } from './edit-user-action';
 
 async function getUserCounter(): Promise<number> {
   const authUser = await verifyAuthUser();
@@ -29,7 +29,7 @@ export default async function AccountPage() {
   return (
     <Account
       debugProps={{ count, incrementCounter }}
-      updateUserAction={updateUserAction}
+      editUserAction={editUserAction}
     />
   );
 }

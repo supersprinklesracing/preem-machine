@@ -15,7 +15,7 @@ export const MetadataRow: React.FC<MetadataRowProps> = ({ items }) => {
   return (
     <Grid>
       {items.map((item) => (
-        <Grid.Col span="auto" key={item.key}>
+        <Grid.Col key={item.key} span={{ base: 6, md: 4 }}>
           <Group gap="xs" wrap="nowrap">
             {item.icon}
             {item.label}

@@ -18,7 +18,7 @@ const mockProps: AccountDetailsProps = {
     user: { uid: 'test-user' } as any,
     dbUser: { id: 'test-db-user' } as any,
   },
-  updateUserAction: jest.fn(),
+  editAction: jest.fn(),
 };
 
 describe('AccountPage component', () => {

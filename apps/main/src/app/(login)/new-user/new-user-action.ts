@@ -1,8 +1,8 @@
 'use server';
 
 import { getAuthUserFromCookies } from '@/auth/user';
+import { createUser } from '@/datastore/create';
 import type { User } from '@/datastore/types';
-import { getFirestore } from '@/firebase-admin/firebase-admin';
 
 export interface NewUserOptions {
   user: Partial<User>;
@@ -22,16 +22,7 @@ export async function newUserAction({
       return { ok: false, error: 'Not registered.' };
     }
 
-    const db = await getFirestore();
-    const userRef = db.collection('users').doc(authUser.uid);
-    const userDoc = await userRef.get();
-
-    if (userDoc.exists) {
-      // User already exists, which we treat as a success for redirection purposes.
-      return { ok: true };
-    }
-
-    await userRef.set(user);
+    await createUser(user, authUser);
 
     return { ok: true };
   } catch (error) {

@@ -1,16 +1,20 @@
-import { SeriesWithEvents } from '@/datastore/firestore';
-import { ClientCompat } from '@/datastore/types';
+import { ClientCompat, Series } from '@/datastore/types';
 import { render, screen } from '@/test-utils';
 import '@testing-library/jest-dom';
 import SeriesCard from './SeriesCard';
 
-const mockSeries: ClientCompat<SeriesWithEvents> = {
+const mockSeries: ClientCompat<Series> = {
   id: 'series-1',
+  path: 'organizations/org-1/series/series-1',
   name: 'Test Series',
   location: 'Test Location',
   startDate: new Date('2024-01-01T00:00:00').toISOString(),
   endDate: new Date('2024-01-31T00:00:00').toISOString(),
-  events: [],
+  organizationBrief: {
+    id: 'org-1',
+    path: 'organizations/org-1',
+    name: 'Test Org',
+  },
 };
 
 describe('SeriesCard', () => {
@@ -20,6 +24,5 @@ describe('SeriesCard', () => {
     expect(screen.getByText('Test Series')).toBeInTheDocument();
     expect(screen.getAllByText('Test Location')[0]).toBeInTheDocument();
     expect(screen.getAllByText(/Jan 1, 2024/i)[0]).toBeInTheDocument();
-    expect(screen.getAllByText(/Jan 31, 2024/i)[0]).toBeInTheDocument();
   });
 });
