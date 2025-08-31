@@ -14,16 +14,12 @@ import { useMediaQuery } from '@mantine/hooks';
 import Link from 'next/link';
 import { CSSProperties } from 'react';
 
-export interface LiveContributionFeedData {
+interface LiveContributionFeedProps {
   contributions: ClientCompat<Contribution>[];
 }
 
-interface LiveContributionFeedProps {
-  data: LiveContributionFeedData;
-}
-
 export default function LiveContributionFeed({
-  data,
+  contributions,
 }: LiveContributionFeedProps) {
   const theme = useMantineTheme();
   const isLargeScreen = useMediaQuery(`(min-width: ${theme.breakpoints.lg})`);
@@ -40,7 +36,7 @@ export default function LiveContributionFeed({
     ? { flexGrow: 1, overflowY: 'auto', height: '100%' }
     : {};
 
-  const contributionFeed = data.contributions.map((c) => {
+  const contributionFeed = contributions.map((c) => {
     const contributor = c.contributor;
     return (
       <Group key={c.id} wrap="nowrap">
@@ -103,7 +99,7 @@ export default function LiveContributionFeed({
         Real-time contributions as they happen.
       </Text>
       <Stack mt="md" style={stackStyle}>
-        {data.contributions.length === 0 ? (
+        {contributions.length === 0 ? (
           <Text c="dimmed" ta="center" py="xl">
             Waiting for contributions...
           </Text>

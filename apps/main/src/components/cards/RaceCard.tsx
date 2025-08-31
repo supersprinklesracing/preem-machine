@@ -1,5 +1,5 @@
-import { RaceWithPreems } from '@/datastore/firestore';
-import type { ClientCompat } from '@/datastore/types';
+import { PreemWithContributions } from '@/datastore/firestore';
+import type { ClientCompat, Race } from '@/datastore/types';
 import {
   Card,
   Grid,
@@ -23,7 +23,8 @@ import { MetadataItem, MetadataRow } from './MetadataRow';
 const LARGE_PREEM_THRESHOLD = 100;
 
 interface RaceCardProps {
-  race: ClientCompat<RaceWithPreems>;
+  race: ClientCompat<Race>;
+  preems: PreemWithContributions[];
   children?: React.ReactNode;
   style?: React.CSSProperties;
   withBorder?: boolean;
@@ -32,13 +33,14 @@ interface RaceCardProps {
 
 const RaceCard: React.FC<RaceCardProps> = ({
   race,
+  preems,
   children,
   style,
   withBorder = true,
   titleOrder = 3,
 }) => {
-  const totalPrizePool = (race.preems ?? []).reduce(
-    (sum, preem) => sum + (preem.prizePool ?? 0),
+  const totalPrizePool = preems.reduce(
+    (sum, { preem }) => sum + (preem.prizePool ?? 0),
     0,
   );
 

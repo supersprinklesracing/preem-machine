@@ -29,7 +29,7 @@ const createMetadata = (userRef: DocumentReference<DocumentData>) => ({
   'metadata.lastModifiedBy': userRef,
 });
 
-const createDocument = async <T extends { id: string }, U>(
+const createDocument = async <U>(
   path: string,
   data: U,
   authUser: AuthContextUser,
@@ -177,6 +177,16 @@ export const createPreem = async (
   const preemRef = raceRef.collection('preems').doc();
 
   return createDocument(preemRef.path, preem, authUser, { raceBrief });
+};
+
+export const createOrganization = async (
+  organization: Partial<Organization>,
+  authUser: AuthContextUser,
+) => {
+  const db = await getFirestore();
+  const orgRef = db.collection('organizations').doc();
+
+  return createDocument(orgRef.path, organization, authUser, {});
 };
 
 export const createPendingContribution = async (

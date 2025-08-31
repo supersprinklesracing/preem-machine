@@ -1,65 +1,27 @@
-import { EventWithRaces } from '@/datastore/firestore';
-import {
-  Card,
-  Grid,
-  Group,
-  Stack,
-  Text,
-  Title,
-  TitleOrder,
-} from '@mantine/core';
-import { IconCurrencyDollar, IconUsers } from '@tabler/icons-react';
+import type { ClientCompat, Event } from '@/datastore/types';
+import { Card, Grid, Group, Stack, Title, TitleOrder } from '@mantine/core';
+import React from 'react';
+import DateStatusBadge from '../DateStatusBadge';
 import { DateLocationDetail } from './DateLocationDetail';
-import { MetadataItem, MetadataRow } from './MetadataRow';
 
-export interface EventCardProps {
-  event: EventWithRaces;
+interface EventCardProps {
+  event: ClientCompat<Event>;
   children?: React.ReactNode;
+  style?: React.CSSProperties;
   withBorder?: boolean;
   titleOrder?: TitleOrder;
 }
 
-export default function EventCard({
+const EventCard: React.FC<EventCardProps> = ({
   event,
   children,
+  style,
   withBorder = true,
   titleOrder = 3,
-}: EventCardProps) {
-  const totalCollected = (event.races ?? []).reduce(
-    (sum, race) =>
-      sum +
-      (race.preems ?? []).reduce((pSum, p) => pSum + (p.prizePool ?? 0), 0),
-    0,
-  );
-
-  const totalContributors = new Set(
-    (event.races ?? []).flatMap((r) =>
-      (r.preems ?? []).flatMap((p) =>
-        (p.contributions ?? []).map((c) => c.contributor?.id).filter(Boolean),
-      ),
-    ),
-  ).size;
-
+}) => {
   const dateLocationDetailContent = (
     <DateLocationDetail startDate={event.startDate} location={event.location} />
   );
-
-  const metadataItems: MetadataItem[] = [
-    {
-      key: 'total-collected',
-      icon: <IconCurrencyDollar size={16} />,
-      label: (
-        <Text size="sm" c="green" fw={600}>
-          ${totalCollected.toLocaleString()}
-        </Text>
-      ),
-    },
-    {
-      key: 'total-contributors',
-      icon: <IconUsers size={16} />,
-      label: <Text size="sm">{totalContributors} Contributors</Text>,
-    },
-  ];
 
   return (
     <Card
@@ -70,17 +32,25 @@ export default function EventCard({
         display: 'flex',
         flexDirection: 'column',
         height: '100%',
+        ...style,
       }}
     >
-      <Grid style={{ flexGrow: 1 }}>
+      <Grid gutter="lg" style={{ flexGrow: 1 }}>
         <Grid.Col span={{ base: 12, lg: 9 }}>
           <Stack justify="space-between" style={{ height: '100%' }}>
             <div>
-              <Title order={titleOrder}>{event.name}</Title>
+              <Group justify="space-between" align="flex-start">
+                <div>
+                  <Group align="center" gap="md">
+                    <Title order={titleOrder}>{event.name}</Title>
+                    <DateStatusBadge {...event} />
+                  </Group>
+                </div>
+              </Group>
+
               <Group mt="md" mb="md" hiddenFrom="lg">
                 {dateLocationDetailContent}
               </Group>
-              <MetadataRow items={metadataItems} />
             </div>
           </Stack>
         </Grid.Col>
@@ -99,4 +69,6 @@ export default function EventCard({
       </Grid>
     </Card>
   );
-}
+};
+
+export default EventCard;

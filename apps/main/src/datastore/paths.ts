@@ -44,3 +44,5 @@ export const contributionPath = (contribution: {
     };
   };
 }) => `${preemPath(contribution.preemBrief!)}/contributions/${contribution.id}`;
+
+export const docPath = (path: string) => path.split('/').slice(0, -1).join('/');

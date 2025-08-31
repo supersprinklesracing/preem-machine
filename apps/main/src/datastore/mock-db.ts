@@ -130,7 +130,32 @@ export const createMockDb = (firestore: Firestore): DatabaseCollections =>
   postProcessDatabase({
     users: [
       {
+        // preem-machine
         id: 'BFGvWNXZoCWayJa0pNEL4bfhtUC3',
+        name: 'Test User',
+        email: 'test-user@example.com',
+        avatarUrl: 'https://placehold.co/100x100.png',
+        role: 'admin',
+        organizationRefs: [
+          createDocRef(firestore, 'organizations', 'org-super-sprinkles'),
+        ],
+        metadata: createMetadata(firestore, '2024-07-01T10:00:00Z'),
+      },
+      {
+        // preem-machine-ci
+        id: '73LhDvkigMdwJ4r7NICamtwgd0u1',
+        name: 'Test User',
+        email: 'test-user@example.com',
+        avatarUrl: 'https://placehold.co/100x100.png',
+        role: 'admin',
+        organizationRefs: [
+          createDocRef(firestore, 'organizations', 'org-super-sprinkles'),
+        ],
+        metadata: createMetadata(firestore, '2024-07-01T10:00:00Z'),
+      },
+      {
+        // preem-machine-dev
+        id: 'RwgsPxLnp1bHNcxgw7MdCpm1Cuj1',
         name: 'Test User',
         email: 'test-user@example.com',
         avatarUrl: 'https://placehold.co/100x100.png',
@@ -181,8 +206,12 @@ export const createMockDb = (firestore: Firestore): DatabaseCollections =>
         id: 'org-super-sprinkles',
         name: 'Super Sprinkles Racing',
         memberRefs: [
-          // test-user@example.com
+          // test-user@example.com - preem-machine
           createDocRef(firestore, 'users', 'BFGvWNXZoCWayJa0pNEL4bfhtUC3'),
+          // test-user@example.com - preem-machine-ci
+          createDocRef(firestore, 'users', '73LhDvkigMdwJ4r7NICamtwgd0u1'),
+          // test-user@example.com - preem-machine-dev
+          createDocRef(firestore, 'users', 'RwgsPxLnp1bHNcxgw7MdCpm1Cuj1'),
           // jlapenna.test.1@gmail.com
           createDocRef(firestore, 'users', '5URlCEB3ACVgem9RAdWudjRURpl2'),
         ],

@@ -3,9 +3,9 @@
 import { verifyAuthUser } from '@/auth/user';
 import { getEventsForUser } from '@/datastore/firestore';
 import { CurrentUser } from '@/datastore/user/UserContext';
-import AvatarCluster from './AvatarCluster';
-import MainAppShell from './MainAppShell';
-import Sidebar from './Sidebar';
+import AvatarCluster from './Shell/AvatarCluster';
+import MainAppShell from './Shell/MainAppShell';
+import Sidebar from './Shell/Sidebar';
 
 export interface MainProps {
   currentUser: CurrentUser | null;
@@ -19,7 +19,7 @@ export default async function Layout({ children }: MainProps) {
   return (
     <MainAppShell
       avatarCluster={<AvatarCluster />}
-      sidebar={<Sidebar data={{ events: events }} />}
+      sidebar={<Sidebar {...{ events }} />}
     >
       {children}
     </MainAppShell>

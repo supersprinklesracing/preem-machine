@@ -1,9 +1,9 @@
 import { getFirestore } from '@/firebase-admin';
 import { seedFirestore } from '@/datastore/seed-firestore';
-import { NextRequest, NextResponse } from 'next/server';
+import { NextResponse } from 'next/server';
 import { AuthError, verifyUserRole } from '@/auth/claims';
 
-export async function POST(request: NextRequest) {
+export async function POST() {
   try {
     await verifyUserRole('admin');
 

@@ -141,8 +141,9 @@ export interface Race {
   metadata?: Metadata;
 
   name?: string;
+  description?: string;
   category?: string;
-  gender?: 'Women' | 'Men' | 'Open';
+  gender?: string;
   location?: string;
   courseDetails?: string;
   maxRacers?: number;
@@ -171,6 +172,7 @@ export interface Event {
   metadata?: Metadata;
 
   name?: string;
+  description?: string;
   website?: string;
   location?: string;
   startDate?: Timestamp;
@@ -193,6 +195,7 @@ export interface Series {
   metadata?: Metadata;
 
   name?: string;
+  description?: string;
   location?: string;
   website?: string;
   startDate?: Timestamp;

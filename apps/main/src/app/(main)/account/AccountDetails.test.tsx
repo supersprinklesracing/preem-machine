@@ -1,8 +1,7 @@
-import { render, screen, fireEvent, act } from '@/test-utils';
-import React from 'react';
-import { AccountDetails } from './AccountDetails';
+import '@/matchMedia.mock';
+import { act, fireEvent, render, screen } from '@/test-utils';
 import { CurrentUserProvider } from '../../../datastore/user/UserProvider';
-import '../../../matchMedia.mock';
+import { AccountDetails } from './AccountDetails';
 
 // Mock next/navigation
 jest.mock('next/navigation', () => ({

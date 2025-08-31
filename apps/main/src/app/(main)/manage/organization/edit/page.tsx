@@ -1,0 +1,23 @@
+'use server';
+
+import { getOrganizationAndRefreshStripeAccount } from '@/app/shared/data-access/organizations';
+import { EditOrganization } from './EditOrganization';
+import { updateOrganizationAction } from './update-organization-action';
+
+export default async function EditOrganizationPage({
+  searchParams,
+}: {
+  searchParams: Promise<{ path: string }>;
+}) {
+  const { path } = await searchParams;
+  const { organization, error } =
+    await getOrganizationAndRefreshStripeAccount(path);
+
+  return (
+    <EditOrganization
+      organization={organization}
+      stripeError={error}
+      updateOrganizationAction={updateOrganizationAction}
+    />
+  );
+}

@@ -1,10 +1,9 @@
 import { render, screen } from '@/test-utils';
 import React from 'react';
 import LiveContributionFeed from './LiveContributionFeed';
-import type { LiveContributionFeedData } from './LiveContributionFeed';
-import '../../matchMedia.mock';
+import '@/matchMedia.mock';
 
-const mockData: LiveContributionFeedData = {
+const mockData = {
   contributions: [
     {
       id: 'contrib-1',
@@ -22,7 +21,7 @@ const mockData: LiveContributionFeedData = {
 
 describe('LiveContributionFeed component', () => {
   it('should render the contribution feed', () => {
-    render(<LiveContributionFeed data={mockData} />);
+    render(<LiveContributionFeed {...mockData} />);
 
     expect(screen.getByText('Alice')).toBeInTheDocument();
     expect(screen.getByText('$100')).toBeInTheDocument();
@@ -32,7 +31,7 @@ describe('LiveContributionFeed component', () => {
   });
 
   it('should render a message when there are no contributions', () => {
-    render(<LiveContributionFeed data={{ contributions: [] }} />);
+    render(<LiveContributionFeed {...{ contributions: [] }} />);
 
     expect(
       screen.getByText('Waiting for contributions...'),

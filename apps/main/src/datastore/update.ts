@@ -59,11 +59,11 @@ export const updateOrganization = async (
   organization: Partial<Organization>,
   authUser: AuthContextUser,
 ) => {
-  const orgId = path.split('/').pop();
-  if (!orgId) {
-    throw new Error('Invalid path');
-  }
-  return await updateOrganizationAndDescendants(authUser, orgId, organization);
+  return await updateOrganizationAndDescendants(
+    authUser,
+    path,
+    organization,
+  );
 };
 
 export const updateSeries = async (
@@ -74,16 +74,28 @@ export const updateSeries = async (
   },
   authUser: AuthContextUser,
 ) => {
-  const seriesId = path.split('/').pop();
-  if (!seriesId) {
-    throw new Error('Invalid path');
-  }
   const data = {
     ...series,
     startDate: getTimestampFromISODate(series.startDate),
     endDate: getTimestampFromISODate(series.endDate),
   };
-  return await updateSeriesAndDescendants(authUser, seriesId, data);
+  return await updateSeriesAndDescendants(authUser, path, data);
+};
+
+export const updateRace = async (
+  path: string,
+  race: Partial<Omit<Race, 'startDate' | 'endDate'>> & {
+    startDate?: string;
+    endDate?: string;
+  },
+  authUser: AuthContextUser,
+) => {
+  const data = {
+    ...race,
+    startDate: getTimestampFromISODate(race.startDate),
+    endDate: getTimestampFromISODate(race.endDate),
+  };
+  return await updateRaceAndDescendants(authUser, path, data);
 };
 
 export const updateEvent = async (
@@ -94,16 +106,12 @@ export const updateEvent = async (
   },
   authUser: AuthContextUser,
 ) => {
-  const eventId = path.split('/').pop();
-  if (!eventId) {
-    throw new Error('Invalid path');
-  }
   const data = {
     ...event,
     startDate: getTimestampFromISODate(event.startDate),
     endDate: getTimestampFromISODate(event.endDate),
   };
-  return await updateEventAndDescendants(authUser, eventId, data);
+  return await updateEventAndDescendants(authUser, path, data);
 };
 
 export const updateOrganizationStripeConnectAccount = async (
@@ -333,10 +341,14 @@ export const updatePreemAndDescendants = async (
 
 export const updateRaceAndDescendants = async (
   authUser: AuthContextUser,
-  raceId: string,
+  path: string,
   data: Partial<Race>,
 ) => {
-  const path = `races/${raceId}`;
+  const raceId = path.split('/').pop();
+  if (!raceId) {
+    throw new Error('Invalid path');
+  }
+
   if (!(await isUserAuthorized(authUser, path))) {
     unauthorized();
   }
@@ -371,10 +383,14 @@ export const updateRaceAndDescendants = async (
 
 export const updateEventAndDescendants = async (
   authUser: AuthContextUser,
-  eventId: string,
+  path: string,
   data: Partial<Event>,
 ) => {
-  const path = `events/${eventId}`;
+  const eventId = path.split('/').pop();
+  if (!eventId) {
+    throw new Error('Invalid path');
+  }
+
   if (!(await isUserAuthorized(authUser, path))) {
     unauthorized();
   }
@@ -409,10 +425,14 @@ export const updateEventAndDescendants = async (
 
 export const updateSeriesAndDescendants = async (
   authUser: AuthContextUser,
-  seriesId: string,
+  path: string,
   data: Partial<Series>,
 ) => {
-  const path = `series/${seriesId}`;
+  const seriesId = path.split('/').pop();
+  if (!seriesId) {
+    throw new Error('Invalid path');
+  }
+
   if (!(await isUserAuthorized(authUser, path))) {
     unauthorized();
   }
@@ -447,10 +467,14 @@ export const updateSeriesAndDescendants = async (
 
 export const updateOrganizationAndDescendants = async (
   authUser: AuthContextUser,
-  orgId: string,
+  path: string,
   data: Partial<Organization>,
 ) => {
-  const path = `organizations/${orgId}`;
+  const orgId = path.split('/').pop();
+  if (!orgId) {
+    throw new Error('Invalid path');
+  }
+
   if (!(await isUserAuthorized(authUser, path))) {
     unauthorized();
   }

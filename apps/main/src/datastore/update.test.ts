@@ -1,5 +1,5 @@
-import { createMockDb } from '@/datastore/mock-db';
 import { getFirestore } from '@/firebase-admin';
+import { setupMockDb } from '@/test-utils';
 import type { Firestore } from 'firebase-admin/firestore';
 import {
   updateEventAndDescendants,
@@ -18,9 +18,13 @@ describe('update mutations', () => {
   let firestore: Firestore;
   const authUser = { uid: 'test-user' };
 
-  beforeEach(async () => {
+  setupMockDb();
+
+  beforeAll(async () => {
     firestore = await getFirestore();
-    (firestore as any).database = createMockDb(firestore);
+  });
+
+  beforeEach(async () => {
     (isUserAuthorized as jest.Mock).mockClear();
     (isUserAuthorized as jest.Mock).mockResolvedValue(true);
   });
@@ -36,7 +40,11 @@ describe('update mutations', () => {
 
     it('should throw an error if the user is not authorized', async () => {
       await expect(
-        updateOrganizationAndDescendants(authUser, 'org-super-sprinkles', {}),
+        updateOrganizationAndDescendants(
+          authUser,
+          'organizations/org-super-sprinkles',
+          {},
+        ),
       ).rejects.toThrow('Unauthorized');
     });
   });
@@ -45,7 +53,7 @@ describe('update mutations', () => {
     it('should update an organization and all its descendants and return them', async () => {
       const modifiedDocs = await updateOrganizationAndDescendants(
         authUser,
-        'org-super-sprinkles',
+        'organizations/org-super-sprinkles',
         {
           name: 'New Org Name',
         },
@@ -74,9 +82,13 @@ describe('update mutations', () => {
     });
 
     it('should update the organization brief in a series doc', async () => {
-      await updateOrganizationAndDescendants(authUser, 'org-super-sprinkles', {
-        name: 'New Org Name',
-      });
+      await updateOrganizationAndDescendants(
+        authUser,
+        'organizations/org-super-sprinkles',
+        {
+          name: 'New Org Name',
+        },
+      );
 
       const seriesDoc = await firestore
         .collection('organizations/org-super-sprinkles/series')
@@ -93,7 +105,7 @@ describe('update mutations', () => {
     it('should update a series and all its descendants and return them', async () => {
       const modifiedDocs = await updateSeriesAndDescendants(
         authUser,
-        'series-sprinkles-2025',
+        'organizations/org-super-sprinkles/series/series-sprinkles-2025',
         {
           name: 'New Series Name',
         },
@@ -116,9 +128,13 @@ describe('update mutations', () => {
     });
 
     it('should update the series brief in an event doc', async () => {
-      await updateSeriesAndDescendants(authUser, 'series-sprinkles-2025', {
-        name: 'New Series Name',
-      });
+      await updateSeriesAndDescendants(
+        authUser,
+        'organizations/org-super-sprinkles/series/series-sprinkles-2025',
+        {
+          name: 'New Series Name',
+        },
+      );
 
       const eventDoc = await firestore
         .collection(
@@ -137,7 +153,7 @@ describe('update mutations', () => {
     it('should update an event and all its descendants and return them', async () => {
       const modifiedDocs = await updateEventAndDescendants(
         authUser,
-        'event-giro-sf-2025',
+        'organizations/org-super-sprinkles/series/series-sprinkles-2025/events/event-giro-sf-2025',
         {
           name: 'New Event Name',
         },
@@ -155,9 +171,13 @@ describe('update mutations', () => {
     });
 
     it('should update the event brief in a race doc', async () => {
-      await updateEventAndDescendants(authUser, 'event-giro-sf-2025', {
-        name: 'New Event Name',
-      });
+      await updateEventAndDescendants(
+        authUser,
+        'organizations/org-super-sprinkles/series/series-sprinkles-2025/events/event-giro-sf-2025',
+        {
+          name: 'New Event Name',
+        },
+      );
 
       const raceDoc = await firestore
         .collection(
@@ -176,7 +196,7 @@ describe('update mutations', () => {
     it('should update a race and all its descendants and return them', async () => {
       const modifiedDocs = await updateRaceAndDescendants(
         authUser,
-        'race-giro-sf-2025-masters-women',
+        'organizations/org-super-sprinkles/series/series-sprinkles-2025/events/event-giro-sf-2025/races/race-giro-sf-2025-masters-women',
         {
           name: 'New Race Name',
         },
@@ -196,7 +216,7 @@ describe('update mutations', () => {
     it('should update the race brief in a preem doc', async () => {
       await updateRaceAndDescendants(
         authUser,
-        'race-giro-sf-2025-masters-women',
+        'organizations/org-super-sprinkles/series/series-sprinkles-2025/events/event-giro-sf-2025/races/race-giro-sf-2025-masters-women',
         {
           name: 'New Race Name',
         },
