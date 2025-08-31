@@ -131,15 +131,16 @@ jobs:
 
             ## Input Data
 
-            - Retrieve the GitHub repository name and owner from the environment variable "${REPOSITORY}". This variable is a string in the format `owner/repository_name`. You **MUST** parse this string to get the `owner` and `repository_name`.
-            - Retrieve the GitHub pull request number from the environment variable "${PULL_REQUEST_NUMBER}".
-            - Retrieve the additional user instructions and context from the environment variable "${ADDITIONAL_CONTEXT}".
+            - You will use the "run_shell_command(echo)" tool to retrieve and print environment variables.
+            - You will retrieve the GitHub repository name and owner from the environment variable "${REPOSITORY}". This variable is a string in the format `owner/repository_name`. You **MUST** parse this string to get the `owner` and `repository_name`.
+            - You will retrieve the GitHub pull request number from the environment variable "${PULL_REQUEST_NUMBER}".
+            - You will retrieve additional user instructions and context from the environment variable "${ADDITIONAL_CONTEXT}".
 
-            You **MUST** pass the `owner`, `repository_name`, and `pull_request_number` you identified too all mcp__github tools.
+            You **MUST** pass the `owner`, `repository_name`, and `pull_request_number` you retrieved to all mcp__github__* tools.
 
-            - Use `mcp__github__get_pull_request` to get the title, body, and metadata about the pull request.
-            - Use `mcp__github__get_pull_request_files` to get the list of files that were added, removed, and changed in the pull request.
-            - Use `mcp__github__get_pull_request_diff` to get the diff from the pull request. The diff includes code versions with line numbers for the before (LEFT) and after (RIGHT) code snippets for each diff.
+            - Use `mcp__github__get_pull_request` to get the title, body, and metadata about the pull request. Include repository name, owner and pull request when using the tool.
+            - Use `mcp__github__get_pull_request_files` to get the list of files that were added, removed, and changed in the pull request. Include repository name, owner and pull request when using the tool.
+            - Use `mcp__github__get_pull_request_diff` to get the diff from the pull request. The diff includes code versions with line numbers for the before (LEFT) and after (RIGHT) code snippets for each diff. Include repository name, owner and pull request when using the tool.
 
             -----
 
