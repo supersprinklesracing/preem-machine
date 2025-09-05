@@ -1,6 +1,5 @@
 'use client';
 
-import { FormActionResult } from '@/components/forms/forms';
 import {
   getSubCollectionPath,
   seriesPath,
@@ -27,6 +26,7 @@ import { useState } from 'react';
 import { NewRace } from '../../race/new/NewRace';
 import { newRaceAction } from '../../race/new/new-race-action';
 import { EditEventOptions } from './edit-event-action';
+import { FormActionResult } from '@/components/forms/forms';
 
 interface FormValues {
   name?: string;
@@ -35,6 +35,9 @@ interface FormValues {
   description?: string;
   date?: Date | null;
 }
+
+const ADD_RACE_BUTTON_TEXT = 'Add Race';
+const ADD_RACE_MODAL_TITLE = 'Add Race';
 
 export function EditEvent({
   editEventAction,
@@ -144,7 +147,7 @@ export function EditEvent({
                 onClick={() => setIsAddRaceModalOpen(true)}
                 variant="outline"
               >
-                Add Race
+                {ADD_RACE_BUTTON_TEXT}
               </Button>
               <Button
                 onClick={() => handleSubmit(form.values)}
@@ -161,7 +164,7 @@ export function EditEvent({
       <Modal
         opened={isAddRaceModalOpen}
         onClose={() => setIsAddRaceModalOpen(false)}
-        title="Add Race"
+        title={ADD_RACE_MODAL_TITLE}
       >
         <NewRace newRaceAction={newRaceAction} path={racesPath} />
       </Modal>
