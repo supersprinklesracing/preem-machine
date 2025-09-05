@@ -1,8 +1,7 @@
 /* eslint-disable @eslint-react/hooks-extra/no-unnecessary-use-prefix */
+import '@/matchMedia.mock';
 import { render, screen } from '@/test-utils';
-import React from 'react';
 import LoginPage from './page';
-import '../../../matchMedia.mock';
 
 jest.mock('./login-action');
 

@@ -1,20 +1,20 @@
 import { Container, Stack } from '@mantine/core';
 import { AccountDebug, AccountDebugProps } from './account-debug/AccountDebug';
 import { AccountDetails } from './AccountDetails';
-import { UpdateUserOptions } from './update-user-action';
+import { EditUserOptions } from './edit-user-action';
+
+import { FormActionResult } from '@/components/forms/forms';
 
 export interface AccountDetailsProps {
   debugProps: AccountDebugProps;
-  updateUserAction: (
-    options: UpdateUserOptions,
-  ) => Promise<{ ok: boolean; error?: string }>;
+  editUserAction: (options: EditUserOptions) => Promise<FormActionResult>;
 }
 
 export default async function AccountPage(props: AccountDetailsProps) {
   return (
     <Container size="lg" pt="xl">
       <Stack>
-        <AccountDetails updateUserAction={props.updateUserAction} />
+        <AccountDetails editUserAction={props.editUserAction} />
         <AccountDebug {...props.debugProps} />
       </Stack>
     </Container>

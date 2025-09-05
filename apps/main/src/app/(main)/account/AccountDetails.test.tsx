@@ -1,8 +1,7 @@
-import { render, screen, fireEvent, act } from '@/test-utils';
-import React from 'react';
-import { AccountDetails } from './AccountDetails';
+import '@/matchMedia.mock';
+import { act, fireEvent, render, screen } from '@/test-utils';
 import { CurrentUserProvider } from '../../../datastore/user/UserProvider';
-import '../../../matchMedia.mock';
+import { AccountDetails } from './AccountDetails';
 
 // Mock next/navigation
 jest.mock('next/navigation', () => ({
@@ -35,6 +34,7 @@ const mockAuthUser = {
 
 const mockCurrentUser = {
   id: 'test-uid',
+  path: 'users/test-uid',
   name: 'Test User',
   affiliation: 'Test Affiliation',
   raceLicenseId: '12345',
@@ -43,10 +43,10 @@ const mockCurrentUser = {
 
 describe('AccountDetails component', () => {
   it('should render without crashing', () => {
-    const updateUserAction = jest.fn();
+    const editUserAction = jest.fn();
     render(
       <CurrentUserProvider currentUser={mockCurrentUser as any}>
-        <AccountDetails updateUserAction={updateUserAction} />
+        <AccountDetails editUserAction={editUserAction} />
       </CurrentUserProvider>,
       { authUser: mockAuthUser as any },
     );
@@ -56,12 +56,12 @@ describe('AccountDetails component', () => {
     ).toBeInTheDocument();
   });
 
-  it('should call updateUserAction with the correct data on form submission', async () => {
-    const updateUserAction = jest.fn(() => Promise.resolve({ ok: true }));
+  it('should call editUserAction with the correct data on form submission', async () => {
+    const editUserAction = jest.fn(() => Promise.resolve({ ok: true }));
 
     render(
       <CurrentUserProvider currentUser={mockCurrentUser as any}>
-        <AccountDetails updateUserAction={updateUserAction} />
+        <AccountDetails editUserAction={editUserAction} />
       </CurrentUserProvider>,
       { authUser: mockAuthUser as any },
     );
@@ -85,9 +85,9 @@ describe('AccountDetails component', () => {
     });
 
     // Assert that the action was called with the correct data
-    expect(updateUserAction).toHaveBeenCalledWith({
+    expect(editUserAction).toHaveBeenCalledWith({
       path: 'users/test-uid',
-      user: expect.objectContaining({
+      edits: expect.objectContaining({
         name: 'New Name',
         affiliation: 'Test Affiliation',
       }),

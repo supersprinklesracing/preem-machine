@@ -1,6 +1,6 @@
 import 'server-only';
 
-import { getOrganizationById } from '@/datastore/firestore';
+import { getDoc } from '@/datastore/firestore';
 import { ClientCompat, Organization } from '@/datastore/types';
 import { getStripeServer } from '@/stripe/server';
 import { cache } from 'react';
@@ -9,13 +9,10 @@ export const getOrganizationAndRefreshStripeAccount = cache(
   async (
     id: string,
   ): Promise<{
-    organization?: ClientCompat<Organization>;
+    organization: ClientCompat<Organization>;
     error?: string;
   }> => {
-    const organization = await getOrganizationById(id);
-    if (!organization) {
-      return { organization: undefined };
-    }
+    const organization = await getDoc<Organization>(id);
 
     // Enrich with Stripe data if a connect account exists.
     if (organization.stripe?.connectAccountId) {

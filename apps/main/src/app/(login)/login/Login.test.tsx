@@ -1,7 +1,6 @@
+import '@/matchMedia.mock';
 import { render, screen } from '@/test-utils';
-import React from 'react';
 import { Login } from './Login';
-import '../../../matchMedia.mock';
 
 // Mock firebase/auth and firebase-client to prevent initialization errors
 jest.mock('firebase/auth', () => ({

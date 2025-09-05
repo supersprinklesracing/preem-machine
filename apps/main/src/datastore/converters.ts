@@ -4,7 +4,8 @@ import type {
   QueryDocumentSnapshot,
 } from 'firebase-admin/firestore';
 import { DocumentReference, Timestamp } from 'firebase-admin/firestore';
-import type { ClientCompat, Event, Preem, Race, Series } from './types';
+import { asDocPath } from './paths';
+import type { ClientCompat } from './types';
 
 /**
  * Recursively finds and converts all complex Firestore objects (Timestamp, DocumentReference)
@@ -26,7 +27,7 @@ function serializeFirestoreData(
   }
 
   if (data instanceof DocumentReference) {
-    return { id: data.id, path: data.path };
+    return { id: data.id, path: asDocPath(data.path) };
   }
 
   if (Array.isArray(data)) {
@@ -36,7 +37,11 @@ function serializeFirestoreData(
   if (typeof data === 'object') {
     const newData: DocumentData = {};
     for (const key in data) {
-      newData[key] = serializeFirestoreData(data[key]);
+      if (key === 'path' && typeof data[key] === 'string') {
+        newData[key] = asDocPath(data[key]);
+      } else {
+        newData[key] = serializeFirestoreData(data[key]);
+      }
     }
     return newData;
   }
@@ -50,7 +55,7 @@ function serializeFirestoreData(
  * 1. Automatically adds the document `id` to the object.
  * 2. Recursively converts all Firestore Timestamps and DocumentReferences to serializable types.
  */
-export const genericConverter = <T>(): FirestoreDataConverter<
+export const clientConverter = <T>(): FirestoreDataConverter<
   ClientCompat<T>
 > => ({
   toFirestore: (data: ClientCompat<T>) => {
@@ -62,43 +67,17 @@ export const genericConverter = <T>(): FirestoreDataConverter<
     const convertedData = serializeFirestoreData(data);
     return {
       id: snapshot.id,
+      path: asDocPath(snapshot.ref.path),
       ...convertedData,
     } as unknown as ClientCompat<T>;
   },
 });
 
-export const preemConverter: FirestoreDataConverter<Preem> = {
-  toFirestore(preem: Preem): DocumentData {
-    return preem;
+export const serverConverter = <T>(): FirestoreDataConverter<T> => ({
+  toFirestore(data: T): DocumentData {
+    return data as DocumentData;
   },
-  fromFirestore(snapshot: QueryDocumentSnapshot): Preem {
-    return snapshot.data() as Preem;
+  fromFirestore(snapshot: QueryDocumentSnapshot): T {
+    return snapshot.data() as T;
   },
-};
-
-export const raceConverter: FirestoreDataConverter<Race> = {
-  toFirestore(race: Race): DocumentData {
-    return race;
-  },
-  fromFirestore(snapshot: QueryDocumentSnapshot): Race {
-    return snapshot.data() as Race;
-  },
-};
-
-export const eventConverter: FirestoreDataConverter<Event> = {
-  toFirestore(event: Event): DocumentData {
-    return event;
-  },
-  fromFirestore(snapshot: QueryDocumentSnapshot): Event {
-    return snapshot.data() as Event;
-  },
-};
-
-export const seriesConverter: FirestoreDataConverter<Series> = {
-  toFirestore(series: Series): DocumentData {
-    return series;
-  },
-  fromFirestore(snapshot: QueryDocumentSnapshot): Series {
-    return snapshot.data() as Series;
-  },
-};
+});

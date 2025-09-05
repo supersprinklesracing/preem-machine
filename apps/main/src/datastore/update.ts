@@ -3,22 +3,18 @@
 import { AuthContextUser } from '@/auth/AuthContext';
 import { getFirestore } from '@/firebase-admin/firebase-admin';
 import {
+  DocumentData,
   FieldValue,
-  type DocumentData,
   type DocumentReference,
   type Transaction,
 } from 'firebase-admin/firestore';
 import Stripe from 'stripe';
-import { getTimestampFromISODate } from '../firebase-admin/dates';
 import { isUserAuthorized } from './access';
-import { unauthorized } from './errors';
-import {
-  eventConverter,
-  preemConverter,
-  raceConverter,
-  seriesConverter,
-} from './converters';
+import { serverConverter } from './converters';
+import { NotFoundError, unauthorized } from './errors';
+import { asDocPath, getSubCollectionPath } from './paths';
 import type {
+  Contribution,
   Event,
   EventBrief,
   Organization,
@@ -32,14 +28,29 @@ import type {
   User,
 } from './types';
 
+interface DocUpdate<T> {
+  ref: DocumentReference<T>;
+  updates: Partial<T>;
+}
+
+const getDocRef = async <T>(path: string) => {
+  const db = await getFirestore();
+  return db.doc(path).withConverter(serverConverter<T>());
+};
+
+const getCollectionRef = async <T>(path: string) => {
+  const db = await getFirestore();
+  return db.collection(path).withConverter(serverConverter<T>());
+};
+
 const getUpdateMetadata = (userRef: DocumentReference<DocumentData>) => ({
-  'metadata.lastModified': FieldValue.serverTimestamp(),
-  'metadata.lastModifiedBy': userRef,
+  'metaupdates.lastModified': FieldValue.serverTimestamp(),
+  'metaupdates.lastModifiedBy': userRef,
 });
 
 export const updateUser = async (
   path: string,
-  user: Partial<User>,
+  user: Pick<User, 'name' | 'affiliation' | 'raceLicenseId' | 'address'>,
   authUser: AuthContextUser,
 ) => {
   if (!(await isUserAuthorized(authUser, path))) {
@@ -52,58 +63,6 @@ export const updateUser = async (
     ...user,
     ...getUpdateMetadata(docRef),
   });
-};
-
-export const updateOrganization = async (
-  path: string,
-  organization: Partial<Organization>,
-  authUser: AuthContextUser,
-) => {
-  const orgId = path.split('/').pop();
-  if (!orgId) {
-    throw new Error('Invalid path');
-  }
-  return await updateOrganizationAndDescendants(authUser, orgId, organization);
-};
-
-export const updateSeries = async (
-  path: string,
-  series: Partial<Omit<Series, 'startDate' | 'endDate'>> & {
-    startDate?: string;
-    endDate?: string;
-  },
-  authUser: AuthContextUser,
-) => {
-  const seriesId = path.split('/').pop();
-  if (!seriesId) {
-    throw new Error('Invalid path');
-  }
-  const data = {
-    ...series,
-    startDate: getTimestampFromISODate(series.startDate),
-    endDate: getTimestampFromISODate(series.endDate),
-  };
-  return await updateSeriesAndDescendants(authUser, seriesId, data);
-};
-
-export const updateEvent = async (
-  path: string,
-  event: Partial<Omit<Event, 'startDate' | 'endDate'>> & {
-    startDate?: string;
-    endDate?: string;
-  },
-  authUser: AuthContextUser,
-) => {
-  const eventId = path.split('/').pop();
-  if (!eventId) {
-    throw new Error('Invalid path');
-  }
-  const data = {
-    ...event,
-    startDate: getTimestampFromISODate(event.startDate),
-    endDate: getTimestampFromISODate(event.endDate),
-  };
-  return await updateEventAndDescendants(authUser, eventId, data);
 };
 
 export const updateOrganizationStripeConnectAccount = async (
@@ -135,151 +94,66 @@ export const updateOrganizationStripeConnectAccountForWebhook = async (
   await orgRef.update({
     'stripe.connectAccountId': account.id,
     'stripe.account': account,
-    'metadata.lastModified': FieldValue.serverTimestamp(),
+    'metaupdates.lastModified': FieldValue.serverTimestamp(),
   });
 };
 
-interface DocUpdate {
-  ref: DocumentReference;
-  data: DocumentData;
-}
+export const updateOrganization = async (
+  path: string,
+  updates: Pick<Organization, 'name' | 'website' | 'description'>,
+  authUser: AuthContextUser,
+) => {
+  if (!(await isUserAuthorized(authUser, path))) {
+    unauthorized();
+  }
 
-const preparePreemDescendantUpdates = async (
-  transaction: Transaction,
-  preemId: string,
-  preemBrief: PreemBrief,
-): Promise<DocUpdate[]> => {
   const db = await getFirestore();
-  const updates: DocUpdate[] = [];
-  const contributionSnap = await transaction.get(
-    db.collectionGroup('contributions').where('preemBrief.id', '==', preemId),
-  );
-  contributionSnap.docs.forEach((doc) => {
-    updates.push({ ref: doc.ref, data: { preemBrief } });
+  return await db.runTransaction(async (transaction) => {
+    const ref = await getDocRef<Organization>(path);
+    const doc = await transaction.get(ref);
+    const existingData = doc.data();
+    if (!existingData) {
+      throw new NotFoundError("Organization doesn't exist");
+    }
+    const { name } = existingData;
+    const organizationBrief: OrganizationBrief = {
+      id: ref.id,
+      path: ref.path,
+      name: updates.name ?? name,
+    };
+    transaction.update(ref, updates);
+
+    let descendantUpdates: DocUpdate<unknown>[] = [];
+    if (updates.name) {
+      descendantUpdates = await prepareOrganizationDescendantUpdates(
+        transaction,
+        path,
+        organizationBrief,
+      );
+      for (const { ref, updates } of descendantUpdates) {
+        transaction.update(ref, updates);
+      }
+    }
+
+    return [{ ref, updates }, ...descendantUpdates];
   });
-  return updates;
-};
-
-const prepareRaceDescendantUpdates = async (
-  transaction: Transaction,
-  raceId: string,
-  raceBrief: RaceBrief,
-): Promise<DocUpdate[]> => {
-  const db = await getFirestore();
-  let updates: DocUpdate[] = [];
-
-  const preemSnap = await transaction.get(
-    db
-      .collectionGroup('preems')
-      .select('name')
-      .where('raceBrief.id', '==', raceId)
-      .withConverter(preemConverter),
-  );
-
-  for (const doc of preemSnap.docs) {
-    updates.push({ ref: doc.ref, data: { raceBrief } });
-    const newPreemBrief: PreemBrief = {
-      id: doc.id,
-      name: doc.data().name,
-      raceBrief,
-    };
-    const descendantUpdates = await preparePreemDescendantUpdates(
-      transaction,
-      doc.id,
-      newPreemBrief,
-    );
-    updates = updates.concat(descendantUpdates);
-  }
-  return updates;
-};
-
-const prepareEventDescendantUpdates = async (
-  transaction: Transaction,
-  eventId: string,
-  eventBrief: EventBrief,
-): Promise<DocUpdate[]> => {
-  const db = await getFirestore();
-  let updates: DocUpdate[] = [];
-  const raceSnap = await transaction.get(
-    db
-      .collectionGroup('races')
-      .select('name', 'startDate', 'endDate')
-      .where('eventBrief.id', '==', eventId)
-      .withConverter(raceConverter),
-  );
-
-  for (const doc of raceSnap.docs) {
-    updates.push({ ref: doc.ref, data: { eventBrief } });
-    const newRaceBrief: RaceBrief = {
-      id: doc.id,
-      name: doc.data().name,
-      startDate: doc.data().startDate,
-      endDate: doc.data().endDate,
-      eventBrief,
-    };
-    const descendantUpdates = await prepareRaceDescendantUpdates(
-      transaction,
-      doc.id,
-      newRaceBrief,
-    );
-    updates = updates.concat(descendantUpdates);
-  }
-  return updates;
-};
-
-const prepareSeriesDescendantUpdates = async (
-  transaction: Transaction,
-  seriesId: string,
-  seriesBrief: SeriesBrief,
-): Promise<DocUpdate[]> => {
-  const db = await getFirestore();
-  let updates: DocUpdate[] = [];
-  const eventSnap = await transaction.get(
-    db
-      .collectionGroup('events')
-      .select('name', 'startDate', 'endDate')
-      .where('seriesBrief.id', '==', seriesId)
-      .withConverter(eventConverter),
-  );
-
-  for (const doc of eventSnap.docs) {
-    updates.push({ ref: doc.ref, data: { seriesBrief } });
-    const newEventBrief: EventBrief = {
-      id: doc.id,
-      name: doc.data().name,
-      startDate: doc.data().startDate,
-      endDate: doc.data().endDate,
-      seriesBrief,
-    };
-    const descendantUpdates = await prepareEventDescendantUpdates(
-      transaction,
-      doc.id,
-      newEventBrief,
-    );
-    updates = updates.concat(descendantUpdates);
-  }
-  return updates;
 };
 
 const prepareOrganizationDescendantUpdates = async (
   transaction: Transaction,
-  orgId: string,
+  path: string,
   organizationBrief: OrganizationBrief,
-): Promise<DocUpdate[]> => {
-  const db = await getFirestore();
-  let updates: DocUpdate[] = [];
+): Promise<DocUpdate<unknown>[]> => {
+  let updates: DocUpdate<unknown>[] = [];
   const seriesSnap = await transaction.get(
-    db
-      .collectionGroup('series')
-      .select('name', 'startDate', 'endDate')
-      .where('organizationBrief.id', '==', orgId)
-      .withConverter(seriesConverter),
+    await getCollectionRef<Series>(getSubCollectionPath(path, 'series')),
   );
 
   for (const doc of seriesSnap.docs) {
-    updates.push({ ref: doc.ref, data: { organizationBrief } });
+    updates.push({ ref: doc.ref, updates: { organizationBrief } });
     const newSeriesBrief: SeriesBrief = {
       id: doc.id,
+      path: asDocPath(doc.ref.path),
       name: doc.data().name,
       startDate: doc.data().startDate,
       endDate: doc.data().endDate,
@@ -287,7 +161,7 @@ const prepareOrganizationDescendantUpdates = async (
     };
     const descendantUpdates = await prepareSeriesDescendantUpdates(
       transaction,
-      doc.id,
+      doc.ref.path,
       newSeriesBrief,
     );
     updates = updates.concat(descendantUpdates);
@@ -295,187 +169,293 @@ const prepareOrganizationDescendantUpdates = async (
   return updates;
 };
 
-export const updatePreemAndDescendants = async (
+export const updateSeries = async (
+  path: string,
+  updates: Pick<
+    Series,
+    'name' | 'website' | 'location' | 'description' | 'startDate' | 'endDate'
+  >,
   authUser: AuthContextUser,
-  preemId: string,
-  data: Partial<Preem>,
 ) => {
-  const path = `preems/${preemId}`;
   if (!(await isUserAuthorized(authUser, path))) {
     unauthorized();
   }
 
   const db = await getFirestore();
-  const preemRef = db.doc(path);
-
   return await db.runTransaction(async (transaction) => {
-    const preemDoc = await transaction.get(preemRef);
-    const newPreem = { ...preemDoc.data(), ...data };
-    const preemBrief: PreemBrief = {
-      id: preemId,
-      name: newPreem.name,
-      raceBrief: newPreem.raceBrief,
+    const ref = await getDocRef<Series>(path);
+    const doc = await transaction.get(ref);
+    const existingData = doc.data();
+    if (!existingData) {
+      throw new NotFoundError("Series doesn't exist");
+    }
+    const { name, startDate, endDate, organizationBrief } = existingData;
+    const seriesBrief: SeriesBrief = {
+      id: ref.id,
+      path: ref.path,
+      name: updates.name ?? name,
+      startDate: updates.startDate ?? startDate,
+      endDate: updates.endDate ?? endDate,
+      organizationBrief: organizationBrief,
     };
-    const descendantUpdates = await preparePreemDescendantUpdates(
-      transaction,
-      preemId,
-      preemBrief,
-    );
+    transaction.update(ref, updates);
 
-    transaction.update(preemRef, data);
-    for (const { ref, data } of descendantUpdates) {
-      transaction.update(ref, data);
+    let descendantUpdates: DocUpdate<unknown>[] = [];
+    if (updates.name || updates.startDate || updates.endDate) {
+      descendantUpdates = await prepareSeriesDescendantUpdates(
+        transaction,
+        path,
+        seriesBrief,
+      );
+      for (const { ref, updates } of descendantUpdates) {
+        transaction.update(ref, updates);
+      }
     }
 
-    return [newPreem, ...descendantUpdates.map((u) => u.data)];
+    return [{ ref, updates }, ...descendantUpdates];
   });
 };
 
-export const updateRaceAndDescendants = async (
-  authUser: AuthContextUser,
-  raceId: string,
-  data: Partial<Race>,
-) => {
-  const path = `races/${raceId}`;
-  if (!(await isUserAuthorized(authUser, path))) {
-    unauthorized();
-  }
+const prepareSeriesDescendantUpdates = async (
+  transaction: Transaction,
+  path: string,
+  seriesBrief: SeriesBrief,
+): Promise<DocUpdate<unknown>[]> => {
+  let updates: DocUpdate<unknown>[] = [];
+  const eventSnap = await transaction.get(
+    await getCollectionRef<Event>(getSubCollectionPath(path, 'events')),
+  );
 
-  const db = await getFirestore();
-  const raceRef = db.doc(path);
-
-  return await db.runTransaction(async (transaction) => {
-    const raceDoc = await transaction.get(raceRef);
-    const newRace = { ...raceDoc.data(), ...data };
-    const raceBrief: RaceBrief = {
-      id: raceId,
-      name: newRace.name,
-      startDate: newRace.startDate,
-      endDate: newRace.endDate,
-      eventBrief: newRace.eventBrief,
-    };
-    const descendantUpdates = await prepareRaceDescendantUpdates(
-      transaction,
-      raceId,
-      raceBrief,
-    );
-
-    transaction.update(raceRef, data);
-    for (const { ref, data } of descendantUpdates) {
-      transaction.update(ref, data);
-    }
-
-    return [newRace, ...descendantUpdates.map((u) => u.data)];
-  });
-};
-
-export const updateEventAndDescendants = async (
-  authUser: AuthContextUser,
-  eventId: string,
-  data: Partial<Event>,
-) => {
-  const path = `events/${eventId}`;
-  if (!(await isUserAuthorized(authUser, path))) {
-    unauthorized();
-  }
-
-  const db = await getFirestore();
-  const eventRef = db.doc(path);
-
-  return await db.runTransaction(async (transaction) => {
-    const eventDoc = await transaction.get(eventRef);
-    const newEvent = { ...eventDoc.data(), ...data };
-    const eventBrief: EventBrief = {
-      id: eventId,
-      name: newEvent.name,
-      startDate: newEvent.startDate,
-      endDate: newEvent.endDate,
-      seriesBrief: newEvent.seriesBrief,
+  for (const doc of eventSnap.docs) {
+    updates.push({ ref: doc.ref, updates: { seriesBrief } });
+    const newEventBrief: EventBrief = {
+      id: doc.id,
+      path: asDocPath(doc.ref.path),
+      name: doc.data().name,
+      startDate: doc.data().startDate,
+      endDate: doc.data().endDate,
+      seriesBrief,
     };
     const descendantUpdates = await prepareEventDescendantUpdates(
       transaction,
-      eventId,
+      doc.ref.path,
+      newEventBrief,
+    );
+    updates = updates.concat(descendantUpdates);
+  }
+  return updates;
+};
+
+export const updateEvent = async (
+  path: string,
+  updates: Pick<
+    Event,
+    'name' | 'website' | 'location' | 'description' | 'startDate' | 'endDate'
+  >,
+  authUser: AuthContextUser,
+) => {
+  if (!(await isUserAuthorized(authUser, path))) {
+    unauthorized();
+  }
+
+  const db = await getFirestore();
+  return await db.runTransaction(async (transaction) => {
+    const ref = await getDocRef<Event>(path);
+    const doc = await transaction.get(ref);
+    const existingData = doc.data();
+    if (!existingData) {
+      throw new NotFoundError("Event doesn't exist");
+    }
+    const { name, startDate, endDate, seriesBrief } = existingData;
+    const eventBrief: EventBrief = {
+      id: ref.id,
+      path: ref.path,
+      name: updates.name ?? name,
+      startDate: updates.startDate ?? startDate,
+      endDate: updates.endDate ?? endDate,
+      seriesBrief: seriesBrief,
+    };
+    transaction.update(ref, updates);
+
+    let descendantUpdates: DocUpdate<unknown>[] = [];
+    if (updates.name || updates.startDate || updates.endDate) {
+      descendantUpdates = await prepareEventDescendantUpdates(
+        transaction,
+        path,
+        eventBrief,
+      );
+      for (const { ref, updates } of descendantUpdates) {
+        transaction.update(ref, updates);
+      }
+    }
+
+    return [{ ref, updates }, ...descendantUpdates];
+  });
+};
+
+const prepareEventDescendantUpdates = async (
+  transaction: Transaction,
+  path: string,
+  eventBrief: EventBrief,
+): Promise<DocUpdate<unknown>[]> => {
+  let updates: DocUpdate<unknown>[] = [];
+  const raceSnap = await transaction.get(
+    await getCollectionRef<Race>(getSubCollectionPath(path, 'races')),
+  );
+
+  for (const doc of raceSnap.docs) {
+    updates.push({ ref: doc.ref, updates: { eventBrief } });
+    const newRaceBrief: RaceBrief = {
+      id: doc.id,
+      path: asDocPath(doc.ref.path),
+      name: doc.data().name,
+      startDate: doc.data().startDate,
+      endDate: doc.data().endDate,
       eventBrief,
+    };
+    const descendantUpdates = await prepareRaceDescendantUpdates(
+      transaction,
+      doc.ref.path,
+      newRaceBrief,
     );
-
-    transaction.update(eventRef, data);
-    for (const { ref, data } of descendantUpdates) {
-      transaction.update(ref, data);
-    }
-
-    return [newEvent, ...descendantUpdates.map((u) => u.data)];
-  });
+    updates = updates.concat(descendantUpdates);
+  }
+  return updates;
 };
 
-export const updateSeriesAndDescendants = async (
+export const updateRace = async (
+  path: string,
+  updates: Pick<
+    Race,
+    'name' | 'location' | 'description' | 'startDate' | 'endDate'
+  >,
   authUser: AuthContextUser,
-  seriesId: string,
-  data: Partial<Series>,
 ) => {
-  const path = `series/${seriesId}`;
   if (!(await isUserAuthorized(authUser, path))) {
     unauthorized();
   }
 
   const db = await getFirestore();
-  const seriesRef = db.doc(path);
-
   return await db.runTransaction(async (transaction) => {
-    const seriesDoc = await transaction.get(seriesRef);
-    const newSeries = { ...seriesDoc.data(), ...data };
-    const seriesBrief: SeriesBrief = {
-      id: seriesId,
-      name: newSeries.name,
-      startDate: newSeries.startDate,
-      endDate: newSeries.endDate,
-      organizationBrief: newSeries.organizationBrief,
+    const ref = await getDocRef<Race>(path);
+    const doc = await transaction.get(ref);
+    const existingData = doc.data();
+    if (!existingData) {
+      throw new NotFoundError("Race doesn't exist");
+    }
+    const { name, startDate, endDate, eventBrief } = existingData;
+    const raceBrief: RaceBrief = {
+      id: ref.id,
+      path: ref.path,
+      name: updates.name ?? name,
+      startDate: updates.startDate ?? startDate,
+      endDate: updates.endDate ?? endDate,
+      eventBrief: eventBrief,
     };
-    const descendantUpdates = await prepareSeriesDescendantUpdates(
-      transaction,
-      seriesId,
-      seriesBrief,
-    );
+    transaction.update(ref, updates);
 
-    transaction.update(seriesRef, data);
-    for (const { ref, data } of descendantUpdates) {
-      transaction.update(ref, data);
+    let descendantUpdates: DocUpdate<unknown>[] = [];
+    if (updates.name || updates.startDate || updates.endDate) {
+      descendantUpdates = await prepareRaceDescendantUpdates(
+        transaction,
+        path,
+        raceBrief,
+      );
+      for (const { ref, updates } of descendantUpdates) {
+        transaction.update(ref, updates);
+      }
     }
 
-    return [newSeries, ...descendantUpdates.map((u) => u.data)];
+    return [{ ref, updates }, ...descendantUpdates];
   });
 };
 
-export const updateOrganizationAndDescendants = async (
+const prepareRaceDescendantUpdates = async (
+  transaction: Transaction,
+  path: string,
+  raceBrief: RaceBrief,
+): Promise<DocUpdate<unknown>[]> => {
+  let updates: DocUpdate<unknown>[] = [];
+  const preemSnap = await transaction.get(
+    await getCollectionRef<Preem>(getSubCollectionPath(path, 'preems')),
+  );
+
+  for (const doc of preemSnap.docs) {
+    updates.push({ ref: doc.ref, updates: { raceBrief } });
+    const newPreemBrief: PreemBrief = {
+      id: doc.id,
+      path: asDocPath(doc.ref.path),
+      name: doc.data().name,
+      raceBrief,
+    };
+    const descendantUpdates = await preparePreemDescendantUpdates(
+      transaction,
+      doc.ref.path,
+      newPreemBrief,
+    );
+    updates = updates.concat(descendantUpdates);
+  }
+  return updates;
+};
+
+export const updatePreem = async (
+  path: string,
+  updates: Pick<Preem, 'name' | 'description'>,
   authUser: AuthContextUser,
-  orgId: string,
-  data: Partial<Organization>,
 ) => {
-  const path = `organizations/${orgId}`;
   if (!(await isUserAuthorized(authUser, path))) {
     unauthorized();
   }
 
   const db = await getFirestore();
-  const orgRef = db.doc(path);
-
   return await db.runTransaction(async (transaction) => {
-    const orgDoc = await transaction.get(orgRef);
-    const newOrg = { ...orgDoc.data(), ...data };
-    const organizationBrief: OrganizationBrief = {
-      id: orgId,
-      name: newOrg.name,
-    };
-    const descendantUpdates = await prepareOrganizationDescendantUpdates(
-      transaction,
-      orgId,
-      organizationBrief,
-    );
+    const ref = await getDocRef<Preem>(path);
+    const doc = await transaction.get(ref);
+    const fullPreem = doc.data();
+    if (!fullPreem) {
+      throw new NotFoundError("Preem doesn't exist");
+    }
+    const { name, raceBrief } = fullPreem;
+    const preemBrief: PreemBrief = {
+      id: ref.id,
+      path: ref.path,
 
-    transaction.update(orgRef, data);
-    for (const { ref, data } of descendantUpdates) {
-      transaction.update(ref, data);
+      name: updates.name ?? name,
+      raceBrief,
+    };
+    transaction.update(ref, updates);
+
+    // We only need to prepare descendent updates if the preem changed in a way
+    // to affect the descendent briefs.
+    let descendantUpdates: DocUpdate<unknown>[] = [];
+    if (updates.name) {
+      descendantUpdates = await preparePreemDescendantUpdates(
+        transaction,
+        path,
+        preemBrief,
+      );
+      for (const { ref, updates } of descendantUpdates) {
+        transaction.update(ref, updates);
+      }
     }
 
-    return [newOrg, ...descendantUpdates.map((u) => u.data)];
+    return [{ ref, updates }, ...descendantUpdates];
   });
+};
+
+const preparePreemDescendantUpdates = async (
+  transaction: Transaction,
+  path: string,
+  preemBrief: PreemBrief,
+): Promise<DocUpdate<unknown>[]> => {
+  const updates: DocUpdate<unknown>[] = [];
+  const contributionSnap = await transaction.get(
+    await getCollectionRef<Contribution>(
+      getSubCollectionPath(path, 'contributions'),
+    ),
+  );
+  contributionSnap.docs.forEach((doc) => {
+    updates.push({ ref: doc.ref, updates: { preemBrief } });
+  });
+  return updates;
 };

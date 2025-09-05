@@ -11,6 +11,7 @@
 
 import type { DocumentReference, Timestamp } from 'firebase-admin/firestore';
 import type Stripe from 'stripe';
+import { DocPath } from './paths';
 
 type RecursiveReplace<T, X, Y> = T extends X
   ? Y // If T is the type we're looking for, replace it with Y.
@@ -28,9 +29,32 @@ type ForClient<T> = RecursiveReplace<
 
 type DeepPartial<T> =
   // Don't change "id"
-  Pick<T, Extract<keyof T, 'id'>> & {
+  Pick<
+    T,
+    Extract<
+      keyof T,
+      | 'id'
+      | 'path'
+      | 'organizationBrief'
+      | 'seriesBrief'
+      | 'eventBrief'
+      | 'raceBrief'
+      | 'preemBrief'
+      | 'userBrief'
+    >
+  > & {
     // Make all other properties optional, recursively.
-    [P in Exclude<keyof T, 'id'>]?: T[P] extends (infer U)[]
+    [P in Exclude<
+      keyof T,
+      | 'id'
+      | 'path'
+      | 'organizationBrief'
+      | 'seriesBrief'
+      | 'eventBrief'
+      | 'raceBrief'
+      | 'preemBrief'
+      | 'userBrief'
+    >]?: T[P] extends (infer U)[]
       ? DeepPartial<U>[] // Recurse with the same "skip id" logic
       : T[P] extends object
         ? DeepPartial<T[P]> // Recurse with the same "skip id" logic
@@ -46,11 +70,18 @@ export interface Metadata {
   lastModifiedBy?: DocumentReference<User>;
 }
 
-export interface User {
+export interface BaseDoc {
   id: string;
-  path: string;
+  path: DocPath;
   metadata?: Metadata;
+}
 
+export interface BaseBrief {
+  id: string;
+  path: DocPath;
+}
+
+export interface User extends BaseDoc {
   termsAccepted?: boolean;
 
   name?: string;
@@ -64,18 +95,21 @@ export interface User {
   organizationRefs?: DocumentReference<Organization>[];
 }
 
-export interface UserBrief extends Partial<User> {
+export interface UserBrief {
   id: string;
+  path: string;
+
   name?: string;
   avatarUrl?: string;
 }
 
-export interface Organization {
+export interface Organization extends BaseDoc {
   id: string;
-  path: string;
+  path: DocPath;
   metadata?: Metadata;
 
   name?: string;
+  description?: string;
   website?: string;
   memberRefs?: DocumentReference<User>[];
   stripe?: {
@@ -84,65 +118,65 @@ export interface Organization {
   };
 }
 
-export interface OrganizationBrief extends Partial<Organization> {
-  id: string;
+export interface OrganizationBrief extends BaseBrief {
   name?: string;
 }
 
-export interface Contribution {
+export interface Series {
   id: string;
-  path: string;
-  metadata?: Metadata;
-  status?: 'pending' | 'confirmed' | 'failed';
-
-  contributor?: Partial<User>;
-  amount?: number;
-  date?: Timestamp;
-  message?: string;
-  isAnonymous?: boolean;
-  stripe?: {
-    paymentIntent: Stripe.PaymentIntent;
-  };
-
-  preemBrief?: PreemBrief;
-}
-
-// ?
-export interface ContributionBrief extends Partial<Contribution> {
-  id: string;
-  amount?: number;
-  date?: Timestamp;
-  message?: string;
-}
-
-export interface Preem {
-  id: string;
-  path: string;
+  path: DocPath;
   metadata?: Metadata;
 
   name?: string;
-  type?: 'Pooled' | 'One-Shot';
-  status?: 'Open' | 'Minimum Met' | 'Awarded';
-  prizePool?: number;
-  timeLimit?: Timestamp;
-  minimumThreshold?: number;
+  description?: string;
+  location?: string;
+  website?: string;
+  startDate?: Timestamp;
+  endDate?: Timestamp;
 
-  raceBrief?: RaceBrief;
+  organizationBrief: OrganizationBrief;
 }
 
-export interface PreemBrief extends Partial<Preem> {
-  id: string;
+export interface SeriesBrief extends BaseBrief {
   name?: string;
+  startDate?: Timestamp;
+  endDate?: Timestamp;
+
+  organizationBrief: OrganizationBrief;
 }
 
-export interface Race {
+export interface Event extends BaseDoc {
   id: string;
-  path: string;
+  path: DocPath;
   metadata?: Metadata;
 
   name?: string;
+  description?: string;
+  website?: string;
+  location?: string;
+  startDate?: Timestamp;
+  endDate?: Timestamp;
+
+  seriesBrief: SeriesBrief;
+}
+
+export interface EventBrief extends BaseBrief {
+  name?: string;
+  startDate?: Timestamp;
+  endDate?: Timestamp;
+
+  seriesBrief: SeriesBrief;
+}
+
+export interface Race extends BaseDoc {
+  id: string;
+  path: DocPath;
+  metadata?: Metadata;
+
+  name?: string;
+  description?: string;
   category?: string;
-  gender?: 'Women' | 'Men' | 'Open';
+  gender?: string;
   location?: string;
   courseDetails?: string;
   maxRacers?: number;
@@ -155,56 +189,58 @@ export interface Race {
   startDate?: Timestamp;
   endDate?: Timestamp;
 
-  eventBrief?: EventBrief;
+  eventBrief: EventBrief;
 }
 
-export interface RaceBrief extends Partial<Race> {
-  id: string;
+export interface RaceBrief extends BaseBrief {
   name?: string;
   startDate?: Timestamp;
   endDate?: Timestamp;
+
+  eventBrief: EventBrief;
 }
 
-export interface Event {
+export interface Preem extends BaseDoc {
   id: string;
-  path: string;
+  path: DocPath;
   metadata?: Metadata;
 
   name?: string;
-  website?: string;
-  location?: string;
-  startDate?: Timestamp;
-  endDate?: Timestamp;
+  description?: string;
+  type?: 'Pooled' | 'One-Shot';
+  status?: 'Open' | 'Minimum Met' | 'Awarded';
+  prizePool?: number;
+  timeLimit?: Timestamp;
+  minimumThreshold?: number;
 
-  seriesBrief?: SeriesBrief;
+  raceBrief: RaceBrief;
 }
 
-export interface EventBrief extends Partial<Event> {
-  id: string;
+export interface PreemBrief extends BaseBrief {
   name?: string;
-  startDate?: Timestamp;
-  endDate?: Timestamp;
-  seriesBrief?: SeriesBrief;
+
+  raceBrief: RaceBrief;
 }
 
-export interface Series {
-  id: string;
-  path: string;
-  metadata?: Metadata;
+export interface Contribution extends BaseDoc {
+  status?: 'pending' | 'confirmed' | 'failed';
 
-  name?: string;
-  location?: string;
-  website?: string;
-  startDate?: Timestamp;
-  endDate?: Timestamp;
+  contributor?: Partial<User>;
+  amount?: number;
+  date?: Timestamp;
+  message?: string;
+  isAnonymous?: boolean;
+  stripe?: {
+    paymentIntent: Stripe.PaymentIntent;
+  };
 
-  organizationBrief?: OrganizationBrief;
+  preemBrief: PreemBrief;
 }
 
-export interface SeriesBrief extends Partial<Series> {
-  id: string;
-  name?: string;
-  startDate?: Timestamp;
-  endDate?: Timestamp;
-  organizationBrief?: OrganizationBrief;
+export interface ContributionBrief extends BaseBrief {
+  amount?: number;
+  date?: Timestamp;
+  message?: string;
+
+  preemBrief: PreemBrief;
 }

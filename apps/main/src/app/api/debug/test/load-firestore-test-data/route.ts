@@ -1,17 +1,29 @@
 import { getFirestore } from '@/firebase-admin';
 import { seedFirestore } from '@/datastore/seed-firestore';
-import { NextRequest, NextResponse } from 'next/server';
+import { NextResponse } from 'next/server';
 import { AuthError, verifyUserRole } from '@/auth/claims';
 
-export async function POST(request: NextRequest) {
+async function clearFirestore() {
+  const db = await getFirestore();
+  const collections = await db.listCollections();
+  for (const collection of collections) {
+    const docs = await collection.listDocuments();
+    for (const doc of docs) {
+      await doc.delete();
+    }
+  }
+}
+
+export async function POST() {
   try {
     await verifyUserRole('admin');
 
+    await clearFirestore();
     const db = await getFirestore();
     await seedFirestore(db);
 
     return NextResponse.json({
-      message: 'Firestore seeded successfully.',
+      message: 'Firestore cleared and seeded successfully.',
     });
   } catch (error) {
     if (error instanceof AuthError) {

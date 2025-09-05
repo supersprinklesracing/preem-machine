@@ -1,5 +1,6 @@
 'use client';
 
+import { toUrlPath } from '@/datastore/paths';
 import { useAuth } from '@/auth/AuthContext';
 import { checkEmailVerification, logout } from '@/auth/client-util';
 import UpdateUserProfileCard from '@/components/UpdateUserProfileCard';
@@ -25,14 +26,14 @@ import { unauthorized, useRouter } from 'next/navigation';
 import { useState } from 'react';
 import { useLoadingCallback } from 'react-loading-hook';
 import { PreferencesPanel } from './PreferencesPanel';
-import { UpdateUserOptions } from './update-user-action';
+import { EditUserOptions } from './edit-user-action';
+
+import { FormActionResult } from '@/components/forms/forms';
 
 export function AccountDetails({
-  updateUserAction,
+  editUserAction,
 }: {
-  updateUserAction: (
-    options: UpdateUserOptions,
-  ) => Promise<{ ok: boolean; error?: string }>;
+  editUserAction: (options: EditUserOptions) => Promise<FormActionResult>;
 }) {
   const router = useRouter();
   const { authUser } = useAuth();
@@ -88,12 +89,8 @@ export function AccountDetails({
 
     try {
       const path = `users/${currentUser.id}`;
-      const result = await updateUserAction({ path, user });
-      if (result.ok) {
-        router.refresh();
-      } else {
-        setSubmissionError(result.error || 'An unknown error occurred.');
-      }
+      await editUserAction({ path, edits: user });
+      router.refresh();
     } catch (error) {
       console.error('Failed to save user data:', error);
       setSubmissionError(
@@ -129,7 +126,11 @@ export function AccountDetails({
         <Stack>
           <Group justify="space-between">
             <Title order={3}>Account</Title>
-            <Button component={Link} href={`/user/${authUser.uid}`} size="xs">
+            <Button
+              component={Link}
+              href={`/${toUrlPath(currentUser.path)}`}
+              size="xs"
+            >
               View My Public Profile
             </Button>
           </Group>

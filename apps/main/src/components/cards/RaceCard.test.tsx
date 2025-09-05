@@ -1,41 +1,49 @@
 import { render, screen } from '@/test-utils';
 import RaceCard from './RaceCard';
-import { RaceWithPreems } from '@/datastore/firestore';
-import { ClientCompat } from '@/datastore/types';
 
-const mockRace: ClientCompat<RaceWithPreems> = {
-  id: 'race-1',
-  name: 'Test Race',
-  category: 'Category A',
-  gender: 'Men',
-  courseDetails: 'A beautiful course.',
-  currentRacers: 10,
-  maxRacers: 100,
-  duration: '60 minutes',
-  laps: 20,
-  eventBrief: {
-    id: 'event-1',
-    name: 'Test Event',
-    startDate: new Date().toISOString(),
-    location: 'Test Location',
+const mockData = {
+  race: {
+    id: 'race-1',
+    path: 'organizations/org-1/series/series-1/events/event-1/races/race-1',
+    name: 'Test Race',
+    category: 'Category A',
+    gender: 'Men',
+    courseDetails: 'A beautiful course.',
+    currentRacers: 10,
+    maxRacers: 100,
+    duration: '60 minutes',
+    laps: 20,
+    eventBrief: {
+      id: 'event-1',
+      path: 'organizations/org-1/series/series-1/events/event-1',
+      name: 'Test Event',
+      startDate: new Date().toISOString(),
+      location: 'Test Location',
+    },
   },
-  preems: [
+  children: [
     {
-      id: 'preem-1',
-      prizePool: 100,
-      contributions: [],
+      preem: {
+        id: 'preem-1',
+        path: 'organizations/org-1/series/series-1/events/event-1/races/race-1/preems/preem-1',
+        prizePool: 100,
+      },
+      children: [],
     },
     {
-      id: 'preem-2',
-      prizePool: 50,
-      contributions: [],
+      preem: {
+        id: 'preem-2',
+        path: 'organizations/org-1/series/series-1/events/event-1/races/race-1/preems/preem-2',
+        prizePool: 50,
+      },
+      children: [],
     },
   ],
 };
 
 describe('RaceCard', () => {
   it('renders race details correctly', () => {
-    render(<RaceCard race={mockRace} />);
+    render(<RaceCard race={mockData.race} preems={mockData.children} />);
 
     expect(screen.getByText('Test Race')).toBeInTheDocument();
     expect(screen.getByText('Category A - Men')).toBeInTheDocument();

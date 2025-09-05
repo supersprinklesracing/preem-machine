@@ -1,11 +1,7 @@
-import { render, screen } from '@/test-utils';
-import React from 'react';
-import AdminPage from './page';
-import { createMockDb } from '@/datastore/mock-db';
-import { getFirestore } from '@/firebase-admin';
-import type { Firestore } from 'firebase-admin/firestore';
+import '@/matchMedia.mock';
+import { render, screen, setupMockDb } from '@/test-utils';
 import Admin from './Admin';
-import '../../../matchMedia.mock';
+import AdminPage from './page';
 
 // Mock dependencies
 jest.mock('./Admin', () => ({
@@ -13,11 +9,7 @@ jest.mock('./Admin', () => ({
   default: jest.fn(() => <div>Mock Admin</div>),
 }));
 
-let firestore: Firestore;
-beforeAll(async () => {
-  firestore = await getFirestore();
-  (firestore as any).database = createMockDb(firestore);
-});
+setupMockDb();
 
 describe('AdminPage component', () => {
   it('should fetch admin data and render the Admin component', async () => {
@@ -28,6 +20,6 @@ describe('AdminPage component', () => {
 
     // Assert that Admin was called with the users from the mock DB
     const adminCalls = (Admin as jest.Mock).mock.calls;
-    expect(adminCalls[0][0].data.users.length).toBe(5); // The mock DB has 5 users
+    expect(adminCalls[0][0].users.length).toBe(7); // The mock DB has 7 users
   });
 });

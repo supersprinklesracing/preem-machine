@@ -1,7 +1,6 @@
-import { render, screen, fireEvent, act } from '@/test-utils';
-import React from 'react';
+import '@/matchMedia.mock';
+import { act, fireEvent, render, screen } from '@/test-utils';
 import { AccountDebug } from './AccountDebug';
-import '../../../../matchMedia.mock';
 
 // Mock dependencies
 jest.mock('next/navigation', () => ({

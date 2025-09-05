@@ -1,5 +1,6 @@
 'use client';
 
+import { toUrlPath } from '@/datastore/paths';
 import type { Contribution, ClientCompat } from '@/datastore/types';
 import {
   Avatar,
@@ -14,16 +15,12 @@ import { useMediaQuery } from '@mantine/hooks';
 import Link from 'next/link';
 import { CSSProperties } from 'react';
 
-export interface LiveContributionFeedData {
+interface LiveContributionFeedProps {
   contributions: ClientCompat<Contribution>[];
 }
 
-interface LiveContributionFeedProps {
-  data: LiveContributionFeedData;
-}
-
 export default function LiveContributionFeed({
-  data,
+  contributions,
 }: LiveContributionFeedProps) {
   const theme = useMantineTheme();
   const isLargeScreen = useMediaQuery(`(min-width: ${theme.breakpoints.lg})`);
@@ -40,11 +37,13 @@ export default function LiveContributionFeed({
     ? { flexGrow: 1, overflowY: 'auto', height: '100%' }
     : {};
 
-  const contributionFeed = data.contributions.map((c) => {
+  const contributionFeed = contributions.map((c) => {
     const contributor = c.contributor;
     return (
       <Group key={c.id} wrap="nowrap">
-        <Link href={contributor?.id ? `/user/${contributor?.id}` : '#'}>
+        <Link
+          href={contributor?.path ? `/${toUrlPath(contributor.path)}` : '#'}
+        >
           <Avatar
             src={contributor?.avatarUrl}
             alt={contributor?.name}
@@ -55,7 +54,7 @@ export default function LiveContributionFeed({
           <Text size="sm">
             <Text
               component={Link}
-              href={contributor?.id ? `/user/${contributor.id}` : '#'}
+              href={contributor?.path ? `/${toUrlPath(contributor.path)}` : '#'}
               fw={600}
               style={{ textDecoration: 'none', color: 'inherit' }}
             >
@@ -68,7 +67,7 @@ export default function LiveContributionFeed({
             to{' '}
             <Text
               component={Link}
-              href={`/preem/${c.preemBrief?.id}`}
+              href={`/${toUrlPath(c.preemBrief.path)}`}
               style={{ textDecoration: 'none', color: 'inherit' }}
             >
               &quot;{c.preemBrief?.name}&quot;
@@ -76,11 +75,11 @@ export default function LiveContributionFeed({
             in the{' '}
             <Text
               component={Link}
-              href={`/race/${c.preemBrief?.raceBrief?.id}`}
+              href={`/${toUrlPath(c.preemBrief.raceBrief.path)}`}
               fw={600}
               style={{ textDecoration: 'none', color: 'inherit' }}
             >
-              &quot;{c.preemBrief?.raceBrief?.name}&quot;
+              &quot;{c.preemBrief.raceBrief.name}&quot;
             </Text>{' '}
             race!
           </Text>
@@ -103,7 +102,7 @@ export default function LiveContributionFeed({
         Real-time contributions as they happen.
       </Text>
       <Stack mt="md" style={stackStyle}>
-        {data.contributions.length === 0 ? (
+        {contributions.length === 0 ? (
           <Text c="dimmed" ta="center" py="xl">
             Waiting for contributions...
           </Text>
