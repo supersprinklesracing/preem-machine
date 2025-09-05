@@ -17,7 +17,7 @@ interface SyncOptions {
   githubToken: string;
   githubRepo: string; // Format: "owner/repo"
   projectId: string;
-  envFilePath?: string;
+  envFile?: string;
 }
 
 /**
@@ -35,7 +35,7 @@ async function encryptSecret(
 }
 
 export async function syncSecrets(options: SyncOptions) {
-  const { githubToken, githubRepo, projectId, envFilePath = '.env' } = options;
+  const { githubToken, githubRepo, projectId, envFile = '.env' } = options;
   const [owner, repo] = githubRepo.split('/');
 
   // --- API Clients ---
@@ -48,12 +48,12 @@ export async function syncSecrets(options: SyncOptions) {
 
   try {
     // 1. Read and parse the local .env file to get the desired state
-    if (!fs.existsSync(envFilePath)) {
-      throw new Error(`Environment file not found at '${envFilePath}'`);
+    if (!fs.existsSync(envFile)) {
+      throw new Error(`Environment file not found at '${envFile}'`);
     }
-    const envConfig = dotenv.parse(fs.readFileSync(envFilePath));
+    const envConfig = dotenv.parse(fs.readFileSync(envFile));
     const localSecretKeys = Object.keys(envConfig);
-    console.log(`Found ${localSecretKeys.length} secrets in ${envFilePath}`);
+    console.log(`Found ${localSecretKeys.length} secrets in ${envFile}`);
 
     // --- GitHub Sync ---
     console.log('\n--- Syncing GitHub Secrets ---');
@@ -205,12 +205,11 @@ export const secretsCommand = {
         description: 'GitHub repo in owner/repo format',
         demandOption: true,
       })
-      .option('env-file-path', {
+      .option('env-file', {
         type: 'string',
         description: 'Path to .env file',
-        default: '.env',
-      })
-      .demandOption('project');
+        demandOption: true,
+      });
   },
   // eslint-disable-next-line @typescript-eslint/no-explicit-any
   handler: async (argv: any) => {
@@ -218,7 +217,7 @@ export const secretsCommand = {
       githubToken: argv.githubToken,
       githubRepo: argv.githubRepo,
       projectId: argv.project,
-      envFilePath: argv.envFilePath,
+      envFile: argv.envFile,
     });
   },
 };

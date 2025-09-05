@@ -16,6 +16,7 @@ async function main() {
       alias: 'p',
       type: 'string',
       description: 'The Firebase project ID',
+      demandOption: true,
     })
     .middleware((argv) => {
       if (argv.project) {
