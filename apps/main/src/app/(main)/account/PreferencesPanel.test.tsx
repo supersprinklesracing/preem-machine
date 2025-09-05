@@ -1,8 +1,7 @@
-import { render, screen, fireEvent } from '@/test-utils';
-import React from 'react';
-import { PreferencesPanel } from './PreferencesPanel';
+import '@/matchMedia.mock';
+import { fireEvent, render, screen } from '@/test-utils';
 import { useMantineColorScheme } from '@mantine/core';
-import '../../../matchMedia.mock';
+import { PreferencesPanel } from './PreferencesPanel';
 
 // Mock @mantine/core
 jest.mock('@mantine/core', () => ({

@@ -1,7 +1,7 @@
 import { render, screen } from '@/test-utils';
 import React from 'react';
 import DateStatusBadge from './DateStatusBadge';
-import '../matchMedia.mock';
+import '@/matchMedia.mock';
 
 describe('DateStatusBadge', () => {
   it('should render "Upcoming" for a future event', () => {

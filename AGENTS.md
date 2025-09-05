@@ -42,11 +42,39 @@ This project uses `husky` and `lint-staged` to enforce code quality standards on
 
 **Recommended Flags:** You **must** pass `--tuiAutoExit --outputStyle=stream` to `npx nx` commands for optimal performance in this environment.
 
+### Critical: Quoting File Paths in Shell Commands
+
+You **MUST ALWAYS** quote filenames and paths in shell commands. Failure to do so will cause commands to fail, especially with file paths that contain special characters such as spaces, parentheses, or brackets.
+
+#### Quoting Examples
+
+Proper quoting is essential for commands to execute correctly. Here are examples of common mistakes and their correct versions:
+
+- **Incorrect (spaces):** `git mv apps/main/src/app/(main)/new race/page.tsx apps/main/src/app/(main)/new-race/page.tsx`
+  - **Why it's wrong:** The shell interprets the space as a separator for arguments, leading to incorrect file paths.
+  - **Correct:** `git mv "apps/main/src/app/(main)/new race/page.tsx" "apps/main/src/app/(main)/new-race/page.tsx"`
+
+- **Incorrect (special characters):** `ls apps/main/src/app/(main)/layout.tsx`
+  - **Why it's wrong:** Parentheses `()` are special characters in the shell and can cause syntax errors.
+  - **Correct:** `ls "apps/main/src/app/(main)/layout.tsx"`
+
+- **Incorrect (unnecessary escaping):** `git grep "myFunction\(\)"`
+  - **Why it's wrong:** Double escaping can lead to the pattern not being found. `git grep` handles special characters in its search pattern when quoted.
+  - **Correct:** `git grep "myFunction()"`
+
+- **Incorrect (glob patterns):** `find apps/main/src/app/(main) -name "*[]/page.tsx"`
+  - **Why it's wrong:** Complex glob patterns with special characters are prone to errors.
+  - **Correct:** Use the `glob` tool instead of `find` for complex pattern matching.
+
+- **Incorrect (read_file with unquoted path):** `read_file "apps/main/src/app/(main)/layout.tsx"`
+  - **Why it's wrong:** The tool expects a single, quoted path. Unquoted paths with special characters will fail.
+  - **Correct:** `read_file "apps/main/src/app/(main)/layout.tsx"`
+
 ### Building & Running
 
 - **Run Dev Server:** `npx nx --tuiAutoExit --outputStyle=stream dev main --no-color`
 - **Verify Build:** `npx nx --tuiAutoExit --outputStyle=stream run @preem-machine/main:build:verify --no-color`
-- **Production Bundle:** `npx nx --tuiAutoExit --outputStyle=stream run @preem-machine/main:build:production --no-color`
+- **Production Bundle:** `npx nx --tuiAutoExit --outputStyle=stream run @preem-machine/main:build:production --no-colo`
 - **Run All Unit Tests:** `npx nx --tuiAutoExit --outputStyle=stream test main --no-color --forceExit`
 - **Run Single Unit Test:** `npx nx --tuiAutoExit --outputStyle=stream run main:test --no-color --forceExit --testFile="${TEST_FILE}"`
 - **Run E2E Tests:** `npx nx --tuiAutoExit --outputStyle=stream e2e e2e-main --no-color`
@@ -63,10 +91,30 @@ ESLint, Prettier, and Stylelint are used to maintain a consistent code style.
 
 ### File System & Search Tools
 
-- **Use Git-based commands** for file operations to automatically ignore build artifacts and other non-project files.
-  - **List Files:** `git ls-files`
-  - **Search Content:** `git grep`
-- **Quoting:** You **MUST ALWAYS** quote filenames in shell commands. This is not optional. It is required to prevent errors with file paths that contain special characters. Example: `"apps/main/src/app/(main)/layout.tsx"`.
+This project provides a variety of tools for interacting with the file system. Choose the best tool for the job to ensure your commands are safe, effective, and respect the project's structure.
+
+#### **1. Codebase Search (`git grep`)**
+
+For most codebase searches, `git grep` is the preferred tool. It is fast, powerful, and automatically ignores files listed in `.gitignore`, ensuring that search results are focused on relevant source code.
+
+- **Usage:** `git grep "search pattern"`
+- **Example:** `git grep "newRaceAction"`
+
+#### **2. Targeted File Search (Built-in Tools)**
+
+For more specific file system operations, the built-in tools offer more direct access and control.
+
+- **Reading Files:**
+  - `read_file`: To read the full content of a single file.
+  - `read_many_files`: To read the full content of multiple files at once.
+- **Finding Files by Path:**
+  - `glob`: To find files based on path patterns (e.g., `apps/main/src/**/*.tsx`).
+- **Searching Content with Regex:**
+  - `search_file_content`: To search for a specific regex pattern within a targeted set of files (defined by a glob). Use this when your search requires a complex regex that `git grep` might not support well, or when you need to search outside of a git repository.
+
+#### **3. Listing Tracked Files (`git ls-files`)**
+
+To get a list of all files tracked by Git (respecting `.gitignore`), use `git ls-files`. This is useful for discovery or for piping to other commands.
 
 ## 5. Testing Guide
 
@@ -113,34 +161,28 @@ For server components that interact with Firestore, refer to the **Mocking `fire
 #### Mocking `firestore`
 
 - **Reference:** `apps/main/src/datastore/mock-db.test.ts`
-- **Concept:** The testing strategy is to mock the entire Firestore database, render the component, and verify that it displays the mock data correctly.
+- **Concept:** The testing strategy is to mock the entire Firestore database before tests run. This allows components to interact with a realistic, in-memory version of the database.
 - **Procedure:**
-  1.  Import `createMockDb` from `@/datastore/mock-db`.
-  2.  Import the real Firestore instance using `getFirestore` from `@/firebase-admin`.
-  3.  In a `beforeAll` or `beforeEach` block, create and inject the mock database:
+  1.  Import `setupMockDb` from `@/test-utils`.
+  2.  Call `setupMockDb()` at the top level of your test file's `describe` block. This function automatically sets up the mock database in a `beforeAll` hook.
 
       ```typescript
-      import { createMockDb } from '@/datastore/mock-db';
-      import { getFirestore } from '@/firebase-admin';
-      import type { Firestore } from 'firebase-admin/firestore';
+      import { setupMockDb } from '@/test-utils';
 
-      let firestore: Firestore;
-      beforeAll(async () => {
-        firestore = await getFirestore();
-        (firestore as any).database = createMockDb(firestore);
-        // Seed the mock database with any data needed for the test
+      describe('MyTestSuite', () => {
+        setupMockDb();
+
+        it('should interact with the mock database', async () => {
+          // Your test logic here
+        });
       });
       ```
 
-  4.  Since Server Components can be asynchronous, your test function must be `async`.
-  5.  Render the component. React Testing Library's `render` function will wait for the async component to resolve.
-  6.  Use `screen.findByText(...)` to assert that the content derived from your mock data is present.
-
 > **Important:**
->
+> 
 > - You should not need to modify `mock-db.ts`; the existing data is sufficient for testing.
-> - **Never** access the mock database directly in your tests.
-> - Do not mock individual Firestore functions (e.g., `(firestore.getRenderableRaceDataForPage as jest.Mock).mockResolvedValue(...)`). This approach is incorrect and will not work with the Firestore instance. You **must** follow the procedure above by creating a mock database with `createMockDb` and seeding it with test data.
+> - **Never** access the mock database directly in your tests. Your components should interact with Firestore as they normally would.
+> - Do not mock individual Firestore functions (e.g., `(firestore.getRenderableRaceDataForPage as jest.Mock).mockResolvedValue(...)`). This approach is incorrect and will not work with the Firestore instance. You **must** use `setupMockDb` to ensure the entire database is mocked correctly.
 
 #### Handling Asynchronous Operations
 

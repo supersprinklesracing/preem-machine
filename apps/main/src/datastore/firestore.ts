@@ -1,18 +1,11 @@
 import 'server-only';
 
 import { getFirestore } from '@/firebase-admin';
+import { docId, DocPath } from './paths';
 import type { firestore } from 'firebase-admin';
+import { DocumentSnapshot } from 'firebase-admin/firestore';
 import { cache } from 'react';
-import type { AdminPageData } from '../app/(main)/admin/Admin';
-import type { HomePageData } from '../app/(main)/Home';
-import type { HubPageData } from '../app/(main)/manage/(live)/Hub';
-import type { OrganizationPageData } from '../app/(main)/organization/[id]/Organization';
-import type { PreemPageData } from '../app/(main)/preem/[id]/Preem';
-import type { RacePageData } from '../app/(main)/race/[id]/Race';
-import type { SeriesPageData } from '../app/(main)/series/[id]/Series';
-import type { UserPageData } from '../app/(main)/user/[[...id]]/User';
-import { verifyAuthUser } from '../auth/user';
-import { genericConverter } from './converters';
+import { clientConverter } from './converters';
 import type {
   ClientCompat,
   Contribution,
@@ -23,155 +16,180 @@ import type {
   Series,
   User,
 } from './types';
+import { notFound } from './errors';
 
-export type RaceWithPreems = ClientCompat<
-  Race & {
-    preems: PreemWithContributions[];
-  }
->;
-export type EventWithRaces = ClientCompat<Event & { races: RaceWithPreems[] }>;
-export type SeriesWithEvents = ClientCompat<
-  Series & { events: EventWithRaces[] }
->;
-export type PreemWithContributions = ClientCompat<
-  Preem & {
-    contributions: Contribution[];
-  }
->;
+export interface PreemWithContributions {
+  preem: ClientCompat<Preem>;
+  children: ClientCompat<Contribution>[];
+}
+export interface RaceWithPreems {
+  race: ClientCompat<Race>;
+  children: PreemWithContributions[];
+}
+export interface EventWithRaces {
+  event: ClientCompat<Event>;
+  children: RaceWithPreems[];
+}
+export interface SeriesWithEvents {
+  series: ClientCompat<Series>;
+  children: EventWithRaces[];
+}
+export interface OrganizationWithSeries {
+  organization: ClientCompat<Organization>;
+  children: SeriesWithEvents[];
+}
 
-const getContributionsForPreem = async (
-  preemDoc: firestore.QueryDocumentSnapshot<ClientCompat<Preem>>,
+const _getDocSnap = async <T>(
+  path: string,
+): Promise<DocumentSnapshot<ClientCompat<T>>> => {
+  const db = await getFirestore();
+
+  // The converter now correctly receives the base type `T`
+  // and will return the expected `ClientCompat<T>`.
+  return await db.doc(path).withConverter(clientConverter<T>()).get();
+};
+export const getDocSnap = cache(_getDocSnap);
+
+const _getDoc = async <T>(path: string): Promise<ClientCompat<T>> => {
+  const data = (await getDocSnap<T>(path)).data();
+  if (!data) {
+    notFound('Doc not found');
+  }
+  return data;
+};
+export const getDoc = cache(_getDoc);
+
+const getPreemWithContributions = async (
+  preemDoc: firestore.DocumentSnapshot<ClientCompat<Preem>>,
 ): Promise<PreemWithContributions> => {
   const preem = preemDoc.data();
+  if (!preem) {
+    notFound('Preem not found');
+  }
   const contributionsSnap = await preemDoc.ref
     .collection('contributions')
-    .withConverter(genericConverter<Contribution>())
+    .withConverter(clientConverter<Contribution>())
     .get();
-  const contributions = contributionsSnap.docs.map((doc) => doc.data());
-  return { ...preem, contributions };
+  return {
+    preem,
+    children: contributionsSnap.docs.map((doc) => doc.data()),
+  };
 };
 
-const getPreemsForRace = async (
-  raceDoc: firestore.QueryDocumentSnapshot<ClientCompat<Race>>,
+const getRaceWithPreems = async (
+  raceDoc: firestore.DocumentSnapshot<ClientCompat<Race>>,
 ): Promise<RaceWithPreems> => {
-  const race = raceDoc.data();
-  const preemsSnap = await raceDoc.ref
+  const result: RaceWithPreems = {
+    // eslint-disable-next-line @typescript-eslint/no-non-null-assertion
+    race: raceDoc.data()!,
+    children: [],
+  };
+  const snap = await raceDoc.ref
     .collection('preems')
-    .withConverter(genericConverter<Preem>())
+    .withConverter(clientConverter<Preem>())
     .get();
-  const preems = await Promise.all(
-    preemsSnap.docs.map(getContributionsForPreem),
-  );
-  return { ...race, preems };
+  for (const doc of snap.docs) {
+    result.children.push(await getPreemWithContributions(doc));
+  }
+  return result;
 };
 
 const getRacesForEvent = async (
-  eventDoc: firestore.QueryDocumentSnapshot<ClientCompat<Event>>,
+  eventDoc: firestore.DocumentSnapshot<ClientCompat<Event>>,
 ): Promise<EventWithRaces> => {
-  const event = eventDoc.data();
-  const racesSnap = await eventDoc.ref
+  const result: EventWithRaces = {
+    // eslint-disable-next-line @typescript-eslint/no-non-null-assertion
+    event: eventDoc.data()!,
+    children: [],
+  };
+  const snap = await eventDoc.ref
     .collection('races')
-    .withConverter(genericConverter<Race>())
+    .withConverter(clientConverter<Race>())
     .get();
-  const races = await Promise.all(racesSnap.docs.map(getPreemsForRace));
-  return { ...event, races };
+  for (const doc of snap.docs) {
+    result.children.push(await getRaceWithPreems(doc));
+  }
+  return result;
 };
 
 const getEventsForSeries = async (
-  seriesDoc: firestore.QueryDocumentSnapshot<ClientCompat<Series>>,
-): Promise<ClientCompat<SeriesWithEvents>> => {
-  const series = seriesDoc.data();
-  const eventsSnap = await seriesDoc.ref
+  seriesDoc: firestore.DocumentSnapshot<ClientCompat<Series>>,
+): Promise<SeriesWithEvents> => {
+  const result: SeriesWithEvents = {
+    // eslint-disable-next-line @typescript-eslint/no-non-null-assertion
+    series: seriesDoc.data()!,
+    children: [],
+  };
+  const snap = await seriesDoc.ref
     .collection('events')
-    .withConverter(genericConverter<ClientCompat<Event>>())
+    .withConverter(clientConverter<Event>())
     .get();
-  const events = await Promise.all(eventsSnap.docs.map(getRacesForEvent));
-  return { ...series, events };
+  for (const doc of snap.docs) {
+    result.children.push(await getRacesForEvent(doc));
+  }
+  return result;
 };
 
-export const getUsers = cache(async (): Promise<ClientCompat<User>[]> => {
+export const getSeriesForOrganization = async (
+  organizationDoc: firestore.DocumentSnapshot<ClientCompat<Organization>>,
+): Promise<SeriesWithEvents[]> => {
+  const snap = await organizationDoc.ref
+    .collection('series')
+    .withConverter(clientConverter<Series>())
+    .get();
+  return Promise.all(snap.docs.map(getEventsForSeries));
+};
+
+export const getOrganizationWithSeries = async (
+  organizationDoc: firestore.DocumentSnapshot<ClientCompat<Organization>>,
+): Promise<OrganizationWithSeries> => {
+  const result: OrganizationWithSeries = {
+    // eslint-disable-next-line @typescript-eslint/no-non-null-assertion
+    organization: organizationDoc.data()!,
+    children: [],
+  };
+  result.children = await getSeriesForOrganization(organizationDoc);
+  return result;
+};
+
+export const getUsers = cache(async () => {
   const db = await getFirestore();
   const usersSnap = await db
     .collection('users')
-    .withConverter(genericConverter<User>())
+    .withConverter(clientConverter<User>())
     .get();
   return usersSnap.docs.map((doc) => doc.data());
 });
 
 export const getUserById = cache(
-  async (id: string | undefined): Promise<ClientCompat<User> | undefined> => {
-    if (!id) {
-      return undefined;
-    }
+  async (id: string): Promise<ClientCompat<User>> => {
     const db = await getFirestore();
     const docSnap = await db
       .collection('users')
       .doc(id)
-      .withConverter(genericConverter<User>())
+      .withConverter(clientConverter<User>())
       .get();
-    return docSnap.data();
-  },
-);
-
-export const getOrganizationById = cache(
-  async (id: string): Promise<ClientCompat<Organization> | undefined> => {
-    const db = await getFirestore();
-    const docSnap = await db
-      .collection('organizations')
-      .doc(id)
-      .withConverter(genericConverter<Organization>())
-      .get();
-    return docSnap.data();
-  },
-);
-
-export const getSeriesById = cache(
-  async (id: string): Promise<ClientCompat<Series> | undefined> => {
-    const db = await getFirestore();
-    const seriesSnap = await db
-      .collectionGroup('series')
-      .where('id', '==', id)
-      .withConverter(genericConverter<Series>())
-      .limit(1)
-      .get();
-    if (seriesSnap.empty) {
-      return undefined;
+    if (!docSnap.exists) {
+      notFound('User not found');
     }
-    return seriesSnap.docs[0].data();
-  },
-);
-
-export const getEventById = cache(
-  async (id: string): Promise<ClientCompat<Event> | undefined> => {
-    const db = await getFirestore();
-    const eventSnap = await db
-      .collectionGroup('events')
-      .where('id', '==', id)
-      .withConverter(genericConverter<Event>())
-      .limit(1)
-      .get();
-    if (eventSnap.empty) {
-      return undefined;
-    }
-    return eventSnap.docs[0].data();
+    // eslint-disable-next-line @typescript-eslint/no-non-null-assertion
+    return docSnap.data()!;
   },
 );
 
 export const getOrganizationByStripeConnectAccountId = async (
   accountId: string,
-): Promise<
-  firestore.QueryDocumentSnapshot<ClientCompat<Organization>> | undefined
-> => {
+) => {
   const db = await getFirestore();
   const orgsSnap = await db
     .collection('organizations')
     .where('stripe.connectAccountId', '==', accountId)
-    .withConverter(genericConverter<Organization>())
+    .withConverter(clientConverter<Organization>())
     .limit(1)
     .get();
 
   if (orgsSnap.empty) {
-    return undefined;
+    notFound('Organization not found.');
   }
   return orgsSnap.docs[0];
 };
@@ -186,20 +204,11 @@ export const getUsersByIds = cache(
     const usersSnap = await db
       .collection('users')
       .where('id', 'in', uniqueIds)
-      .withConverter(genericConverter<User>())
+      .withConverter(clientConverter<User>())
       .get();
     return usersSnap.docs.map((doc) => doc.data());
   },
 );
-
-export const getAllRaces = cache(async (): Promise<ClientCompat<Race>[]> => {
-  const db = await getFirestore();
-  const racesSnap = await db
-    .collectionGroup('races')
-    .withConverter(genericConverter<Race>())
-    .get();
-  return racesSnap.docs.map((doc) => doc.data());
-});
 
 export const getEventsForOrganizations = cache(
   async (organizationIds: string[]): Promise<ClientCompat<Event>[]> => {
@@ -216,7 +225,7 @@ export const getEventsForOrganizations = cache(
       .where('seriesBrief.organizationBrief.id', 'in', organizationIds)
       .where('endDate', '>=', oneDayAgo)
       .orderBy('endDate', 'asc')
-      .withConverter(genericConverter<Event>())
+      .withConverter(clientConverter<Event>())
       .get();
     console.log(
       'Events',
@@ -238,98 +247,60 @@ export const getEventsForUser = cache(
   },
 );
 
-export const getRenderablePreemDataForPage = cache(
-  async (id: string): Promise<PreemPageData | undefined> => {
-    const db = await getFirestore();
-    const preemSnap = await db
-      .collectionGroup('preems')
-      .where('id', '==', id)
-      .withConverter(genericConverter<Preem>())
-      .limit(1)
-      .get();
-    if (preemSnap.empty) {
-      return undefined;
-    }
+export const getRenderablePreemDataForPage = cache(async (path: DocPath) => {
+  const preemDocSnap = await getDocSnap<Preem>(path);
+  if (!preemDocSnap.exists) {
+    notFound('Preem not found');
+  }
 
-    const preem = await getContributionsForPreem(preemSnap.docs[0]);
+  return await getPreemWithContributions(preemDocSnap);
+});
 
-    return {
-      preem: preem as unknown as PreemPageData['preem'],
-    };
-  },
-);
+export const getRenderableRaceDataForPage = cache(async (path: DocPath) => {
+  const raceSnap = await getDocSnap<Race>(path);
+  if (!raceSnap.exists) {
+    notFound('Race not found');
+  }
 
-export const getRenderableRaceDataForPage = cache(
-  async (id: string): Promise<RacePageData | undefined> => {
-    const db = await getFirestore();
-    const raceSnap = await db
-      .collectionGroup('races')
-      .where('id', '==', id)
-      .withConverter(genericConverter<Race>())
-      .limit(1)
-      .get();
-    if (raceSnap.empty) {
-      return undefined;
-    }
+  return await getRaceWithPreems(raceSnap);
+});
 
-    const race = await getPreemsForRace(raceSnap.docs[0]);
+export const getRacePageDataWithUsers = cache(async (path: string) => {
+  const { race, children } = await getRenderableRaceDataForPage(path);
 
-    return {
-      race: race as unknown as RacePageData['race'],
-    };
-  },
-);
+  const contributorIds =
+    children
+      .flatMap(({ children }) => children.map((c) => c.contributor?.id))
+      .filter((id): id is string => !!id) ?? [];
 
-export const getRacePageDataWithUsers = cache(
-  async (
-    id: string,
-  ): Promise<
-    { race: RaceWithPreems; users: ClientCompat<User>[] } | undefined
-  > => {
-    const raceData = await getRenderableRaceDataForPage(id);
-    if (!raceData) {
-      return undefined;
-    }
-    const { race } = raceData;
+  const uniqueUserIds = [...new Set(contributorIds)];
+  const users =
+    uniqueUserIds.length > 0 ? await getUsersByIds(uniqueUserIds) : [];
 
-    const contributorIds =
-      race.preems
-        ?.flatMap((p) => p.contributions?.map((c) => c.contributor?.id))
-        .filter((id): id is string => !!id) ?? [];
-
-    const uniqueUserIds = [...new Set(contributorIds)];
-    const users =
-      uniqueUserIds.length > 0 ? await getUsersByIds(uniqueUserIds) : [];
-
-    return {
-      race: race as RaceWithPreems,
-      users: users as ClientCompat<User>[],
-    };
-  },
-);
+  return {
+    race,
+    children,
+    users,
+  };
+});
 
 export const getRenderableOrganizationDataForPage = cache(
-  async (id: string): Promise<OrganizationPageData | undefined> => {
-    const db = await getFirestore();
-    const orgDoc = await db
-      .collection('organizations')
-      .doc(id)
-      .withConverter(genericConverter<Organization>())
-      .get();
+  async (path: DocPath) => {
+    const orgDoc = await getDocSnap<Organization>(path);
     if (!orgDoc.exists) {
-      return undefined;
+      notFound('Org not found');
     }
 
     const organization = orgDoc.data();
     if (!organization) {
-      return undefined;
+      notFound('Org not found');
     }
 
     const seriesSnap = await orgDoc.ref
       .collection('series')
-      .withConverter(genericConverter<Series>())
+      .withConverter(clientConverter<Series>())
       .get();
-    const series = await Promise.all(seriesSnap.docs.map(getEventsForSeries));
+    const serieses = await Promise.all(seriesSnap.docs.map(getEventsForSeries));
 
     const memberIds =
       organization.memberRefs
@@ -337,160 +308,113 @@ export const getRenderableOrganizationDataForPage = cache(
         .filter((id): id is string => !!id) ?? [];
     const members = memberIds.length > 0 ? await getUsersByIds(memberIds) : [];
 
-    return {
-      organization:
-        organization as unknown as OrganizationPageData['organization'],
-      serieses: series as unknown as OrganizationPageData['serieses'],
-      members: members as unknown as OrganizationPageData['members'],
-    };
+    return { organization, serieses, members };
   },
 );
 
-export const getRenderableSeriesDataForPage = cache(
-  async (id: string): Promise<SeriesPageData | undefined> => {
-    const db = await getFirestore();
-    const seriesSnap = await db
-      .collectionGroup('series')
-      .where('id', '==', id)
-      .withConverter(genericConverter<Series>())
-      .limit(1)
-      .get();
-    if (seriesSnap.empty) {
-      return undefined;
-    }
+export const getRenderableSeriesDataForPage = cache(async (path: DocPath) => {
+  const seriesSnap = await getDocSnap<Series>(path);
+  if (!seriesSnap.exists) {
+    notFound('Series not found');
+  }
 
-    const series = await getEventsForSeries(seriesSnap.docs[0]);
+  return await getEventsForSeries(seriesSnap);
+});
 
+export const getRenderableEventDataForPage = cache(async (path: DocPath) => {
+  const eventSnap = await getDocSnap<Event>(path);
+  if (!eventSnap.exists) {
+    notFound('Event not found');
+  }
+  return await getRacesForEvent(eventSnap);
+});
+
+export const getRenderableHomeDataForPage = cache(async () => {
+  const db = await getFirestore();
+
+  // Fetch upcoming events
+  const now = new Date();
+  const eventsSnap = await db
+    .collectionGroup('events')
+    .where('startDate', '>=', now)
+    .orderBy('startDate', 'asc')
+    .withConverter(clientConverter<Event>())
+    .get();
+  const contributionsSnap = await db
+    .collectionGroup('contributions')
+    .withConverter(clientConverter<Contribution>())
+    .orderBy('date', 'desc')
+    .limit(20)
+    .get();
+  const recentContributionsRaw = contributionsSnap.docs.map((doc) =>
+    doc.data(),
+  );
+
+  const preemIds = [
+    ...new Set(
+      recentContributionsRaw
+        .map((c) => c.preemBrief?.id)
+        .filter((id): id is string => !!id),
+    ),
+  ];
+
+  const preems =
+    preemIds.length > 0
+      ? (
+          await db
+            .collectionGroup('preems')
+            .where('id', 'in', preemIds)
+            .withConverter(clientConverter<Preem>())
+            .get()
+        ).docs.map((d) => d.data())
+      : [];
+
+  const preemsMap = preems.reduce(
+    (acc, preem) => {
+      acc[preem.id] = preem;
+      return acc;
+    },
+    {} as Record<string, ClientCompat<Preem>>,
+  );
+
+  const contributions = recentContributionsRaw.map((c) => {
+    const fullPreem = c.preemBrief?.id ? preemsMap[c.preemBrief.id] : undefined;
     return {
-      series: series as unknown as SeriesPageData['series'],
-    };
-  },
-);
+      ...c,
+      preemBrief: fullPreem,
+    } as ClientCompat<Contribution>;
+  });
 
-import type { LiveEventPageData } from '../app/(main)/manage/event/[eventId]/(live)/LiveEvent';
-// ...
-export const getRenderableEventDataForPage = cache(
-  async (id: string): Promise<LiveEventPageData | undefined> => {
-    const db = await getFirestore();
-    const eventSnap = await db
-      .collectionGroup('events')
-      .where('id', '==', id)
-      .withConverter(genericConverter<Event>())
-      .limit(1)
-      .get();
-    if (eventSnap.empty) {
-      return undefined;
-    }
+  const eventsWithRaces = await Promise.all(
+    eventsSnap.docs.map(getRacesForEvent),
+  );
 
-    const event = await getRacesForEvent(eventSnap.docs[0]);
+  return {
+    eventsWithRaces,
+    contributions,
+  };
+});
 
-    return {
-      event: event as unknown as LiveEventPageData['event'],
-    };
-  },
-);
+export const getRenderableUserDataForPage = cache(async (path: DocPath) => {
+  const db = await getFirestore();
+  const user = await getDoc<User>(path);
+  if (!user) {
+    notFound('User not found');
+  }
 
-export const getRenderableHomeDataForPage = cache(
-  async (): Promise<HomePageData> => {
-    const db = await getFirestore();
+  const contributionsSnap = await db
+    .collectionGroup('contributions')
+    .where('contributor.id', '==', docId(path))
+    .withConverter(clientConverter<Contribution>())
+    .get();
 
-    // Fetch upcoming events
-    const now = new Date();
-    const eventsSnap = await db
-      .collectionGroup('events')
-      .where('startDate', '>=', now)
-      .orderBy('startDate', 'asc')
-      .withConverter(genericConverter<Event>())
-      .get();
-    const contributionsSnap = await db
-      .collectionGroup('contributions')
-      .withConverter(genericConverter<Contribution>())
-      .orderBy('date', 'desc')
-      .limit(20)
-      .get();
-    const recentContributionsRaw = contributionsSnap.docs.map((doc) =>
-      doc.data(),
-    );
+  const contributions = contributionsSnap.docs.map((doc) => doc.data());
 
-    const preemIds = [
-      ...new Set(
-        recentContributionsRaw
-          .map((c) => c.preemBrief?.id)
-          .filter((id): id is string => !!id),
-      ),
-    ];
-
-    const preems =
-      preemIds.length > 0
-        ? (
-            await db
-              .collectionGroup('preems')
-              .where('id', 'in', preemIds)
-              .withConverter(genericConverter<ClientCompat<Preem>>())
-              .get()
-          ).docs.map((d) => d.data())
-        : [];
-
-    const preemsMap = preems.reduce(
-      (acc, preem) => {
-        acc[preem.id] = preem;
-        return acc;
-      },
-      {} as Record<string, ClientCompat<Preem>>,
-    );
-
-    const recentContributions = recentContributionsRaw.map((c) => {
-      const fullPreem = c.preemBrief?.id
-        ? preemsMap[c.preemBrief.id]
-        : undefined;
-      return {
-        ...c,
-        preemBrief: fullPreem,
-      };
-    });
-
-    const upcomingEvents = await Promise.all(
-      eventsSnap.docs.map(getRacesForEvent),
-    );
-
-    return {
-      upcomingEvents: upcomingEvents,
-      contributions: recentContributions,
-    };
-  },
-);
-
-export const getRenderableUserDataForPage = cache(
-  async (id: string): Promise<UserPageData | undefined> => {
-    const db = await getFirestore();
-    const user = await getUserById(id);
-    if (!user) {
-      return undefined;
-    }
-
-    const contributionsSnap = await db
-      .collectionGroup('contributions')
-      .where('contributor.id', '==', id)
-      .withConverter(genericConverter<Contribution>())
-      .get();
-
-    const contributions = contributionsSnap.docs.map((doc) => doc.data());
-
-    return {
-      user: user as unknown as UserPageData['user'],
-      contributions: contributions as unknown as UserPageData['contributions'],
-    };
-  },
-);
-
-export const getRenderableAdminDataForPage = cache(
-  async (): Promise<AdminPageData> => {
-    const users = await getUsers();
-    return {
-      users: users as unknown as AdminPageData['users'],
-    };
-  },
-);
+  return {
+    user,
+    contributions,
+  };
+});
 
 export const anonymousUser = () => ({
   id: undefined,
@@ -501,19 +425,18 @@ export const anonymousUser = () => ({
 export const getRaceWithUsers = cache(
   async (
     raceId: string,
-  ): Promise<
-    | { race: ClientCompat<RaceWithPreems>; users: ClientCompat<User>[] }
-    | undefined
-  > => {
-    const raceData = await getRenderableRaceDataForPage(raceId);
-    if (!raceData) {
-      return undefined;
+  ): Promise<{
+    race: ClientCompat<RaceWithPreems>;
+    users: ClientCompat<User>[];
+  }> => {
+    const { race, children } = await getRenderableRaceDataForPage(raceId);
+    if (!race) {
+      notFound('Race not found');
     }
-    const { race } = raceData;
 
     const contributorIds =
-      race.preems
-        ?.flatMap((p) => p.contributions?.map((c) => c.contributor?.id))
+      children
+        ?.flatMap(({ children }) => children.map((c) => c.contributor?.id))
         .filter((id): id is string => !!id) ?? [];
 
     const uniqueUserIds = [...new Set(contributorIds)];
@@ -524,17 +447,6 @@ export const getRaceWithUsers = cache(
       race: race as ClientCompat<RaceWithPreems>,
       users: users as ClientCompat<User>[],
     };
-  },
-);
-
-export const getSeriesForOrganization = cache(
-  async (organizationId: string): Promise<ClientCompat<Series>[]> => {
-    const db = await getFirestore();
-    const seriesSnap = await db
-      .collection(`organizations/${organizationId}/series`)
-      .withConverter(genericConverter<Series>())
-      .get();
-    return seriesSnap.docs.map((doc) => doc.data());
   },
 );
 
@@ -551,7 +463,7 @@ export const getRacesForEventId = cache(
     }
     const racesSnap = await eventSnap.docs[0].ref
       .collection('races')
-      .withConverter(genericConverter<Race>())
+      .withConverter(clientConverter<Race>())
       .get();
     return racesSnap.docs.map((doc) => doc.data());
   },
@@ -570,7 +482,7 @@ export const getPreemsForRaceId = cache(
     }
     const preemsSnap = await raceSnap.docs[0].ref
       .collection('preems')
-      .withConverter(genericConverter<Preem>())
+      .withConverter(clientConverter<Preem>())
       .get();
     return preemsSnap.docs.map((doc) => doc.data());
   },
@@ -589,72 +501,16 @@ export const getContributionsForPreemId = cache(
     }
     const contributionsSnap = await preemSnap.docs[0].ref
       .collection('contributions')
-      .withConverter(genericConverter<Contribution>())
+      .withConverter(clientConverter<Contribution>())
       .get();
     return contributionsSnap.docs.map((doc) => doc.data());
   },
 );
 
-export const getOrganizationsForUser = cache(
-  async (userId: string): Promise<ClientCompat<Organization>[]> => {
-    const user = await getUserById(userId);
-    if (!user || !user.organizationRefs) {
-      return [];
-    }
-    const orgs = await Promise.all(
-      user.organizationRefs.map((ref) => getOrganizationById(ref.id)),
-    );
-    return orgs.filter((org): org is ClientCompat<Organization> => !!org);
-  },
-);
-
-export const getHubPageData = cache(async (): Promise<HubPageData> => {
-  const authUser = await verifyAuthUser();
-
-  const organizations = await getOrganizationsForUser(authUser.id);
-
-  const organizationsWithSeries = await Promise.all(
-    organizations.map(async (org) => {
-      const serieses = await getSeriesForOrganization(org.id);
-      const seriesesWithEvents = await Promise.all(
-        serieses.map(async (series) => {
-          const seriesDocSnap = await (await getFirestore())
-            .collection(`organizations/${org.id}/series`)
-            .doc(series.id)
-            .withConverter(genericConverter<Series>())
-            .get();
-          if (seriesDocSnap.exists) {
-            return getEventsForSeries(
-              seriesDocSnap as firestore.QueryDocumentSnapshot<
-                ClientCompat<Series>
-              >,
-            );
-          }
-          return null;
-        }),
-      );
-      return {
-        ...org,
-        serieses: seriesesWithEvents.filter(
-          (s): s is ClientCompat<SeriesWithEvents> => s !== null,
-        ),
-      };
-    }),
-  );
-
-  return { organizations: organizationsWithSeries };
+export const getOrganizationFromPath = cache(async (path: string) => {
+  const pathParts = path.split('/');
+  if (pathParts.length < 2 || pathParts[0] !== 'organizations') {
+    notFound(`Invalid path for getting organization: ${path}`);
+  }
+  return getDoc<Organization>(`organizations/${pathParts[1]}`);
 });
-
-export const getOrganizationFromPreemPath = cache(
-  async (
-    preemPath: string,
-  ): Promise<ClientCompat<Organization> | undefined> => {
-    const pathParts = preemPath.split('/');
-    if (pathParts.length < 2 || pathParts[0] !== 'organizations') {
-      console.error('Invalid preem path for getting organization:', preemPath);
-      return undefined;
-    }
-    const organizationId = pathParts[1];
-    return getOrganizationById(organizationId);
-  },
-);

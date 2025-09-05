@@ -1,19 +1,24 @@
 import { render, screen } from '@/test-utils';
 import React from 'react';
 import LiveContributionFeed from './LiveContributionFeed';
-import type { LiveContributionFeedData } from './LiveContributionFeed';
-import '../../matchMedia.mock';
+import '@/matchMedia.mock';
 
-const mockData: LiveContributionFeedData = {
+const mockData = {
   contributions: [
     {
       id: 'contrib-1',
+      path: 'organizations/org-1/series/series-1/events/event-1/races/race-1/preems/preem-1/contributions/contrib-1',
       amount: 100,
-      contributor: { id: 'user-1', name: 'Alice' },
+      contributor: { id: 'user-1', path: 'users/user-1', name: 'Alice' },
       preemBrief: {
         id: 'preem-1',
+        path: 'organizations/org-1/series/series-1/events/event-1/races/race-1/preems/preem-1',
         name: 'Test Preem',
-        raceBrief: { id: 'race-1', name: 'Test Race' },
+        raceBrief: {
+          id: 'race-1',
+          path: 'organizations/org-1/series/series-1/events/event-1/races/race-1',
+          name: 'Test Race',
+        },
       },
       message: 'Go fast!',
     },
@@ -22,7 +27,7 @@ const mockData: LiveContributionFeedData = {
 
 describe('LiveContributionFeed component', () => {
   it('should render the contribution feed', () => {
-    render(<LiveContributionFeed data={mockData} />);
+    render(<LiveContributionFeed {...mockData} />);
 
     expect(screen.getByText('Alice')).toBeInTheDocument();
     expect(screen.getByText('$100')).toBeInTheDocument();
@@ -32,7 +37,7 @@ describe('LiveContributionFeed component', () => {
   });
 
   it('should render a message when there are no contributions', () => {
-    render(<LiveContributionFeed data={{ contributions: [] }} />);
+    render(<LiveContributionFeed {...{ contributions: [] }} />);
 
     expect(
       screen.getByText('Waiting for contributions...'),

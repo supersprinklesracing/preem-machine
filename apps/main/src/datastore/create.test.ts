@@ -1,5 +1,5 @@
-import { createMockDb } from '@/datastore/mock-db';
 import { getFirestore } from '@/firebase-admin';
+import { setupMockDb } from '@/test-utils';
 import type { Firestore } from 'firebase-admin/firestore';
 import {
   createEvent,
@@ -19,9 +19,13 @@ describe('create mutations', () => {
   let firestore: Firestore;
   const authUser = { uid: 'test-user' };
 
-  beforeEach(async () => {
+  setupMockDb();
+
+  beforeAll(async () => {
     firestore = await getFirestore();
-    (firestore as any).database = createMockDb(firestore);
+  });
+
+  beforeEach(async () => {
     (isUserAuthorized as jest.Mock).mockClear();
     (isUserAuthorized as jest.Mock).mockResolvedValue(true);
   });

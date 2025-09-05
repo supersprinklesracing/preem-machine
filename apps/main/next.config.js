@@ -21,6 +21,120 @@ const nextConfig = {
 
     return config;
   },
+  async rewrites() {
+    return [
+      {
+        source: '/manage/live',
+        destination: '/manage',
+      },
+      {
+        source: '/manage/hub',
+        destination: '/manage',
+      },
+
+      // ==== MANAGE ====
+
+      // manage/event/edit
+      {
+        source: '/manage/:orgId/:seriesId/:eventId/edit',
+        destination:
+          '/manage/event/edit?path=organizations/:orgId/series/:seriesId/events/:eventId',
+      },
+      // manage/new-race
+      {
+        source: '/manage/:orgId/:seriesId/:eventId/race/new',
+        destination:
+          '/manage/race/new?path=organizations/:orgId/series/:seriesId/events/:eventId/races',
+      },
+      // manage/race/edit
+      {
+        source: '/manage/:orgId/:seriesId/:eventId/:raceId/edit',
+        destination:
+          '/manage/race/edit?path=organizations/:orgId/series/:seriesId/events/:eventId/races/:raceId',
+      },
+      // manage/new-event
+      {
+        source: '/manage/:orgId/:seriesId/event/new',
+        destination:
+          '/manage/event/new?path=organizations/:orgId/series/:seriesId/events',
+      },
+      // manage/race/details
+      {
+        source: '/manage/:orgId/:seriesId/:eventId/:raceId',
+        destination:
+          '/manage/race?path=organizations/:orgId/series/:seriesId/events/:eventId/races/:raceId',
+      },
+      // manage/series/edit
+      {
+        source: '/manage/:orgId/:seriesId/edit',
+        destination:
+          '/manage/series/edit?path=organizations/:orgId/series/:seriesId',
+      },
+      // manage/new-series
+      {
+        source: '/manage/:orgId/series/new',
+        destination: '/manage/series/new?path=organizations/:orgId/series',
+      },
+      // manage/event/details
+      {
+        source: '/manage/:orgId/:seriesId/:eventId',
+        destination:
+          '/manage/event?path=organizations/:orgId/series/:seriesId/events/:eventId',
+      },
+
+      // manage/organization/edit
+      {
+        source: '/manage/:orgId/edit',
+        destination: '/manage/organization/edit?path=organizations/:orgId',
+      },
+      // manage/series/details
+      {
+        source: '/manage/:orgId/:seriesId',
+        destination:
+          '/manage/series?path=organizations/:orgId/series/:seriesId',
+      },
+
+      // manage/new-organization
+      {
+        source: '/manage/new',
+        destination: '/manage/organization/new?path=organizations',
+      },
+      // manage/organization/details
+      {
+        source: '/manage/:orgId',
+        destination: '/manage/organization?path=organizations/:orgId',
+      },
+
+      // ==== VIEWS ====
+      {
+        source: '/user',
+        destination: '/user',
+      },
+      {
+        source: '/:orgId/:seriesId/:eventId/:raceId/:preemId',
+        destination:
+          '/race?path=organizations/:orgId/series/:seriesId/events/:eventId/races/:raceId/preems/:preemId',
+      },
+      {
+        source: '/:orgId/:seriesId/:eventId/:raceId',
+        destination:
+          '/race?path=organizations/:orgId/series/:seriesId/events/:eventId/races/:raceId',
+      },
+      {
+        source: '/:orgId/:seriesId/:eventId',
+        destination:
+          '/event?path=organizations/:orgId/series/:seriesId/events/:eventId',
+      },
+      {
+        source: '/:orgId/:seriesId',
+        destination: '/series?path=organizations/:orgId/series/:seriesId',
+      },
+      {
+        source: '/:orgId',
+        destination: '/organization?path=organizations/:orgId',
+      },
+    ];
+  },
 };
 
 const plugins = [

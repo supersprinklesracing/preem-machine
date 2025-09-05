@@ -3,6 +3,7 @@
 import { AuthContextUser } from '@/auth/AuthContext';
 import { getFirestore } from '@/firebase-admin';
 import type { firestore } from 'firebase-admin';
+import { organizationPath } from './paths';
 import type { Organization, User } from './types';
 
 export async function isUserAuthorized(
@@ -41,7 +42,7 @@ export async function isUserAuthorized(
     console.debug('isUserAuthorizedToEdit: Invalid path.');
     return false;
   }
-  const rootPath = pathSegments.slice(0, 2).join('/');
+  const rootPath = organizationPath(canonicalDocRef.path);
 
   const rootRef = db.doc(rootPath);
   const rootDoc = await rootRef.get();

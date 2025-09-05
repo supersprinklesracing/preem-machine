@@ -1,13 +1,12 @@
-import { render, screen } from '@/test-utils';
-import React from 'react';
-import Layout from './layout';
-import * as firestore from '@/datastore/firestore';
 import * as auth from '@/auth/user';
-import MainAppShell from './MainAppShell';
-import '../../matchMedia.mock';
+import * as firestore from '@/datastore/firestore';
+import '@/matchMedia.mock';
+import { render, screen } from '@/test-utils';
+import Layout from './layout';
+import MainAppShell from './Shell/MainAppShell';
 
 // Mock dependencies
-jest.mock('./MainAppShell', () => ({
+jest.mock('./Shell/MainAppShell', () => ({
   __esModule: true,
   default: jest.fn(({ children }) => <div>Mock MainAppShell{children}</div>),
 }));
@@ -20,7 +19,10 @@ describe('Layout component', () => {
     (auth.verifyAuthUser as jest.Mock).mockResolvedValue({ uid: 'test-uid' });
     (firestore.getEventsForUser as jest.Mock).mockResolvedValue([]);
 
-    const PageComponent = await Layout({ children: <div>Test Children</div> });
+    const PageComponent = await Layout({
+      children: <div>Test Children</div>,
+      currentUser: null,
+    });
     render(PageComponent);
 
     expect(screen.getByText('Mock MainAppShell')).toBeInTheDocument();

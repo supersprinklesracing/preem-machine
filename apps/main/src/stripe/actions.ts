@@ -1,7 +1,7 @@
 'use server';
 
 import { verifyAuthUser } from '@/auth/user';
-import { getOrganizationFromPreemPath } from '@/datastore/firestore';
+import { getOrganizationFromPath } from '@/datastore/firestore';
 import { processContribution } from '@/stripe-datastore/contributions';
 import { getStripeServer } from './server';
 
@@ -12,7 +12,7 @@ export async function createPaymentIntent(
 ): Promise<{ clientSecret: string | null }> {
   const authUser = await verifyAuthUser();
 
-  const organization = await getOrganizationFromPreemPath(preemPath);
+  const organization = await getOrganizationFromPath(preemPath);
   if (!organization?.stripe?.connectAccountId) {
     throw new Error('Organization does not have a Stripe account connected');
   }

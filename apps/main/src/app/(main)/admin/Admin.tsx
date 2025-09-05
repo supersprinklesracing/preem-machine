@@ -16,16 +16,11 @@ import {
 import { IconSearch, IconUserCheck } from '@tabler/icons-react';
 import React, { useState } from 'react';
 
-export interface AdminPageData {
+interface Props {
   users: ClientCompat<User>[];
 }
 
-interface Props {
-  data: AdminPageData;
-}
-
-const Admin: React.FC<Props> = ({ data }) => {
-  const { users } = data;
+const Admin: React.FC<Props> = ({ users }) => {
   const [search, setSearch] = useState('');
   const { toast } = createToast();
 

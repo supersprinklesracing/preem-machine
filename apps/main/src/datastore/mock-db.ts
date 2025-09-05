@@ -53,6 +53,7 @@ const postProcessDatabase = (db: DatabaseCollections): DatabaseCollections => {
     organization.path = `organizations/${organization.id}`;
     const organizationBrief: OrganizationBrief = {
       id: organization.id,
+      path: organization.path,
       name: organization.name,
     };
 
@@ -64,6 +65,7 @@ const postProcessDatabase = (db: DatabaseCollections): DatabaseCollections => {
       series.organizationBrief = organizationBrief;
       const seriesBrief: SeriesBrief = {
         id: series.id,
+        path: series.path,
         name: series.name,
         startDate: series.startDate,
         endDate: series.endDate,
@@ -78,6 +80,7 @@ const postProcessDatabase = (db: DatabaseCollections): DatabaseCollections => {
         event.seriesBrief = seriesBrief;
         const eventBrief: EventBrief = {
           id: event.id,
+          path: event.path,
           name: event.name,
           startDate: event.startDate,
           endDate: event.endDate,
@@ -92,6 +95,7 @@ const postProcessDatabase = (db: DatabaseCollections): DatabaseCollections => {
           race.eventBrief = eventBrief;
           const raceBrief: RaceBrief = {
             id: race.id,
+            path: race.path,
             name: race.name,
             startDate: race.startDate,
             endDate: race.endDate,
@@ -106,6 +110,7 @@ const postProcessDatabase = (db: DatabaseCollections): DatabaseCollections => {
             preem.raceBrief = raceBrief;
             const preemBrief: PreemBrief = {
               id: preem.id,
+              path: preem.path,
               name: preem.name,
               raceBrief,
             };
@@ -130,7 +135,32 @@ export const createMockDb = (firestore: Firestore): DatabaseCollections =>
   postProcessDatabase({
     users: [
       {
+        // preem-machine
         id: 'BFGvWNXZoCWayJa0pNEL4bfhtUC3',
+        name: 'Test User',
+        email: 'test-user@example.com',
+        avatarUrl: 'https://placehold.co/100x100.png',
+        role: 'admin',
+        organizationRefs: [
+          createDocRef(firestore, 'organizations', 'org-super-sprinkles'),
+        ],
+        metadata: createMetadata(firestore, '2024-07-01T10:00:00Z'),
+      },
+      {
+        // preem-machine-ci
+        id: '73LhDvkigMdwJ4r7NICamtwgd0u1',
+        name: 'Test User',
+        email: 'test-user@example.com',
+        avatarUrl: 'https://placehold.co/100x100.png',
+        role: 'admin',
+        organizationRefs: [
+          createDocRef(firestore, 'organizations', 'org-super-sprinkles'),
+        ],
+        metadata: createMetadata(firestore, '2024-07-01T10:00:00Z'),
+      },
+      {
+        // preem-machine-dev
+        id: 'RwgsPxLnp1bHNcxgw7MdCpm1Cuj1',
         name: 'Test User',
         email: 'test-user@example.com',
         avatarUrl: 'https://placehold.co/100x100.png',
@@ -181,8 +211,12 @@ export const createMockDb = (firestore: Firestore): DatabaseCollections =>
         id: 'org-super-sprinkles',
         name: 'Super Sprinkles Racing',
         memberRefs: [
-          // test-user@example.com
+          // test-user@example.com - preem-machine
           createDocRef(firestore, 'users', 'BFGvWNXZoCWayJa0pNEL4bfhtUC3'),
+          // test-user@example.com - preem-machine-ci
+          createDocRef(firestore, 'users', '73LhDvkigMdwJ4r7NICamtwgd0u1'),
+          // test-user@example.com - preem-machine-dev
+          createDocRef(firestore, 'users', 'RwgsPxLnp1bHNcxgw7MdCpm1Cuj1'),
           // jlapenna.test.1@gmail.com
           createDocRef(firestore, 'users', '5URlCEB3ACVgem9RAdWudjRURpl2'),
         ],

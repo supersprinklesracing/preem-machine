@@ -1,7 +1,7 @@
 import { render, screen } from '@/test-utils';
 import React from 'react';
 import PreemStatusBadge from './PreemStatusBadge';
-import '../matchMedia.mock';
+import '@/matchMedia.mock';
 
 describe('PreemStatusBadge', () => {
   it('should render "Open" status', () => {
