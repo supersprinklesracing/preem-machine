@@ -25,6 +25,12 @@ To set up your local environment, use `HUSKY=0 npm ci` to install the project de
   git rebase origin/main
   ```
 
+### Pull Request Best Practices
+
+- **Clear Titles:** Write clear and concise PR titles.
+- **Reference Issues:** If your PR fixes or addresses a GitHub issue, mention it in the title. For example: `feat: Add user profile page (fixes #123)`.
+- **Detailed Descriptions:** Provide a detailed description of the changes, including the "why" and "what."
+
 ### Code Quality Tools
 
 This project uses `husky` and `lint-staged` to enforce code quality standards on every commit.
