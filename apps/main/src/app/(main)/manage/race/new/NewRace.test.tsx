@@ -1,7 +1,8 @@
-import { render, screen, fireEvent, act } from '@/test-utils';
+import { render, screen, fireEvent, act, waitFor } from '@/test-utils';
 import React from 'react';
 import { NewRace } from './NewRace';
 import '@/matchMedia.mock';
+import { FormActionResult } from '@/components/forms/forms';
 
 // Mock dependencies
 jest.mock('next/navigation', () => ({
@@ -10,46 +11,58 @@ jest.mock('next/navigation', () => ({
   }),
 }));
 
+jest.mock('@mantine/dates', () => ({
+  DateTimePicker: (props: any) => (
+    <input
+      data-testid="date-time-picker"
+      onChange={(e) => props.onChange(new Date(e.target.value))}
+    />
+  ),
+}));
+
 describe('NewRace component', () => {
   it('should call newRaceAction with the correct data on form submission', async () => {
-    const newRaceAction = jest.fn(() =>
-      Promise.resolve({ path: 'new-race-id' }),
+    const newRaceAction = jest.fn(
+      (): Promise<FormActionResult<{ path?: string }>> =>
+        Promise.resolve({
+          type: 'success',
+          message: '',
+          path: 'new-race-id',
+        }),
     );
 
     render(
       <NewRace
         newRaceAction={newRaceAction}
-        path="organizations/org-1/series/series-1/events/event-1"
+        path="organizations/org-1/series/series-1/events/event-1/races"
       />,
     );
 
     // Fill out the form
-    const nameInput = screen.getByTestId('name-input');
-    fireEvent.change(nameInput, { target: { value: 'New Test Race' } });
+    fireEvent.change(screen.getByTestId('name-input'), {
+      target: { value: 'New Test Race' },
+    });
+    fireEvent.change(screen.getByTestId('location-input'), {
+      target: { value: 'Test Location' },
+    });
+    fireEvent.change(screen.getByTestId('date-time-picker'), {
+      target: { value: '2025-08-01T10:00:00.000Z' },
+    });
 
-    const locationInput = screen.getByTestId('location-input');
-    fireEvent.change(locationInput, { target: { value: 'Test Location' } });
-
-    // Select the date
-    fireEvent.click(
-      screen.getByRole('button', { name: /race date 1 august 2025/i }),
-    );
+    const createButton = screen.getByRole('button', { name: /create race/i });
+    await waitFor(() => expect(createButton).not.toBeDisabled());
 
     // Click the create button
-    const createButton = screen.getByRole('button', { name: /create race/i });
-    fireEvent.click(createButton);
-
-    // Wait for the action to be called
     await act(async () => {
-      await new Promise((resolve) => setTimeout(resolve, 100));
+      fireEvent.click(createButton);
     });
 
     expect(newRaceAction).toHaveBeenCalledWith(
-      'organizations/org-1/series/series-1/events/event-1',
+      'organizations/org-1/series/series-1/events/event-1/races',
       expect.objectContaining({
         name: 'New Test Race',
         location: 'Test Location',
-        date: new Date('2025-08-01'),
+        date: new Date('2025-08-01T10:00:00.000Z'),
       }),
     );
   });
@@ -62,27 +75,30 @@ describe('NewRace component', () => {
     render(
       <NewRace
         newRaceAction={newRaceAction}
-        path="organizations/org-1/series/series-1/events/event-1"
+        path="organizations/org-1/series/series-1/events/event-1/races"
       />,
     );
 
     // Fill out the form
-    const nameInput = screen.getByTestId('name-input');
-    fireEvent.change(nameInput, { target: { value: 'New Test Race' } });
+    fireEvent.change(screen.getByTestId('name-input'), {
+      target: { value: 'New Test Race' },
+    });
+    fireEvent.change(screen.getByTestId('location-input'), {
+      target: { value: 'Test Location' },
+    });
+    fireEvent.change(screen.getByTestId('date-time-picker'), {
+      target: { value: '2025-08-01T10:00:00.000Z' },
+    });
 
-    const locationInput = screen.getByTestId('location-input');
-    fireEvent.change(locationInput, { target: { value: 'Test Location' } });
-
-    // Select the date
-    fireEvent.click(
-      screen.getByRole('button', { name: /race date 1 august 2025/i }),
-    );
+    const createButton = screen.getByRole('button', { name: /create race/i });
+    await waitFor(() => expect(createButton).not.toBeDisabled());
 
     // Click the create button
-    const createButton = screen.getByRole('button', { name: /create race/i });
-    fireEvent.click(createButton);
+    await act(async () => {
+      fireEvent.click(createButton);
+    });
 
     // Wait for the error message to appear
-    await screen.findByText('Failed to create');
+    expect(await screen.findByText('Failed to create')).toBeInTheDocument();
   });
 });

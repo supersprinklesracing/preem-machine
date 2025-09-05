@@ -1,6 +1,6 @@
 'use client';
 
-import { toUrlPath, CollectionPath } from '@/datastore/paths';
+import { CollectionPath, toUrlPath } from '@/datastore/paths';
 import type { Race } from '@/datastore/types';
 import {
   Button,
@@ -11,9 +11,8 @@ import {
   TextInput,
   Title,
 } from '@mantine/core';
-import { DatePicker, DatePickerProps } from '@mantine/dates';
+import { DateTimePicker } from '@mantine/dates';
 import { useForm } from '@mantine/form';
-import dayjs from 'dayjs';
 import { useRouter } from 'next/navigation';
 import { useState } from 'react';
 
@@ -81,14 +80,6 @@ export function NewRace({
     }
   };
 
-  const getDayProps =
-    (prefix: string): DatePickerProps['getDayProps'] =>
-    (date) => {
-      return {
-        'aria-label': `${prefix} ${dayjs(date).format('D MMMM YYYY')}`,
-      };
-    };
-
   return (
     <Container size="xs">
       <Stack>
@@ -108,10 +99,11 @@ export function NewRace({
                 {...form.getInputProps('location')}
                 data-testid="location-input"
               />
-              <DatePicker
+              <DateTimePicker
+                label="Date and Time"
+                required
                 {...form.getInputProps('date')}
-                defaultDate={new Date('2025-08-01')}
-                getDayProps={getDayProps('Race date')}
+                data-testid="date-time-picker"
               />
               <Group justify="right">
                 <Button

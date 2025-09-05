@@ -108,8 +108,8 @@ export function NewSeries({
               <TextInput
                 label="Series Name"
                 required
-                {...form.getInputProps('name')}
                 data-testid="name-input"
+                {...form.getInputProps('name')}
               />
               <TextInput
                 label="Location"
@@ -129,10 +129,10 @@ export function NewSeries({
               />
               <DatePicker
                 type="range"
+                allowSingleDateInRange={true}
+                getDayProps={getDayProps('Series date')}
                 {...form.getInputProps('dateRange')}
                 data-testid="series-date-picker"
-                defaultDate={new Date('2025-08-01')}
-                getDayProps={getDayProps('Series date')}
               />
               <Group justify="right">
                 <Button

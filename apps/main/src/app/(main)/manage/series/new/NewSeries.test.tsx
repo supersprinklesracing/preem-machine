@@ -1,7 +1,8 @@
-import { render, screen, fireEvent, act } from '@/test-utils';
+import { render, screen, fireEvent, act, waitFor } from '@/test-utils';
 import React from 'react';
 import { NewSeries } from './NewSeries';
 import '@/matchMedia.mock';
+import { FormActionResult } from '@/components/forms/forms';
 
 // Mock dependencies
 jest.mock('next/navigation', () => ({
@@ -21,12 +22,18 @@ describe('NewSeries component', () => {
   afterAll(() => {
     jest.useRealTimers();
   });
+
   it('should call newSeriesAction with the correct data on form submission', async () => {
-    const newSeriesAction = jest.fn(() =>
-      Promise.resolve({ path: 'new-series-id' }),
+    const newSeriesAction = jest.fn(
+      (): Promise<FormActionResult<{ path?: string }>> =>
+        Promise.resolve({
+          type: 'success',
+          message: '',
+          path: 'new-series-id',
+        }),
     );
 
-    render(
+    const { container } = render(
       <NewSeries
         newSeriesAction={newSeriesAction}
         path="organizations/org-1"
@@ -34,28 +41,25 @@ describe('NewSeries component', () => {
     );
 
     // Fill out the form
-    const nameInput = screen.getByTestId('name-input');
-    fireEvent.change(nameInput, { target: { value: 'New Test Series' } });
-
-    const locationInput = screen.getByTestId('location-input');
-    fireEvent.change(locationInput, { target: { value: 'Test Location' } });
-
-    const websiteInput = screen.getByTestId('website-input');
-    fireEvent.change(websiteInput, {
+    fireEvent.change(screen.getByTestId('name-input'), {
+      target: { value: 'New Test Series' },
+    });
+    fireEvent.change(screen.getByTestId('location-input'), {
+      target: { value: 'Test Location' },
+    });
+    fireEvent.change(screen.getByTestId('website-input'), {
       target: { value: 'https://example.com' },
     });
-
-    const descriptionInput = screen.getByTestId('description-input');
-    fireEvent.change(descriptionInput, {
+    fireEvent.change(screen.getByTestId('description-input'), {
       target: { value: 'This is a test series description.' },
     });
 
-    // Select a date range
-    const nextButton = document.querySelector('[data-direction="next"]');
-    if (!nextButton) {
-      throw new Error('Next month button not found');
+    // Select a date range by navigating months
+    const nextButton = container.querySelector('[data-direction="next"]');
+    expect(nextButton).toBeInTheDocument();
+    if (nextButton) {
+      fireEvent.click(nextButton); // Move to August
     }
-    fireEvent.click(nextButton);
 
     fireEvent.click(
       screen.getAllByRole('button', { name: /Series date 1 August 2025/i })[0],
@@ -64,13 +68,13 @@ describe('NewSeries component', () => {
       screen.getAllByRole('button', { name: /Series date 15 August 2025/i })[0],
     );
 
-    // Click the create button
     const createButton = screen.getByRole('button', { name: /create series/i });
-    fireEvent.click(createButton);
+    await waitFor(() => expect(createButton).not.toBeDisabled());
 
-    // Wait for the action to be called
+    // Click the create button
     await act(async () => {
-      jest.runAllTimers();
+      fireEvent.click(createButton);
+      await jest.runAllTimers();
     });
 
     expect(newSeriesAction).toHaveBeenCalledWith(
@@ -91,7 +95,7 @@ describe('NewSeries component', () => {
       Promise.reject(new Error('Failed to create')),
     );
 
-    render(
+    const { container } = render(
       <NewSeries
         newSeriesAction={newSeriesAction}
         path="organizations/org-1"
@@ -99,20 +103,19 @@ describe('NewSeries component', () => {
     );
 
     // Fill out the form
-    const nameInput = screen.getByTestId('name-input');
-    fireEvent.change(nameInput, { target: { value: 'New Test Series' } });
-
-    const descriptionInput = screen.getByTestId('description-input');
-    fireEvent.change(descriptionInput, {
+    fireEvent.change(screen.getByTestId('name-input'), {
+      target: { value: 'New Test Series' },
+    });
+    fireEvent.change(screen.getByTestId('description-input'), {
       target: { value: 'This is a test series description.' },
     });
 
     // Select a date range
-    const nextButton = document.querySelector('[data-direction="next"]');
-    if (!nextButton) {
-      throw new Error('Next month button not found');
+    const nextButton = container.querySelector('[data-direction="next"]');
+    expect(nextButton).toBeInTheDocument();
+    if (nextButton) {
+      fireEvent.click(nextButton); // Move to August
     }
-    fireEvent.click(nextButton);
 
     fireEvent.click(
       screen.getAllByRole('button', { name: /Series date 1 August 2025/i })[0],
@@ -121,11 +124,16 @@ describe('NewSeries component', () => {
       screen.getAllByRole('button', { name: /Series date 15 August 2025/i })[0],
     );
 
-    // Click the create button
     const createButton = screen.getByRole('button', { name: /create series/i });
-    fireEvent.click(createButton);
+    await waitFor(() => expect(createButton).not.toBeDisabled());
+
+    // Click the create button
+    await act(async () => {
+      fireEvent.click(createButton);
+      await jest.runAllTimers();
+    });
 
     // Wait for the error message to appear
-    await screen.findByText('Failed to create');
+    expect(await screen.findByText('Failed to create')).toBeInTheDocument();
   });
 });
