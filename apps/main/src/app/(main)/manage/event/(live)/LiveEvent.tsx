@@ -13,7 +13,11 @@ import {
   Text,
   Title,
 } from '@mantine/core';
-import { IconChevronRight, IconPencil } from '@tabler/icons-react';
+import {
+  IconChevronRight,
+  IconPencil,
+  IconPlus,
+} from '@tabler/icons-react';
 import { format } from 'date-fns';
 import Link from 'next/link';
 
@@ -30,15 +34,25 @@ export default function LiveEvent({ event, children }: Props) {
     <Stack>
       <Group justify="space-between">
         <Title>{event.name}</Title>
-        <Button
-          variant="outline"
-          leftSection={<IconPencil size={14} />}
-          size="xs"
-          component={Link}
-          href={`/manage/${toUrlPath(event.path)}/edit`}
-        >
-          Edit Event
-        </Button>
+        <Group>
+          <Button
+            variant="outline"
+            leftSection={<IconPencil size={14} />}
+            size="xs"
+            component={Link}
+            href={`/manage/${toUrlPath(event.path)}/edit`}
+          >
+            Edit Event
+          </Button>
+          <Button
+            leftSection={<IconPlus size={14} />}
+            size="xs"
+            component={Link}
+            href={`/manage/race/new?path=${event.path}`}
+          >
+            Create New Race
+          </Button>
+        </Group>
       </Group>
       <Text>
         Part of{' '}

@@ -2,7 +2,6 @@
 
 import { toUrlPath } from '@/datastore/paths';
 import {
-  Alert,
   Button,
   Card,
   Container,
@@ -16,7 +15,7 @@ import { DatePicker, DatePickerProps } from '@mantine/dates';
 import { useForm } from '@mantine/form';
 import { useRouter } from 'next/navigation';
 import { useState } from 'react';
-import type { Event } from '@/datastore/types';
+import type { ClientCompat, Event, Series } from '@/datastore/types';
 import dayjs from 'dayjs';
 
 type FormValues = Partial<Omit<Event, 'startDate' | 'endDate'>> & {
@@ -30,19 +29,18 @@ import { FormActionResult } from '@/components/forms/forms';
 export function NewEvent({
   newEventAction,
   path,
+  series,
 }: {
   newEventAction: (
     path: string,
     options: FormValues,
   ) => Promise<FormActionResult<{ path?: string }>>;
   path: string;
+  series: ClientCompat<Series>;
 }) {
   const router = useRouter();
   const [isLoading, setIsLoading] = useState(false);
   const [submissionError, setSubmissionError] = useState<string | null>(null);
-  const [submissionSuccess, setSubmissionSuccess] = useState<string | null>(
-    null,
-  );
 
   const form = useForm<FormValues>({
     initialValues: {
@@ -60,8 +58,37 @@ export function NewEvent({
         !value || value.trim().length < 10
           ? 'Description must have at least 10 letters'
           : null,
-      startDate: (value) => (value ? null : 'Start date is required'),
-      endDate: (value) => (value ? null : 'End date is required'),
+      startDate: (value) => {
+        if (!value) {
+          return 'Start date is required';
+        }
+        if (
+          series.startDate &&
+          dayjs(value).isBefore(dayjs(series.startDate))
+        ) {
+          return `Start date must be on or after series start date (${dayjs(
+            series.startDate,
+          ).format('YYYY-MM-DD')})`;
+        }
+        return null;
+      },
+      endDate: (value, values) => {
+        if (!value) {
+          return 'End date is required';
+        }
+        if (series.endDate && dayjs(value).isAfter(dayjs(series.endDate))) {
+          return `End date must be on or before series end date (${dayjs(
+            series.endDate,
+          ).format('YYYY-MM-DD')})`;
+        }
+        if (
+          values.startDate &&
+          dayjs(value).isBefore(dayjs(values.startDate))
+        ) {
+          return 'End date must be after start date';
+        }
+        return null;
+      },
     },
   });
 
@@ -90,31 +117,6 @@ export function NewEvent({
     }
   };
 
-  const handleCreateAndAddAnother = async (values: FormValues) => {
-    setIsLoading(true);
-    setSubmissionError(null);
-    setSubmissionSuccess(null);
-
-    const submissionValues = {
-      ...values,
-      startDate: values.startDate ? new Date(values.startDate) : null,
-      endDate: values.endDate ? new Date(values.endDate) : null,
-    };
-
-    try {
-      await newEventAction(path, submissionValues);
-      setSubmissionSuccess('Event created successfully.');
-      form.reset();
-    } catch (error) {
-      console.error('Failed to create event:', error);
-      setSubmissionError(
-        error instanceof Error ? error.message : 'An unknown error occurred.',
-      );
-    } finally {
-      setIsLoading(false);
-    }
-  };
-
   const getDayProps =
     (prefix: string): DatePickerProps['getDayProps'] =>
     (date) => {
@@ -127,18 +129,8 @@ export function NewEvent({
     <Container size="xs">
       <Stack>
         <Title order={1}>Create Event</Title>
-        {submissionSuccess && (
-          <Alert
-            color="green"
-            title="Event Created"
-            onClose={() => setSubmissionSuccess(null)}
-            withCloseButton
-          >
-            {submissionSuccess}
-          </Alert>
-        )}
         <Card withBorder>
-          <form>
+          <form onSubmit={form.onSubmit(handleSubmit)}>
             <Stack>
               <TextInput
                 label="Event Name"
@@ -164,18 +156,9 @@ export function NewEvent({
               />
               <Group justify="right">
                 <Button
-                  onClick={form.onSubmit(handleCreateAndAddAnother)}
+                  type="submit"
                   loading={isLoading}
                   disabled={!form.isValid()}
-                  data-testid="create-and-add-another-button"
-                >
-                  Create and Add Another
-                </Button>
-                <Button
-                  onClick={form.onSubmit(handleSubmit)}
-                  loading={isLoading}
-                  disabled={!form.isValid()}
-                  data-testid="create-button"
                 >
                   Create Event
                 </Button>
