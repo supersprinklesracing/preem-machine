@@ -21,7 +21,6 @@ import { useDisclosure } from '@mantine/hooks';
 import { useRouter } from 'next/navigation';
 import { useState } from 'react';
 import { NewEvent } from '../../event/new/NewEvent';
-import { newEventAction } from '../../event/new/new-event-action';
 import { EditSeriesOptions } from './edit-series-action';
 import { FormActionResult } from '@/components/forms/forms';
 

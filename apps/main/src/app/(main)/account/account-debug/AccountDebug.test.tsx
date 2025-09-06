@@ -1,5 +1,5 @@
 import '@/matchMedia.mock';
-import { act, fireEvent, render, screen, waitFor } from '@/test-utils';
+import { fireEvent, render, screen, waitFor } from '@/test-utils';
 import { AccountDebug } from './AccountDebug';
 
 // Mock dependencies
