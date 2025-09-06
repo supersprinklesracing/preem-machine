@@ -28,13 +28,32 @@ export default defineConfig({
     url: 'http://localhost:3000',
     reuseExistingServer: true,
     cwd: workspaceRoot,
+    env: {
+      E2E_TESTING: 'true',
+    },
   },
   projects: [
     {
       name: 'chromium',
       use: { ...devices['Desktop Chrome'] },
     },
-
+    {
+      name: 'chromium-authed',
+      use: {
+        ...devices['Desktop Chrome'],
+        extraHTTPHeaders: {
+          'x-e2e-auth-user': JSON.stringify({
+            uid: 'test-user-id',
+            email: 'test-user@example.com',
+            displayName: 'Test User',
+            customClaims: {
+              admin: true,
+            },
+          }),
+        },
+      },
+      testMatch: /.*\.authed\.spec\.ts/,
+    },
     {
       name: 'firefox',
       use: { ...devices['Desktop Firefox'] },

@@ -4,9 +4,10 @@ import { getFirebaseAuth } from '@/firebase-admin/firebase-admin';
 import { getTokens, Tokens } from 'next-firebase-auth-edge';
 import type { Auth } from 'next-firebase-auth-edge/auth';
 import { filterStandardClaims } from 'next-firebase-auth-edge/lib/auth/claims';
-import { cookies } from 'next/headers';
+import { cookies, headers } from 'next/headers';
 import { unauthorized } from 'next/navigation';
 import { NextRequest } from 'next/server';
+import { ENV_E2E_TESTING } from '../env/env';
 
 export type AuthUserBrief = Partial<AuthContextUser> & { id: string };
 
@@ -43,6 +44,12 @@ export const toAuthContextUser = ({
 };
 
 export const getAuthUserFromCookies = async () => {
+  if (ENV_E2E_TESTING) {
+    const e2eAuthUser = headers().get('x-e2e-auth-user');
+    if (e2eAuthUser) {
+      return JSON.parse(e2eAuthUser) as AuthContextUser;
+    }
+  }
   const serverConfig = await serverConfigFn();
   const tokens = await getTokens(await cookies(), {
     ...serverConfig,
