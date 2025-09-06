@@ -5,6 +5,7 @@ import { SecretManagerServiceClient } from '@google-cloud/secret-manager';
 import * as dotenv from 'dotenv';
 import * as fs from 'fs';
 import {
+  base64_variants,
   ready,
   from_base64,
   to_base64,
@@ -16,8 +17,9 @@ import yargs from 'yargs';
 interface SyncOptions {
   githubToken: string;
   githubRepo: string; // Format: "owner/repo"
-  projectId: string;
-  envFilePath?: string;
+  project: string;
+  envFile: string;
+  environment: string;
 }
 
 /**
@@ -28,14 +30,14 @@ async function encryptSecret(
   secretValue: string,
 ): Promise<string> {
   await ready;
-  const binkey = from_base64(publicKey.key);
+  const binkey = from_base64(publicKey.key, base64_variants.ORIGINAL);
   const binsec = Buffer.from(secretValue);
   const encBytes = crypto_box_seal(binsec, binkey);
-  return to_base64(encBytes);
+  return to_base64(encBytes, base64_variants.ORIGINAL);
 }
 
 export async function syncSecrets(options: SyncOptions) {
-  const { githubToken, githubRepo, projectId, envFilePath = '.env' } = options;
+  const { githubToken, githubRepo, project, envFile, environment } = options;
   const [owner, repo] = githubRepo.split('/');
 
   // --- API Clients ---
@@ -43,17 +45,17 @@ export async function syncSecrets(options: SyncOptions) {
   const gcpSecretClient = new SecretManagerServiceClient();
 
   console.log(
-    `Starting secret sync for repo: ${owner}/${repo} and GCP project: ${projectId}`,
+    `Starting secret sync for repo: ${owner}/${repo} (env: ${environment}) and GCP project: ${project}`,
   );
 
   try {
     // 1. Read and parse the local .env file to get the desired state
-    if (!fs.existsSync(envFilePath)) {
-      throw new Error(`Environment file not found at '${envFilePath}'`);
+    if (!fs.existsSync(envFile)) {
+      throw new Error(`Environment file not found at '${envFile}'`);
     }
-    const envConfig = dotenv.parse(fs.readFileSync(envFilePath));
+    const envConfig = dotenv.parse(fs.readFileSync(envFile));
     const localSecretKeys = Object.keys(envConfig);
-    console.log(`Found ${localSecretKeys.length} secrets in ${envFilePath}`);
+    console.log(`Found ${localSecretKeys.length} secrets in ${envFile}`);
 
     // --- GitHub Sync ---
     console.log('\n--- Syncing GitHub Secrets ---');
@@ -75,6 +77,7 @@ export async function syncSecrets(options: SyncOptions) {
           owner,
           repo,
           secret_name: remoteKey,
+          environment_name: environment,
         });
       }
     }
@@ -82,7 +85,7 @@ export async function syncSecrets(options: SyncOptions) {
     // --- GCP Sync ---
     console.log('\n--- Syncing GCP Secrets ---');
     const [remoteGcpSecrets] = await gcpSecretClient.listSecrets({
-      parent: `projects/${projectId}`,
+      parent: `projects/${project}`,
       filter: 'labels.dotenv=managed',
     });
 
@@ -111,11 +114,12 @@ export async function syncSecrets(options: SyncOptions) {
         secret_name: key,
         encrypted_value: encryptedValue,
         key_id: publicKey.key_id,
+        environment_name: environment, 
       });
       console.log(`  -> GitHub secret set.`);
 
       // GCP: Create or update
-      const secretPath = `projects/${projectId}/secrets/${key}`;
+      const secretPath = `projects/${project}/secrets/${key}`;
       try {
         await gcpSecretClient.getSecret({ name: secretPath });
         // Secret exists, add a new version
@@ -135,7 +139,7 @@ export async function syncSecrets(options: SyncOptions) {
       } catch (error) {
         // Secret does not exist, create it
         await gcpSecretClient.createSecret({
-          parent: `projects/${projectId}`,
+          parent: `projects/${project}`,
           secretId: key,
           secret: { labels: { dotenv: 'managed' } },
         });
@@ -205,20 +209,25 @@ export const secretsCommand = {
         description: 'GitHub repo in owner/repo format',
         demandOption: true,
       })
-      .option('env-file-path', {
+      .option('env-file', {
         type: 'string',
         description: 'Path to .env file',
-        default: '.env',
+        demandOption: true,
       })
-      .demandOption('project');
+      .option('environment', {
+        type: 'string',
+        description: 'Environment (used for github)',
+        demandOption: true,
+      });
   },
   // eslint-disable-next-line @typescript-eslint/no-explicit-any
   handler: async (argv: any) => {
     await syncSecrets({
       githubToken: argv.githubToken,
       githubRepo: argv.githubRepo,
-      projectId: argv.project,
-      envFilePath: argv.envFilePath,
+      project: argv.project,
+      envFile: argv.envFile,
+      environment: argv.environment,
     });
   },
 };
