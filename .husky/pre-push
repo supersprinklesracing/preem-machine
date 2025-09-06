@@ -1,2 +1,3 @@
 npx nx --tuiAutoExit --outputStyle=static run-many -t build
 npx nx --tuiAutoExit --outputStyle=static run-many -t test --forceExit
+npx nx --tuiAutoExit --outputStyle=static run-many -t e2e
