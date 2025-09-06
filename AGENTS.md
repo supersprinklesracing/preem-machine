@@ -233,6 +233,34 @@ import { MyComponent } from './MyComponent';
 // ...
 ```
 
+### Screenshot Testing
+
+This project uses Playwright for screenshot testing to catch visual regressions.
+
+#### Adding a New Screenshot Test
+
+1.  Create a new test file in `apps/e2e-main/src` with the `.spec.ts` extension.
+2.  In the test file, navigate to the page you want to test and use the `toHaveScreenshot` assertion:
+
+    ```typescript
+    import { test, expect } from '@playwright/test';
+    test('should take a screenshot of the about page', async ({ page }) => {
+      await page.goto('/about');
+      await expect(page).toHaveScreenshot();
+    });
+    ```
+
+#### Generating and Updating Snapshots
+
+- **First Run:** When you run a new screenshot test for the first time, it will fail because no baseline snapshot exists. This is expected. The test runner will create a new snapshot file in the `apps/e2e-main/src/snapshots` directory.
+- **Updating Snapshots:** If a test fails due to an intentional UI change, you need to update the baseline snapshot. You can do this by running the tests with the `--update-snapshots` flag:
+
+  ```shell
+  npx nx e2e e2e-main --update-snapshots
+  ```
+
+After updating the snapshots, you need to commit the new snapshot files to the repository.
+
 ## 6. Forms
 
 This project uses a standardized approach to form handling to ensure consistency, reliability, and a good user experience.
