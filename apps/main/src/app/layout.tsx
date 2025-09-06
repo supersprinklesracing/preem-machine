@@ -1,6 +1,6 @@
 'use server';
 
-import { getAuthUserFromCookies } from '@/auth/user';
+import { getAuthUser } from '@/auth/user';
 import { getUserById } from '@/datastore/firestore';
 import { CurrentUserProvider } from '@/datastore/user/UserProvider';
 import {
@@ -19,7 +19,7 @@ export default async function RootLayout({
 }: {
   children: React.ReactNode;
 }) {
-  const authUser = await getAuthUserFromCookies();
+  const authUser = await getAuthUser();
   const currentUser = authUser
     ? ((await getUserById(authUser.uid)) ?? null)
     : null;
