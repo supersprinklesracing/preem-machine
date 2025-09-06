@@ -138,17 +138,7 @@ export function NewEvent({
           </Alert>
         )}
         <Card withBorder>
-          <form
-            onSubmit={form.onSubmit((values, event) => {
-              const submitter = (event?.nativeEvent as SubmitEvent)
-                .submitter as HTMLButtonElement;
-              if (submitter.dataset.testid === 'create-button') {
-                handleSubmit(values);
-              } else {
-                handleCreateAndAddAnother(values);
-              }
-            })}
-          >
+          <form>
             <Stack>
               <TextInput
                 label="Event Name"
@@ -174,6 +164,7 @@ export function NewEvent({
               />
               <Group justify="right">
                 <Button
+                  onClick={form.onSubmit(handleCreateAndAddAnother)}
                   loading={isLoading}
                   disabled={!form.isValid()}
                   data-testid="create-and-add-another-button"
@@ -181,7 +172,7 @@ export function NewEvent({
                   Create and Add Another
                 </Button>
                 <Button
-                  type="submit"
+                  onClick={form.onSubmit(handleSubmit)}
                   loading={isLoading}
                   disabled={!form.isValid()}
                   data-testid="create-button"
