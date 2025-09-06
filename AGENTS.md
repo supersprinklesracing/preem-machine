@@ -27,19 +27,12 @@ To set up your local environment, use `HUSKY=0 npm ci` to install the project de
 
 ### Pull Request Best Practices
 
-A well-crafted Pull Request (PR) is crucial for efficient and effective code review. Adhering to the following best practices will help streamline the development process.
-
-- **Scope and Size:** Keep pull requests small and focused. Each PR should address a single concern, making it easier and faster to review. Avoid mixing unrelated changes. If you fix a bug while working on a new feature, commit the fix separately, ideally in its own PR.
-
-- **Title and Description:**
-    - **Write a clear and concise title.** The title should summarize the change, include the relevant issue ID (e.g., `feat: Super feature (#123)`), and may use a prefix like `feat:`, `fix:`, or `chore:` to indicate the type of change.
-    - **Provide a detailed description.** Explain the "what" and "why" of the changes. Link to any relevant GitHub issues in the description using keywords like `Closes #123` to ensure issues are automatically closed when the PR is merged.
-
-- **Commits and History:** Maintain a clean and understandable commit history. Use interactive rebase (`git rebase -i`) to squash or fix up commits before opening a pull request. Each commit message should be meaningful and follow the same conventions as the PR title.
-
-- **Review Process:**
-  - **Review your own PR first.** Before requesting a review, perform a self-review to catch any obvious errors or typos.
-  - **Ensure tests pass.** All continuous integration (CI) checks must be green before a PR is merged. If you are adding a new feature or fixing a bug, include tests that cover the new code.
+- **Scope:** Keep PRs small and focused on a single concern.
+- **Title:** Must be clear, concise, include an issue ID, and have a type prefix (e.g., `feat: Super feature (#123)`).
+- **Description:** Explain the "what" and "why." Link issues with `Closes #123`.
+- **Commits:** Keep history clean using interactive rebase. Write meaningful commit messages.
+- **Review:** Self-review PRs before requesting a review from others.
+- **Tests:** All CI checks must pass. Add tests for new features and bug fixes.
 
 ### Critical: Merging Pull Requests
 
@@ -60,49 +53,28 @@ This project uses `husky` and `lint-staged` to enforce code quality standards on
 
 ## 4. Commands
 
+### Common NX Development Commands
+
 **Recommended Flags:** You **must** pass `--tuiAutoExit --outputStyle=stream` to `npx nx` commands for optimal performance in this environment.
 
-### Critical: Quoting File Paths in Shell Commands
-
-You **MUST ALWAYS** quote filenames and paths in shell commands. Failure to do so will cause commands to fail, especially with file paths that contain special characters such as spaces, parentheses, or brackets.
-
-#### Quoting Examples
-
-Proper quoting is essential for commands to execute correctly. Here are examples of common mistakes and their correct versions:
-
-- **Incorrect (spaces):** `git mv apps/main/src/app/(main)/new race/page.tsx apps/main/src/app/(main)/new-race/page.tsx`
-  - **Why it's wrong:** The shell interprets the space as a separator for arguments, leading to incorrect file paths.
-  - **Correct:** `git mv "apps/main/src/app/(main)/new race/page.tsx" "apps/main/src/app/(main)/new-race/page.tsx"`
-
-- **Incorrect (special characters):** `ls apps/main/src/app/(main)/layout.tsx`
-  - **Why it's wrong:** Parentheses `()` are special characters in the shell and can cause syntax errors.
-  - **Correct:** `ls "apps/main/src/app/(main)/layout.tsx"`
-
-- **Incorrect (unnecessary escaping):** `git grep "myFunction\(\)"`
-  - **Why it's wrong:** Double escaping can lead to the pattern not being found. `git grep` handles special characters in its search pattern when quoted.
-  - **Correct:** `git grep "myFunction()"`
-
-- **Incorrect (glob patterns):** `find apps/main/src/app/(main) -name "*[]/page.tsx"`
-  - **Why it's wrong:** Complex glob patterns with special characters are prone to errors.
-  - **Correct:** Use the `glob` tool instead of `find` for complex pattern matching.
-
-- **Incorrect (read_file with unquoted path):** `read_file "apps/main/src/app/(main)/layout.tsx"`
-  - **Why it's wrong:** The tool expects a single, quoted path. Unquoted paths with special characters will fail.
-  - **Correct:** `read_file "apps/main/src/app/(main)/layout.tsx"`
-
-### Building & Running
+#### Building & Running
 
 - **Run Dev Server:** `npx nx --tuiAutoExit --outputStyle=stream dev main --no-color`
 - **Verify Build:** `npx nx --tuiAutoExit --outputStyle=stream run @preem-machine/main:build:verify --no-color`
-- **Production Bundle:** `npx nx --tuiAutoExit --outputStyle=stream run @preem-machine/main:build:production --no-colo`
-- **Run All Unit Tests:** `npx nx --tuiAutoExit --outputStyle=stream test main --no-color --forceExit`
-- **Run Single Unit Test:** `npx nx --tuiAutoExit --outputStyle=stream run main:test --no-color --forceExit --testFile="${TEST_FILE}"`
-- **Run E2E Tests:** `npx nx --tuiAutoExit --outputStyle=stream e2e e2e-main --no-color`
-- **List Project Targets:** `npx nx --tuiAutoExit --outputStyle=stream show --no-web project main --no-color`
+- **Production Bundle:** `npx nx --tuiAutoExit --outputStyle=stream run @preem-machine/main:build:production --no-color`
+- **List Project Targets:** `npx nx --tuiAutoExit --outputStyle=stream show --no-web project main`
 
-### Code Style & Formatting
+#### Testing
 
-ESLint, Prettier, and Stylelint are used to maintain a consistent code style.
+- **Tests using Jest**
+  - **Run All Unit Tests:** `npx nx --tuiAutoExit --outputStyle=stream test main --no-color --forceExit`
+  - **Run Single Unit Test:** `npx nx --tuiAutoExit --outputStyle=stream run main:test --no-color --forceExit --testFile="${TEST_FILE}"`
+
+- **E2E Tests using Playwright**
+  - **Run E2E Tests:** `npx nx --tuiAutoExit --outputStyle=stream e2e e2e-main`
+  - **Run Single E2E Test:** `npx nx --tuiAutoExit --outputStyle=stream e2e e2e-main -- "${TEST_FILE}"`
+
+#### Code Style & Formatting
 
 - **Lint & Fix All Files:** `npx nx --tuiAutoExit --outputStyle=stream affected:lint --fix`
 - **Lint & Fix Single File:** `npx eslint --fix "${FILE}"`
@@ -135,6 +107,34 @@ For more specific file system operations, the built-in tools offer more direct a
 #### **3. Listing Tracked Files (`git ls-files`)**
 
 To get a list of all files tracked by Git (respecting `.gitignore`), use `git ls-files`. This is useful for discovery or for piping to other commands.
+
+### Critical: Quoting File Paths in Shell Commands
+
+You **MUST ALWAYS** quote filenames and paths in shell commands. Failure to do so will cause commands to fail, especially with file paths that contain special characters such as spaces, parentheses, or brackets.
+
+#### Quoting Examples
+
+Proper quoting is essential for commands to execute correctly. Here are examples of common mistakes and their correct versions:
+
+- **Incorrect (read_file with unquoted path):** `read_file "apps/main/src/app/(main)/layout.tsx"`
+  - **Why it's wrong:** The tool expects a single, quoted path. Unquoted paths with fail.
+  - **Correct:** `read_file "apps/main/src/app/(main)/layout.tsx"`
+
+- **Incorrect (Unittest with unquoted path):** `npx nx --tuiAutoExit --outputStyle=stream run main:test --no-color --forceExit --testFile=apps/main/src/app/(main)/layout.tsx`
+  - **Why it's wrong:** The tool expects a single, quoted path. Unquoted paths will fail.
+  - **Correct:** `npx nx --tuiAutoExit --outputStyle=stream run main:test --no-color --forceExit --testFile="apps/main/src/app/(main)/layout.tsx"`
+
+- **Incorrect (special characters):** `ls apps/main/src/app/(main)/layout.tsx`
+  - **Why it's wrong:** Parentheses `()` are special characters. Unquoted special characters will fail.
+  - **Correct:** `ls "apps/main/src/app/(main)/layout.tsx"`
+
+- **Incorrect (unnecessary escaping):** `git grep "myFunction\(\)"`
+  - **Why it's wrong:** Double escaping can lead to the pattern not being found. `git grep` handles special characters in its search pattern when quoted.
+  - **Correct:** `git grep "myFunction()"`
+
+- **Incorrect (glob patterns):** `find apps/main/src/app/(main) -name "*[]/page.tsx"`
+  - **Why it's wrong:** Complex glob patterns with special characters are prone to errors.
+  - **Correct:** Use the `glob` tool instead of `find` for complex pattern matching.
 
 ## 5. Testing Guide
 
