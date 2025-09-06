@@ -67,4 +67,17 @@ describe('LiveEvent component', () => {
       screen.getByText('Mock RaceCard: Test Live Race 2'),
     ).toBeInTheDocument();
   });
+
+  it('should render a "Create New Race" button with the correct link', () => {
+    render(<LiveEvent {...mockData} />);
+
+    const createRaceButton = screen.getByRole('link', {
+      name: /create new race/i,
+    });
+    expect(createRaceButton).toBeInTheDocument();
+    expect(createRaceButton).toHaveAttribute(
+      'href',
+      `/manage/race/new?path=${mockData.event.path}`,
+    );
+  });
 });

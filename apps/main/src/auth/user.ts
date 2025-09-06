@@ -43,7 +43,7 @@ export const toAuthContextUser = ({
   };
 };
 
-export const getAuthUserFromCookies = async () => {
+export const getAuthUser = async () => {
   if (ENV_E2E_TESTING) {
     const headersList = await headers();
     const e2eAuthUser = headersList.get('x-e2e-auth-user');
@@ -64,7 +64,7 @@ export const getAuthUserFromCookies = async () => {
 };
 
 export const verifyAuthUser = async (): Promise<AuthContextUser> => {
-  const authUser = await getAuthUserFromCookies();
+  const authUser = await getAuthUser();
   if (!authUser) {
     unauthorized();
   }

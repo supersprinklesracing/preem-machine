@@ -1,5 +1,5 @@
 import '@/matchMedia.mock';
-import { act, fireEvent, render, screen } from '@/test-utils';
+import { fireEvent, render, screen, waitFor } from '@/test-utils';
 import { NewOrganization } from './NewOrganization';
 
 // Mock dependencies
@@ -10,6 +10,14 @@ jest.mock('next/navigation', () => ({
 }));
 
 describe('NewOrganization component', () => {
+  beforeEach(() => {
+    jest.useFakeTimers();
+  });
+
+  afterEach(() => {
+    jest.useRealTimers();
+  });
+
   it('should call newOrganizationAction with the correct data on form submission', async () => {
     const newOrganizationAction = jest.fn(() =>
       Promise.resolve({ path: 'new-org-id' }),
@@ -33,8 +41,11 @@ describe('NewOrganization component', () => {
     fireEvent.click(createButton);
 
     // Wait for the action to be called
-    await act(async () => {
-      await new Promise((resolve) => setTimeout(resolve, 100));
+    await waitFor(() => {
+      expect(newOrganizationAction).toHaveBeenCalledWith({
+        name: 'New Test Organization',
+        website: 'https://new-example.com',
+      });
     });
 
     // Assert that the action was called with the correct data

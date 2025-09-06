@@ -1,6 +1,6 @@
 import type { ClientCompat, Event } from '@/datastore/types';
 import '@/matchMedia.mock';
-import { act, fireEvent, render, screen } from '@/test-utils';
+import { fireEvent, render, screen, waitFor } from '@/test-utils';
 import { EditEvent } from './EditEvent';
 
 // Mock next/navigation
@@ -28,6 +28,14 @@ const mockEvent: ClientCompat<Event> = {
 };
 
 describe('EditEvent component', () => {
+  beforeEach(() => {
+    jest.useFakeTimers();
+  });
+
+  afterEach(() => {
+    jest.useRealTimers();
+  });
+
   it('should call updateEventAction with the correct data on form submission', async () => {
     const updateEventAction = jest.fn(() => Promise.resolve({ ok: true }));
 
@@ -42,8 +50,15 @@ describe('EditEvent component', () => {
     fireEvent.click(saveButton);
 
     // Wait for the action to be called
-    await act(async () => {
-      await new Promise((resolve) => setTimeout(resolve, 100));
+    await waitFor(() => {
+      expect(updateEventAction).toHaveBeenCalledWith(
+        expect.objectContaining({
+          path: 'organizations/org-1/series/series-1/events/event-1',
+          edits: expect.objectContaining({
+            name: 'New Event Name',
+          }),
+        }),
+      );
     });
 
     // Assert that the action was called with the correct data
@@ -74,5 +89,15 @@ describe('EditEvent component', () => {
 
     // Wait for the error message to appear
     await screen.findByText('Failed to save');
+  });
+
+  it('should open a modal to add a new race', async () => {
+    render(<EditEvent event={mockEvent} editEventAction={jest.fn()} />);
+
+    const addRaceButton = screen.getByText('Add Race');
+    fireEvent.click(addRaceButton);
+
+    const modalTitle = await screen.findByText('Add Race');
+    expect(modalTitle).toBeInTheDocument();
   });
 });

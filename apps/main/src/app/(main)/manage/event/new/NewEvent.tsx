@@ -29,12 +29,14 @@ import { FormActionResult } from '@/components/forms/forms';
 export function NewEvent({
   newEventAction,
   path,
+  onSuccess,
 }: {
   newEventAction: (
     path: string,
     options: FormValues,
   ) => Promise<FormActionResult<{ path?: string }>>;
   path: string;
+  onSuccess?: () => void;
 }) {
   const router = useRouter();
   const [isLoading, setIsLoading] = useState(false);
@@ -73,7 +75,9 @@ export function NewEvent({
 
     try {
       const result = await newEventAction(path, submissionValues);
-      if (result.path) {
+      if (onSuccess) {
+        onSuccess();
+      } else if (result.path) {
         router.push(`/manage/${toUrlPath(result.path)}/edit`);
       }
     } catch (error) {

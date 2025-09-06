@@ -1,6 +1,6 @@
 'use server';
 
-import { verifyAuthUser } from '@/auth/user';
+import { getAuthUser } from '@/auth/user';
 import { getEventsForUser } from '@/datastore/firestore';
 import { CurrentUser } from '@/datastore/user/UserContext';
 import AvatarCluster from './Shell/AvatarCluster';
@@ -13,8 +13,8 @@ export interface MainProps {
 }
 
 export default async function Layout({ children }: MainProps) {
-  const authUser = await verifyAuthUser();
-  const events = await getEventsForUser(authUser.uid);
+  const authUser = await getAuthUser();
+  const events = authUser ? await getEventsForUser(authUser.uid) : [];
 
   return (
     <MainAppShell

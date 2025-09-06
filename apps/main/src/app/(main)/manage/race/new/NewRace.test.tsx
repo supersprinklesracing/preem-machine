@@ -53,8 +53,17 @@ describe('NewRace component', () => {
     await waitFor(() => expect(createButton).not.toBeDisabled());
 
     // Click the create button
-    await act(async () => {
-      fireEvent.click(createButton);
+    fireEvent.click(createButton);
+
+    await waitFor(() => {
+      expect(newRaceAction).toHaveBeenCalledWith(
+        'organizations/org-1/series/series-1/events/event-1/races',
+        expect.objectContaining({
+          name: 'New Test Race',
+          location: 'Test Location',
+          date: new Date('2025-08-01T10:00:00.000Z'),
+        }),
+      );
     });
 
     expect(newRaceAction).toHaveBeenCalledWith(
