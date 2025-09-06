@@ -25,6 +25,19 @@ To set up your local environment, use `HUSKY=0 npm ci` to install the project de
   git rebase origin/main
   ```
 
+### Pull Request Best Practices
+
+- **Scope:** Keep PRs small and focused on a single concern.
+- **Title:** Must be clear, concise, include an issue ID, and have a type prefix (e.g., `feat: Super feature (#123)`).
+- **Description:** Explain the "what" and "why." Link issues with `Closes #123`.
+- **Commits:** Keep history clean using interactive rebase. Write meaningful commit messages.
+- **Review:** Self-review PRs before requesting a review from others.
+- **Tests:** All CI checks must pass. Add tests for new features and bug fixes.
+
+### Critical: Merging Pull Requests
+
+**UNDER NO CIRCUMSTANCES** are you to merge a pull request without the user's direct and explicit consent. This is a strict and non-negotiable rule. Even if all checks pass and the user seems to imply approval, you **MUST** ask for confirmation before merging. For example, ask: "All checks have passed. Should I merge the pull request?" This rule applies in all modes, including any "yolo" or autonomous mode.
+
 ### Code Quality Tools
 
 This project uses `husky` and `lint-staged` to enforce code quality standards on every commit.
@@ -40,49 +53,28 @@ This project uses `husky` and `lint-staged` to enforce code quality standards on
 
 ## 4. Commands
 
+### Common NX Development Commands
+
 **Recommended Flags:** You **must** pass `--tuiAutoExit --outputStyle=stream` to `npx nx` commands for optimal performance in this environment.
 
-### Critical: Quoting File Paths in Shell Commands
-
-You **MUST ALWAYS** quote filenames and paths in shell commands. Failure to do so will cause commands to fail, especially with file paths that contain special characters such as spaces, parentheses, or brackets.
-
-#### Quoting Examples
-
-Proper quoting is essential for commands to execute correctly. Here are examples of common mistakes and their correct versions:
-
-- **Incorrect (spaces):** `git mv apps/main/src/app/(main)/new race/page.tsx apps/main/src/app/(main)/new-race/page.tsx`
-  - **Why it's wrong:** The shell interprets the space as a separator for arguments, leading to incorrect file paths.
-  - **Correct:** `git mv "apps/main/src/app/(main)/new race/page.tsx" "apps/main/src/app/(main)/new-race/page.tsx"`
-
-- **Incorrect (special characters):** `ls apps/main/src/app/(main)/layout.tsx`
-  - **Why it's wrong:** Parentheses `()` are special characters in the shell and can cause syntax errors.
-  - **Correct:** `ls "apps/main/src/app/(main)/layout.tsx"`
-
-- **Incorrect (unnecessary escaping):** `git grep "myFunction\(\)"`
-  - **Why it's wrong:** Double escaping can lead to the pattern not being found. `git grep` handles special characters in its search pattern when quoted.
-  - **Correct:** `git grep "myFunction()"`
-
-- **Incorrect (glob patterns):** `find apps/main/src/app/(main) -name "*[]/page.tsx"`
-  - **Why it's wrong:** Complex glob patterns with special characters are prone to errors.
-  - **Correct:** Use the `glob` tool instead of `find` for complex pattern matching.
-
-- **Incorrect (read_file with unquoted path):** `read_file "apps/main/src/app/(main)/layout.tsx"`
-  - **Why it's wrong:** The tool expects a single, quoted path. Unquoted paths with special characters will fail.
-  - **Correct:** `read_file "apps/main/src/app/(main)/layout.tsx"`
-
-### Building & Running
+#### Building & Running
 
 - **Run Dev Server:** `npx nx --tuiAutoExit --outputStyle=stream dev main --no-color`
 - **Verify Build:** `npx nx --tuiAutoExit --outputStyle=stream run @preem-machine/main:build:verify --no-color`
-- **Production Bundle:** `npx nx --tuiAutoExit --outputStyle=stream run @preem-machine/main:build:production --no-colo`
-- **Run All Unit Tests:** `npx nx --tuiAutoExit --outputStyle=stream test main --no-color --forceExit`
-- **Run Single Unit Test:** `npx nx --tuiAutoExit --outputStyle=stream run main:test --no-color --forceExit --testFile="${TEST_FILE}"`
-- **Run E2E Tests:** `npx nx --tuiAutoExit --outputStyle=stream e2e e2e-main --no-color`
-- **List Project Targets:** `npx nx --tuiAutoExit --outputStyle=stream show --no-web project main --no-color`
+- **Production Bundle:** `npx nx --tuiAutoExit --outputStyle=stream run @preem-machine/main:build:production --no-color`
+- **List Project Targets:** `npx nx --tuiAutoExit --outputStyle=stream show --no-web project main`
 
-### Code Style & Formatting
+#### Testing
 
-ESLint, Prettier, and Stylelint are used to maintain a consistent code style.
+- **Tests using Jest**
+  - **Run All Unit Tests:** `npx nx --tuiAutoExit --outputStyle=stream test main --no-color --forceExit`
+  - **Run Single Unit Test:** `npx nx --tuiAutoExit --outputStyle=stream run main:test --no-color --forceExit --testFile="${TEST_FILE}"`
+
+- **E2E Tests using Playwright**
+  - **Run E2E Tests:** `npx nx --tuiAutoExit --outputStyle=stream e2e e2e-main`
+  - **Run Single E2E Test:** `npx nx --tuiAutoExit --outputStyle=stream e2e e2e-main -- "${TEST_FILE}"`
+
+#### Code Style & Formatting
 
 - **Lint & Fix All Files:** `npx nx --tuiAutoExit --outputStyle=stream affected:lint --fix`
 - **Lint & Fix Single File:** `npx eslint --fix "${FILE}"`
@@ -115,6 +107,34 @@ For more specific file system operations, the built-in tools offer more direct a
 #### **3. Listing Tracked Files (`git ls-files`)**
 
 To get a list of all files tracked by Git (respecting `.gitignore`), use `git ls-files`. This is useful for discovery or for piping to other commands.
+
+### Critical: Quoting File Paths in Shell Commands
+
+You **MUST ALWAYS** quote filenames and paths in shell commands. Failure to do so will cause commands to fail, especially with file paths that contain special characters such as spaces, parentheses, or brackets.
+
+#### Quoting Examples
+
+Proper quoting is essential for commands to execute correctly. Here are examples of common mistakes and their correct versions:
+
+- **Incorrect (read_file with unquoted path):** `read_file "apps/main/src/app/(main)/layout.tsx"`
+  - **Why it's wrong:** The tool expects a single, quoted path. Unquoted paths with fail.
+  - **Correct:** `read_file "apps/main/src/app/(main)/layout.tsx"`
+
+- **Incorrect (Unittest with unquoted path):** `npx nx --tuiAutoExit --outputStyle=stream run main:test --no-color --forceExit --testFile=apps/main/src/app/(main)/layout.tsx`
+  - **Why it's wrong:** The tool expects a single, quoted path. Unquoted paths will fail.
+  - **Correct:** `npx nx --tuiAutoExit --outputStyle=stream run main:test --no-color --forceExit --testFile="apps/main/src/app/(main)/layout.tsx"`
+
+- **Incorrect (special characters):** `ls apps/main/src/app/(main)/layout.tsx`
+  - **Why it's wrong:** Parentheses `()` are special characters. Unquoted special characters will fail.
+  - **Correct:** `ls "apps/main/src/app/(main)/layout.tsx"`
+
+- **Incorrect (unnecessary escaping):** `git grep "myFunction\(\)"`
+  - **Why it's wrong:** Double escaping can lead to the pattern not being found. `git grep` handles special characters in its search pattern when quoted.
+  - **Correct:** `git grep "myFunction()"`
+
+- **Incorrect (glob patterns):** `find apps/main/src/app/(main) -name "*[]/page.tsx"`
+  - **Why it's wrong:** Complex glob patterns with special characters are prone to errors.
+  - **Correct:** Use the `glob` tool instead of `find` for complex pattern matching.
 
 ## 5. Testing Guide
 
@@ -179,7 +199,7 @@ For server components that interact with Firestore, refer to the **Mocking `fire
       ```
 
 > **Important:**
-> 
+>
 > - You should not need to modify `mock-db.ts`; the existing data is sufficient for testing.
 > - **Never** access the mock database directly in your tests. Your components should interact with Firestore as they normally would.
 > - Do not mock individual Firestore functions (e.g., `(firestore.getRenderableRaceDataForPage as jest.Mock).mockResolvedValue(...)`). This approach is incorrect and will not work with the Firestore instance. You **must** use `setupMockDb` to ensure the entire database is mocked correctly.

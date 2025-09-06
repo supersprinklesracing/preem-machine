@@ -37,8 +37,13 @@ describe('NewEvent component', () => {
   const mockPath = 'series/some-series-id';
 
   beforeEach(() => {
+    jest.useFakeTimers();
     jest.clearAllMocks();
     mockNewEventAction.mockReset();
+  });
+
+  afterEach(() => {
+    jest.useRealTimers();
   });
 
   it('should call newEventAction with the correct data on form submission', async () => {

@@ -21,6 +21,7 @@ import { useDisclosure } from '@mantine/hooks';
 import { useRouter } from 'next/navigation';
 import { useState } from 'react';
 import { NewEvent } from '../../event/new/NewEvent';
+import { newEventAction } from '../../event/new/new-event-action';
 import { EditSeriesOptions } from './edit-series-action';
 import { FormActionResult } from '@/components/forms/forms';
 
@@ -44,6 +45,11 @@ export function EditSeries({
   const [isLoading, setIsLoading] = useState(false);
   const [submissionError, setSubmissionError] = useState<string | null>(null);
   const [opened, { open, close }] = useDisclosure(false);
+
+  const handleNewEventSuccess = () => {
+    close();
+    router.refresh();
+  };
 
   const form = useForm<FormValues>({
     initialValues: {
@@ -99,11 +105,6 @@ export function EditSeries({
     } finally {
       setIsLoading(false);
     }
-  };
-
-  const handleNewEventSuccess = () => {
-    close();
-    router.refresh();
   };
 
   return (
