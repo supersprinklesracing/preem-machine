@@ -1,6 +1,6 @@
 'use server';
 
-import { getAuthUserFromCookies } from '@/auth/user';
+import { getAuthUser } from '@/auth/user';
 import { getRenderableUserDataForPage } from '@/datastore/firestore';
 import { getDocPathFromSearchParams } from '@/datastore/paths';
 import { redirect } from 'next/navigation';
@@ -13,7 +13,7 @@ export default async function UserPage({
 }) {
   const resolvedSearchParams = await searchParams;
   if (!resolvedSearchParams.path) {
-    const authUser = await getAuthUserFromCookies();
+    const authUser = await getAuthUser();
     redirect(
       authUser ? `/user?path=users/${authUser.uid}` : '/login?redirect=/user',
     );

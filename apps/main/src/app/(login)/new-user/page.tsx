@@ -1,13 +1,13 @@
 'use server';
 
-import { getAuthUserFromCookies } from '@/auth/user';
+import { getAuthUser } from '@/auth/user';
 import { getUserById } from '@/datastore/firestore';
 import { redirect } from 'next/navigation';
 import { newUserAction } from './new-user-action';
 import NewUser from './NewUser';
 
 export default async function NewUserPage() {
-  const authUser = await getAuthUserFromCookies();
+  const authUser = await getAuthUser();
 
   // If the user is not authenticated, redirect to login.
   // This is a safeguard; middleware should typically handle this.

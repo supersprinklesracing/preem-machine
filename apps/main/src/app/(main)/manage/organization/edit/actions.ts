@@ -1,6 +1,6 @@
 'use server';
 
-import { getAuthUserFromCookies } from '@/auth/user';
+import { getAuthUser } from '@/auth/user';
 import { isUserAuthorized } from '@/datastore/access';
 import { updateOrganizationStripeConnectAccount } from '@/datastore/update';
 import { ENV_URL_PREFIX } from '@/env/env';
@@ -15,7 +15,7 @@ export async function createStripeConnectAccount(
   error?: string;
   accountId?: string;
 }> {
-  const authUser = await getAuthUserFromCookies();
+  const authUser = await getAuthUser();
   if (!authUser) {
     // This should be caught by middleware, but as a safeguard:
     return { success: false, error: 'User not authenticated' };
@@ -70,7 +70,7 @@ export async function createDashboardLink(
   accountId: string,
   organizationId: string,
 ): Promise<{ success: boolean; error?: string; url?: string }> {
-  const authUser = await getAuthUserFromCookies();
+  const authUser = await getAuthUser();
   if (!authUser) {
     return { success: false, error: 'User not authenticated' };
   }
@@ -99,7 +99,7 @@ export async function createOnboardingLink(
   accountId: string,
   organizationId: string,
 ): Promise<{ success: boolean; error?: string; url?: string }> {
-  const authUser = await getAuthUserFromCookies();
+  const authUser = await getAuthUser();
   if (!authUser) {
     return { success: false, error: 'User not authenticated' };
   }
