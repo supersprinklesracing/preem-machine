@@ -27,11 +27,7 @@ describe('MainAppShell', () => {
 
     render(
       <MantineProvider theme={theme}>
-        <MainAppShell
-          sidebar={(onLinkClick) => (
-            <Sidebar {...{ events: [] }} onLinkClick={onLinkClick} />
-          )}
-        >
+        <MainAppShell sidebar={<Sidebar {...{ events: [] }} />}>
           <div>Page content</div>
         </MainAppShell>
       </MantineProvider>,

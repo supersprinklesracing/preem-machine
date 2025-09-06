@@ -18,7 +18,6 @@ jest.mock('next/navigation', () => ({
   useRouter: jest.fn(() => ({
     refresh: jest.fn(),
   })),
-  // eslint-disable-next-line @eslint-react/hooks-extra/no-unnecessary-use-prefix
   useSearchParams: () => ({
     get: jest.fn(),
   }),

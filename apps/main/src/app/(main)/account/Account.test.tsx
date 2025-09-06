@@ -1,7 +1,5 @@
 import { render, screen } from '@/test-utils';
 import React from 'react';
-import { AuthContextUser } from '@/auth/AuthContext';
-import { User } from '@/datastore/types';
 import AccountPage from './Account';
 import type { AccountDetailsProps } from './Account';
 
@@ -17,8 +15,8 @@ jest.mock('./account-debug/AccountDebug', () => ({
 
 const mockProps: AccountDetailsProps = {
   debugProps: {
-    user: { uid: 'test-user' } as AuthContextUser,
-    dbUser: { id: 'test-db-user', path: 'users/test-db-user' } as User,
+    user: { uid: 'test-user' } as any,
+    dbUser: { id: 'test-db-user' } as any,
   },
   editAction: jest.fn(),
 };

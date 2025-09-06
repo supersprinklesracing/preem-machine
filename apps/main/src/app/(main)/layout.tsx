@@ -19,9 +19,7 @@ export default async function Layout({ children }: MainProps) {
   return (
     <MainAppShell
       avatarCluster={<AvatarCluster />}
-      sidebar={(onLinkClick) => (
-        <Sidebar {...{ events }} onLinkClick={onLinkClick} />
-      )}
+      sidebar={<Sidebar {...{ events }} />}
     >
       {children}
     </MainAppShell>

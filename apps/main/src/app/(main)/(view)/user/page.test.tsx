@@ -23,7 +23,7 @@ setupMockDb();
 
 describe('UserPage component', () => {
   beforeEach(() => {
-    (redirect as jest.Mock<(url: string) => never>).mockClear();
+    (redirect as any as jest.Mock).mockClear();
   });
 
   it('should fetch user data and render the User component', async () => {

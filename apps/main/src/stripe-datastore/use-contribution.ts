@@ -30,6 +30,7 @@ export const useContribution = () => {
 
   const handleContribute = async ({
     amount,
+    message,
     isAnonymous,
     preem,
     onSuccess,

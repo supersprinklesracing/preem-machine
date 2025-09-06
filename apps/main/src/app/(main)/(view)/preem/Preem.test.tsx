@@ -29,7 +29,7 @@ const mockPreemData = {
         },
       },
     },
-    status: 'Open',
+    status: 'Open' as any,
     type: 'Pooled',
     prizePool: 150,
     minimumThreshold: 100,

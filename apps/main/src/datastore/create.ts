@@ -35,7 +35,7 @@ const createDocument = async <U>(
   path: DocPath,
   data: U,
   authUser: AuthContextUser,
-  briefData: Record<string, unknown>,
+  briefData: Record<string, any>,
 ) => {
   if (!(await isUserAuthorized(authUser, path))) {
     unauthorized();
