@@ -1,34 +1,31 @@
 'use server';
 
+import { userSchema } from '@/app/(main)/account/user-schema';
 import { getAuthUser } from '@/auth/user';
+import { FormActionError, FormActionResult } from '@/components/forms/forms';
 import { createUser } from '@/datastore/create';
-import type { User } from '@/datastore/types';
+import { z } from 'zod';
 
 export interface NewUserOptions {
-  user: Partial<User>;
-}
-
-interface ActionResult {
-  ok: boolean;
-  error?: string;
+  values: z.infer<typeof userSchema>;
 }
 
 export async function newUserAction({
-  user,
-}: NewUserOptions): Promise<ActionResult> {
+  values,
+}: NewUserOptions): Promise<FormActionResult> {
   try {
     const authUser = await getAuthUser();
     if (!authUser) {
-      return { ok: false, error: 'Not registered.' };
+      throw new FormActionError('Not registered.');
     }
 
-    await createUser(user, authUser);
+    await createUser(values, authUser);
 
-    return { ok: true };
+    return {};
   } catch (error) {
     console.error('Failed to create user document:', error);
     const message =
       error instanceof Error ? error.message : 'An unknown error occurred.';
-    return { ok: false, error: `Failed to save profile: ${message}` };
+    throw new FormActionError(`Failed to save profile: ${message}`);
   }
 }

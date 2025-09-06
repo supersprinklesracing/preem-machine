@@ -89,6 +89,7 @@ export const Preem: React.FC<Props> = ({ preem, children }) => {
           {preem.name}
         </Title>
         <Text c="dimmed">Part of {preem.raceBrief.name}</Text>
+        {preem.description && <Text mt="md">{preem.description}</Text>}
       </Box>
 
       <Grid gutter="lg">

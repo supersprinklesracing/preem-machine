@@ -3,33 +3,41 @@
 import { verifyAuthUser } from '@/auth/user';
 import { FormActionError, FormActionResult } from '@/components/forms/forms';
 import { createSeries } from '@/datastore/create';
-import { DocPath } from '@/datastore/paths';
+import { CollectionPath, DocPath } from '@/datastore/paths';
+import { getTimestampFromDate } from '@/firebase-admin/dates';
 import { revalidatePath } from 'next/cache';
 import { z } from 'zod';
+import { seriesSchema } from '../series-schema';
 
-const newSeriesSchema = z.object({
-  name: z.string().min(2, 'Name must have at least 2 letters'),
-  location: z.string().optional(),
-  website: z.string().optional(),
-  description: z.string().min(10, 'Description must have at least 10 letters'),
-  startDate: z.string(),
-  endDate: z.string(),
-});
+export interface NewSeriesOptions {
+  path: CollectionPath;
+  values: z.infer<typeof seriesSchema>;
+}
 
-export async function newSeriesAction(
-  path: string,
-  options: unknown,
-): Promise<FormActionResult<{ path: DocPath }>> {
+export async function newSeriesAction({
+  path,
+  values,
+}: NewSeriesOptions): Promise<FormActionResult<{ path: DocPath }>> {
   try {
     const user = await verifyAuthUser();
 
-    const validation = newSeriesSchema.safeParse(options);
+    const validation = seriesSchema.safeParse(values);
 
     if (!validation.success) {
       throw new FormActionError('Invalid data.');
     }
 
-    const newSeriesSnapshot = await createSeries(path, validation.data, user);
+    const { startDate, endDate, ...rest } = validation.data;
+
+    const newSeriesSnapshot = await createSeries(
+      path,
+      {
+        ...rest,
+        ...(startDate ? { startDate: getTimestampFromDate(startDate) } : {}),
+        ...(endDate ? { endDate: getTimestampFromDate(endDate) } : {}),
+      },
+      user,
+    );
     const newSeries = newSeriesSnapshot.data();
     if (!newSeries) {
       throw new Error('Failed to create series.');

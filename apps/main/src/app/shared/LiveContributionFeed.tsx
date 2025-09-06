@@ -70,7 +70,7 @@ export default function LiveContributionFeed({
               href={`/${toUrlPath(c.preemBrief.path)}`}
               style={{ textDecoration: 'none', color: 'inherit' }}
             >
-              &quot;{c.preemBrief?.name}&quot;
+              &quot;{c.preemBrief.name}&quot;
             </Text>{' '}
             in the{' '}
             <Text

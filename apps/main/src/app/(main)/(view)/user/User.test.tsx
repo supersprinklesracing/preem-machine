@@ -12,6 +12,9 @@ const mockUserData = {
     name: 'John Doe',
     email: 'john.doe@example.com',
     avatarUrl: 'https://example.com/avatar.png',
+    affiliation: 'Test Team',
+    raceLicenseId: '12345',
+    address: '123 Main St',
   },
   contributions: [
     {
@@ -56,6 +59,9 @@ describe('User component', () => {
 
     expect(screen.getByText('John Doe')).toBeInTheDocument();
     expect(screen.getByText('john.doe@example.com')).toBeInTheDocument();
+    expect(screen.getByText('Affiliation: Test Team')).toBeInTheDocument();
+    expect(screen.getByText('Race License ID: 12345')).toBeInTheDocument();
+    expect(screen.getByText('Address: 123 Main St')).toBeInTheDocument();
     expect(screen.getByText('$150')).toBeInTheDocument();
 
     expect(screen.getByText('Test Race 1')).toBeInTheDocument();

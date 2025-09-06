@@ -8,17 +8,21 @@ import {
   Text,
   Title,
   TitleOrder,
+  Anchor,
 } from '@mantine/core';
 import {
   IconAward,
   IconClock,
   IconSparkles,
   IconUsers,
+  IconWorldWww,
 } from '@tabler/icons-react';
 import React from 'react';
 import DateStatusBadge from '../DateStatusBadge';
 import { DateLocationDetail } from './DateLocationDetail';
 import { MetadataItem, MetadataRow } from './MetadataRow';
+import Link from 'next/link';
+import { toUrlPath } from '@/datastore/paths';
 
 const LARGE_PREEM_THRESHOLD = 100;
 
@@ -122,7 +126,16 @@ const RaceCard: React.FC<RaceCardProps> = ({
                     <DateStatusBadge {...race} />
                   </Group>
                   <Text c="dimmed">
-                    {race.category} - {race.gender}
+                    Part of{' '}
+                    <Anchor
+                      component={Link}
+                      href={`/${toUrlPath(race.eventBrief.path)}`}
+                    >
+                      {race.eventBrief.name}
+                    </Anchor>
+                  </Text>
+                  <Text c="dimmed">
+                    {race.category} - {race.gender} - {race.ageCategory}
                   </Text>
                 </div>
               </Group>
@@ -132,10 +145,29 @@ const RaceCard: React.FC<RaceCardProps> = ({
               </Group>
 
               <Text size="sm" mt="md" mb="md">
+                {race.description}
+              </Text>
+
+              <Text size="sm" mt="md" mb="md">
                 {race.courseDetails}
               </Text>
 
+              {race.website && (
+                <Group gap="xs">
+                  <IconWorldWww size={16} />
+                  <Anchor href={race.website} target="_blank" size="sm">
+                    Official Website
+                  </Anchor>
+                </Group>
+              )}
+
               <MetadataRow items={metadataItems} />
+
+              {race.sponsors && race.sponsors.length > 0 && (
+                <Text size="sm" mt="md">
+                  Sponsored by: {race.sponsors.join(', ')}
+                </Text>
+              )}
             </div>
           </Stack>
         </Grid.Col>

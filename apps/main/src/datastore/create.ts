@@ -7,7 +7,7 @@ import {
   type DocumentData,
   type DocumentReference,
 } from 'firebase-admin/firestore';
-import { getTimestampFromISODate } from '../firebase-admin/dates';
+
 import { isUserAuthorized } from './access';
 import { unauthorized } from './errors';
 import { DocPath, asDocPath } from './paths';
@@ -58,10 +58,10 @@ const createDocument = async <U>(
 
 export const createSeries = async (
   organizationPath: DocPath,
-  series: Partial<Omit<Series, 'startDate' | 'endDate'>> & {
-    startDate?: string;
-    endDate?: string;
-  },
+  series: Pick<
+    Event,
+    'name' | 'description' | 'website' | 'location' | 'startDate' | 'endDate'
+  >,
   authUser: AuthContextUser,
 ) => {
   const db = await getFirestore();
@@ -72,29 +72,23 @@ export const createSeries = async (
   const organizationBrief: OrganizationBrief = {
     id: orgRef.id,
     path: asDocPath(orgRef.path),
+
     name: orgData.name,
   };
 
   const seriesRef = orgRef.collection('series').doc();
 
-  return createDocument(
-    asDocPath(seriesRef.path),
-    {
-      ...series,
-      startDate: getTimestampFromISODate(series.startDate),
-      endDate: getTimestampFromISODate(series.endDate),
-    },
-    authUser,
-    { organizationBrief },
-  );
+  return createDocument(asDocPath(seriesRef.path), series, authUser, {
+    organizationBrief,
+  });
 };
 
 export const createEvent = async (
   seriesPath: DocPath,
-  event: Partial<Omit<Event, 'startDate' | 'endDate'>> & {
-    startDate?: string;
-    endDate?: string;
-  },
+  event: Pick<
+    Event,
+    'name' | 'description' | 'website' | 'location' | 'startDate' | 'endDate'
+  >,
   authUser: AuthContextUser,
 ) => {
   const db = await getFirestore();
@@ -113,24 +107,17 @@ export const createEvent = async (
 
   const eventRef = seriesRef.collection('events').doc();
 
-  return createDocument(
-    asDocPath(eventRef.path),
-    {
-      ...event,
-      startDate: getTimestampFromISODate(event.startDate),
-      endDate: getTimestampFromISODate(event.endDate),
-    },
-    authUser,
-    { seriesBrief },
-  );
+  return createDocument(asDocPath(eventRef.path), event, authUser, {
+    seriesBrief,
+  });
 };
 
 export const createRace = async (
   eventPath: DocPath,
-  race: Partial<Omit<Race, 'startDate' | 'endDate'>> & {
-    startDate?: string;
-    endDate?: string;
-  },
+  race: Pick<
+    Event,
+    'name' | 'description' | 'website' | 'location' | 'startDate' | 'endDate'
+  >,
   authUser: AuthContextUser,
 ) => {
   const db = await getFirestore();
@@ -141,6 +128,7 @@ export const createRace = async (
   const eventBrief: EventBrief = {
     id: eventRef.id,
     path: asDocPath(eventRef.path),
+
     name: eventData.name,
     startDate: eventData.startDate,
     endDate: eventData.endDate,
@@ -149,21 +137,23 @@ export const createRace = async (
 
   const raceRef = eventRef.collection('races').doc();
 
-  return createDocument(
-    asDocPath(raceRef.path),
-    {
-      ...race,
-      startDate: getTimestampFromISODate(race.startDate),
-      endDate: getTimestampFromISODate(race.endDate),
-    },
-    authUser,
-    { eventBrief },
-  );
+  return createDocument(asDocPath(raceRef.path), race, authUser, {
+    eventBrief,
+  });
 };
 
 export const createPreem = async (
   racePath: DocPath,
-  preem: Partial<Preem>,
+  preem: Pick<
+    Preem,
+    | 'name'
+    | 'description'
+    | 'type'
+    | 'status'
+    | 'prizePool'
+    | 'timeLimit'
+    | 'minimumThreshold'
+  >,
   authUser: AuthContextUser,
 ) => {
   const db = await getFirestore();
@@ -188,7 +178,7 @@ export const createPreem = async (
 };
 
 export const createOrganization = async (
-  organization: Partial<Organization>,
+  organization: Pick<Organization, 'name' | 'description' | 'website'>,
   authUser: AuthContextUser,
 ) => {
   const db = await getFirestore();
@@ -198,7 +188,10 @@ export const createOrganization = async (
 };
 
 export const createUser = async (
-  user: Partial<User>,
+  user: Pick<
+    User,
+    'name' | 'email' | 'avatarUrl' | 'affiliation' | 'raceLicenseId' | 'address'
+  >,
   authUser: AuthContextUser,
 ) => {
   const db = await getFirestore();
@@ -230,10 +223,7 @@ export const createPendingContribution = async (
     message,
     status: 'pending',
     contributor: isAnonymous ? null : userRef,
-    'metadata.created': FieldValue.serverTimestamp(),
-    'metadata.createdBy': userRef,
-    'metadata.lastModified': FieldValue.serverTimestamp(),
-    'metadata.lastModifiedBy': userRef,
+    ...createMetadata(userRef),
   });
 
   await docRef.update({ path: docRef.path });

@@ -5,6 +5,7 @@ import SeriesCard from '@/components/cards/SeriesCard';
 import { SeriesWithEvents } from '@/datastore/firestore';
 import type { ClientCompat, Organization, User } from '@/datastore/types';
 import {
+  Anchor,
   Avatar,
   Button,
   Card,
@@ -15,7 +16,7 @@ import {
   Text,
   Title,
 } from '@mantine/core';
-import { IconChevronRight, IconPlus } from '@tabler/icons-react';
+import { IconChevronRight, IconPlus, IconWorldWww } from '@tabler/icons-react';
 import Link from 'next/link';
 
 interface Props {
@@ -59,6 +60,15 @@ export default function Organization({
   return (
     <Stack>
       <Title>{organization.name}</Title>
+      {organization.description && <Text>{organization.description}</Text>}
+      {organization.website && (
+        <Group gap="xs">
+          <IconWorldWww size={16} />
+          <Anchor href={organization.website} target="_blank" size="sm">
+            Official Website
+          </Anchor>
+        </Group>
+      )}
       <Grid gutter="xl">
         <Grid.Col span={{ base: 12, md: 8 }}>
           <Stack>

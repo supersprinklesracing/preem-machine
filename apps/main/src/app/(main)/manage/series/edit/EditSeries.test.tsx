@@ -15,6 +15,7 @@ const mockSeries: ClientCompat<Series> = {
   id: 'series-1',
   path: 'organizations/org-1/series/series-1',
   name: 'Test Series',
+  description: 'This is a test series description.',
   location: 'Test Location',
   website: 'https://example.com',
   startDate: new Date().toISOString(),
@@ -22,6 +23,7 @@ const mockSeries: ClientCompat<Series> = {
   organizationBrief: {
     id: 'org-1',
     path: 'organizations/org-1',
+    name: 'Test Org',
   },
 };
 
@@ -48,17 +50,13 @@ describe('EditSeries component', () => {
 
     // Change the name in the form
     const nameInput = screen.getByDisplayValue('Test Series');
-    fireEvent.change(nameInput, { target: { value: 'New Series Name' } });
-
-    act(() => {
-      jest.runAllTimers();
+    await act(async () => {
+      fireEvent.change(nameInput, { target: { value: 'New Series Name' } });
+      jest.advanceTimersByTime(500);
     });
 
-    // Wait for the debounce and click the save button
+    // Click the save button
     const saveButton = screen.getByText('Save Changes');
-    await waitFor(() => {
-      expect(saveButton).not.toBeDisabled();
-    });
     fireEvent.click(saveButton);
 
     // Wait for the action to be called
@@ -90,17 +88,13 @@ describe('EditSeries component', () => {
 
     // Change the name in the form
     const nameInput = screen.getByDisplayValue('Test Series');
-    fireEvent.change(nameInput, { target: { value: 'New Series Name' } });
-
-    act(() => {
-      jest.runAllTimers();
+    await act(async () => {
+      fireEvent.change(nameInput, { target: { value: 'New Series Name' } });
+      jest.advanceTimersByTime(500);
     });
 
-    // Wait for the debounce and click the save button
+    // Click the save button
     const saveButton = screen.getByText('Save Changes');
-    await waitFor(() => {
-      expect(saveButton).not.toBeDisabled();
-    });
     fireEvent.click(saveButton);
 
     // Wait for the error message to appear

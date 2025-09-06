@@ -77,3 +77,25 @@ export function getISODateFromDate(value: Date | undefined): string | undefined;
 export function getISODateFromDate(value: Date | null | undefined) {
   return value ? value.toISOString() : undefined;
 }
+
+export function formatDateRange(
+  startDate: string | undefined,
+  endDate: string | undefined,
+) {
+  if (!startDate) {
+    return '';
+  }
+
+  const start = new Date(startDate);
+  const end = endDate ? new Date(endDate) : null;
+
+  if (end && start.toDateString() === end.toDateString()) {
+    return format(start, 'PP');
+  }
+
+  if (end) {
+    return `${format(start, 'PP')} - ${format(end, 'PP')}`;
+  }
+
+  return format(start, 'PP');
+}

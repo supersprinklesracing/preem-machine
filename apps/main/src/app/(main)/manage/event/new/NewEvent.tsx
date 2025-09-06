@@ -1,5 +1,6 @@
 'use client';
 
+import { useActionForm } from '@/app/shared/hooks/useActionForm';
 import EventCard from '@/components/cards/EventCard';
 import { FormActionResult } from '@/components/forms/forms';
 import { toUrlPath } from '@/datastore/paths';
@@ -12,22 +13,16 @@ import {
   SimpleGrid,
   Stack,
   Text,
+  Textarea,
   TextInput,
   Title,
-  Textarea,
 } from '@mantine/core';
-import { DatePicker, DatePickerProps } from '@mantine/dates';
-import { useForm } from '@mantine/form';
+import { DatePicker } from '@mantine/dates';
 import { useDebouncedValue } from '@mantine/hooks';
 import isEqual from 'fast-deep-equal';
-import { format } from 'date-fns';
 import { useRouter } from 'next/navigation';
-import { useState } from 'react';
-
-type FormValues = Partial<Omit<Event, 'startDate' | 'endDate'>> & {
-  dateRange: [Date | null, Date | null];
-  description?: string;
-};
+import { eventSchema } from '../event-schema';
+import { NewEventOptions } from './new-event-action';
 
 export function NewEvent({
   newEventAction,
@@ -35,86 +30,47 @@ export function NewEvent({
   onSuccess,
 }: {
   newEventAction: (
-    path: string,
-    options: FormValues,
-  ) => Promise<FormActionResult<{ path?: string }>>;
+    options: NewEventOptions,
+  ) => Promise<FormActionResult<{ path: string }>>;
   path: string;
   onSuccess?: () => void;
 }) {
   const router = useRouter();
-  const [isLoading, setIsLoading] = useState(false);
-  const [submissionError, setSubmissionError] = useState<string | null>(null);
 
-  const form = useForm<FormValues>({
+  const { form, handleSubmit, isLoading, submissionError } = useActionForm({
+    schema: eventSchema,
     initialValues: {
       name: '',
       description: '',
-      dateRange: [null, null],
+      website: '',
+      location: '',
+      startDate: null,
+      endDate: null,
     },
-    validate: {
-      name: (value) =>
-        !value || value.trim().length < 2
-          ? 'Name must have at least 2 letters'
-          : null,
-      description: (value) =>
-        !value || value.trim().length < 10
-          ? 'Description must have at least 10 letters'
-          : null,
-      dateRange: (value) =>
-        value[0] && value[1] ? null : 'Date range is required',
-    },
-  });
-
-  const [debouncedValues] = useDebouncedValue(form.values, 500);
-
-  const handleSubmit = async (values: FormValues) => {
-    setIsLoading(true);
-    setSubmissionError(null);
-
-    const [startDate, endDate] = values.dateRange.map((d) =>
-      d ? new Date(d) : null,
-    );
-
-    const submissionValues = {
-      ...values,
-      startDate,
-      endDate,
-    };
-
-    try {
-      const result = await newEventAction(path, submissionValues);
+    action: (values) => newEventAction({ path, values }),
+    onSuccess: (result) => {
       if (onSuccess) {
         onSuccess();
       } else if (result.path) {
         router.push(`/manage/${toUrlPath(result.path)}/edit`);
       }
-    } catch (error) {
-      setSubmissionError(
-        error instanceof Error ? error.message : 'An unknown error occurred.',
-      );
-    } finally {
-      setIsLoading(false);
-    }
-  };
+    },
+  });
 
-  const getDayProps =
-    (prefix: string): DatePickerProps['getDayProps'] =>
-    (date) => {
-      return {
-        'aria-label': `${prefix} ${format(date, 'd MMMM yyyy')}`,
-      };
-    };
+  const [debouncedValues] = useDebouncedValue(form.values, 100);
 
   const eventPreview: ClientCompat<Event> = {
     id: 'preview',
     path: 'organizations/org-1/series/series-1/events/preview',
     name: debouncedValues.name || 'Your Event Name',
     description: debouncedValues.description,
-    startDate: debouncedValues.dateRange[0]
-      ? new Date(debouncedValues.dateRange[0]).toISOString()
+    website: debouncedValues.website,
+    location: debouncedValues.location,
+    startDate: debouncedValues.startDate
+      ? new Date(debouncedValues.startDate).toISOString()
       : undefined,
-    endDate: debouncedValues.dateRange[1]
-      ? new Date(debouncedValues.dateRange[1]).toISOString()
+    endDate: debouncedValues.endDate
+      ? new Date(debouncedValues.endDate).toISOString()
       : undefined,
     seriesBrief: {
       id: 'preview',
@@ -144,15 +100,30 @@ export function NewEvent({
                 />
                 <Textarea
                   label="Description"
-                  required
                   {...form.getInputProps('description')}
                   data-testid="description-input"
                 />
+                <TextInput
+                  label="Website"
+                  {...form.getInputProps('website')}
+                  data-testid="website-input"
+                />
+                <TextInput
+                  label="Location"
+                  {...form.getInputProps('location')}
+                  data-testid="location-input"
+                />
                 <DatePicker
                   type="range"
-                  allowSingleDateInRange={true}
-                  getDayProps={getDayProps('Start date')}
-                  {...form.getInputProps('dateRange')}
+                  allowSingleDateInRange
+                  value={[form.values.startDate, form.values.endDate]}
+                  onChange={([start, end]) => {
+                    form.setFieldValue(
+                      'startDate',
+                      start ? new Date(start) : null,
+                    );
+                    form.setFieldValue('endDate', end ? new Date(end) : null);
+                  }}
                   data-testid="date-picker"
                 />
                 <Group justify="right">

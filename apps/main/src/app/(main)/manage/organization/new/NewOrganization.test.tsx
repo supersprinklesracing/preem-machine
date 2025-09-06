@@ -1,9 +1,10 @@
 import '@/matchMedia.mock';
-import { fireEvent, render, screen, waitFor } from '@/test-utils';
+import { act, fireEvent, render, screen, waitFor } from '@/test-utils';
 import { NewOrganization } from './NewOrganization';
 
 // Mock dependencies
 jest.mock('next/navigation', () => ({
+  // eslint-disable-next-line @eslint-react/hooks-extra/no-unnecessary-use-prefix
   useRouter: () => ({
     push: jest.fn(),
   }),
@@ -27,11 +28,20 @@ describe('NewOrganization component', () => {
 
     // Fill out the form
     const nameInput = screen.getByTestId('name-input');
-    fireEvent.change(nameInput, { target: { value: 'New Test Organization' } });
-
+    const descriptionInput = screen.getByTestId('description-input');
     const websiteInput = screen.getByTestId('website-input');
-    fireEvent.change(websiteInput, {
-      target: { value: 'https://new-example.com' },
+
+    await act(async () => {
+      fireEvent.change(nameInput, {
+        target: { value: 'New Test Organization' },
+      });
+      fireEvent.change(descriptionInput, {
+        target: { value: 'This is a test description' },
+      });
+      fireEvent.change(websiteInput, {
+        target: { value: 'https://new-example.com' },
+      });
+      jest.advanceTimersByTime(500);
     });
 
     // Click the create button
@@ -40,18 +50,23 @@ describe('NewOrganization component', () => {
     });
     fireEvent.click(createButton);
 
-    // Wait for the action to be called
     await waitFor(() => {
       expect(newOrganizationAction).toHaveBeenCalledWith({
-        name: 'New Test Organization',
-        website: 'https://new-example.com',
+        values: {
+          name: 'New Test Organization',
+          description: 'This is a test description',
+          website: 'https://new-example.com',
+        },
       });
     });
 
     // Assert that the action was called with the correct data
     expect(newOrganizationAction).toHaveBeenCalledWith({
-      name: 'New Test Organization',
-      website: 'https://new-example.com',
+      values: {
+        name: 'New Test Organization',
+        description: 'This is a test description',
+        website: 'https://new-example.com',
+      },
     });
   });
 
@@ -64,7 +79,16 @@ describe('NewOrganization component', () => {
 
     // Fill out the form
     const nameInput = screen.getByTestId('name-input');
-    fireEvent.change(nameInput, { target: { value: 'New Test Organization' } });
+    const descriptionInput = screen.getByTestId('description-input');
+    await act(async () => {
+      fireEvent.change(nameInput, {
+        target: { value: 'New Test Organization' },
+      });
+      fireEvent.change(descriptionInput, {
+        target: { value: 'This is a test description' },
+      });
+      jest.advanceTimersByTime(500);
+    });
 
     // Click the create button
     const createButton = screen.getByRole('button', {

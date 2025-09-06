@@ -2,17 +2,14 @@
 
 import { verifyAuthUser } from '@/auth/user';
 import { FormActionError, FormActionResult } from '@/components/forms/forms';
+import { DocPath } from '@/datastore/paths';
 import { updateOrganization } from '@/datastore/update';
 import { z } from 'zod';
-
-const editOrganizationSchema = z.object({
-  name: z.string().min(2),
-  website: z.string().url().optional(),
-});
+import { organizationSchema } from '../organization-schema';
 
 export interface EditOrganizationOptions {
-  path: string;
-  edits: z.infer<typeof editOrganizationSchema>;
+  path: DocPath;
+  edits: z.infer<typeof organizationSchema>;
 }
 
 export async function editOrganizationAction({
@@ -21,10 +18,10 @@ export async function editOrganizationAction({
 }: EditOrganizationOptions): Promise<FormActionResult> {
   try {
     const authUser = await verifyAuthUser();
-    const parsedOrganization = editOrganizationSchema.parse(organization);
+    const parsedOrganization = organizationSchema.parse(organization);
     await updateOrganization(path, parsedOrganization, authUser);
 
-    return { ok: true };
+    return {};
   } catch (error) {
     const message =
       error instanceof Error ? error.message : 'An unknown error occurred.';

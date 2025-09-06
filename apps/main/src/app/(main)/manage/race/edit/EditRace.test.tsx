@@ -1,0 +1,94 @@
+import type { ClientCompat, Race } from '@/datastore/types';
+import '@/matchMedia.mock';
+import { act, fireEvent, render, screen, waitFor } from '@/test-utils';
+import { EditRace } from './EditRace';
+
+// Mock next/navigation
+jest.mock('next/navigation', () => ({
+  useRouter: () => ({
+    refresh: jest.fn(),
+  }),
+}));
+
+const mockRace: ClientCompat<Race> = {
+  id: 'race-1',
+  path: 'organizations/org-1/series/series-1/events/event-1/races/race-1',
+  name: 'Test Race',
+  location: 'Test Location',
+  website: 'https://example.com',
+  startDate: new Date().toISOString(),
+  endDate: new Date().toISOString(),
+  eventBrief: {
+    id: 'event-1',
+    path: 'organizations/org-1/series/series-1/events/event-1',
+    seriesBrief: {
+      id: 'series-1',
+      path: 'organizations/org-1/series/series-1',
+      organizationBrief: {
+        id: 'org-1',
+        path: 'organizations/org-1',
+      },
+    },
+  },
+};
+
+describe('EditRace component', () => {
+  beforeEach(() => {
+    jest.useFakeTimers();
+  });
+
+  afterEach(() => {
+    jest.useRealTimers();
+  });
+
+  it('should call editRaceAction with the correct data on form submission', async () => {
+    const editRaceAction = jest.fn(() => Promise.resolve({ ok: true }));
+
+    render(<EditRace race={mockRace} editRaceAction={editRaceAction} />);
+
+    // Change the name in the form
+    const nameInput = screen.getByDisplayValue('Test Race');
+    await act(async () => {
+      fireEvent.change(nameInput, { target: { value: 'New Race Name' } });
+      jest.advanceTimersByTime(500);
+    });
+
+    // Click the save button
+    const saveButton = screen.getByText('Save Changes');
+    fireEvent.click(saveButton);
+
+    // Wait for the action to be called
+    await waitFor(() => {
+      expect(editRaceAction).toHaveBeenCalledWith(
+        expect.objectContaining({
+          path: 'organizations/org-1/series/series-1/events/event-1/races/race-1',
+          edits: expect.objectContaining({
+            name: 'New Race Name',
+          }),
+        }),
+      );
+    });
+  });
+
+  it('should display an error message if the action fails', async () => {
+    const editRaceAction = jest.fn(() =>
+      Promise.reject(new Error('Failed to save')),
+    );
+
+    render(<EditRace race={mockRace} editRaceAction={editRaceAction} />);
+
+    // Change the name in the form
+    const nameInput = screen.getByDisplayValue('Test Race');
+    await act(async () => {
+      fireEvent.change(nameInput, { target: { value: 'New Race Name' } });
+      jest.advanceTimersByTime(500);
+    });
+
+    // Click the save button
+    const saveButton = screen.getByText('Save Changes');
+    fireEvent.click(saveButton);
+
+    // Wait for the error message to appear
+    await screen.findByText('Failed to save');
+  });
+});

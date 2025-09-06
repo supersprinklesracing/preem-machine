@@ -1,10 +1,10 @@
 'use client';
 
+import { useActionForm } from '@/app/shared/hooks/useActionForm';
 import EventCard from '@/components/cards/EventCard';
 import { FormActionResult } from '@/components/forms/forms';
 import { getSubCollectionPath, seriesPath } from '@/datastore/paths';
 import type { ClientCompat, Event } from '@/datastore/types';
-import { getISODateFromDate } from '@/firebase-client/dates';
 import {
   Button,
   Card,
@@ -20,22 +20,13 @@ import {
   Title,
 } from '@mantine/core';
 import { DatePicker } from '@mantine/dates';
-import { useForm } from '@mantine/form';
-import { useDebouncedValue } from '@mantine/hooks';
+import { useDebouncedValue, useDisclosure } from '@mantine/hooks';
 import isEqual from 'fast-deep-equal';
 import { useRouter } from 'next/navigation';
-import { useState } from 'react';
 import { NewRace } from '../../race/new/NewRace';
 import { newRaceAction } from '../../race/new/new-race-action';
+import { eventSchema } from '../event-schema';
 import { EditEventOptions } from './edit-event-action';
-
-interface FormValues {
-  name?: string;
-  location?: string;
-  website?: string;
-  description?: string;
-  date?: Date | null;
-}
 
 const ADD_RACE_BUTTON_TEXT = 'Add Race';
 const ADD_RACE_MODAL_TITLE = 'Add Race';
@@ -48,55 +39,25 @@ export function EditEvent({
   event: ClientCompat<Event>;
 }) {
   const router = useRouter();
-  const [isLoading, setIsLoading] = useState(false);
-  const [submissionError, setSubmissionError] = useState<string | null>(null);
-  const [isAddRaceModalOpen, setIsAddRaceModalOpen] = useState(false);
+  const [opened, { open, close }] = useDisclosure(false);
 
-  const form = useForm<FormValues>({
+  const { form, handleSubmit, isLoading, submissionError } = useActionForm({
+    schema: eventSchema,
     initialValues: {
-      name: event.name,
-      location: event.location,
-      website: event.website,
-      description: event.description,
-      date: event.startDate ? new Date(event.startDate) : null,
+      name: event.name ?? '',
+      location: event.location ?? '',
+      website: event.website ?? '',
+      description: event.description ?? '',
+      startDate: event.startDate ? new Date(event.startDate) : null,
+      endDate: event.endDate ? new Date(event.endDate) : null,
     },
-    validate: {
-      name: (value) =>
-        !value || value.trim().length < 2
-          ? 'Name must have at least 2 letters'
-          : null,
+    action: (values) => editEventAction({ path: event.path, edits: values }),
+    onSuccess: () => {
+      router.refresh();
     },
   });
 
-  const [debouncedValues] = useDebouncedValue(form.values, 500);
-
-  const handleSubmit = async (values: FormValues) => {
-    setIsLoading(true);
-    setSubmissionError(null);
-
-    const date = values.date ? new Date(values.date) : null;
-
-    try {
-      await editEventAction({
-        path: event.path,
-        edits: {
-          name: values.name,
-          location: values.location,
-          website: values.website,
-          description: values.description,
-          startDate: getISODateFromDate(date),
-          endDate: getISODateFromDate(date),
-        },
-      });
-      router.refresh();
-    } catch (error) {
-      setSubmissionError(
-        error instanceof Error ? error.message : 'An unknown error occurred.',
-      );
-    } finally {
-      setIsLoading(false);
-    }
-  };
+  const [debouncedValues] = useDebouncedValue(form.values, 100);
 
   const racesPath = getSubCollectionPath(seriesPath(event.path), 'races');
 
@@ -106,8 +67,12 @@ export function EditEvent({
     location: debouncedValues.location,
     website: debouncedValues.website,
     description: debouncedValues.description,
-    startDate: debouncedValues.date?.toISOString(),
-    endDate: debouncedValues.date?.toISOString(),
+    startDate: debouncedValues.startDate
+      ? new Date(debouncedValues.startDate).toISOString()
+      : undefined,
+    endDate: debouncedValues.endDate
+      ? new Date(debouncedValues.endDate).toISOString()
+      : undefined,
   };
 
   return (
@@ -146,22 +111,27 @@ export function EditEvent({
                     <Stack>
                       <Title order={5}>Event Date</Title>
                       <DatePicker
-                        {...form.getInputProps('date')}
-                        defaultDate={
-                          event.startDate
-                            ? new Date(event.startDate)
-                            : undefined
-                        }
+                        type="range"
+                        allowSingleDateInRange
+                        value={[form.values.startDate, form.values.endDate]}
+                        onChange={([start, end]) => {
+                          form.setFieldValue(
+                            'startDate',
+                            start ? new Date(start) : null,
+                          );
+                          form.setFieldValue(
+                            'endDate',
+                            end ? new Date(end) : null,
+                          );
+                        }}
+                        data-testid="date-picker"
                       />
                     </Stack>
                   </Card>
                 </Grid.Col>
               </Grid>
               <Group justify="right">
-                <Button
-                  onClick={() => setIsAddRaceModalOpen(true)}
-                  variant="outline"
-                >
+                <Button onClick={open} variant="outline">
                   {ADD_RACE_BUTTON_TEXT}
                 </Button>
                 <Button
@@ -180,11 +150,7 @@ export function EditEvent({
           <EventCard event={eventPreview} />
         </SimpleGrid>
       </Stack>
-      <Modal
-        opened={isAddRaceModalOpen}
-        onClose={() => setIsAddRaceModalOpen(false)}
-        title={ADD_RACE_MODAL_TITLE}
-      >
+      <Modal opened={opened} onClose={close} title={ADD_RACE_MODAL_TITLE}>
         <NewRace newRaceAction={newRaceAction} path={racesPath} />
       </Modal>
     </Container>

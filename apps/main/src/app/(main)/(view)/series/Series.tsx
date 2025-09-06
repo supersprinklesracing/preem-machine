@@ -43,6 +43,7 @@ export default function Series({ series, children: eventsWithRaces }: Props) {
           : ''} - {}
         {series.endDate ? format(new Date(series.endDate), 'PP') : ''}
       </Text>
+      {series.description && <Text>{series.description}</Text>}
       <Stack>
         <Group justify="space-between">
           <Stack gap={0}>

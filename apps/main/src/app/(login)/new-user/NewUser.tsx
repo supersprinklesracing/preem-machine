@@ -1,105 +1,65 @@
 'use client';
 
+import { useActionForm } from '@/app/shared/hooks/useActionForm';
 import { useAuth } from '@/auth/AuthContext';
 import UserProfileCard from '@/components/UpdateUserProfileCard';
-import type { FormValues } from '@/components/UserProfileFormFields';
-import FormFields from '@/components/UserProfileFormFields';
-import type { User } from '@/datastore/types';
+import { FormActionResult } from '@/components/forms/forms';
 import {
   Box,
   Button,
+  Card,
   Checkbox,
   Container,
   Grid,
   Stack,
   Text,
+  Textarea,
+  TextInput,
   Title,
 } from '@mantine/core';
-import { useForm } from '@mantine/form';
 import { useDebouncedValue } from '@mantine/hooks';
 import { redirect, useRouter } from 'next/navigation';
-import React, { useEffect, useState } from 'react';
-import type { NewUserOptions } from './new-user-action';
+import { NewUserOptions } from './new-user-action';
+import { userSchema } from '@/app/(main)/account/user-schema';
 
-interface Props {
-  newUserAction: (
-    options: NewUserOptions,
-  ) => Promise<{ ok: boolean; error?: string }>;
-}
-
-const NewUser: React.FC<Props> = ({ newUserAction }: Props) => {
+export default function NewUser({
+  newUserAction,
+  onSuccess,
+}: {
+  newUserAction: ({ values }: NewUserOptions) => Promise<FormActionResult>;
+  onSuccess?: () => void;
+}) {
   const { authUser } = useAuth();
   const router = useRouter();
-  const [isLoading, setIsLoading] = useState(false);
-  const [submissionError, setSubmissionError] = useState<string | null>(null);
-  const [debouncedNameError, setDebouncedNameError] =
-    useState<React.ReactNode>(null);
 
   if (!authUser) {
     redirect('/login');
   }
 
-  const form = useForm<FormValues>({
+  const { form, handleSubmit, isLoading, submissionError } = useActionForm({
+    schema: userSchema,
     initialValues: {
       name: authUser.displayName ?? '',
       email: authUser.email ?? '',
       avatarUrl: authUser.photoURL ?? '',
       termsAccepted: true,
+      affiliation: '',
+      raceLicenseId: '',
+      address: '',
     },
-    validateInputOnChange: false,
-    validate: {
-      name: (value) =>
-        !value || value.trim().length < 2
-          ? 'Name must have at least 2 letters'
-          : null,
-      termsAccepted: (value) =>
-        !value ? 'You must accept the terms and conditions' : null,
+    action: (values) => {
+      return newUserAction({ values });
+    },
+    onSuccess: () => {
+      if (onSuccess) {
+        onSuccess();
+      } else {
+        router.push('/');
+      }
     },
   });
 
-  const [debouncedName] = useDebouncedValue(form.values.name, 500);
-
-  useEffect(() => {
-    const result = form.validateField('name');
-    setDebouncedNameError(result.error);
-  }, [debouncedName, form]);
-
-  const handleSubmit = async (values: FormValues) => {
-    setIsLoading(true);
-    setSubmissionError(null);
-
-    const userUpdate: Partial<User> = {
-      name: values.name,
-      email: values.email,
-      avatarUrl: values.avatarUrl,
-    };
-
-    if (values.affiliation) {
-      userUpdate.affiliation = values.affiliation;
-    }
-    if (values.raceLicenseId) {
-      userUpdate.raceLicenseId = values.raceLicenseId;
-    }
-    if (values.address) {
-      userUpdate.address = values.address;
-    }
-
-    try {
-      const result = await newUserAction({ user: userUpdate });
-      if (result.ok) {
-        router.push('/');
-      } else {
-        setSubmissionError(result.error || 'An unknown error occurred.');
-        setIsLoading(false);
-      }
-    } catch (error) {
-      console.error('Failed to save user data:', error);
-      setSubmissionError(
-        error instanceof Error ? error.message : 'An unknown error occurred.',
-      );
-      setIsLoading(false);
-    }
-  };
+  const [debouncedName] = useDebouncedValue(form.values.name, 100);
 
   return (
     <Container size="md" pt="xl">
@@ -116,11 +76,6 @@ const NewUser: React.FC<Props> = ({ newUserAction }: Props) => {
                 email={authUser.email ?? undefined}
                 avatarUrl={authUser.photoURL ?? undefined}
               />
-
-              <Box display={{ base: 'block', lg: 'none' }} mt="md">
-                <FormFields form={form} nameError={debouncedNameError} />
-              </Box>
-
               <Checkbox
                 mt="md"
                 label="I agree to the Terms and Conditions"
@@ -143,13 +98,62 @@ const NewUser: React.FC<Props> = ({ newUserAction }: Props) => {
               </Box>
             </Stack>
           </Grid.Col>
-          <Grid.Col span={{ lg: 8 }} visibleFrom="lg">
-            <FormFields form={form} nameError={form.errors.name} />
+          <Grid.Col span={{ lg: 8 }}>
+            <Card
+              withBorder
+              padding="lg"
+              radius="md"
+              style={{ height: '100%' }}
+            >
+              <Stack>
+                <Stack gap={0}>
+                  <TextInput
+                    label="Full Name"
+                    placeholder="Your full name"
+                    required
+                    {...form.getInputProps('name')}
+                  />
+                  <Box h={22} pt={2}>
+                    {form.errors.name && (
+                      <Text c="red" size="sm">
+                        {form.errors.name}
+                      </Text>
+                    )}
+                  </Box>
+                </Stack>
+                <TextInput
+                  label="Email"
+                  placeholder="Your email address"
+                  readOnly
+                  {...form.getInputProps('email')}
+                />
+                <TextInput
+                  label="Avatar URL"
+                  placeholder="URL to your avatar image"
+                  readOnly
+                  {...form.getInputProps('avatarUrl')}
+                />
+
+                <TextInput
+                  label="Affiliation"
+                  placeholder="Your club or team"
+                  {...form.getInputProps('affiliation')}
+                />
+                <TextInput
+                  label="Race License ID"
+                  placeholder="e.g., 123456"
+                  {...form.getInputProps('raceLicenseId')}
+                />
+                <Textarea
+                  label="Address"
+                  placeholder="123 Main St, Anytown, USA"
+                  {...form.getInputProps('address')}
+                />
+              </Stack>
+            </Card>
           </Grid.Col>
         </Grid>
       </form>
     </Container>
   );
-};
-
-export default NewUser;
+}

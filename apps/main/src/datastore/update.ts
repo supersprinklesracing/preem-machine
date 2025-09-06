@@ -250,7 +250,7 @@ export const updateEvent = async (
   path: string,
   updates: Pick<
     Event,
-    'name' | 'website' | 'location' | 'description' | 'startDate' | 'endDate'
+    'name' | 'description' | 'website' | 'location' | 'startDate' | 'endDate'
   >,
   authUser: AuthContextUser,
 ) => {

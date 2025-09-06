@@ -6,6 +6,8 @@ const mockOrganizationData = {
     id: 'org-1',
     path: 'organizations/org-1',
     name: 'Test Organization',
+    description: 'This is a test organization.',
+    website: 'https://example.com',
   },
   serieses: [
     {
@@ -46,6 +48,10 @@ describe('Organization component', () => {
     render(<Organization {...mockOrganizationData} />);
 
     expect(screen.getByText('Test Organization')).toBeInTheDocument();
+    expect(
+      screen.getByText('This is a test organization.'),
+    ).toBeInTheDocument();
+    expect(screen.getByText('Official Website')).toBeInTheDocument();
 
     expect(screen.getByText('Test Series 1')).toBeInTheDocument();
     expect(screen.getByText('Test Series 2')).toBeInTheDocument();

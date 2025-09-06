@@ -4,16 +4,11 @@ import { verifyAuthUser } from '@/auth/user';
 import { FormActionError, FormActionResult } from '@/components/forms/forms';
 import { updateUser } from '@/datastore/update';
 import { z } from 'zod';
-
-const editUserSchema = z.object({
-  name: z.string().min(2).optional(),
-  email: z.string().email().optional(),
-  photoURL: z.string().url().optional(),
-});
+import { userSchema } from './user-schema';
 
 export interface EditUserOptions {
   path: string;
-  edits: z.infer<typeof editUserSchema>;
+  edits: z.infer<typeof userSchema>;
 }
 
 export async function editUserAction(
@@ -21,10 +16,10 @@ export async function editUserAction(
 ): Promise<FormActionResult> {
   try {
     const authUser = await verifyAuthUser();
-    const parsedEdits = editUserSchema.parse(options.edits);
+    const parsedEdits = userSchema.parse(options.edits);
     await updateUser(options.path, parsedEdits, authUser);
 
-    return { ok: true };
+    return {};
   } catch (error) {
     const message =
       error instanceof Error ? error.message : 'An unknown error occurred.';
