@@ -1,6 +1,8 @@
 import { incrementCounter } from '@/actions/user-counters';
 import { verifyAuthUser } from '@/auth/user';
+import { Breadcrumbs } from '@/components/Breadcrumbs';
 import { getFirestore } from '@/firebase-admin/firebase-admin';
+import { Stack } from '@mantine/core';
 import Account from './Account';
 import { editUserAction } from './edit-user-action';
 
@@ -27,9 +29,12 @@ export default async function AccountPage() {
   const count = await getUserCounter();
 
   return (
-    <Account
-      debugProps={{ count, incrementCounter }}
-      editUserAction={editUserAction}
-    />
+    <Stack>
+      <Breadcrumbs brief={null} />
+      <Account
+        debugProps={{ count, incrementCounter }}
+        editUserAction={editUserAction}
+      />
+    </Stack>
   );
 }

@@ -15,8 +15,7 @@ setupMockDb();
 describe('OrganizationPage component', () => {
   it('should fetch organization data and render the Organization component', async () => {
     const searchParams = { path: 'organizations/org-super-sprinkles' };
-    const PageComponent = await OrganizationPage({ searchParams });
-    render(PageComponent);
+    render(await OrganizationPage({ searchParams }));
 
     expect(screen.getByText('Mock Organization')).toBeInTheDocument();
 

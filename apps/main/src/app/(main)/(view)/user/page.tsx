@@ -1,8 +1,10 @@
 'use server';
 
 import { getAuthUser } from '@/auth/user';
+import { Breadcrumbs } from '@/components/Breadcrumbs';
 import { getRenderableUserDataForPage } from '@/datastore/firestore';
 import { getDocPathFromSearchParams } from '@/datastore/paths';
+import { Stack } from '@mantine/core';
 import { redirect } from 'next/navigation';
 import User from './User';
 
@@ -21,5 +23,10 @@ export default async function UserPage({
 
   const path = getDocPathFromSearchParams(resolvedSearchParams);
   const data = await getRenderableUserDataForPage(path);
-  return <User {...data} />;
+  return (
+    <Stack>
+      <Breadcrumbs brief={null} />
+      <User {...data} />
+    </Stack>
+  );
 }

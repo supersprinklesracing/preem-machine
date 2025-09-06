@@ -27,7 +27,9 @@ describe('LiveEventPage component', () => {
   });
 
   it('should throw NotFoundError when the event does not exist', async () => {
-    const searchParams = { path: 'events/non-existent-event' };
+    const searchParams = {
+      path: 'organizations/org-1/series/series-1/events/non-existent-event',
+    };
     expect(LiveEventPage({ searchParams })).rejects.toThrow(NotFoundError);
   });
 });

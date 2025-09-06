@@ -1,7 +1,9 @@
 'use server';
 
+import { Breadcrumbs } from '@/components/Breadcrumbs';
 import { getDoc } from '@/datastore/firestore';
 import { Series } from '@/datastore/types';
+import { Stack } from '@mantine/core';
 import { newEventAction } from '../../event/new/new-event-action';
 import { EditSeries } from './EditSeries';
 import { editSeriesAction } from './edit-series-action';
@@ -14,10 +16,13 @@ export default async function EditSeriesPage({
   const { path } = searchParams;
   const doc = await getDoc<Series>(path);
   return (
-    <EditSeries
-      series={doc}
-      editSeriesAction={editSeriesAction}
-      newEventAction={newEventAction}
-    />
+    <Stack>
+      <Breadcrumbs brief={doc} />
+      <EditSeries
+        series={doc}
+        editSeriesAction={editSeriesAction}
+        newEventAction={newEventAction}
+      />
+    </Stack>
   );
 }
