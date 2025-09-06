@@ -8,6 +8,7 @@ import {
   Container,
   Grid,
   Group,
+  Modal,
   Stack,
   Text,
   Textarea,
@@ -16,26 +17,33 @@ import {
 } from '@mantine/core';
 import { DatePicker } from '@mantine/dates';
 import { useForm } from '@mantine/form';
+import { useDisclosure } from '@mantine/hooks';
 import { useRouter } from 'next/navigation';
 import { useState } from 'react';
+import { NewEvent } from '../../event/new/NewEvent';
 import { EditSeriesOptions } from './edit-series-action';
+import { FormActionResult } from '@/components/forms/forms';
 
 type FormValues = Partial<Omit<Series, 'startDate' | 'endDate'>> & {
   dateRange: [Date | null, Date | null];
 };
 
-import { FormActionResult } from '@/components/forms/forms';
-
 export function EditSeries({
   editSeriesAction,
   series,
+  newEventAction,
 }: {
   editSeriesAction: (options: EditSeriesOptions) => Promise<FormActionResult>;
   series: ClientCompat<Series>;
+  newEventAction: (
+    path: string,
+    options: any,
+  ) => Promise<FormActionResult<{ path?: string }>>;
 }) {
   const router = useRouter();
   const [isLoading, setIsLoading] = useState(false);
   const [submissionError, setSubmissionError] = useState<string | null>(null);
+  const [opened, { open, close }] = useDisclosure(false);
 
   const form = useForm<FormValues>({
     initialValues: {
@@ -93,10 +101,18 @@ export function EditSeries({
     }
   };
 
+  const handleNewEventSuccess = () => {
+    close();
+    router.refresh();
+  };
+
   return (
     <Container size="sm">
       <Stack>
-        <Title order={1}>Edit Series</Title>
+        <Group justify="space-between">
+          <Title order={1}>Edit Series</Title>
+          <Button onClick={open}>Add Event</Button>
+        </Group>
         <Card withBorder>
           <Stack>
             <Grid>
@@ -153,6 +169,13 @@ export function EditSeries({
           </Stack>
         </Card>
       </Stack>
+      <Modal opened={opened} onClose={close} title="Add New Event" size="lg">
+        <NewEvent
+          newEventAction={newEventAction}
+          path={series.path}
+          onSuccess={handleNewEventSuccess}
+        />
+      </Modal>
     </Container>
   );
 }
