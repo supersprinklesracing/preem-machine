@@ -1,10 +1,11 @@
 import type { ClientCompat, Event } from '@/datastore/types';
 import '@/matchMedia.mock';
-import { fireEvent, render, screen, waitFor } from '@/test-utils';
+import { act, fireEvent, render, screen, waitFor } from '@/test-utils';
 import { EditEvent } from './EditEvent';
 
 // Mock next/navigation
 jest.mock('next/navigation', () => ({
+  // eslint-disable-next-line @eslint-react/hooks-extra/no-unnecessary-use-prefix
   useRouter: () => ({
     refresh: jest.fn(),
   }),
@@ -36,22 +37,29 @@ describe('EditEvent component', () => {
     jest.useRealTimers();
   });
 
-  it('should call updateEventAction with the correct data on form submission', async () => {
-    const updateEventAction = jest.fn(() => Promise.resolve({ ok: true }));
+  it('should call editEventAction with the correct data on form submission', async () => {
+    const editEventAction = jest.fn(() => Promise.resolve({}));
 
-    render(<EditEvent event={mockEvent} editEventAction={updateEventAction} />);
+    render(<EditEvent event={mockEvent} editEventAction={editEventAction} />);
 
     // Change the name in the form
     const nameInput = screen.getByDisplayValue('Test Event');
     fireEvent.change(nameInput, { target: { value: 'New Event Name' } });
 
-    // Click the save button
+    act(() => {
+      jest.runAllTimers();
+    });
+
+    // Wait for the debounce and click the save button
     const saveButton = screen.getByText('Save Changes');
+    await waitFor(() => {
+      expect(saveButton).not.toBeDisabled();
+    });
     fireEvent.click(saveButton);
 
     // Wait for the action to be called
     await waitFor(() => {
-      expect(updateEventAction).toHaveBeenCalledWith(
+      expect(editEventAction).toHaveBeenCalledWith(
         expect.objectContaining({
           path: 'organizations/org-1/series/series-1/events/event-1',
           edits: expect.objectContaining({
@@ -60,31 +68,28 @@ describe('EditEvent component', () => {
         }),
       );
     });
-
-    // Assert that the action was called with the correct data
-    expect(updateEventAction).toHaveBeenCalledWith(
-      expect.objectContaining({
-        path: 'organizations/org-1/series/series-1/events/event-1',
-        edits: expect.objectContaining({
-          name: 'New Event Name',
-        }),
-      }),
-    );
   });
 
   it('should display an error message if the action fails', async () => {
-    const updateEventAction = jest.fn(() =>
+    const editEventAction = jest.fn(() =>
       Promise.reject(new Error('Failed to save')),
     );
 
-    render(<EditEvent event={mockEvent} editEventAction={updateEventAction} />);
+    render(<EditEvent event={mockEvent} editEventAction={editEventAction} />);
 
     // Change the name in the form
     const nameInput = screen.getByDisplayValue('Test Event');
     fireEvent.change(nameInput, { target: { value: 'New Event Name' } });
 
-    // Click the save button
+    act(() => {
+      jest.runAllTimers();
+    });
+
+    // Wait for the debounce and click the save button
     const saveButton = screen.getByText('Save Changes');
+    await waitFor(() => {
+      expect(saveButton).not.toBeDisabled();
+    });
     fireEvent.click(saveButton);
 
     // Wait for the error message to appear

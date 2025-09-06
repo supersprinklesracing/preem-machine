@@ -1,30 +1,33 @@
 'use client';
 
+import EventCard from '@/components/cards/EventCard';
+import { FormActionResult } from '@/components/forms/forms';
 import { toUrlPath } from '@/datastore/paths';
+import type { ClientCompat, Event } from '@/datastore/types';
 import {
   Button,
   Card,
   Container,
   Group,
+  SimpleGrid,
   Stack,
+  Text,
   TextInput,
   Title,
   Textarea,
 } from '@mantine/core';
 import { DatePicker, DatePickerProps } from '@mantine/dates';
 import { useForm } from '@mantine/form';
+import { useDebouncedValue } from '@mantine/hooks';
+import isEqual from 'fast-deep-equal';
+import { format } from 'date-fns';
 import { useRouter } from 'next/navigation';
 import { useState } from 'react';
-import type { Event } from '@/datastore/types';
-import dayjs from 'dayjs';
 
 type FormValues = Partial<Omit<Event, 'startDate' | 'endDate'>> & {
-  startDate?: Date | null;
-  endDate?: Date | null;
+  dateRange: [Date | null, Date | null];
   description?: string;
 };
-
-import { FormActionResult } from '@/components/forms/forms';
 
 export function NewEvent({
   newEventAction,
@@ -46,8 +49,7 @@ export function NewEvent({
     initialValues: {
       name: '',
       description: '',
-      startDate: null,
-      endDate: null,
+      dateRange: [null, null],
     },
     validate: {
       name: (value) =>
@@ -58,19 +60,25 @@ export function NewEvent({
         !value || value.trim().length < 10
           ? 'Description must have at least 10 letters'
           : null,
-      startDate: (value) => (value ? null : 'Start date is required'),
-      endDate: (value) => (value ? null : 'End date is required'),
+      dateRange: (value) =>
+        value[0] && value[1] ? null : 'Date range is required',
     },
   });
+
+  const [debouncedValues] = useDebouncedValue(form.values, 500);
 
   const handleSubmit = async (values: FormValues) => {
     setIsLoading(true);
     setSubmissionError(null);
 
+    const [startDate, endDate] = values.dateRange.map((d) =>
+      d ? new Date(d) : null,
+    );
+
     const submissionValues = {
       ...values,
-      startDate: values.startDate ? new Date(values.startDate) : null,
-      endDate: values.endDate ? new Date(values.endDate) : null,
+      startDate,
+      endDate,
     };
 
     try {
@@ -81,7 +89,6 @@ export function NewEvent({
         router.push(`/manage/${toUrlPath(result.path)}/edit`);
       }
     } catch (error) {
-      console.error('Failed to create event:', error);
       setSubmissionError(
         error instanceof Error ? error.message : 'An unknown error occurred.',
       );
@@ -94,52 +101,77 @@ export function NewEvent({
     (prefix: string): DatePickerProps['getDayProps'] =>
     (date) => {
       return {
-        'aria-label': `${prefix} ${dayjs(date).format('D MMMM YYYY')}`,
+        'aria-label': `${prefix} ${format(date, 'd MMMM yyyy')}`,
       };
     };
 
+  const eventPreview: ClientCompat<Event> = {
+    id: 'preview',
+    path: 'organizations/org-1/series/series-1/events/preview',
+    name: debouncedValues.name || 'Your Event Name',
+    description: debouncedValues.description,
+    startDate: debouncedValues.dateRange[0]
+      ? new Date(debouncedValues.dateRange[0]).toISOString()
+      : undefined,
+    endDate: debouncedValues.dateRange[1]
+      ? new Date(debouncedValues.dateRange[1]).toISOString()
+      : undefined,
+    seriesBrief: {
+      id: 'preview',
+      path: 'organizations/org-1/series/series-1',
+      name: 'Series Name',
+      organizationBrief: {
+        id: 'preview',
+        path: 'organizations/org-1',
+        name: 'Organization Name',
+      },
+    },
+  };
+
   return (
-    <Container size="xs">
+    <Container>
       <Stack>
         <Title order={1}>Create Event</Title>
-        <Card withBorder>
-          <form onSubmit={form.onSubmit(handleSubmit)}>
-            <Stack>
-              <TextInput
-                label="Event Name"
-                required
-                {...form.getInputProps('name')}
-                data-testid="name-input"
-              />
-              <Textarea
-                label="Description"
-                required
-                {...form.getInputProps('description')}
-                data-testid="description-input"
-              />
-              <DatePicker
-                {...form.getInputProps('startDate')}
-                data-testid="startDate"
-                getDayProps={getDayProps('Start date')}
-              />
-              <DatePicker
-                {...form.getInputProps('endDate')}
-                data-testid="endDate"
-                getDayProps={getDayProps('End date')}
-              />
-              <Group justify="right">
-                <Button
-                  type="submit"
-                  loading={isLoading}
-                  disabled={!form.isValid()}
-                >
-                  Create Event
-                </Button>
-              </Group>
-              {submissionError && <p>{submissionError}</p>}
-            </Stack>
-          </form>
-        </Card>
+        <SimpleGrid cols={{ base: 1, md: 2 }}>
+          <Card withBorder>
+            <form onSubmit={form.onSubmit(handleSubmit)}>
+              <Stack>
+                <TextInput
+                  label="Event Name"
+                  required
+                  {...form.getInputProps('name')}
+                  data-testid="name-input"
+                />
+                <Textarea
+                  label="Description"
+                  required
+                  {...form.getInputProps('description')}
+                  data-testid="description-input"
+                />
+                <DatePicker
+                  type="range"
+                  allowSingleDateInRange={true}
+                  getDayProps={getDayProps('Start date')}
+                  {...form.getInputProps('dateRange')}
+                  data-testid="date-picker"
+                />
+                <Group justify="right">
+                  <Button
+                    type="submit"
+                    loading={isLoading}
+                    disabled={
+                      !form.isValid() || !isEqual(form.values, debouncedValues)
+                    }
+                  >
+                    Create Event
+                  </Button>
+                </Group>
+                {submissionError && <Text c="red">{submissionError}</Text>}
+              </Stack>
+            </form>
+          </Card>
+          <EventCard event={eventPreview} />
+        </SimpleGrid>
       </Stack>
     </Container>
   );

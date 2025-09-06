@@ -1,18 +1,24 @@
 'use client';
 
+import RaceCard from '@/components/cards/RaceCard';
+import { FormActionResult } from '@/components/forms/forms';
 import { CollectionPath, toUrlPath } from '@/datastore/paths';
-import type { Race } from '@/datastore/types';
+import type { ClientCompat, Race } from '@/datastore/types';
 import {
   Button,
   Card,
   Container,
   Group,
+  SimpleGrid,
   Stack,
+  Text,
   TextInput,
   Title,
 } from '@mantine/core';
 import { DateTimePicker } from '@mantine/dates';
 import { useForm } from '@mantine/form';
+import { useDebouncedValue } from '@mantine/hooks';
+import isEqual from 'fast-deep-equal';
 import { useRouter } from 'next/navigation';
 import { useState } from 'react';
 
@@ -20,8 +26,6 @@ type FormValues = Partial<Omit<Race, 'date'>> & {
   date?: Date | null;
   location?: string;
 };
-
-import { FormActionResult } from '@/components/forms/forms';
 
 export function NewRace({
   newRaceAction,
@@ -56,6 +60,8 @@ export function NewRace({
     },
   });
 
+  const [debouncedValues] = useDebouncedValue(form.values, 500);
+
   const handleSubmit = async (values: FormValues) => {
     setIsLoading(true);
     setSubmissionError(null);
@@ -71,7 +77,6 @@ export function NewRace({
         router.push(`/manage/${toUrlPath(result.path)}/edit`);
       }
     } catch (error) {
-      console.error('Failed to create race:', error);
       setSubmissionError(
         error instanceof Error ? error.message : 'An unknown error occurred.',
       );
@@ -80,44 +85,73 @@ export function NewRace({
     }
   };
 
+  const racePreview: ClientCompat<Race> = {
+    id: 'preview',
+    path: 'organizations/org-1/series/series-1/events/event-1/races/preview',
+    name: debouncedValues.name || 'Your Race Name',
+    location: debouncedValues.location,
+    startDate: debouncedValues.date?.toISOString(),
+    endDate: debouncedValues.date?.toISOString(),
+    eventBrief: {
+      id: 'preview',
+      path: 'organizations/org-1/series/series-1/events/preview',
+      name: 'Event Name',
+      seriesBrief: {
+        id: 'preview',
+        path: 'organizations/org-1/series/series-1',
+        name: 'Series Name',
+        organizationBrief: {
+          id: 'preview',
+          path: 'organizations/org-1',
+          name: 'Organization Name',
+        },
+      },
+    },
+  };
+
   return (
-    <Container size="xs">
+    <Container>
       <Stack>
         <Title order={1}>Create Race</Title>
-        <Card withBorder>
-          <form onSubmit={form.onSubmit(handleSubmit)}>
-            <Stack>
-              <TextInput
-                label="Race Name"
-                required
-                {...form.getInputProps('name')}
-                data-testid="name-input"
-              />
-              <TextInput
-                label="Location"
-                required
-                {...form.getInputProps('location')}
-                data-testid="location-input"
-              />
-              <DateTimePicker
-                label="Date and Time"
-                required
-                {...form.getInputProps('date')}
-                data-testid="date-time-picker"
-              />
-              <Group justify="right">
-                <Button
-                  type="submit"
-                  loading={isLoading}
-                  disabled={!form.isValid()}
-                >
-                  Create Race
-                </Button>
-              </Group>
-              {submissionError && <p>{submissionError}</p>}
-            </Stack>
-          </form>
-        </Card>
+        <SimpleGrid cols={{ base: 1, md: 2 }}>
+          <Card withBorder>
+            <form onSubmit={form.onSubmit(handleSubmit)}>
+              <Stack>
+                <TextInput
+                  label="Race Name"
+                  required
+                  {...form.getInputProps('name')}
+                  data-testid="name-input"
+                />
+                <TextInput
+                  label="Location"
+                  required
+                  {...form.getInputProps('location')}
+                  data-testid="location-input"
+                />
+                <DateTimePicker
+                  label="Date and Time"
+                  required
+                  {...form.getInputProps('date')}
+                  data-testid="date-time-picker"
+                />
+                <Group justify="right">
+                  <Button
+                    type="submit"
+                    loading={isLoading}
+                    disabled={
+                      !form.isValid() || !isEqual(form.values, debouncedValues)
+                    }
+                  >
+                    Create Race
+                  </Button>
+                </Group>
+                {submissionError && <Text c="red">{submissionError}</Text>}
+              </Stack>
+            </form>
+          </Card>
+          <RaceCard race={racePreview} preems={[]} />
+        </SimpleGrid>
       </Stack>
     </Container>
   );
