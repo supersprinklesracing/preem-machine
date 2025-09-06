@@ -48,6 +48,17 @@
   ],
   "fieldOverrides": [
     {
+      "collectionGroup": "organizations",
+      "fieldPath": "stripe.connectAccountId",
+      "ttl": false,
+      "indexes": [
+        {
+          "order": "ASCENDING",
+          "queryScope": "COLLECTION"
+        }
+      ]
+    },
+    {
       "collectionGroup": "contributions",
       "fieldPath": "contributor.id",
       "ttl": false,
