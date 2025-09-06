@@ -42,7 +42,7 @@ export const toAuthContextUser = ({
   };
 };
 
-export const getAuthUserFromCookies = async () => {
+export const getAuthUser = async () => {
   const serverConfig = await serverConfigFn();
   const tokens = await getTokens(await cookies(), {
     ...serverConfig,
@@ -56,7 +56,7 @@ export const getAuthUserFromCookies = async () => {
 };
 
 export const verifyAuthUser = async (): Promise<AuthContextUser> => {
-  const authUser = await getAuthUserFromCookies();
+  const authUser = await getAuthUser();
   if (!authUser) {
     unauthorized();
   }

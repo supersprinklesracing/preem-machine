@@ -1,6 +1,6 @@
 'use server';
 
-import { getAuthUserFromCookies } from '@/auth/user';
+import { getAuthUser } from '@/auth/user';
 import { createUser } from '@/datastore/create';
 import type { User } from '@/datastore/types';
 
@@ -17,7 +17,7 @@ export async function newUserAction({
   user,
 }: NewUserOptions): Promise<ActionResult> {
   try {
-    const authUser = await getAuthUserFromCookies();
+    const authUser = await getAuthUser();
     if (!authUser) {
       return { ok: false, error: 'Not registered.' };
     }

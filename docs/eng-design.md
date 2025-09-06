@@ -193,7 +193,7 @@ This plan outlines the implementation of Stripe Connect for organizer onboarding
   - **Logic:**
     - The `createStripeConnectAccount` action will accept the `organizationId`.
 
-    - **Authorization:** It will get the `authUser` via `getAuthUserFromCookies()` and verify their membership in the organization.
+    - **Authorization:** It will get the `authUser` via `getAuthUser()` and verify their membership in the organization.
 
     - If authorized, it will create the Stripe account and update the `organization.stripe.connectAccountId` field in Firestore.
 

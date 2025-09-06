@@ -14,9 +14,14 @@ jest.mock('@/datastore/firestore');
 jest.mock('@/auth/user');
 
 describe('Layout component', () => {
-  it('should fetch data and render the MainAppShell', async () => {
+  beforeEach(() => {
+    (auth.getAuthUser as jest.Mock).mockClear();
+    (firestore.getEventsForUser as jest.Mock).mockClear();
+  });
+
+  it('should fetch data and render the MainAppShell for an authenticated user', async () => {
     // Mock the return values of the data fetching functions
-    (auth.verifyAuthUser as jest.Mock).mockResolvedValue({ uid: 'test-uid' });
+    (auth.getAuthUser as jest.Mock).mockResolvedValue({ uid: 'test-uid' });
     (firestore.getEventsForUser as jest.Mock).mockResolvedValue([]);
 
     const PageComponent = await Layout({
@@ -28,5 +33,22 @@ describe('Layout component', () => {
     expect(screen.getByText('Mock MainAppShell')).toBeInTheDocument();
     expect(screen.getByText('Test Children')).toBeInTheDocument();
     expect(MainAppShell).toHaveBeenCalled();
+  });
+
+  it('should render the MainAppShell for an unauthenticated user', async () => {
+    // Mock the return values of the data fetching functions
+    (auth.getAuthUser as jest.Mock).mockResolvedValue(null);
+    (firestore.getEventsForUser as jest.Mock).mockResolvedValue([]);
+
+    const PageComponent = await Layout({
+      children: <div>Test Children</div>,
+      currentUser: null,
+    });
+    render(PageComponent);
+
+    expect(screen.getByText('Mock MainAppShell')).toBeInTheDocument();
+    expect(screen.getByText('Test Children')).toBeInTheDocument();
+    expect(MainAppShell).toHaveBeenCalled();
+    expect(firestore.getEventsForUser).not.toHaveBeenCalled();
   });
 });
