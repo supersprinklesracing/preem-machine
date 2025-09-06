@@ -32,7 +32,7 @@ A well-crafted Pull Request (PR) is crucial for efficient and effective code rev
 - **Scope and Size:** Keep pull requests small and focused. Each PR should address a single concern, making it easier and faster to review. Avoid mixing unrelated changes. If you fix a bug while working on a new feature, commit the fix separately, ideally in its own PR.
 
 - **Title and Description:**
-    - **Write a clear and concise title.** The title should summarize the change and may use a prefix like `feat:`, `fix:`, or `chore:` to indicate the type of change.
+        - **Write a clear and concise title.** The title should summarize the change and may use a prefix like `feat:`, `fix:`, or `chore:` to indicate the type of change.
     - **Provide a detailed description.** Explain the "what" and "why" of the changes. Link to any relevant GitHub issues in the description using keywords like `Closes #123` to ensure issues are automatically closed when the PR is merged.
 
 - **Commits and History:** Maintain a clean and understandable commit history. Use interactive rebase (`git rebase -i`) to squash or fix up commits before opening a pull request. Each commit message should be meaningful and follow the same conventions as the PR title.
