@@ -16,6 +16,8 @@ jobs:
     environment:
       name: ci
     env:
+      E2E_TESTING: ${{ secrets.E2E_TESTING }}
+      PLAYWRIGHT_HTML_OPEN: ${{ secrets.PLAYWRIGHT_HTML_OPEN }}
       AUTH_COOKIE_SIGNATURE_KEY_CURRENT: ${{ secrets.AUTH_COOKIE_SIGNATURE_KEY_CURRENT }}
       AUTH_COOKIE_SIGNATURE_KEY_PREVIOUS: ${{ secrets.AUTH_COOKIE_SIGNATURE_KEY_PREVIOUS }}
       DOTENV_SECRETS: ${{ secrets.DOTENV_SECRETS }}

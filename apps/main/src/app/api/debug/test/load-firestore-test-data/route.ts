@@ -1,7 +1,8 @@
 import { getFirestore } from '@/firebase-admin';
 import { seedFirestore } from '@/datastore/seed-firestore';
-import { NextResponse } from 'next/server';
-import { AuthError, verifyUserRole } from '@/auth/claims';
+import { NextRequest, NextResponse } from 'next/server';
+import { verifyUserRole } from '@/auth/user';
+import { AuthError } from '@/auth/errors';
 
 async function clearFirestore() {
   const db = await getFirestore();
@@ -14,9 +15,9 @@ async function clearFirestore() {
   }
 }
 
-export async function POST() {
+export async function POST(request: NextRequest) {
   try {
-    await verifyUserRole('admin');
+    await verifyUserRole(request, 'admin');
 
     await clearFirestore();
     const db = await getFirestore();

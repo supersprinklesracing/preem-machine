@@ -1,3 +1,4 @@
+import { ENV_E2E_TESTING } from '@/env/env';
 import { serverConfigFn } from '@/firebase-admin/config';
 import {
   authMiddleware,
@@ -10,6 +11,11 @@ import { NextResponse } from 'next/server';
 const LOGGED_OUT_ONLY = ['/register', '/login', '/reset-password'];
 
 export async function middleware(request: NextRequest) {
+  // TODO: This should probably live inside handle* methods...
+  const e2eTestingUser = useE2eTestingUser(request);
+  if (e2eTestingUser) {
+    return e2eTestingUser;
+  }
   const serverConfig = await serverConfigFn();
   return authMiddleware(request, {
     ...serverConfig,
@@ -43,6 +49,25 @@ export async function middleware(request: NextRequest) {
   });
 }
 
+// eslint-disable-next-line @eslint-react/hooks-extra/no-unnecessary-use-prefix
+function useE2eTestingUser(request: NextRequest) {
+  if (ENV_E2E_TESTING) {
+    const e2eAuthUser = request.headers.get('X-e2e-auth-user');
+    console.debug(`middleware: url: ${request.url}`);
+    console.debug('middleware: X-e2e-auth-user:', e2eAuthUser);
+    if (e2eAuthUser) {
+      const requestHeaders = new Headers(request.headers);
+      requestHeaders.set('X-e2e-auth-user', e2eAuthUser);
+      return NextResponse.next({
+        request: {
+          headers: requestHeaders,
+        },
+      });
+    }
+  }
+  return undefined;
+}
+
 export const config = {
   runtime: 'nodejs',
   matcher: [
@@ -51,7 +76,9 @@ export const config = {
     '/api/login',
     '/api/logout',
     '/api/refresh-token',
-    // App-specific
-    '/api/stripe',
+    // App-specific; Hitting these URLs unauthenticated will trigger the redirect.
+    // '/api/stripe',
+    // '/(api/debug/.*)',
+    // '/api/debug/test/load-firestore-test-data',
   ],
 };
