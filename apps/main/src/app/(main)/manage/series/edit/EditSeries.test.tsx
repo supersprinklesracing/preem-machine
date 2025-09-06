@@ -1,6 +1,6 @@
 import type { ClientCompat, Series } from '@/datastore/types';
 import '@/matchMedia.mock';
-import { act, fireEvent, render, screen } from '@/test-utils';
+import { fireEvent, render, screen, waitFor } from '@/test-utils';
 import { EditSeries } from './EditSeries';
 
 // Mock next/navigation
@@ -25,6 +25,14 @@ const mockSeries: ClientCompat<Series> = {
 };
 
 describe('EditSeries component', () => {
+  beforeEach(() => {
+    jest.useFakeTimers();
+  });
+
+  afterEach(() => {
+    jest.useRealTimers();
+  });
+
   it('should call updateSeriesAction with the correct data on form submission', async () => {
     const updateSeriesAction = jest.fn(() => Promise.resolve({ ok: true }));
 
@@ -41,8 +49,15 @@ describe('EditSeries component', () => {
     fireEvent.click(saveButton);
 
     // Wait for the action to be called
-    await act(async () => {
-      await new Promise((resolve) => setTimeout(resolve, 100));
+    await waitFor(() => {
+      expect(updateSeriesAction).toHaveBeenCalledWith(
+        expect.objectContaining({
+          path: 'organizations/org-1/series/series-1',
+          edits: expect.objectContaining({
+            name: 'New Series Name',
+          }),
+        }),
+      );
     });
 
     // Assert that the action was called with the correct data
