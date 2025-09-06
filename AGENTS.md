@@ -32,14 +32,14 @@ A well-crafted Pull Request (PR) is crucial for efficient and effective code rev
 - **Scope and Size:** Keep pull requests small and focused. Each PR should address a single concern, making it easier and faster to review. Avoid mixing unrelated changes. If you fix a bug while working on a new feature, commit the fix separately, ideally in its own PR.
 
 - **Title and Description:**
-        - **Write a clear and concise title.** The title should summarize the change and may use a prefix like `feat:`, `fix:`, or `chore:` to indicate the type of change.
+    - **Write a clear and concise title.** The title should summarize the change, include the relevant issue ID (e.g., `feat: Super feature (#123)`), and may use a prefix like `feat:`, `fix:`, or `chore:` to indicate the type of change.
     - **Provide a detailed description.** Explain the "what" and "why" of the changes. Link to any relevant GitHub issues in the description using keywords like `Closes #123` to ensure issues are automatically closed when the PR is merged.
 
 - **Commits and History:** Maintain a clean and understandable commit history. Use interactive rebase (`git rebase -i`) to squash or fix up commits before opening a pull request. Each commit message should be meaningful and follow the same conventions as the PR title.
 
 - **Review Process:**
-    - **Review your own PR first.** Before requesting a review, perform a self-review to catch any obvious errors or typos.
-    - **Ensure tests pass.** All continuous integration (CI) checks must be green before a PR is merged. If you are adding a new feature or fixing a bug, include tests that cover the new code.
+  - **Review your own PR first.** Before requesting a review, perform a self-review to catch any obvious errors or typos.
+  - **Ensure tests pass.** All continuous integration (CI) checks must be green before a PR is merged. If you are adding a new feature or fixing a bug, include tests that cover the new code.
 
 ### Code Quality Tools
 
@@ -195,7 +195,7 @@ For server components that interact with Firestore, refer to the **Mocking `fire
       ```
 
 > **Important:**
-> 
+>
 > - You should not need to modify `mock-db.ts`; the existing data is sufficient for testing.
 > - **Never** access the mock database directly in your tests. Your components should interact with Firestore as they normally would.
 > - Do not mock individual Firestore functions (e.g., `(firestore.getRenderableRaceDataForPage as jest.Mock).mockResolvedValue(...)`). This approach is incorrect and will not work with the Firestore instance. You **must** use `setupMockDb` to ensure the entire database is mocked correctly.
