@@ -68,6 +68,9 @@ describe('NewRace component', () => {
   });
 
   it('should display an error message if the action fails', async () => {
+    const consoleErrorSpy = jest
+      .spyOn(console, 'error')
+      .mockImplementation(() => {});
     const newRaceAction = jest.fn(() =>
       Promise.reject(new Error('Failed to create')),
     );
@@ -100,5 +103,6 @@ describe('NewRace component', () => {
 
     // Wait for the error message to appear
     expect(await screen.findByText('Failed to create')).toBeInTheDocument();
+    consoleErrorSpy.mockRestore();
   });
 });

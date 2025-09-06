@@ -57,6 +57,9 @@ describe('EditSeries component', () => {
   });
 
   it('should display an error message if the action fails', async () => {
+    const consoleErrorSpy = jest
+      .spyOn(console, 'error')
+      .mockImplementation(() => {});
     const updateSeriesAction = jest.fn(() =>
       Promise.reject(new Error('Failed to save')),
     );
@@ -75,5 +78,6 @@ describe('EditSeries component', () => {
 
     // Wait for the error message to appear
     await screen.findByText('Failed to save');
+    consoleErrorSpy.mockRestore();
   });
 });

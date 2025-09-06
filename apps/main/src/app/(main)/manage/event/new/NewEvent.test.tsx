@@ -102,6 +102,9 @@ describe('NewEvent component', () => {
   });
 
   it('should display an error message if the action fails', async () => {
+    const consoleErrorSpy = jest
+      .spyOn(console, 'error')
+      .mockImplementation(() => {});
     mockNewEventAction.mockRejectedValue(new Error('Failed to create'));
 
     render(<NewEvent newEventAction={mockNewEventAction} path={mockPath} />);
@@ -134,5 +137,6 @@ describe('NewEvent component', () => {
 
     // Wait for the error message to appear
     expect(await screen.findByText('Failed to create')).toBeInTheDocument();
+    consoleErrorSpy.mockRestore();
   });
 });
