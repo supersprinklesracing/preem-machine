@@ -1,5 +1,7 @@
 'use client';
 
+import RaceCard from '@/components/cards/RaceCard';
+import { FormActionResult } from '@/components/forms/forms';
 import type { ClientCompat, Race } from '@/datastore/types';
 import { getISODateFromDate } from '@/firebase-client/dates';
 import {
@@ -8,6 +10,7 @@ import {
   Container,
   Grid,
   Group,
+  SimpleGrid,
   Stack,
   Text,
   Textarea,
@@ -16,6 +19,8 @@ import {
 } from '@mantine/core';
 import { DatePicker } from '@mantine/dates';
 import { useForm } from '@mantine/form';
+import { useDebouncedValue } from '@mantine/hooks';
+import isEqual from 'fast-deep-equal';
 import { useRouter } from 'next/navigation';
 import { useState } from 'react';
 import { EditRaceOptions } from './edit-race-action';
@@ -26,8 +31,6 @@ type FormValues = Partial<
   description: string;
   dateRange: [Date | null, Date | null];
 };
-
-import { FormActionResult } from '@/components/forms/forms';
 
 export function EditRace({
   editRaceAction,
@@ -57,6 +60,8 @@ export function EditRace({
           : null,
     },
   });
+
+  const [debouncedValues] = useDebouncedValue(form.values, 500);
 
   const handleSubmit = async (values: FormValues) => {
     setIsLoading(true);
@@ -94,59 +99,73 @@ export function EditRace({
     }
   };
 
+  const racePreview: ClientCompat<Race> = {
+    ...race,
+    name: debouncedValues.name,
+    location: debouncedValues.location,
+    description: debouncedValues.description,
+    startDate: debouncedValues.dateRange[0]?.toISOString(),
+    endDate: debouncedValues.dateRange[1]?.toISOString(),
+  };
+
   return (
-    <Container size="sm">
+    <Container fluid>
       <Stack>
         <Title order={1}>Edit Race</Title>
-        <Card withBorder>
-          <Stack>
-            <Grid>
-              <Grid.Col span={{ base: 12, md: 6 }}>
-                <Card withBorder p="sm" h="100%">
-                  <Stack>
-                    <TextInput
-                      label="Race Name"
-                      required
-                      {...form.getInputProps('name')}
-                    />
-                    <TextInput
-                      label="Location"
-                      {...form.getInputProps('location')}
-                    />
-                    <Textarea
-                      label="Description"
-                      {...form.getInputProps('description')}
-                    />
-                  </Stack>
-                </Card>
-              </Grid.Col>
-              <Grid.Col span={{ base: 12, md: 6 }}>
-                <Card withBorder p="sm" h="100%">
-                  <Stack>
-                    <Title order={5}>Race Dates</Title>
-                    <DatePicker
-                      type="range"
-                      {...form.getInputProps('dateRange')}
-                      defaultDate={
-                        race.startDate ? new Date(race.startDate) : undefined
-                      }
-                    />
-                  </Stack>
-                </Card>
-              </Grid.Col>
-            </Grid>
-            <Group justify="right">
-              <Button
-                onClick={() => handleSubmit(form.values)}
-                loading={isLoading}
-                disabled={!form.isValid()}
-              >
-                Save Changes
-              </Button>
-            </Group>
-            {submissionError && <Text c="red">{submissionError}</Text>}
-          </Stack>
-        </Card>
+        <SimpleGrid cols={{ base: 1, md: 2 }}>
+          <Card withBorder>
+            <Stack>
+              <Grid>
+                <Grid.Col span={{ base: 12, md: 6 }}>
+                  <Card withBorder p="sm" h="100%">
+                    <Stack>
+                      <TextInput
+                        label="Race Name"
+                        required
+                        {...form.getInputProps('name')}
+                      />
+                      <TextInput
+                        label="Location"
+                        {...form.getInputProps('location')}
+                      />
+                      <Textarea
+                        label="Description"
+                        {...form.getInputProps('description')}
+                      />
+                    </Stack>
+                  </Card>
+                </Grid.Col>
+                <Grid.Col span={{ base: 12, md: 6 }}>
+                  <Card withBorder p="sm" h="100%">
+                    <Stack>
+                      <Title order={5}>Race Dates</Title>
+                      <DatePicker
+                        type="range"
+                        {...form.getInputProps('dateRange')}
+                        defaultDate={
+                          race.startDate ? new Date(race.startDate) : undefined
+                        }
+                      />
+                    </Stack>
+                  </Card>
+                </Grid.Col>
+              </Grid>
+              <Group justify="right">
+                <Button
+                  onClick={() => handleSubmit(form.values)}
+                  loading={isLoading}
+                  disabled={
+                    !form.isValid() || !isEqual(form.values, debouncedValues)
+                  }
+                >
+                  Save Changes
+                </Button>
+              </Group>
+              {submissionError && <Text c="red">{submissionError}</Text>}
+            </Stack>
+          </Card>
+          <RaceCard race={racePreview} preems={[]} />
+        </SimpleGrid>
       </Stack>
     </Container>
   );

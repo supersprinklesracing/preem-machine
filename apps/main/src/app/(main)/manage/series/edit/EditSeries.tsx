@@ -1,5 +1,7 @@
 'use client';
 
+import SeriesCard from '@/components/cards/SeriesCard';
+import { FormActionResult } from '@/components/forms/forms';
 import type { ClientCompat, Series } from '@/datastore/types';
 import { getISODateFromDate } from '@/firebase-client/dates';
 import {
@@ -9,6 +11,7 @@ import {
   Grid,
   Group,
   Modal,
+  SimpleGrid,
   Stack,
   Text,
   Textarea,
@@ -17,12 +20,12 @@ import {
 } from '@mantine/core';
 import { DatePicker } from '@mantine/dates';
 import { useForm } from '@mantine/form';
-import { useDisclosure } from '@mantine/hooks';
+import { useDebouncedValue, useDisclosure } from '@mantine/hooks';
+import isEqual from 'fast-deep-equal';
 import { useRouter } from 'next/navigation';
 import { useState } from 'react';
 import { NewEvent } from '../../event/new/NewEvent';
 import { EditSeriesOptions } from './edit-series-action';
-import { FormActionResult } from '@/components/forms/forms';
 
 type FormValues = Partial<Omit<Series, 'startDate' | 'endDate'>> & {
   dateRange: [Date | null, Date | null];
@@ -69,6 +72,8 @@ export function EditSeries({
     },
   });
 
+  const [debouncedValues] = useDebouncedValue(form.values, 500);
+
   const handleSubmit = async (values: FormValues) => {
     setIsLoading(true);
     setSubmissionError(null);
@@ -97,7 +102,6 @@ export function EditSeries({
       });
       router.refresh();
     } catch (error) {
-      console.error('Failed to save series data:', error);
       setSubmissionError(
         error instanceof Error ? error.message : 'An unknown error occurred.',
       );
@@ -106,68 +110,83 @@ export function EditSeries({
     }
   };
 
+  const seriesPreview: ClientCompat<Series> = {
+    ...series,
+    name: debouncedValues.name,
+    location: debouncedValues.location,
+    website: debouncedValues.website,
+    description: debouncedValues.description,
+    startDate: debouncedValues.dateRange[0]?.toISOString(),
+    endDate: debouncedValues.dateRange[1]?.toISOString(),
+  };
+
   return (
-    <Container size="sm">
+    <Container fluid>
       <Stack>
         <Group justify="space-between">
           <Title order={1}>Edit Series</Title>
           <Button onClick={open}>Add Event</Button>
         </Group>
-        <Card withBorder>
-          <Stack>
-            <Grid>
-              <Grid.Col span={{ base: 12, md: 6 }}>
-                <Card withBorder p="sm" h="100%">
-                  <Stack>
-                    <TextInput
-                      label="Series Name"
-                      required
-                      {...form.getInputProps('name')}
-                    />
-                    <TextInput
-                      label="Location"
-                      {...form.getInputProps('location')}
-                    />
-                    <TextInput
-                      label="Website"
-                      {...form.getInputProps('website')}
-                    />
-                    <Textarea
-                      label="Description"
-                      {...form.getInputProps('description')}
-                    />
-                  </Stack>
-                </Card>
-              </Grid.Col>
-              <Grid.Col span={{ base: 12, md: 6 }}>
-                <Card withBorder p="sm" h="100%">
-                  <Stack>
-                    <Title order={5}>Series Dates</Title>
-                    <DatePicker
-                      type="range"
-                      {...form.getInputProps('dateRange')}
-                      defaultDate={
-                        series.startDate
-                          ? new Date(series.startDate)
-                          : undefined
-                      }
-                    />
-                  </Stack>
-                </Card>
-              </Grid.Col>
-            </Grid>
-            <Group justify="right">
-              <Button
-                onClick={() => handleSubmit(form.values)}
-                loading={isLoading}
-                disabled={!form.isValid()}
-              >
-                Save Changes
-              </Button>
-            </Group>
-            {submissionError && <Text c="red">{submissionError}</Text>}
-          </Stack>
-        </Card>
+        <SimpleGrid cols={{ base: 1, md: 2 }}>
+          <Card withBorder>
+            <Stack>
+              <Grid>
+                <Grid.Col span={{ base: 12, md: 6 }}>
+                  <Card withBorder p="sm" h="100%">
+                    <Stack>
+                      <TextInput
+                        label="Series Name"
+                        required
+                        {...form.getInputProps('name')}
+                      />
+                      <TextInput
+                        label="Location"
+                        {...form.getInputProps('location')}
+                      />
+                      <TextInput
+                        label="Website"
+                        {...form.getInputProps('website')}
+                      />
+                      <Textarea
+                        label="Description"
+                        {...form.getInputProps('description')}
+                      />
+                    </Stack>
+                  </Card>
+                </Grid.Col>
+                <Grid.Col span={{ base: 12, md: 6 }}>
+                  <Card withBorder p="sm" h="100%">
+                    <Stack>
+                      <Title order={5}>Series Dates</Title>
+                      <DatePicker
+                        type="range"
+                        {...form.getInputProps('dateRange')}
+                        defaultDate={
+                          series.startDate
+                            ? new Date(series.startDate)
+                            : undefined
+                        }
+                      />
+                    </Stack>
+                  </Card>
+                </Grid.Col>
+              </Grid>
+              <Group justify="right">
+                <Button
+                  onClick={() => handleSubmit(form.values)}
+                  loading={isLoading}
+                  disabled={
+                    !form.isValid() || !isEqual(form.values, debouncedValues)
+                  }
+                >
+                  Save Changes
+                </Button>
+              </Group>
+              {submissionError && <Text c="red">{submissionError}</Text>}
+            </Stack>
+          </Card>
+          <SeriesCard series={seriesPreview} />
+        </SimpleGrid>
       </Stack>
       <Modal opened={opened} onClose={close} title="Add New Event" size="lg">
         <NewEvent

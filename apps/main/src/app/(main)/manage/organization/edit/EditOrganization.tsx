@@ -61,7 +61,6 @@ export function EditOrganization({
       });
       router.refresh();
     } catch (error) {
-      console.error('Failed to save organization data:', error);
       setSubmissionError(
         error instanceof Error ? error.message : 'An unknown error occurred.',
       );

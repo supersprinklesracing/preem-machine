@@ -1,15 +1,64 @@
 import { render, screen, fireEvent, act, waitFor } from '@/test-utils';
-import React from 'react';
 import { NewSeries } from './NewSeries';
 import '@/matchMedia.mock';
 import { FormActionResult } from '@/components/forms/forms';
 
 // Mock dependencies
 jest.mock('next/navigation', () => ({
+  // eslint-disable-next-line @eslint-react/hooks-extra/no-unnecessary-use-prefix
   useRouter: () => ({
     push: jest.fn(),
   }),
 }));
+
+// Mock the DatePicker component to avoid interacting with its UI
+jest.mock('@mantine/dates', () => {
+  const originalModule = jest.requireActual('@mantine/dates');
+  const React = require('react');
+  return {
+    ...originalModule,
+    DatePicker: jest.fn(
+      ({
+        value,
+        onChange,
+        ...props
+      }: {
+        value: [Date | null, Date | null];
+        onChange: (value: [Date, Date]) => void;
+        'data-testid'?: string;
+      }) => (
+        <>
+          <input
+            type="date"
+            data-testid="series-date-picker"
+            value={
+              value && value[0]
+                ? new Date(value[0]).toISOString().split('T')[0]
+                : ''
+            }
+            onChange={(e) => {
+              const date = new Date(e.target.value + 'T00:00:00Z');
+              onChange([date, value?.[1] || date]);
+            }}
+          />
+          <input
+            type="date"
+            data-testid="series-date-picker"
+            value={
+              value && value[1]
+                ? new Date(value[1]).toISOString().split('T')[0]
+                : ''
+            }
+            onChange={(e) => {
+              const date = new Date(e.target.value + 'T00:00:00Z');
+              onChange([value?.[0] || date, date]);
+            }}
+          />
+        </>
+      ),
+    ),
+  };
+});
 
 describe('NewSeries component', () => {
   const mockDate = new Date('2025-07-15T12:00:00Z');
@@ -33,7 +82,7 @@ describe('NewSeries component', () => {
         }),
     );
 
-    const { container } = render(
+    render(
       <NewSeries
         newSeriesAction={newSeriesAction}
         path="organizations/org-1"
@@ -55,18 +104,17 @@ describe('NewSeries component', () => {
     });
 
     // Select a date range by navigating months
-    const nextButton = container.querySelector('[data-direction="next"]');
-    expect(nextButton).toBeInTheDocument();
-    if (nextButton) {
-      fireEvent.click(nextButton); // Move to August
-    }
+    const datePickers = await screen.findAllByTestId('series-date-picker');
+    fireEvent.change(datePickers[0], {
+      target: { value: '2025-08-01' },
+    });
+    fireEvent.change(datePickers[1], {
+      target: { value: '2025-08-15' },
+    });
 
-    fireEvent.click(
-      screen.getAllByRole('button', { name: /Series date 1 August 2025/i })[0],
-    );
-    fireEvent.click(
-      screen.getAllByRole('button', { name: /Series date 15 August 2025/i })[0],
-    );
+    act(() => {
+      jest.runAllTimers();
+    });
 
     const createButton = screen.getByRole('button', { name: /create series/i });
     await waitFor(() => expect(createButton).not.toBeDisabled());
@@ -94,7 +142,7 @@ describe('NewSeries component', () => {
       Promise.reject(new Error('Failed to create')),
     );
 
-    const { container } = render(
+    render(
       <NewSeries
         newSeriesAction={newSeriesAction}
         path="organizations/org-1"
@@ -110,27 +158,23 @@ describe('NewSeries component', () => {
     });
 
     // Select a date range
-    const nextButton = container.querySelector('[data-direction="next"]');
-    expect(nextButton).toBeInTheDocument();
-    if (nextButton) {
-      fireEvent.click(nextButton); // Move to August
-    }
+    const datePickers = await screen.findAllByTestId('series-date-picker');
+    fireEvent.change(datePickers[0], {
+      target: { value: '2025-08-01' },
+    });
+    fireEvent.change(datePickers[1], {
+      target: { value: '2025-08-15' },
+    });
 
-    fireEvent.click(
-      screen.getAllByRole('button', { name: /Series date 1 August 2025/i })[0],
-    );
-    fireEvent.click(
-      screen.getAllByRole('button', { name: /Series date 15 August 2025/i })[0],
-    );
+    act(() => {
+      jest.runAllTimers();
+    });
 
     const createButton = screen.getByRole('button', { name: /create series/i });
     await waitFor(() => expect(createButton).not.toBeDisabled());
 
     // Click the create button
-    await act(async () => {
-      fireEvent.click(createButton);
-      await jest.runAllTimers();
-    });
+    fireEvent.click(createButton);
 
     // Wait for the error message to appear
     expect(await screen.findByText('Failed to create')).toBeInTheDocument();

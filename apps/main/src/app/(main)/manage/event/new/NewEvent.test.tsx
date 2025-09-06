@@ -16,19 +16,46 @@ jest.mock('@mantine/dates', () => {
   const React = require('react');
   return {
     ...originalModule,
-    DatePicker: jest.fn(({ value, onChange, ...props }) => (
-      <input
-        type="date"
-        data-testid={props['data-testid']}
-        value={value ? new Date(value).toISOString().split('T')[0] : ''}
-        onChange={(e) => {
-          // The browser may return a date string without a timezone,
-          // so parse it as UTC.
-          const date = new Date(e.target.value + 'T00:00:00Z');
-          onChange(date);
-        }}
-      />
-    )),
+    DatePicker: jest.fn(
+      ({
+        value,
+        onChange,
+        ...props
+      }: {
+        value: [Date | null, Date | null];
+        onChange: (value: [Date, Date]) => void;
+        'data-testid'?: string;
+      }) => (
+        <>
+          <input
+            type="date"
+            data-testid="startDate"
+            value={
+              value && value[0]
+                ? new Date(value[0]).toISOString().split('T')[0]
+                : ''
+            }
+            onChange={(e) => {
+              const date = new Date(e.target.value + 'T00:00:00Z');
+              onChange([date, value?.[1] || date]);
+            }}
+          />
+          <input
+            type="date"
+            data-testid="endDate"
+            value={
+              value && value[1]
+                ? new Date(value[1]).toISOString().split('T')[0]
+                : ''
+            }
+            onChange={(e) => {
+              const date = new Date(e.target.value + 'T00:00:00Z');
+              onChange([value?.[0] || date, date]);
+            }}
+          />
+        </>
+      ),
+    ),
   };
 });
 
