@@ -1,10 +1,11 @@
 import type { ClientCompat, Organization } from '@/datastore/types';
 import '@/matchMedia.mock';
-import { fireEvent, render, screen, waitFor } from '@/test-utils';
+import { act, fireEvent, render, screen, waitFor } from '@/test-utils';
 import { EditOrganization } from './EditOrganization';
 
 // Mock dependencies
 jest.mock('next/navigation', () => ({
+  // eslint-disable-next-line @eslint-react/hooks-extra/no-unnecessary-use-prefix
   useRouter: () => ({
     refresh: jest.fn(),
   }),
@@ -19,6 +20,7 @@ const mockOrganization: ClientCompat<Organization> = {
   path: 'organizations/org-1',
   name: 'Test Organization',
   website: 'https://example.com',
+  description: 'This is a test description',
 };
 
 describe('EditOrganization component', () => {
@@ -44,7 +46,10 @@ describe('EditOrganization component', () => {
 
     // Change the name in the form
     const nameInput = screen.getByDisplayValue('Test Organization');
-    fireEvent.change(nameInput, { target: { value: 'New Org Name' } });
+    await act(async () => {
+      fireEvent.change(nameInput, { target: { value: 'New Org Name' } });
+      jest.advanceTimersByTime(500);
+    });
 
     // Click the save button
     const saveButton = screen.getByText('Save Changes');
@@ -74,20 +79,23 @@ describe('EditOrganization component', () => {
   });
 
   it('should display an error message if the action fails', async () => {
-    const updateOrganizationAction = jest.fn(() =>
+    const editOrganizationAction = jest.fn(() =>
       Promise.reject(new Error('Failed to save')),
     );
 
     render(
       <EditOrganization
         organization={mockOrganization}
-        editOrganizationAction={updateOrganizationAction}
+        editOrganizationAction={editOrganizationAction}
       />,
     );
 
     // Change the name in the form
     const nameInput = screen.getByDisplayValue('Test Organization');
-    fireEvent.change(nameInput, { target: { value: 'New Org Name' } });
+    await act(async () => {
+      fireEvent.change(nameInput, { target: { value: 'New Org Name' } });
+      jest.advanceTimersByTime(500);
+    });
 
     // Click the save button
     const saveButton = screen.getByText('Save Changes');

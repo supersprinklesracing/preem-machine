@@ -3,48 +3,35 @@
 import { verifyAuthUser } from '@/auth/user';
 import { FormActionError, FormActionResult } from '@/components/forms/forms';
 import { createEvent } from '@/datastore/create';
-import type { Event } from '@/datastore/types';
-import { DocPath } from '@/datastore/paths';
-import { revalidatePath } from 'next/cache';
+import { CollectionPath, DocPath } from '@/datastore/paths';
+import { getTimestampFromDate } from '@/firebase-admin/dates';
 import { z } from 'zod';
+import { eventSchema } from '../event-schema';
 
-const newEventSchema = z.object({
-  name: z.string().min(2, 'Name must have at least 2 letters'),
-  description: z.string().min(10, 'Description must have at least 10 letters'),
-  startDate: z.string(),
-  endDate: z.string(),
-});
+export interface NewEventOptions {
+  path: CollectionPath;
+  values: z.infer<typeof eventSchema>;
+}
 
-export async function newEventAction(
-  path: string,
-  options: unknown,
-): Promise<FormActionResult<{ path: DocPath }>> {
+export async function newEventAction({
+  path,
+  values,
+}: NewEventOptions): Promise<FormActionResult<{ path: DocPath }>> {
   try {
-    const user = await verifyAuthUser();
-
-    const validation = newEventSchema.safeParse(options);
-
-    if (!validation.success) {
-      throw new FormActionError('Invalid data.');
-    }
-
-    const eventData: Partial<Omit<Event, 'startDate' | 'endDate'>> & {
-      startDate?: string;
-      endDate?: string;
-    } = {
-      ...validation.data,
+    const authUser = await verifyAuthUser();
+    const parsedValues = eventSchema.parse(values);
+    const { startDate, endDate, ...rest } = parsedValues;
+    const updates = {
+      ...rest,
+      ...(startDate ? { startDate: getTimestampFromDate(startDate) } : {}),
+      ...(endDate ? { endDate: getTimestampFromDate(endDate) } : {}),
     };
+    const snap = await createEvent(path, updates, authUser);
 
-    const newEventSnapshot = await createEvent(path, eventData, user);
-    const newEvent = newEventSnapshot.data();
-    if (!newEvent) {
-      throw new Error('Failed to create event.');
-    }
-    revalidatePath(path);
-    return { path: newEvent.path };
-  } catch (e) {
+    return { path: snap.ref.path };
+  } catch (error) {
     const message =
-      e instanceof Error ? e.message : 'An unknown error occurred.';
-    throw new FormActionError(message);
+      error instanceof Error ? error.message : 'An unknown error occurred.';
+    throw new FormActionError(`Failed to save event: ${message}`);
   }
 }

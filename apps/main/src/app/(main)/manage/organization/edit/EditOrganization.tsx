@@ -1,25 +1,27 @@
 'use client';
 
+import { useActionForm } from '@/app/shared/hooks/useActionForm';
+import OrganizationCard from '@/components/cards/OrganizationCard';
+import { FormActionResult } from '@/components/forms/forms';
 import type { ClientCompat, Organization } from '@/datastore/types';
 import {
   Button,
   Card,
   Container,
   Group,
+  SimpleGrid,
   Stack,
   Text,
+  Textarea,
   TextInput,
   Title,
 } from '@mantine/core';
-import { useForm } from '@mantine/form';
+import { useDebouncedValue } from '@mantine/hooks';
+import isEqual from 'fast-deep-equal';
 import { useRouter } from 'next/navigation';
-import { useState } from 'react';
+import { organizationSchema } from '../organization-schema';
 import { StripeConnectCard } from './StripeConnectCard';
 import { EditOrganizationOptions } from './edit-organization-action';
-
-type FormValues = EditOrganizationOptions['edits'];
-
-import { FormActionResult } from '@/components/forms/forms';
 
 export function EditOrganization({
   editOrganizationAction,
@@ -33,70 +35,75 @@ export function EditOrganization({
   stripeError?: string;
 }) {
   const router = useRouter();
-  const [isLoading, setIsLoading] = useState(false);
-  const [submissionError, setSubmissionError] = useState<string | null>(null);
 
-  const form = useForm<FormValues>({
+  const { form, handleSubmit, isLoading, submissionError } = useActionForm({
+    schema: organizationSchema,
     initialValues: {
       name: organization.name ?? '',
       website: organization.website ?? '',
+      description: organization.description ?? '',
     },
-    validate: {
-      name: (value) =>
-        !value || value.trim().length < 2
-          ? 'Name must have at least 2 letters'
-          : null,
+    action: (values) =>
+      editOrganizationAction({ path: organization.path, edits: values }),
+    onSuccess: () => {
+      router.refresh();
     },
   });
 
-  const handleSubmit = async (values: FormValues) => {
-    setIsLoading(true);
-    setSubmissionError(null);
+  const [debouncedValues] = useDebouncedValue(form.values, 100);
 
-    try {
-      const path = organization.path;
-      await editOrganizationAction({
-        path,
-        edits: values,
-      });
-      router.refresh();
-    } catch (error) {
-      setSubmissionError(
-        error instanceof Error ? error.message : 'An unknown error occurred.',
-      );
-    } finally {
-      setIsLoading(false);
-    }
+  const organizationPreview: ClientCompat<Organization> = {
+    ...organization,
+    name: debouncedValues.name,
+    website: debouncedValues.website,
+    description: debouncedValues.description,
   };
 
   return (
-    <Container size="xs">
+    <Container>
       <Stack>
         <Title order={1}>Edit Organization</Title>
-        <Card withBorder>
+        <SimpleGrid cols={{ base: 1, md: 2 }}>
           <Stack>
-            <TextInput
-              label="Organization Name"
-              required
-              {...form.getInputProps('name')}
+            <Card withBorder>
+              <form onSubmit={form.onSubmit(handleSubmit)}>
+                <Stack>
+                  <TextInput
+                    label="Organization Name"
+                    required
+                    {...form.getInputProps('name')}
+                  />
+                  <TextInput
+                    label="Website"
+                    {...form.getInputProps('website')}
+                  />
+                  <Textarea
+                    label="Description"
+                    {...form.getInputProps('description')}
+                  />
+                  <Group justify="right">
+                    <Button
+                      type="submit"
+                      loading={isLoading}
+                      disabled={
+                        !form.isValid() ||
+                        !isEqual(form.values, debouncedValues)
+                      }
+                    >
+                      Save Changes
+                    </Button>
+                  </Group>
+                  {submissionError && <Text c="red">{submissionError}</Text>}
+                </Stack>
+              </form>
+            </Card>
+            <StripeConnectCard
+              organization={organization}
+              stripeError={stripeError}
             />
-            <TextInput label="Website" {...form.getInputProps('website')} />
-            <Group justify="right">
-              <Button
-                onClick={() => handleSubmit(form.values)}
-                loading={isLoading}
-                disabled={!form.isValid()}
-              >
-                Save Changes
-              </Button>
-            </Group>
-            {submissionError && <Text c="red">{submissionError}</Text>}
           </Stack>
-        </Card>
-        <StripeConnectCard
-          organization={organization}
-          stripeError={stripeError}
-        />
+          <OrganizationCard organization={organizationPreview} />
+        </SimpleGrid>
       </Stack>
     </Container>
   );

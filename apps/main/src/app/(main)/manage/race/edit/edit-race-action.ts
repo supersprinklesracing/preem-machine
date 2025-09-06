@@ -3,21 +3,14 @@
 import { verifyAuthUser } from '@/auth/user';
 import { FormActionError, FormActionResult } from '@/components/forms/forms';
 import { updateRace } from '@/datastore/update';
-import { getTimestampFromISODate } from '@/firebase-admin/dates';
+import { getTimestampFromDate } from '@/firebase-admin/dates';
 import { z } from 'zod';
-
-const editRaceSchema = z.object({
-  name: z.string().min(2).optional(),
-  location: z.string().optional(),
-  description: z.string().optional(),
-  website: z.string().url().optional(),
-  startDate: z.string().optional(),
-  endDate: z.string().optional(),
-});
+import { raceSchema } from '../race-schema';
+import { DocPath } from '@/datastore/paths';
 
 export interface EditRaceOptions {
-  path: string;
-  edits: z.infer<typeof editRaceSchema>;
+  path: DocPath;
+  edits: z.infer<typeof raceSchema>;
 }
 
 export async function editRaceAction({
@@ -26,18 +19,16 @@ export async function editRaceAction({
 }: EditRaceOptions): Promise<FormActionResult> {
   try {
     const authUser = await verifyAuthUser();
-    const parsedEdits = editRaceSchema.parse(edits);
+    const parsedEdits = raceSchema.parse(edits);
     const { startDate, endDate, ...rest } = parsedEdits;
     const updates = {
       ...rest,
-      ...{
-        startDate: startDate ? getTimestampFromISODate(startDate) : undefined,
-      },
-      ...{ endDate: endDate ? getTimestampFromISODate(endDate) : undefined },
+      ...(startDate ? { startDate: getTimestampFromDate(startDate) } : {}),
+      ...(endDate ? { endDate: getTimestampFromDate(endDate) } : {}),
     };
     await updateRace(path, updates, authUser);
 
-    return { ok: true };
+    return {};
   } catch (error) {
     console.error('Failed to update race document:', error);
     const message =

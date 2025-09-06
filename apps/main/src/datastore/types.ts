@@ -87,7 +87,6 @@ export interface User extends BaseDoc {
   name?: string;
   email?: string;
   avatarUrl?: string;
-  role?: 'contributor' | 'organizer' | 'admin';
   affiliation?: string;
   raceLicenseId?: string;
   address?: string;
@@ -111,6 +110,7 @@ export interface Organization extends BaseDoc {
   name?: string;
   description?: string;
   website?: string;
+
   memberRefs?: DocumentReference<User>[];
   stripe?: {
     connectAccountId?: string;
@@ -129,8 +129,8 @@ export interface Series {
 
   name?: string;
   description?: string;
-  location?: string;
   website?: string;
+  location?: string;
   startDate?: Timestamp;
   endDate?: Timestamp;
 
@@ -175,9 +175,10 @@ export interface Race extends BaseDoc {
 
   name?: string;
   description?: string;
+  website?: string;
+  location?: string;
   category?: string;
   gender?: string;
-  location?: string;
   courseDetails?: string;
   maxRacers?: number;
   currentRacers?: number;

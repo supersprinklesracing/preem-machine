@@ -1,98 +1,102 @@
 'use client';
 
+import { useActionForm } from '@/app/shared/hooks/useActionForm';
+import OrganizationCard from '@/components/cards/OrganizationCard';
+import { FormActionResult } from '@/components/forms/forms';
 import { toUrlPath } from '@/datastore/paths';
-import type { Organization } from '@/datastore/types';
+import { ClientCompat, Organization } from '@/datastore/types';
 import {
   Button,
   Card,
   Container,
   Group,
+  SimpleGrid,
   Stack,
+  Textarea,
   TextInput,
   Title,
 } from '@mantine/core';
-import { useForm } from '@mantine/form';
+import { useDebouncedValue } from '@mantine/hooks';
+import isEqual from 'fast-deep-equal';
 import { useRouter } from 'next/navigation';
-import { useState } from 'react';
-
-type FormValues = Partial<Organization>;
-
-import { FormActionResult } from '@/components/forms/forms';
+import { organizationSchema } from '../organization-schema';
+import { NewOrganizationOptions } from './new-organization-action';
 
 export function NewOrganization({
   newOrganizationAction,
 }: {
   newOrganizationAction: (
-    options: FormValues,
+    options: NewOrganizationOptions,
   ) => Promise<FormActionResult<{ path?: string }>>;
 }) {
   const router = useRouter();
-  const [isLoading, setIsLoading] = useState(false);
-  const [submissionError, setSubmissionError] = useState<string | null>(null);
 
-  const form = useForm<FormValues>({
+  const { form, handleSubmit, isLoading, submissionError } = useActionForm({
+    schema: organizationSchema,
     initialValues: {
       name: '',
       website: '',
+      description: '',
     },
-    validate: {
-      name: (value) =>
-        !value || value.trim().length < 2
-          ? 'Name must have at least 2 letters'
-          : null,
-    },
-  });
-
-  const handleSubmit = async (values: FormValues) => {
-    setIsLoading(true);
-    setSubmissionError(null);
-
-    try {
-      const result = await newOrganizationAction(values);
+    action: (values) => newOrganizationAction({ values }),
+    onSuccess: (result) => {
       if (result.path) {
         router.push(`/manage/${toUrlPath(result.path)}/edit`);
       }
-    } catch (error) {
-      console.error('Failed to create organization:', error);
-      setSubmissionError(
-        error instanceof Error ? error.message : 'An unknown error occurred.',
-      );
-    } finally {
-      setIsLoading(false);
-    }
+    },
+  });
+
+  const [debouncedValues] = useDebouncedValue(form.values, 100);
+
+  const organizationPreview: ClientCompat<Organization> = {
+    id: 'preview',
+    path: 'organizations/preview',
+    name: debouncedValues.name || 'Your Organization Name',
+    description: debouncedValues.description,
+    website: debouncedValues.website,
   };
 
   return (
-    <Container size="xs">
+    <Container>
       <Stack>
         <Title order={1}>Create Organization</Title>
-        <Card withBorder>
-          <form onSubmit={form.onSubmit(handleSubmit)}>
-            <Stack>
-              <TextInput
-                label="Organization Name"
-                required
-                {...form.getInputProps('name')}
-                data-testid="name-input"
-              />
-              <TextInput
-                label="Website"
-                {...form.getInputProps('website')}
-                data-testid="website-input"
-              />
-              <Group justify="right">
-                <Button
-                  type="submit"
-                  loading={isLoading}
-                  disabled={!form.isValid()}
-                >
-                  Create Organization
-                </Button>
-              </Group>
-              {submissionError && <p>{submissionError}</p>}
-            </Stack>
-          </form>
-        </Card>
+        <SimpleGrid cols={{ base: 1, md: 2 }}>
+          <Card withBorder>
+            <form onSubmit={form.onSubmit(handleSubmit)}>
+              <Stack>
+                <TextInput
+                  label="Organization Name"
+                  required
+                  {...form.getInputProps('name')}
+                  data-testid="name-input"
+                />
+                <TextInput
+                  label="Website"
+                  {...form.getInputProps('website')}
+                  data-testid="website-input"
+                />
+                <Textarea
+                  label="Description"
+                  {...form.getInputProps('description')}
+                  data-testid="description-input"
+                />
+                <Group justify="right">
+                  <Button
+                    type="submit"
+                    loading={isLoading}
+                    disabled={
+                      !form.isValid() || !isEqual(form.values, debouncedValues)
+                    }
+                  >
+                    Create Organization
+                  </Button>
+                </Group>
+                {submissionError && <p>{submissionError}</p>}
+              </Stack>
+            </form>
+          </Card>
+          <OrganizationCard organization={organizationPreview} />
+        </SimpleGrid>
       </Stack>
     </Container>
   );

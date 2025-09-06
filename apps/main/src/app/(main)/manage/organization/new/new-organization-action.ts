@@ -6,19 +6,19 @@ import { createOrganization } from '@/datastore/create';
 import { DocPath } from '@/datastore/paths';
 import { revalidatePath } from 'next/cache';
 import { z } from 'zod';
+import { organizationSchema } from '../organization-schema';
 
-const newOrganizationSchema = z.object({
-  name: z.string().min(2, 'Name must have at least 2 letters'),
-  website: z.string().optional(),
-});
+export interface NewOrganizationOptions {
+  values: z.infer<typeof organizationSchema>;
+}
 
-export async function newOrganizationAction(
-  options: unknown,
-): Promise<FormActionResult<{ path: DocPath }>> {
+export async function newOrganizationAction({
+  values,
+}: NewOrganizationOptions): Promise<FormActionResult<{ path: DocPath }>> {
   try {
     const user = await verifyAuthUser();
 
-    const validation = newOrganizationSchema.safeParse(options);
+    const validation = organizationSchema.safeParse(values);
 
     if (!validation.success) {
       throw new FormActionError('Invalid data.');

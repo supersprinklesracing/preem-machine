@@ -15,9 +15,11 @@ const mockEvent: ClientCompat<Event> = {
   id: 'event-1',
   path: 'organizations/org-1/series/series-1/events/event-1',
   name: 'Test Event',
+  description: 'Test Description',
   location: 'Test Location',
   website: 'https://example.com',
   startDate: new Date().toISOString(),
+  endDate: new Date().toISOString(),
   seriesBrief: {
     id: 'series-1',
     path: 'organizations/org-1/series/series-1',
@@ -38,23 +40,19 @@ describe('EditEvent component', () => {
   });
 
   it('should call editEventAction with the correct data on form submission', async () => {
-    const editEventAction = jest.fn(() => Promise.resolve({}));
+    const editEventAction = jest.fn(() => Promise.resolve({ ok: true }));
 
     render(<EditEvent event={mockEvent} editEventAction={editEventAction} />);
 
     // Change the name in the form
     const nameInput = screen.getByDisplayValue('Test Event');
-    fireEvent.change(nameInput, { target: { value: 'New Event Name' } });
-
-    act(() => {
-      jest.runAllTimers();
+    await act(async () => {
+      fireEvent.change(nameInput, { target: { value: 'New Event Name' } });
+      jest.advanceTimersByTime(500);
     });
 
-    // Wait for the debounce and click the save button
+    // Click the save button
     const saveButton = screen.getByText('Save Changes');
-    await waitFor(() => {
-      expect(saveButton).not.toBeDisabled();
-    });
     fireEvent.click(saveButton);
 
     // Wait for the action to be called
@@ -79,17 +77,13 @@ describe('EditEvent component', () => {
 
     // Change the name in the form
     const nameInput = screen.getByDisplayValue('Test Event');
-    fireEvent.change(nameInput, { target: { value: 'New Event Name' } });
-
-    act(() => {
-      jest.runAllTimers();
+    await act(async () => {
+      fireEvent.change(nameInput, { target: { value: 'New Event Name' } });
+      jest.advanceTimersByTime(500);
     });
 
-    // Wait for the debounce and click the save button
+    // Click the save button
     const saveButton = screen.getByText('Save Changes');
-    await waitFor(() => {
-      expect(saveButton).not.toBeDisabled();
-    });
     fireEvent.click(saveButton);
 
     // Wait for the error message to appear

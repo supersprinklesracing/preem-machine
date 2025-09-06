@@ -66,6 +66,12 @@ const User: React.FC<Props> = ({ user, contributions }) => {
               <IconMail size={16} />
               <Text c="dimmed">{user.email}</Text>
             </Group>
+
+            {user.affiliation && <Text>Affiliation: {user.affiliation}</Text>}
+            {user.raceLicenseId && (
+              <Text>Race License ID: {user.raceLicenseId}</Text>
+            )}
+            {user.address && <Text>Address: {user.address}</Text>}
             {isOwnProfile ? (
               <Button
                 component={Link}

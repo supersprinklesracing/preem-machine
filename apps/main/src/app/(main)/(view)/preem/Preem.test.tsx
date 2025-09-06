@@ -12,6 +12,7 @@ const mockPreemData = {
     id: 'preem-1',
     path: 'organizations/org-1/series/series-1/events/event-1/races/race-1/preems/preem-1',
     name: 'Test Preem',
+    description: 'This is a test preem.',
     raceBrief: {
       id: 'race-1',
       path: 'organizations/org-1/series/series-1/events/event-1/races/race-1',
@@ -69,6 +70,7 @@ describe('Preem component', () => {
     render(<Preem {...mockPreemData} />);
 
     expect(screen.getByText('Test Preem')).toBeInTheDocument();
+    expect(screen.getByText('This is a test preem.')).toBeInTheDocument();
     expect(screen.getByText('Part of Test Race')).toBeInTheDocument();
     expect(screen.getByText('Open')).toBeInTheDocument();
     expect(screen.getByText('Pooled')).toBeInTheDocument();

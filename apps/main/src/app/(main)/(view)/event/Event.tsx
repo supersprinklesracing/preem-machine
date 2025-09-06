@@ -13,7 +13,7 @@ import {
   Text,
   Title,
 } from '@mantine/core';
-import { IconChevronRight } from '@tabler/icons-react';
+import { IconChevronRight, IconWorldWww } from '@tabler/icons-react';
 import { format } from 'date-fns';
 import Link from 'next/link';
 
@@ -46,6 +46,15 @@ export default function Event({ event, children }: Props) {
         {event.location} |{' '}
         {event.startDate ? format(new Date(event.startDate ?? ''), 'PP p') : ''}
       </Text>
+      {event.description && <Text>{event.description}</Text>}
+      {event.website && (
+        <Group gap="xs">
+          <IconWorldWww size={16} />
+          <Anchor href={event.website} target="_blank" size="sm">
+            Official Website
+          </Anchor>
+        </Group>
+      )}
       <Stack>
         <Group justify="space-between">
           <Stack gap={0}>

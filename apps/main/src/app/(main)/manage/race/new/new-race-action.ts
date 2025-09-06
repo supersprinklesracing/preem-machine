@@ -4,29 +4,40 @@ import { verifyAuthUser } from '@/auth/user';
 import { FormActionError, FormActionResult } from '@/components/forms/forms';
 import { createRace } from '@/datastore/create';
 import { CollectionPath, DocPath } from '@/datastore/paths';
+import { getTimestampFromDate } from '@/firebase-admin/dates';
 import { revalidatePath } from 'next/cache';
 import { z } from 'zod';
+import { raceSchema } from '../race-schema';
 
-const newRaceSchema = z.object({
-  name: z.string().min(2, 'Name must have at least 2 letters'),
-  location: z.string().min(2, 'Location must have at least 2 letters'),
-  date: z.date(),
-});
+export interface NewRaceOptions {
+  path: CollectionPath;
+  values: z.infer<typeof raceSchema>;
+}
 
-export async function newRaceAction(
-  path: CollectionPath,
-  options: unknown,
-): Promise<FormActionResult<{ path: DocPath }>> {
+export async function newRaceAction({
+  path,
+  values,
+}: NewRaceOptions): Promise<FormActionResult<{ path: DocPath }>> {
   try {
     const user = await verifyAuthUser();
 
-    const validation = newRaceSchema.safeParse(options);
+    const validation = raceSchema.safeParse(values);
 
     if (!validation.success) {
       throw new FormActionError('Invalid data.');
     }
 
-    const newRaceSnapshot = await createRace(path, validation.data, user);
+    const { startDate, endDate, ...rest } = validation.data;
+
+    const newRaceSnapshot = await createRace(
+      path,
+      {
+        ...rest,
+        ...(startDate ? { startDate: getTimestampFromDate(startDate) } : {}),
+        ...(endDate ? { endDate: getTimestampFromDate(endDate) } : {}),
+      },
+      user,
+    );
     const newRace = newRaceSnapshot.data();
     if (!newRace) {
       throw new Error('Failed to create race.');

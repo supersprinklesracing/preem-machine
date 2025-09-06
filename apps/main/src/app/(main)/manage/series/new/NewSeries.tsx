@@ -1,5 +1,6 @@
 'use client';
 
+import { useActionForm } from '@/app/shared/hooks/useActionForm';
 import SeriesCard from '@/components/cards/SeriesCard';
 import { FormActionResult } from '@/components/forms/forms';
 import { toUrlPath } from '@/datastore/paths';
@@ -12,96 +13,47 @@ import {
   SimpleGrid,
   Stack,
   Text,
+  Textarea,
   TextInput,
   Title,
-  Textarea,
 } from '@mantine/core';
-import { DatePicker, DatePickerProps } from '@mantine/dates';
-import { useForm } from '@mantine/form';
+import { DatePicker } from '@mantine/dates';
 import { useDebouncedValue } from '@mantine/hooks';
 import isEqual from 'fast-deep-equal';
-import { format } from 'date-fns';
 import { useRouter } from 'next/navigation';
-import { useState } from 'react';
-
-type FormValues = Partial<Omit<Series, 'startDate' | 'endDate'>> & {
-  dateRange: [Date | null, Date | null];
-  description?: string;
-};
+import { seriesSchema } from '../series-schema';
+import { NewSeriesOptions } from './new-series-action';
 
 export function NewSeries({
   newSeriesAction,
   path,
 }: {
   newSeriesAction: (
-    path: string,
-    options: FormValues,
+    options: NewSeriesOptions,
   ) => Promise<FormActionResult<{ path?: string }>>;
   path: string;
 }) {
   const router = useRouter();
-  const [isLoading, setIsLoading] = useState(false);
-  const [submissionError, setSubmissionError] = useState<string | null>(null);
 
-  const form = useForm<FormValues>({
+  const { form, handleSubmit, isLoading, submissionError } = useActionForm({
+    schema: seriesSchema,
     initialValues: {
       name: '',
       location: '',
       website: '',
       description: '',
-      dateRange: [null, null],
+      startDate: null,
+      endDate: null,
     },
-    validate: {
-      name: (value) =>
-        !value || value.trim().length < 2
-          ? 'Name must have at least 2 letters'
-          : null,
-      description: (value) =>
-        !value || value.trim().length < 10
-          ? 'Description must have at least 10 letters'
-          : null,
-      dateRange: (value) =>
-        value[0] && value[1] ? null : 'Date range is required',
-    },
-  });
-
-  const [debouncedValues] = useDebouncedValue(form.values, 500);
-
-  const handleSubmit = async (values: FormValues) => {
-    setIsLoading(true);
-    setSubmissionError(null);
-
-    const [startDate, endDate] = values.dateRange.map((d) =>
-      d ? new Date(d) : null,
-    );
-
-    const submissionValues = {
-      ...values,
-      startDate,
-      endDate,
-    };
-
-    try {
-      const result = await newSeriesAction(path, submissionValues);
+    action: (values) => newSeriesAction({ path, values }),
+    onSuccess: (result) => {
       if (result.path) {
         router.push(`/manage/${toUrlPath(result.path)}/edit`);
       }
-    } catch (error) {
-      setSubmissionError(
-        error instanceof Error ? error.message : 'An unknown error occurred.',
-      );
-    } finally {
-      setIsLoading(false);
-    }
-  };
+    },
+  });
 
-  const getDayProps =
-    (prefix: string): DatePickerProps['getDayProps'] =>
-    (date) => {
-      return {
-        'aria-label': `${prefix} ${format(date, 'd MMMM yyyy')}`,
-      };
-    };
+  const [debouncedValues] = useDebouncedValue(form.values, 100);
 
   const seriesPreview: ClientCompat<Series> = {
     id: 'preview',
@@ -110,11 +62,11 @@ export function NewSeries({
     location: debouncedValues.location,
     website: debouncedValues.website,
     description: debouncedValues.description,
-    startDate: debouncedValues.dateRange[0]
-      ? new Date(debouncedValues.dateRange[0]).toISOString()
+    startDate: debouncedValues.startDate
+      ? new Date(debouncedValues.startDate).toISOString()
       : undefined,
-    endDate: debouncedValues.dateRange[1]
-      ? new Date(debouncedValues.dateRange[1]).toISOString()
+    endDate: debouncedValues.endDate
+      ? new Date(debouncedValues.endDate).toISOString()
       : undefined,
     organizationBrief: {
       id: 'preview',
@@ -149,16 +101,21 @@ export function NewSeries({
                 />
                 <Textarea
                   label="Description"
-                  required
                   {...form.getInputProps('description')}
                   data-testid="description-input"
                 />
                 <DatePicker
                   type="range"
-                  allowSingleDateInRange={true}
-                  getDayProps={getDayProps('Series date')}
-                  {...form.getInputProps('dateRange')}
-                  data-testid="series-date-picker"
+                  allowSingleDateInRange
+                  value={[form.values.startDate, form.values.endDate]}
+                  onChange={([start, end]) => {
+                    form.setFieldValue(
+                      'startDate',
+                      start ? new Date(start) : null,
+                    );
+                    form.setFieldValue('endDate', end ? new Date(end) : null);
+                  }}
+                  data-testid="date-picker"
                 />
                 <Group justify="right">
                   <Button

@@ -2,22 +2,15 @@
 
 import { verifyAuthUser } from '@/auth/user';
 import { FormActionError, FormActionResult } from '@/components/forms/forms';
+import { DocPath } from '@/datastore/paths';
 import { updateSeries } from '@/datastore/update';
-import { getTimestampFromISODate } from '@/firebase-admin/dates';
+import { getTimestampFromDate } from '@/firebase-admin/dates';
 import { z } from 'zod';
-
-const editSeriesSchema = z.object({
-  name: z.string().min(2).optional(),
-  location: z.string().optional(),
-  website: z.string().url().optional(),
-  description: z.string().optional(),
-  startDate: z.string().optional(),
-  endDate: z.string().optional(),
-});
+import { seriesSchema } from '../series-schema';
 
 export interface EditSeriesOptions {
-  path: string;
-  edits: z.infer<typeof editSeriesSchema>;
+  path: DocPath;
+  edits: z.infer<typeof seriesSchema>;
 }
 
 export async function editSeriesAction({
@@ -26,18 +19,19 @@ export async function editSeriesAction({
 }: EditSeriesOptions): Promise<FormActionResult> {
   try {
     const authUser = await verifyAuthUser();
-    const parsedEdits = editSeriesSchema.parse(edits);
+    const parsedEdits = seriesSchema.parse(edits);
     const { startDate, endDate, ...rest } = parsedEdits;
-    const updates = {
-      ...rest,
-      ...{
-        startDate: startDate ? getTimestampFromISODate(startDate) : undefined,
+    await updateSeries(
+      path,
+      {
+        ...rest,
+        ...(startDate ? { startDate: getTimestampFromDate(startDate) } : {}),
+        ...(endDate ? { endDate: getTimestampFromDate(endDate) } : {}),
       },
-      ...{ endDate: endDate ? getTimestampFromISODate(endDate) : undefined },
-    };
-    await updateSeries(path, updates, authUser);
+      authUser,
+    );
 
-    return { ok: true };
+    return {};
   } catch (error) {
     const message =
       error instanceof Error ? error.message : 'An unknown error occurred.';

@@ -11,22 +11,20 @@ jest.mock('next/navigation', () => ({
   }),
 }));
 
-jest.mock('@mantine/dates', () => ({
-  DateTimePicker: (props: any) => (
-    <input
-      data-testid="date-time-picker"
-      onChange={(e) => props.onChange(new Date(e.target.value))}
-    />
-  ),
-}));
-
 describe('NewRace component', () => {
+  beforeEach(() => {
+    jest.useFakeTimers();
+    jest.setSystemTime(new Date('2025-08-05T12:00:00Z'));
+  });
+
+  afterEach(() => {
+    jest.useRealTimers();
+  });
+
   it('should call newRaceAction with the correct data on form submission', async () => {
     const newRaceAction = jest.fn(
       (): Promise<FormActionResult<{ path?: string }>> =>
         Promise.resolve({
-          type: 'success',
-          message: '',
           path: 'new-race-id',
         }),
     );
@@ -45,35 +43,38 @@ describe('NewRace component', () => {
     fireEvent.change(screen.getByTestId('location-input'), {
       target: { value: 'Test Location' },
     });
-    fireEvent.change(screen.getByTestId('date-time-picker'), {
-      target: { value: '2025-08-01T10:00:00.000Z' },
+    fireEvent.change(screen.getByLabelText('Website'), {
+      target: { value: 'https://example.com' },
+    });
+    fireEvent.change(screen.getByTestId('description-input'), {
+      target: { value: 'Test Description' },
+    });
+    fireEvent.click(screen.getByTestId('date-picker'));
+    fireEvent.click(screen.getByRole('button', { name: '1 August 2025' }));
+    fireEvent.click(screen.getByRole('button', { name: '15 August 2025' }));
+
+    await waitFor(() => {
+      expect(screen.getByText('New Test Race')).toBeInTheDocument();
     });
 
     const createButton = screen.getByRole('button', { name: /create race/i });
-    await waitFor(() => expect(createButton).not.toBeDisabled());
+    expect(createButton).not.toBeDisabled();
 
     // Click the create button
     fireEvent.click(createButton);
 
     await waitFor(() => {
-      expect(newRaceAction).toHaveBeenCalledWith(
-        'organizations/org-1/series/series-1/events/event-1/races',
-        expect.objectContaining({
+      expect(newRaceAction).toHaveBeenCalledWith({
+        path: 'organizations/org-1/series/series-1/events/event-1/races',
+        values: expect.objectContaining({
           name: 'New Test Race',
           location: 'Test Location',
-          date: new Date('2025-08-01T10:00:00.000Z'),
+          description: 'Test Description',
+          startDate: new Date('2025-07-31T00:00:00.000Z'),
+          endDate: new Date('2025-08-15T00:00:00.000Z'),
         }),
-      );
+      });
     });
-
-    expect(newRaceAction).toHaveBeenCalledWith(
-      'organizations/org-1/series/series-1/events/event-1/races',
-      expect.objectContaining({
-        name: 'New Test Race',
-        location: 'Test Location',
-        date: new Date('2025-08-01T10:00:00.000Z'),
-      }),
-    );
   });
 
   it('should display an error message if the action fails', async () => {
@@ -95,12 +96,22 @@ describe('NewRace component', () => {
     fireEvent.change(screen.getByTestId('location-input'), {
       target: { value: 'Test Location' },
     });
-    fireEvent.change(screen.getByTestId('date-time-picker'), {
-      target: { value: '2025-08-01T10:00:00.000Z' },
+    fireEvent.change(screen.getByLabelText('Website'), {
+      target: { value: 'https://example.com' },
+    });
+    fireEvent.change(screen.getByTestId('description-input'), {
+      target: { value: 'Test Description' },
+    });
+    fireEvent.click(screen.getByTestId('date-picker'));
+    fireEvent.click(screen.getByRole('button', { name: '1 August 2025' }));
+    fireEvent.click(screen.getByRole('button', { name: '15 August 2025' }));
+
+    await waitFor(() => {
+      expect(screen.getByText('New Test Race')).toBeInTheDocument();
     });
 
     const createButton = screen.getByRole('button', { name: /create race/i });
-    await waitFor(() => expect(createButton).not.toBeDisabled());
+    expect(createButton).not.toBeDisabled();
 
     // Click the create button
     await act(async () => {

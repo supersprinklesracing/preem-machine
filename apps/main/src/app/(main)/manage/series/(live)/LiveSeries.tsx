@@ -13,8 +13,9 @@ import {
   Text,
   Title,
 } from '@mantine/core';
-import { IconPencil } from '@tabler/icons-react';
+import { IconPencil, IconWorldWww } from '@tabler/icons-react';
 import Link from 'next/link';
+import { formatDateRange } from '@/firebase-client/dates';
 
 interface Props {
   series: ClientCompat<Series>;
@@ -47,6 +48,18 @@ export default function LiveSeries({ series, children }: Props) {
           {organization?.name}
         </Anchor>
       </Text>
+      <Text c="dimmed">
+        {series.location} | {formatDateRange(series.startDate, series.endDate)}
+      </Text>
+      {series.description && <Text>{series.description}</Text>}
+      {series.website && (
+        <Group gap="xs">
+          <IconWorldWww size={16} />
+          <Anchor href={series.website} target="_blank" size="sm">
+            Official Website
+          </Anchor>
+        </Group>
+      )}
       <Stack>
         <Title order={2} ff="Space Grotesk, var(--mantine-font-family)">
           Events Schedule

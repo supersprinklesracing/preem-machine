@@ -1,13 +1,14 @@
 import '@/matchMedia.mock';
 import { render, screen } from '@/test-utils';
-import type { EventPageData } from './Event';
 import Event from './Event';
 
-const mockData: EventPageData = {
+const mockData = {
   event: {
     id: 'event-1',
     path: 'organizations/org-1/series/series-1/events/event-1',
     name: 'Test Event',
+    description: 'This is a test event.',
+    website: 'https://example.com',
     location: 'Test Location',
     startDate: new Date().toISOString(),
     seriesBrief: {
@@ -20,23 +21,39 @@ const mockData: EventPageData = {
         name: 'Test Org',
       },
     },
-    races: [
-      {
+  },
+  children: [
+    {
+      race: {
         id: 'race-1',
         path: 'organizations/org-1/series/series-1/events/event-1/races/race-1',
         name: 'Test Race 1',
         category: 'Pro',
         startDate: new Date().toISOString(),
+        eventBrief: {
+          id: 'event-1',
+          path: 'organizations/org-1/series/series-1/events/event-1',
+          name: 'Test Event',
+        },
       },
-      {
+      children: [],
+    },
+    {
+      race: {
         id: 'race-2',
         path: 'organizations/org-1/series/series-1/events/event-1/races/race-2',
         name: 'Test Race 2',
         category: 'Amateur',
         startDate: new Date().toISOString(),
+        eventBrief: {
+          id: 'event-1',
+          path: 'organizations/org-1/series/series-1/events/event-1',
+          name: 'Test Event',
+        },
       },
-    ],
-  },
+      children: [],
+    },
+  ],
 };
 
 describe('Event component', () => {
@@ -44,7 +61,9 @@ describe('Event component', () => {
     render(<Event {...mockData} />);
 
     // Check for event details
-    expect(screen.getByText('Test Event')).toBeInTheDocument();
+    expect(screen.getByRole('heading', { name: 'Test Event' })).toBeInTheDocument();
+    expect(screen.getByText('This is a test event.')).toBeInTheDocument();
+    expect(screen.getByText('Official Website')).toBeInTheDocument();
     expect(screen.getByText('Test Series')).toBeInTheDocument();
   });
 });
