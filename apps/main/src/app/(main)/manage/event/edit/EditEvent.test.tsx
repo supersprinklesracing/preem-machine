@@ -75,4 +75,14 @@ describe('EditEvent component', () => {
     // Wait for the error message to appear
     await screen.findByText('Failed to save');
   });
+
+  it('should open a modal to add a new race', async () => {
+    render(<EditEvent event={mockEvent} editEventAction={jest.fn()} />);
+
+    const addRaceButton = screen.getByText('Add Race');
+    fireEvent.click(addRaceButton);
+
+    const modalTitle = await screen.findByText('Add Race');
+    expect(modalTitle).toBeInTheDocument();
+  });
 });

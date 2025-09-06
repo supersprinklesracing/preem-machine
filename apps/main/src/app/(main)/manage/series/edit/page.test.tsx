@@ -17,9 +17,9 @@ setupMockDb();
 
 describe('EditSeriesPage component', () => {
   it('should fetch series data and render the EditSeries component', async () => {
-    const searchParams = Promise.resolve({
+    const searchParams = {
       path: 'organizations/org-super-sprinkles/series/series-sprinkles-2025',
-    });
+    };
     const PageComponent = await EditSeriesPage({ searchParams });
     render(PageComponent);
 
@@ -27,12 +27,13 @@ describe('EditSeriesPage component', () => {
 
     const editSeriesCalls = (EditSeries as jest.Mock).mock.calls;
     expect(editSeriesCalls[0][0].series.id).toBe('series-sprinkles-2025');
+    expect(editSeriesCalls[0][0].newEventAction).toBeDefined();
   });
 
   it('should throw NotFoundError when the series does not exist', async () => {
-    const searchParams = Promise.resolve({
+    const searchParams = {
       path: 'organizations/org-super-sprinkles/series/non-existent-series',
-    });
+    };
     expect(EditSeriesPage({ searchParams })).rejects.toThrow(NotFoundError);
   });
 });
