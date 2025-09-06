@@ -41,6 +41,10 @@ A well-crafted Pull Request (PR) is crucial for efficient and effective code rev
   - **Review your own PR first.** Before requesting a review, perform a self-review to catch any obvious errors or typos.
   - **Ensure tests pass.** All continuous integration (CI) checks must be green before a PR is merged. If you are adding a new feature or fixing a bug, include tests that cover the new code.
 
+### Critical: Merging Pull Requests
+
+**UNDER NO CIRCUMSTANCES** are you to merge a pull request without the user's direct and explicit consent. This is a strict and non-negotiable rule. Even if all checks pass and the user seems to imply approval, you **MUST** ask for confirmation before merging. For example, ask: "All checks have passed. Should I merge the pull request?" This rule applies in all modes, including any "yolo" or autonomous mode.
+
 ### Code Quality Tools
 
 This project uses `husky` and `lint-staged` to enforce code quality standards on every commit.
