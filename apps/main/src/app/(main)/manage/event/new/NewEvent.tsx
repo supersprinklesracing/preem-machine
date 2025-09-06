@@ -2,6 +2,7 @@
 
 import { toUrlPath } from '@/datastore/paths';
 import {
+  Alert,
   Button,
   Card,
   Container,
@@ -39,6 +40,9 @@ export function NewEvent({
   const router = useRouter();
   const [isLoading, setIsLoading] = useState(false);
   const [submissionError, setSubmissionError] = useState<string | null>(null);
+  const [submissionSuccess, setSubmissionSuccess] = useState<string | null>(
+    null,
+  );
 
   const form = useForm<FormValues>({
     initialValues: {
@@ -86,6 +90,31 @@ export function NewEvent({
     }
   };
 
+  const handleCreateAndAddAnother = async (values: FormValues) => {
+    setIsLoading(true);
+    setSubmissionError(null);
+    setSubmissionSuccess(null);
+
+    const submissionValues = {
+      ...values,
+      startDate: values.startDate ? new Date(values.startDate) : null,
+      endDate: values.endDate ? new Date(values.endDate) : null,
+    };
+
+    try {
+      await newEventAction(path, submissionValues);
+      setSubmissionSuccess('Event created successfully.');
+      form.reset();
+    } catch (error) {
+      console.error('Failed to create event:', error);
+      setSubmissionError(
+        error instanceof Error ? error.message : 'An unknown error occurred.',
+      );
+    } finally {
+      setIsLoading(false);
+    }
+  };
+
   const getDayProps =
     (prefix: string): DatePickerProps['getDayProps'] =>
     (date) => {
@@ -98,8 +127,28 @@ export function NewEvent({
     <Container size="xs">
       <Stack>
         <Title order={1}>Create Event</Title>
+        {submissionSuccess && (
+          <Alert
+            color="green"
+            title="Event Created"
+            onClose={() => setSubmissionSuccess(null)}
+            withCloseButton
+          >
+            {submissionSuccess}
+          </Alert>
+        )}
         <Card withBorder>
-          <form onSubmit={form.onSubmit(handleSubmit)}>
+          <form
+            onSubmit={form.onSubmit((values, event) => {
+              const submitter = (event?.nativeEvent as SubmitEvent)
+                .submitter as HTMLButtonElement;
+              if (submitter.dataset.testid === 'create-button') {
+                handleSubmit(values);
+              } else {
+                handleCreateAndAddAnother(values);
+              }
+            })}
+          >
             <Stack>
               <TextInput
                 label="Event Name"
@@ -125,9 +174,17 @@ export function NewEvent({
               />
               <Group justify="right">
                 <Button
+                  loading={isLoading}
+                  disabled={!form.isValid()}
+                  data-testid="create-and-add-another-button"
+                >
+                  Create and Add Another
+                </Button>
+                <Button
                   type="submit"
                   loading={isLoading}
                   disabled={!form.isValid()}
+                  data-testid="create-button"
                 >
                   Create Event
                 </Button>
