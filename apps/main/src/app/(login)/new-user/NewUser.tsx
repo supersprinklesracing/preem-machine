@@ -59,10 +59,14 @@ const NewUser: React.FC<Props> = ({ newUserAction }: Props) => {
 
   const [debouncedName] = useDebouncedValue(form.values.name, 500);
 
+
   useEffect(() => {
-    const result = form.validateField('name');
-    setDebouncedNameError(result.error);
-  }, [debouncedName, form]);
+    const error =
+      !debouncedName || debouncedName.trim().length < 2
+        ? 'Name must have at least 2 letters'
+        : null;
+    setDebouncedNameError(error);
+  }, [debouncedName]);
 
   const handleSubmit = async (values: FormValues) => {
     setIsLoading(true);

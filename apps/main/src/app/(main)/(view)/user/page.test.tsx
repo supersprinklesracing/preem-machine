@@ -23,7 +23,7 @@ setupMockDb();
 
 describe('UserPage component', () => {
   beforeEach(() => {
-    (redirect as any as jest.Mock).mockClear();
+    (redirect as jest.Mock<(url: string) => never>).mockClear();
   });
 
   it('should fetch user data and render the User component', async () => {
@@ -43,7 +43,7 @@ describe('UserPage component', () => {
   });
 
   it('should redirect to user page when no id is provided and user is logged in', async () => {
-    (auth.getAuthUserFromCookies as jest.Mock).mockResolvedValue({
+    (auth.getAuthUser as jest.Mock).mockResolvedValue({
       uid: 'test-uid',
     });
     const searchParams = { path: undefined };
@@ -53,7 +53,7 @@ describe('UserPage component', () => {
   });
 
   it('should redirect to login page when no id is provided and user is not logged in', async () => {
-    (auth.getAuthUserFromCookies as jest.Mock).mockResolvedValue(null);
+    (auth.getAuthUser as jest.Mock).mockResolvedValue(null);
     const searchParams = { path: undefined };
     await expect(UserPage({ searchParams })).rejects.toThrow(
       'mock redirect(/login?redirect=/user)',

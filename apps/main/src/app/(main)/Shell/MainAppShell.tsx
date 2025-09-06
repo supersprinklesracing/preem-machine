@@ -15,7 +15,9 @@ export default function MainAppShell({
 }: {
   children: React.ReactNode;
   avatarCluster?: React.ReactElement;
-  sidebar?: React.ReactElement<ComponentProps<typeof Sidebar>>;
+  sidebar?: (
+    onLinkClick: () => void,
+  ) => React.ReactElement<ComponentProps<typeof Sidebar>>;
 }) {
   const [opened, { toggle }] = useDisclosure();
   const isMobile = useMediaQuery('(max-width: 768px)');
@@ -26,9 +28,7 @@ export default function MainAppShell({
     }
   };
 
-  const sidebarWithClickHandler = sidebar
-    ? React.cloneElement(sidebar, { onLinkClick: handleLinkClick })
-    : null;
+  const sidebarWithClickHandler = sidebar ? sidebar(handleLinkClick) : null;
 
   return (
     <AppShell

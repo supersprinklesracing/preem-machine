@@ -1,5 +1,4 @@
 import { getFirestore } from '@/firebase-admin';
-import { Firestore } from 'firebase-admin/firestore';
 import { createMockDb } from './mock-db';
 
 // eslint-disable-next-line @typescript-eslint/no-explicit-any
@@ -42,7 +41,7 @@ async function seedCollection(
 /**
  * Seeds the entire Firestore database based on the MOCK_DB structure.
  */
-export async function seedFirestore(firestore: Firestore) {
+export async function seedFirestore() {
   try {
     const db = await getFirestore();
     console.log('Starting Firestore database seeding...');

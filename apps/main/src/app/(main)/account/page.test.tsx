@@ -26,6 +26,7 @@ describe('AccountPage component', () => {
             }),
         }),
       }),
+      // eslint-disable-next-line @typescript-eslint/no-explicit-any
     } as any);
 
     const PageComponent = await AccountPage();

@@ -12,7 +12,7 @@ const nextConfig = {
   experimental: {
     authInterrupts: true,
   },
-  webpack: (config, { isServer, webpack }) => {
+  webpack: (config) => {
     // This rule uses null-loader to fix the "require.extensions" error.
     config.module.rules.push({
       test: /handlebars\/lib\/index\.js$/,

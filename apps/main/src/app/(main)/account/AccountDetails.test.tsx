@@ -1,3 +1,5 @@
+import { AuthContextUser } from '@/auth/AuthContext';
+import { User } from '@/datastore/types';
 import '@/matchMedia.mock';
 import { act, fireEvent, render, screen } from '@/test-utils';
 import { CurrentUserProvider } from '../../../datastore/user/UserProvider';
@@ -5,6 +7,7 @@ import { AccountDetails } from './AccountDetails';
 
 // Mock next/navigation
 jest.mock('next/navigation', () => ({
+  // eslint-disable-next-line @eslint-react/hooks-extra/no-unnecessary-use-prefix
   useRouter: () => ({
     refresh: jest.fn(),
   }),
@@ -23,16 +26,18 @@ jest.mock('@/firebase-client', () => ({
   logout: jest.fn(),
 }));
 
-const mockAuthUser = {
+const mockAuthUser: AuthContextUser = {
+  id: 'test-uid',
   uid: 'test-uid',
   email: 'test@example.com',
   displayName: 'Test User',
   photoURL: 'https://example.com/avatar.png',
   customClaims: { admin: false },
   emailVerified: true,
+  idToken: 'test-token',
 };
 
-const mockCurrentUser = {
+const mockCurrentUser: User = {
   id: 'test-uid',
   path: 'users/test-uid',
   name: 'Test User',
@@ -45,10 +50,10 @@ describe('AccountDetails component', () => {
   it('should render without crashing', () => {
     const editUserAction = jest.fn();
     render(
-      <CurrentUserProvider currentUser={mockCurrentUser as any}>
+      <CurrentUserProvider currentUser={mockCurrentUser}>
         <AccountDetails editUserAction={editUserAction} />
       </CurrentUserProvider>,
-      { authUser: mockAuthUser as any },
+      { authUser: mockAuthUser },
     );
 
     expect(
@@ -60,10 +65,10 @@ describe('AccountDetails component', () => {
     const editUserAction = jest.fn(() => Promise.resolve({ ok: true }));
 
     render(
-      <CurrentUserProvider currentUser={mockCurrentUser as any}>
+      <CurrentUserProvider currentUser={mockCurrentUser}>
         <AccountDetails editUserAction={editUserAction} />
       </CurrentUserProvider>,
-      { authUser: mockAuthUser as any },
+      { authUser: mockAuthUser },
     );
 
     // Change the name in the form

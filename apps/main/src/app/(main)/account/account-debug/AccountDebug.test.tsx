@@ -1,9 +1,11 @@
+import { AuthContextUser } from '@/auth/AuthContext';
 import '@/matchMedia.mock';
 import { act, fireEvent, render, screen } from '@/test-utils';
 import { AccountDebug } from './AccountDebug';
 
 // Mock dependencies
 jest.mock('next/navigation', () => ({
+  // eslint-disable-next-line @eslint-react/hooks-extra/no-unnecessary-use-prefix
   useRouter: () => ({
     refresh: jest.fn(),
   }),
@@ -22,7 +24,7 @@ global.fetch = jest.fn(() =>
   }),
 ) as jest.Mock;
 
-const mockAuthUser = {
+const mockAuthUser: Partial<AuthContextUser> = {
   uid: 'test-uid',
   customClaims: { admin: true },
   customToken: 'test-token',
@@ -36,7 +38,7 @@ describe('AccountDebug component', () => {
   it('should call the incrementCounter action when the button is clicked', () => {
     const incrementCounter = jest.fn();
     render(<AccountDebug count={0} incrementCounter={incrementCounter} />, {
-      authUser: mockAuthUser as any,
+      authUser: mockAuthUser,
     });
 
     fireEvent.click(screen.getByText('Update counter w/ server action'));
@@ -47,7 +49,7 @@ describe('AccountDebug component', () => {
   it('should call incrementCounterUsingClientFirestore when the button is clicked', async () => {
     const { incrementCounterUsingClientFirestore } = require('./user-counters');
     render(<AccountDebug count={0} incrementCounter={jest.fn()} />, {
-      authUser: mockAuthUser as any,
+      authUser: mockAuthUser,
     });
     await act(async () => {
       fireEvent.click(
@@ -62,7 +64,7 @@ describe('AccountDebug component', () => {
   it('should call the fetch API when the refresh claims button is clicked', async () => {
     const incrementCounter = jest.fn();
     render(<AccountDebug count={0} incrementCounter={incrementCounter} />, {
-      authUser: mockAuthUser as any,
+      authUser: mockAuthUser,
     });
 
     await act(async () => {
