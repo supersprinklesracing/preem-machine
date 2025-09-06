@@ -1,5 +1,5 @@
 import '@/matchMedia.mock';
-import { act, fireEvent, render, screen } from '@/test-utils';
+import { act, fireEvent, render, screen, waitFor } from '@/test-utils';
 import { AccountDebug } from './AccountDebug';
 
 // Mock dependencies
@@ -49,9 +49,12 @@ describe('AccountDebug component', () => {
     render(<AccountDebug count={0} incrementCounter={jest.fn()} />, {
       authUser: mockAuthUser as any,
     });
-    await act(async () => {
-      fireEvent.click(
-        screen.getByText('Update counter w/ client firestore sdk'),
+    fireEvent.click(
+      screen.getByText('Update counter w/ client firestore sdk'),
+    );
+    await waitFor(() => {
+      expect(incrementCounterUsingClientFirestore).toHaveBeenCalledWith(
+        'test-token',
       );
     });
     expect(incrementCounterUsingClientFirestore).toHaveBeenCalledWith(
@@ -65,8 +68,13 @@ describe('AccountDebug component', () => {
       authUser: mockAuthUser as any,
     });
 
-    await act(async () => {
-      fireEvent.click(screen.getByText('Refresh custom user claims'));
+    fireEvent.click(screen.getByText('Refresh custom user claims'));
+
+    await waitFor(() => {
+      expect(fetch).toHaveBeenCalledWith(
+        '/api/custom-claims',
+        expect.any(Object),
+      );
     });
 
     expect(fetch).toHaveBeenCalledWith(

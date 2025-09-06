@@ -72,22 +72,21 @@ describe('NewSeries component', () => {
     await waitFor(() => expect(createButton).not.toBeDisabled());
 
     // Click the create button
-    await act(async () => {
-      fireEvent.click(createButton);
-      await jest.runAllTimers();
-    });
+    fireEvent.click(createButton);
 
-    expect(newSeriesAction).toHaveBeenCalledWith(
-      'organizations/org-1',
-      expect.objectContaining({
-        name: 'New Test Series',
-        location: 'Test Location',
-        website: 'https://example.com',
-        description: 'This is a test series description.',
-        startDate: new Date('2025-08-01T00:00:00.000Z'),
-        endDate: new Date('2025-08-15T00:00:00.000Z'),
-      }),
-    );
+    await waitFor(() => {
+      expect(newSeriesAction).toHaveBeenCalledWith(
+        'organizations/org-1',
+        expect.objectContaining({
+          name: 'New Test Series',
+          location: 'Test Location',
+          website: 'https://example.com',
+          description: 'This is a test series description.',
+          startDate: new Date('2025-08-01T00:00:00.000Z'),
+          endDate: new Date('2025-08-15T00:00:00.000Z'),
+        }),
+      );
+    });
   });
 
   it('should display an error message if the action fails', async () => {
