@@ -35,10 +35,13 @@ export default defineConfig({
       use: { ...devices['Desktop Chrome'] },
     },
 
+    // Disable firefox just to speed things up for now.
+    /*
     {
       name: 'firefox',
       use: { ...devices['Desktop Firefox'] },
     },
+    */
 
     // Disable webkit while it is not possible to run on a local machine.
     /*
