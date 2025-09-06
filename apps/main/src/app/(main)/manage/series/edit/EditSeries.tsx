@@ -8,6 +8,7 @@ import {
   Container,
   Grid,
   Group,
+  Modal,
   Stack,
   Text,
   Textarea,
@@ -16,8 +17,11 @@ import {
 } from '@mantine/core';
 import { DatePicker } from '@mantine/dates';
 import { useForm } from '@mantine/form';
+import { useDisclosure } from '@mantine/hooks';
 import { useRouter } from 'next/navigation';
 import { useState } from 'react';
+import { NewEvent } from '../../event/new/NewEvent';
+import { newEventAction } from '../../event/new/new-event-action';
 import { EditSeriesOptions } from './edit-series-action';
 
 type FormValues = Partial<Omit<Series, 'startDate' | 'endDate'>> & {
@@ -36,6 +40,7 @@ export function EditSeries({
   const router = useRouter();
   const [isLoading, setIsLoading] = useState(false);
   const [submissionError, setSubmissionError] = useState<string | null>(null);
+  const [opened, { open, close }] = useDisclosure(false);
 
   const form = useForm<FormValues>({
     initialValues: {
@@ -96,7 +101,10 @@ export function EditSeries({
   return (
     <Container size="sm">
       <Stack>
-        <Title order={1}>Edit Series</Title>
+        <Group justify="space-between">
+          <Title order={1}>Edit Series</Title>
+          <Button onClick={open}>Add Event</Button>
+        </Group>
         <Card withBorder>
           <Stack>
             <Grid>
@@ -153,6 +161,16 @@ export function EditSeries({
           </Stack>
         </Card>
       </Stack>
+      <Modal opened={opened} onClose={close} title="Add New Event" size="lg">
+        <NewEvent
+          newEventAction={newEventAction}
+          path={series.path}
+          onSuccess={() => {
+            close();
+            router.refresh();
+          }}
+        />
+      </Modal>
     </Container>
   );
 }
