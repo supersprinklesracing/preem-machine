@@ -42,6 +42,11 @@ export function EditSeries({
   const [submissionError, setSubmissionError] = useState<string | null>(null);
   const [opened, { open, close }] = useDisclosure(false);
 
+  const handleNewEventSuccess = () => {
+    close();
+    router.refresh();
+  };
+
   const form = useForm<FormValues>({
     initialValues: {
       name: series.name,
@@ -165,10 +170,7 @@ export function EditSeries({
         <NewEvent
           newEventAction={newEventAction}
           path={series.path}
-          onSuccess={() => {
-            close();
-            router.refresh();
-          }}
+          onSuccess={handleNewEventSuccess}
         />
       </Modal>
     </Container>
