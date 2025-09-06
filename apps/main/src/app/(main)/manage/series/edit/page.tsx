@@ -1,16 +1,23 @@
 'use server';
 
 import { getDoc } from '@/datastore/firestore';
+import { Series } from '@/datastore/types';
+import { newEventAction } from '../../event/new/new-event-action';
 import { EditSeries } from './EditSeries';
 import { editSeriesAction } from './edit-series-action';
-import { Series } from '@/datastore/types';
 
 export default async function EditSeriesPage({
   searchParams,
 }: {
-  searchParams: Promise<{ path: string }>;
+  searchParams: { path: string };
 }) {
-  const { path } = await searchParams;
+  const { path } = searchParams;
   const doc = await getDoc<Series>(path);
-  return <EditSeries series={doc} editSeriesAction={editSeriesAction} />;
+  return (
+    <EditSeries
+      series={doc}
+      editSeriesAction={editSeriesAction}
+      newEventAction={newEventAction}
+    />
+  );
 }

@@ -1,5 +1,9 @@
 'use client';
 
+import {
+  getSubCollectionPath,
+  seriesPath,
+} from '@/datastore/paths';
 import type { ClientCompat, Event } from '@/datastore/types';
 import { getISODateFromDate } from '@/firebase-client/dates';
 import {
@@ -8,6 +12,7 @@ import {
   Container,
   Grid,
   Group,
+  Modal,
   Stack,
   Text,
   Textarea,
@@ -18,7 +23,10 @@ import { DatePicker } from '@mantine/dates';
 import { useForm } from '@mantine/form';
 import { useRouter } from 'next/navigation';
 import { useState } from 'react';
+import { NewRace } from '../../race/new/NewRace';
+import { newRaceAction } from '../../race/new/new-race-action';
 import { EditEventOptions } from './edit-event-action';
+import { FormActionResult } from '@/components/forms/forms';
 
 interface FormValues {
   name?: string;
@@ -28,7 +36,8 @@ interface FormValues {
   date?: Date | null;
 }
 
-import { FormActionResult } from '@/components/forms/forms';
+const ADD_RACE_BUTTON_TEXT = 'Add Race';
+const ADD_RACE_MODAL_TITLE = 'Add Race';
 
 export function EditEvent({
   editEventAction,
@@ -40,6 +49,7 @@ export function EditEvent({
   const router = useRouter();
   const [isLoading, setIsLoading] = useState(false);
   const [submissionError, setSubmissionError] = useState<string | null>(null);
+  const [isAddRaceModalOpen, setIsAddRaceModalOpen] = useState(false);
 
   const form = useForm<FormValues>({
     initialValues: {
@@ -85,6 +95,8 @@ export function EditEvent({
       setIsLoading(false);
     }
   };
+
+  const racesPath = getSubCollectionPath(seriesPath(event.path), 'races');
 
   return (
     <Container size="sm">
@@ -132,6 +144,12 @@ export function EditEvent({
             </Grid>
             <Group justify="right">
               <Button
+                onClick={() => setIsAddRaceModalOpen(true)}
+                variant="outline"
+              >
+                {ADD_RACE_BUTTON_TEXT}
+              </Button>
+              <Button
                 onClick={() => handleSubmit(form.values)}
                 loading={isLoading}
                 disabled={!form.isValid()}
@@ -143,6 +161,13 @@ export function EditEvent({
           </Stack>
         </Card>
       </Stack>
+      <Modal
+        opened={isAddRaceModalOpen}
+        onClose={() => setIsAddRaceModalOpen(false)}
+        title={ADD_RACE_MODAL_TITLE}
+      >
+        <NewRace newRaceAction={newRaceAction} path={racesPath} />
+      </Modal>
     </Container>
   );
 }
