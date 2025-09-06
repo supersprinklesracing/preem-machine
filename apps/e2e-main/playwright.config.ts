@@ -26,15 +26,25 @@ export default defineConfig({
   webServer: {
     command: 'npx nx run @preem-machine/main:start',
     url: 'http://localhost:3000',
-    reuseExistingServer: true,
+    reuseExistingServer: !process.env.CI,
+    timeout: 300000,
     cwd: workspaceRoot,
+    env: {
+      E2E_TESTING: 'true',
+    },
   },
   projects: [
     {
       name: 'chromium',
       use: { ...devices['Desktop Chrome'] },
     },
-
+    {
+      name: 'chromium-authed',
+      use: {
+        ...devices['Desktop Chrome'],
+      },
+      testMatch: /.*\.authed\.spec\.ts/,
+    },
     {
       name: 'firefox',
       use: { ...devices['Desktop Firefox'] },

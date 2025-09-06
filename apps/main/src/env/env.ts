@@ -19,6 +19,7 @@ export const ENV_URL_PREFIX = ENV_USE_HTTPS
   : `http://localhost:${process.env.NEXT_PUBLIC_PORT ?? process.env.PORT ?? 3000}`;
 
 export const ENV_DEBUG_AUTH = isTrue(process.env.NEXT_PUBLIC_DEBUG_AUTH);
+export const ENV_E2E_TESTING = isTrue(process.env.E2E_TESTING);
 export const ENV_DEBUG_CREDENTIALS_DANGER =
   isTrue(process.env.DEBUG_CREDENTIALS_DANGER) ||
   isTrue(process.env.NEXT_PUBLIC_DEBUG_CREDENTIALS_DANGER);
