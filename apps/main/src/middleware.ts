@@ -1,3 +1,4 @@
+import { ENV_E2E_TESTING } from '@/env/env';
 import { serverConfigFn } from '@/firebase-admin/config';
 import {
   authMiddleware,
@@ -10,15 +11,17 @@ import { NextResponse } from 'next/server';
 const LOGGED_OUT_ONLY = ['/register', '/login', '/reset-password'];
 
 export async function middleware(request: NextRequest) {
-  const e2eAuthUser = request.headers.get('x-e2e-auth-user');
-  if (e2eAuthUser) {
-    const requestHeaders = new Headers(request.headers);
-    requestHeaders.set('x-e2e-auth-user', e2eAuthUser);
-    return NextResponse.next({
-      request: {
-        headers: requestHeaders,
-      },
-    });
+  if (ENV_E2E_TESTING) {
+    const e2eAuthUser = request.headers.get('x-e2e-auth-user');
+    if (e2eAuthUser) {
+      const requestHeaders = new Headers(request.headers);
+      requestHeaders.set('x-e2e-auth-user', e2eAuthUser);
+      return NextResponse.next({
+        request: {
+          headers: requestHeaders,
+        },
+      });
+    }
   }
 
   const serverConfig = await serverConfigFn();

@@ -45,7 +45,8 @@ export const toAuthContextUser = ({
 
 export const getAuthUserFromCookies = async () => {
   if (ENV_E2E_TESTING) {
-    const e2eAuthUser = headers().get('x-e2e-auth-user');
+    const headersList = await headers();
+    const e2eAuthUser = headersList.get('x-e2e-auth-user');
     if (e2eAuthUser) {
       return JSON.parse(e2eAuthUser) as AuthContextUser;
     }

@@ -26,7 +26,8 @@ export default defineConfig({
   webServer: {
     command: 'npx nx run @preem-machine/main:start',
     url: 'http://localhost:3000',
-    reuseExistingServer: true,
+    reuseExistingServer: !process.env.CI,
+    timeout: 300000,
     cwd: workspaceRoot,
     env: {
       E2E_TESTING: 'true',
@@ -41,16 +42,6 @@ export default defineConfig({
       name: 'chromium-authed',
       use: {
         ...devices['Desktop Chrome'],
-        extraHTTPHeaders: {
-          'x-e2e-auth-user': JSON.stringify({
-            uid: 'test-user-id',
-            email: 'test-user@example.com',
-            displayName: 'Test User',
-            customClaims: {
-              admin: true,
-            },
-          }),
-        },
       },
       testMatch: /.*\.authed\.spec\.ts/,
     },
