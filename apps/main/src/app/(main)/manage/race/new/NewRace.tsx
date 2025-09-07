@@ -119,7 +119,11 @@ export function NewRace({
                   {...form.getInputProps('location')}
                   data-testid="location-input"
                 />
-                <TextInput label="Website" {...form.getInputProps('website')} />
+                <TextInput
+                  label="Website"
+                  {...form.getInputProps('website')}
+                  data-testid="website-input"
+                />
                 <Textarea
                   label="Description"
                   {...form.getInputProps('description')}
@@ -155,28 +159,32 @@ export function NewRace({
                   label="Sponsors"
                   {...form.getInputProps('sponsors')}
                 />
-                <DateTimePicker
-                  label="Start Date"
-                  value={form.values.startDate}
-                  onChange={(value) =>
-                    form.setFieldValue(
-                      'startDate',
-                      value ? new Date(value) : null,
-                    )
-                  }
-                  data-testid="start-date-picker"
-                />
-                <DateTimePicker
-                  label="End Date"
-                  value={form.values.endDate}
-                  onChange={(value) =>
-                    form.setFieldValue(
-                      'endDate',
-                      value ? new Date(value) : null,
-                    )
-                  }
-                  data-testid="end-date-picker"
-                />
+                <div data-testid="start-date-wrapper">
+                  <DateTimePicker
+                    label="Start Date"
+                    value={form.values.startDate}
+                    onChange={(value) =>
+                      form.setFieldValue(
+                        'startDate',
+                        value ? new Date(value) : null,
+                      )
+                    }
+                    data-testid="start-date-picker"
+                  />
+                </div>
+                <div data-testid="end-date-wrapper">
+                  <DateTimePicker
+                    label="End Date"
+                    value={form.values.endDate}
+                    onChange={(value) =>
+                      form.setFieldValue(
+                        'endDate',
+                        value ? new Date(value) : null,
+                      )
+                    }
+                    data-testid="end-date-picker"
+                  />
+                </div>
                 <Group justify="right">
                   <Button
                     type="submit"
