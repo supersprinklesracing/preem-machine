@@ -1,11 +1,20 @@
 import { getRenderableEventDataForPage } from '@/datastore/firestore';
 import LiveEvent from './LiveEvent';
+import { Breadcrumbs } from '@/components/Breadcrumbs';
+import { Stack } from '@mantine/core';
+import { getDocPathFromSearchParams } from '@/datastore/paths';
 
 export default async function LiveEventPage({
   searchParams,
 }: {
   searchParams: Promise<{ path: string }>;
 }) {
-  const data = await getRenderableEventDataForPage((await searchParams).path);
-  return <LiveEvent {...data} />;
+  const path = getDocPathFromSearchParams(await searchParams);
+  const data = await getRenderableEventDataForPage(path);
+  return (
+    <Stack>
+      <Breadcrumbs brief={data.event} />
+      <LiveEvent {...data} />
+    </Stack>
+  );
 }

@@ -17,8 +17,7 @@ describe('EventPage component', () => {
     const searchParams = {
       path: 'organizations/org-super-sprinkles/series/series-sprinkles-2025/events/event-giro-sf-2025',
     };
-    const PageComponent = await EventPage({ searchParams });
-    render(PageComponent);
+    render(await EventPage({ searchParams }));
 
     expect(screen.getByText('Mock Event')).toBeInTheDocument();
 

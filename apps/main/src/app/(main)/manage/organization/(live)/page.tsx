@@ -1,13 +1,20 @@
 import { getRenderableOrganizationDataForPage } from '@/datastore/firestore';
 import LiveOrganization from './LiveOrganization';
+import { Breadcrumbs } from '@/components/Breadcrumbs';
+import { Stack } from '@mantine/core';
+import { getDocPathFromSearchParams } from '@/datastore/paths';
 
 export default async function LiveOrganizationPage({
   searchParams,
 }: {
   searchParams: Promise<{ path: string }>;
 }) {
-  const data = await getRenderableOrganizationDataForPage(
-    (await searchParams).path,
+  const path = getDocPathFromSearchParams(await searchParams);
+  const data = await getRenderableOrganizationDataForPage(path);
+  return (
+    <Stack>
+      <Breadcrumbs brief={data.organization} />
+      <LiveOrganization {...data} />
+    </Stack>
   );
-  return <LiveOrganization {...data} />;
 }

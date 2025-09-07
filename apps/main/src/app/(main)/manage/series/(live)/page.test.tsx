@@ -27,7 +27,9 @@ describe('LiveSeriesPage component', () => {
   });
 
   it('should throw NotFoundError when the series does not exist', async () => {
-    const searchParams = { path: 'series/non-existent-series' };
+    const searchParams = {
+      path: 'organizations/org-1/series/non-existent-series',
+    };
     expect(LiveSeriesPage({ searchParams })).rejects.toThrow(NotFoundError);
   });
 });

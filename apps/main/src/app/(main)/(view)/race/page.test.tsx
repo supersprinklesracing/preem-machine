@@ -18,8 +18,7 @@ describe('RacePage component', () => {
     const searchParams = {
       path: 'organizations/org-super-sprinkles/series/series-sprinkles-2025/events/event-giro-sf-2025/races/race-giro-sf-2025-masters-women',
     };
-    const PageComponent = await RacePage({ searchParams });
-    render(PageComponent);
+    render(await RacePage({ searchParams }));
 
     expect(screen.getByText('Mock Race')).toBeInTheDocument();
 

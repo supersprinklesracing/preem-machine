@@ -1,11 +1,20 @@
 import { getRenderableSeriesDataForPage } from '@/datastore/firestore';
 import LiveSeries from './LiveSeries';
+import { Breadcrumbs } from '@/components/Breadcrumbs';
+import { Stack } from '@mantine/core';
+import { getDocPathFromSearchParams } from '@/datastore/paths';
 
 export default async function LiveSeriesPage({
   searchParams,
 }: {
   searchParams: Promise<{ path: string }>;
 }) {
-  const data = await getRenderableSeriesDataForPage((await searchParams).path);
-  return <LiveSeries {...data} />;
+  const path = getDocPathFromSearchParams(await searchParams);
+  const data = await getRenderableSeriesDataForPage(path);
+  return (
+    <Stack>
+      <Breadcrumbs brief={data.series} />
+      <LiveSeries {...data} />
+    </Stack>
+  );
 }

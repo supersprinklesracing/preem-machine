@@ -30,7 +30,9 @@ describe('PreemPage component', () => {
     render(PageComponent);
 
     expect(screen.getByTestId('mock-preem')).toBeInTheDocument();
-    expect(screen.getByText('First Lap Leader')).toBeInTheDocument();
+    expect(
+      screen.getByRole('heading', { name: 'First Lap Leader' }),
+    ).toBeInTheDocument();
     expect(screen.getByTestId('preem-id')).toHaveTextContent(
       'preem-giro-sf-2025-masters-women-first-lap',
     );
