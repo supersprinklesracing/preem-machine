@@ -18,8 +18,7 @@ describe('SeriesPage component', () => {
     const searchParams = {
       path: 'organizations/org-super-sprinkles/series/series-sprinkles-2025',
     };
-    const PageComponent = await SeriesPage({ searchParams });
-    render(PageComponent);
+    render(await SeriesPage({ searchParams }));
 
     expect(screen.getByText('Mock Series')).toBeInTheDocument();
 

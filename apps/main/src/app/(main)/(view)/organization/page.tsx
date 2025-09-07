@@ -1,6 +1,8 @@
 import { getRenderableOrganizationDataForPage } from '@/datastore/firestore';
 import { getDocPathFromSearchParams } from '@/datastore/paths';
 import Organization from './Organization';
+import { Breadcrumbs } from '@/components/Breadcrumbs';
+import { Stack } from '@mantine/core';
 
 export default async function OrganizationPage({
   searchParams,
@@ -9,5 +11,10 @@ export default async function OrganizationPage({
 }) {
   const path = getDocPathFromSearchParams(await searchParams);
   const data = await getRenderableOrganizationDataForPage(path);
-  return <Organization {...data} />;
+  return (
+    <Stack>
+      <Breadcrumbs brief={data.organization} />
+      <Organization {...data} />
+    </Stack>
+  );
 }
