@@ -1,5 +1,3 @@
-// Getting a github token: GITHUB_TOKEN=$(gh auth token)
-
 import { Octokit } from '@octokit/rest';
 import { SecretManagerServiceClient } from '@google-cloud/secret-manager';
 import * as dotenv from 'dotenv';
@@ -9,15 +7,17 @@ import {
   from_base64,
   to_base64,
   crypto_box_seal,
+  base64_variants,
 } from 'libsodium-wrappers';
 import yargs from 'yargs';
 
 // --- Type Definition for Sync Options ---
-interface SyncOptions {
+export interface SyncOptions {
   githubToken: string;
   githubRepo: string; // Format: "owner/repo"
-  projectId: string;
-  envFilePath?: string;
+  project: string;
+  envFile?: string;
+  dryRun?: boolean;
 }
 
 /**
@@ -28,14 +28,20 @@ async function encryptSecret(
   secretValue: string,
 ): Promise<string> {
   await ready;
-  const binkey = from_base64(publicKey.key);
+  const binkey = from_base64(publicKey.key, base64_variants.ORIGINAL);
   const binsec = Buffer.from(secretValue);
   const encBytes = crypto_box_seal(binsec, binkey);
-  return to_base64(encBytes);
+  return to_base64(encBytes, base64_variants.ORIGINAL);
 }
 
 export async function syncSecrets(options: SyncOptions) {
-  const { githubToken, githubRepo, projectId, envFilePath = '.env' } = options;
+  const {
+    githubToken,
+    githubRepo,
+    project,
+    envFile = '.env',
+    dryRun = false,
+  } = options;
   const [owner, repo] = githubRepo.split('/');
 
   // --- API Clients ---
@@ -43,24 +49,76 @@ export async function syncSecrets(options: SyncOptions) {
   const gcpSecretClient = new SecretManagerServiceClient();
 
   console.log(
-    `Starting secret sync for repo: ${owner}/${repo} and GCP project: ${projectId}`,
+    `Starting secret sync for repo: ${owner}/${repo} and GCP project: ${project}`,
   );
+
+  if (dryRun) {
+    console.log('DRY RUN: The following actions would be taken:');
+    if (!fs.existsSync(envFile)) {
+      throw new Error(`Environment file not found at '${envFile}'`);
+    }
+    const envConfig = dotenv.parse(fs.readFileSync(envFile));
+    const localSecretKeys = Object.keys(envConfig);
+    console.log(`Found ${localSecretKeys.length} secrets in ${envFile}`);
+    console.log('\n--- Syncing GitHub Secrets ---');
+    console.log(
+      `[GitHub] Would check for stale secrets in repo ${githubRepo} and delete them.`,
+    );
+    console.log(
+      `[GitHub] Would create/update ${localSecretKeys.length} secrets in repo ${githubRepo}.`,
+    );
+
+    console.log('\n--- Syncing GCP Secrets ---');
+    console.log(
+      `[GCP] Would check for stale secrets in project ${project} and delete them.`,
+    );
+    console.log(
+      `[GCP] Would create/update ${localSecretKeys.length} secrets in project ${project}.`,
+    );
+
+    console.log('\n--- YAML Configuration Snippets ---');
+    console.log(
+      '------------------------------------------------------------------',
+    );
+    console.log('    env:');
+    for (const key of localSecretKeys) {
+      console.log(`      ${key}: \${{ secrets.${key} }}`);
+    }
+    console.log(
+      '------------------------------------------------------------------',
+    );
+
+    console.log('\n--- Google App Hosting YAML (apphosting.yaml) ---');
+    console.log(
+      '------------------------------------------------------------------',
+    );
+    console.log('secrets:');
+    for (const key of localSecretKeys) {
+      console.log(`  - variable: ${key}`);
+      console.log(`    secret: ${key}`);
+    }
+    console.log(
+      '------------------------------------------------------------------',
+    );
+    return;
+  }
 
   try {
     // 1. Read and parse the local .env file to get the desired state
-    if (!fs.existsSync(envFilePath)) {
-      throw new Error(`Environment file not found at '${envFilePath}'`);
+    if (!fs.existsSync(envFile)) {
+      throw new Error(`Environment file not found at '${envFile}'`);
     }
-    const envConfig = dotenv.parse(fs.readFileSync(envFilePath));
+    const envConfig = dotenv.parse(fs.readFileSync(envFile));
     const localSecretKeys = Object.keys(envConfig);
-    console.log(`Found ${localSecretKeys.length} secrets in ${envFilePath}`);
+    console.log(`Found ${localSecretKeys.length} secrets in ${envFile}`);
 
-    // --- GitHub Sync ---
-    console.log('\n--- Syncing GitHub Secrets ---');
     const { data: publicKey } = await octokit.actions.getRepoPublicKey({
       owner,
       repo,
     });
+
+    // --- GitHub Sync ---
+    console.log('\n--- Syncing GitHub Secrets ---');
     const { data: remoteSecrets } = await octokit.actions.listRepoSecrets({
       owner,
       repo,
@@ -70,7 +128,7 @@ export async function syncSecrets(options: SyncOptions) {
     const remoteSecretNames = remoteSecrets.secrets.map((s) => s.name);
     for (const remoteKey of remoteSecretNames) {
       if (!localSecretKeys.includes(remoteKey)) {
-        console.log(`Deleting stale GitHub secret: ${remoteKey}...`);
+        console.log(`[GitHub] Deleting stale secret: ${remoteKey}`);
         await octokit.actions.deleteRepoSecret({
           owner,
           repo,
@@ -82,7 +140,7 @@ export async function syncSecrets(options: SyncOptions) {
     // --- GCP Sync ---
     console.log('\n--- Syncing GCP Secrets ---');
     const [remoteGcpSecrets] = await gcpSecretClient.listSecrets({
-      parent: `projects/${projectId}`,
+      parent: `projects/${project}`,
       filter: 'labels.dotenv=managed',
     });
 
@@ -90,7 +148,7 @@ export async function syncSecrets(options: SyncOptions) {
     for (const secret of remoteGcpSecrets) {
       const secretName = secret.name?.split('/').pop();
       if (secretName && !localSecretKeys.includes(secretName)) {
-        console.log(`Deleting stale GCP secret: ${secretName}...`);
+        console.log(`[GCP] Deleting stale secret: ${secretName}`);
         await gcpSecretClient.deleteSecret({ name: secret.name });
       }
     }
@@ -104,6 +162,7 @@ export async function syncSecrets(options: SyncOptions) {
       console.log(`Processing secret: ${key}...`);
 
       // GitHub: Encrypt and upload
+      console.log(`[GitHub] Creating/updating secret: ${key}`);
       const encryptedValue = await encryptSecret(publicKey, value);
       await octokit.actions.createOrUpdateRepoSecret({
         owner,
@@ -112,10 +171,9 @@ export async function syncSecrets(options: SyncOptions) {
         encrypted_value: encryptedValue,
         key_id: publicKey.key_id,
       });
-      console.log(`  -> GitHub secret set.`);
 
       // GCP: Create or update
-      const secretPath = `projects/${projectId}/secrets/${key}`;
+      const secretPath = `projects/${project}/secrets/${key}`;
       try {
         await gcpSecretClient.getSecret({ name: secretPath });
         // Secret exists, add a new version
@@ -124,18 +182,19 @@ export async function syncSecrets(options: SyncOptions) {
         });
         const latestValue = latestVersion.payload?.data?.toString();
         if (latestValue !== value) {
+          console.log(`[GCP] Updating secret with a new version: ${key}`);
           await gcpSecretClient.addSecretVersion({
             parent: secretPath,
             payload: { data: Buffer.from(value, 'utf8') },
           });
-          console.log(`  -> GCP secret updated with a new version.`);
         } else {
-          console.log(`  -> GCP secret is already up-to-date.`);
+          console.log(`[GCP] Secret is already up-to-date: ${key}`);
         }
       } catch (error) {
+        console.log(`[GCP] Creating secret: ${key}`);
         // Secret does not exist, create it
         await gcpSecretClient.createSecret({
-          parent: `projects/${projectId}`,
+          parent: `projects/${project}`,
           secretId: key,
           secret: { labels: { dotenv: 'managed' } },
         });
@@ -143,7 +202,6 @@ export async function syncSecrets(options: SyncOptions) {
           parent: secretPath,
           payload: { data: Buffer.from(value, 'utf8') },
         });
-        console.log(`  -> GCP secret created.`);
       }
     }
 
@@ -190,35 +248,95 @@ export async function syncSecrets(options: SyncOptions) {
   }
 }
 
+export async function pullFromGcp(project: string, dryRun: boolean) {
+  const gcpSecretClient = new SecretManagerServiceClient();
+
+  if (dryRun) {
+    console.log(
+      `DRY RUN: Would pull secrets from GCP project ${project} with label 'dotenv=managed'.`,
+    );
+    return;
+  }
+
+  const [secrets] = await gcpSecretClient.listSecrets({
+    parent: `projects/${project}`,
+    filter: 'labels.dotenv=managed',
+  });
+
+  for (const secret of secrets) {
+    const secretName = secret.name?.split('/').pop();
+    if (secretName) {
+      const [version] = await gcpSecretClient.accessSecretVersion({
+        name: `${secret.name}/versions/latest`,
+      });
+      const value = version.payload?.data?.toString();
+      console.log(`${secretName}=${value}`);
+    }
+  }
+}
+
 export const secretsCommand = {
-  command: 'sync-secrets',
-  describe: 'Sync secrets from .env to GCP and Github',
+  command: 'secrets',
+  describe: 'Manage secrets',
   builder: (yargs: yargs.Argv) => {
     return yargs
-      .option('github-token', {
-        type: 'string',
-        description: 'GitHub token',
-        demandOption: true,
-      })
-      .option('github-repo', {
-        type: 'string',
-        description: 'GitHub repo in owner/repo format',
-        demandOption: true,
-      })
-      .option('env-file-path', {
-        type: 'string',
-        description: 'Path to .env file',
-        default: '.env',
-      })
-      .demandOption('project');
+      .command(
+        'sync',
+        'Sync secrets from .env to GCP and Github',
+        (yargs) => {
+          return yargs
+            .option('github-token', {
+              type: 'string',
+              description: 'GitHub token',
+              demandOption: true,
+            })
+            .option('github-repo', {
+              type: 'string',
+              description: 'GitHub repo in owner/repo format',
+              demandOption: true,
+            })
+            .option('env-file', {
+              type: 'string',
+              description: 'Path to .env file',
+              default: '.env',
+            })
+            .option('dry-run', {
+              type: 'boolean',
+              description: 'Do not apply any changes',
+              default: false,
+            })
+            .demandOption('project');
+        },
+        async (argv: any) => {
+          await syncSecrets({
+            githubToken: argv.githubToken,
+            githubRepo: argv.githubRepo,
+            project: argv.project,
+            envFile: argv.envFile,
+            dryRun: argv.dryRun,
+          });
+        },
+      )
+      .command(
+        'pull-from-gcp',
+        'Pull secrets from GCP and output to stdout',
+        (yargs) => {
+          return yargs
+            .option('dry-run', {
+              type: 'boolean',
+              description: 'Do not apply any changes',
+              default: false,
+            })
+            .demandOption('project');
+        },
+        async (argv: any) => {
+          await pullFromGcp(argv.project, argv.dryRun);
+        },
+      )
+      .demandCommand(1, 'You must specify a subcommand: sync or pull-from-gcp');
   },
-  // eslint-disable-next-line @typescript-eslint/no-explicit-any
-  handler: async (argv: any) => {
-    await syncSecrets({
-      githubToken: argv.githubToken,
-      githubRepo: argv.githubRepo,
-      projectId: argv.project,
-      envFilePath: argv.envFilePath,
-    });
+  handler: () => {
+    // This handler is intentionally empty because the subcommands will be used instead.
+    // yargs requires a handler to be present for the command to be valid.
   },
 };
