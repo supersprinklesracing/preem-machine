@@ -54,14 +54,11 @@ export async function isUserAuthorized(
 
   if (rootRef.path.startsWith('organizations')) {
     const orgData = rootDoc.data() as Organization;
-    console.log(orgData);
-    console.log(orgData?.memberRefs?.map((m) => m.id));
     return (
       orgData?.memberRefs?.some((member) => member.id === authUser.uid) ?? false
     );
   } else if (rootRef.path.startsWith('users')) {
     const userData = rootDoc.data() as User;
-    console.log(userData);
     return userData.id === authUser.uid;
   } else {
     return false;

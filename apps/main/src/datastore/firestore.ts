@@ -226,22 +226,15 @@ export const getEventsForOrganizations = cache(
       .orderBy('endDate', 'asc')
       .withConverter(clientConverter<Event>())
       .get();
-    console.log(
-      'Events',
-      eventsSnap.docs.map((doc) => doc.data()),
-    );
     return eventsSnap.docs.map((doc) => doc.data());
   },
 );
 
 export const getEventsForUser = cache(
   async (userId: string): Promise<ClientCompat<Event>[]> => {
-    console.log('Getting events for user', userId);
     const user = await getUserById(userId);
-    console.log('User', user);
     const organizationIds =
       user?.organizationRefs?.map((ref) => ref.id).filter((id) => !!id) ?? [];
-    console.log('Organization IDs', organizationIds);
     return getEventsForOrganizations(organizationIds);
   },
 );
