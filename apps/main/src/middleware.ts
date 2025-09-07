@@ -52,7 +52,6 @@ export const config = {
     '/api/logout',
     '/api/refresh-token',
     // App-specific
-    '/(manage|account|admin|event|organizatoin|preem|race|series|user)',
     '/api/stripe',
   ],
 };
