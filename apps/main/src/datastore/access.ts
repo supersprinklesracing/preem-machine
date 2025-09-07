@@ -2,7 +2,7 @@
 
 import { AuthContextUser } from '@/auth/AuthContext';
 import { getFirestore } from '@/firebase-admin';
-import type { firestore } from 'firebase-admin';
+import type { DocumentReference } from 'firebase-admin/firestore';
 import { organizationPath } from './paths';
 import type { Organization, User } from './types';
 
@@ -12,11 +12,11 @@ export async function isUserAuthorized(
 ): Promise<boolean>;
 export async function isUserAuthorized(
   authUser: AuthContextUser,
-  docRef: firestore.DocumentReference,
+  docRef: DocumentReference,
 ): Promise<boolean>;
 export async function isUserAuthorized(
   authUser: AuthContextUser,
-  docRefOrPath: firestore.DocumentReference | string,
+  docRefOrPath: DocumentReference | string,
 ): Promise<boolean> {
   const db = await getFirestore();
   const docRef =
