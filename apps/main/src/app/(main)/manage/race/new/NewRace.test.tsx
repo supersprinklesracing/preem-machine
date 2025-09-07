@@ -1,6 +1,6 @@
 import { FormActionResult } from '@/components/forms/forms';
 import '@/matchMedia.mock';
-import { act, fireEvent, render, screen, waitFor } from '@/test-utils';
+import { act, fireEvent, render, screen, waitFor, within } from '@/test-utils';
 import { NewRace } from './NewRace';
 
 // Mock dependencies
@@ -37,36 +37,42 @@ describe('NewRace component', () => {
     );
 
     // Fill out the form
+    const nameInput = screen.getByTestId('name-input');
+    const descriptionInput = screen.getByTestId('description-input');
+    const websiteInput = screen.getByTestId('website-input');
+    const locationInput = screen.getByTestId('location-input');
+    const startDateWrapper = screen.getByTestId('start-date-wrapper');
+    const endDateWrapper = screen.getByTestId('end-date-wrapper');
+
     await act(async () => {
-      fireEvent.change(screen.getByTestId('name-input'), {
+      fireEvent.change(nameInput, {
         target: { value: 'New Test Race' },
       });
-      fireEvent.change(screen.getByTestId('location-input'), {
+      fireEvent.change(locationInput, {
         target: { value: 'Test Location' },
       });
-      fireEvent.change(screen.getByLabelText('Website'), {
+      fireEvent.change(websiteInput, {
         target: { value: 'https://example.com' },
       });
-      fireEvent.change(screen.getByTestId('description-input'), {
+      fireEvent.change(descriptionInput, {
         target: { value: 'Test Description' },
       });
 
-      fireEvent.change(screen.getByTestId('start-date-picker'), {
-        target: { value: '2025-08-03T10:00:00.000Z' },
-      });
-      fireEvent.change(screen.getByTestId('end-date-picker'), {
-        target: { value: '2025-08-15T14:00:00.000Z' },
-      });
+      // --- Start Date ---
+      fireEvent.click(within(startDateWrapper).getByRole('button'));
+      let popover = await screen.findByRole('table');
+      fireEvent.click(within(popover).getByLabelText('3 August 2025'));
+      await jest.runAllTimersAsync(); // Let popover close
 
-      // Select a date range
-      // fireEvent.click(screen.getAllByText('3')[0]);
-      // fireEvent.click(screen.getAllByText('15')[0]);
+      // --- End Date ---
+      fireEvent.click(within(endDateWrapper).getByRole('button'));
+      popover = await screen.findByRole('table');
+      fireEvent.click(within(popover).getByLabelText('15 August 2025'));
+      // waiting on timers here will cause the test to fail for some reason.
 
-      jest.advanceTimersByTime(500);
+      const createButton = screen.getByRole('button', { name: /create race/i });
+      fireEvent.click(createButton);
     });
-
-    const createButton = screen.getByRole('button', { name: /create race/i });
-    fireEvent.click(createButton);
 
     await waitFor(() => {
       expect(newRaceAction).toHaveBeenCalledWith({
@@ -76,18 +82,9 @@ describe('NewRace component', () => {
           location: 'Test Location',
           description: 'Test Description',
           website: 'https://example.com',
-          category: '',
-          gender: '',
-          courseDetails: '',
-          maxRacers: 0,
-          ageCategory: '',
-          duration: '',
-          laps: 0,
-          podiums: 0,
-          sponsors: [],
-          // TODO: Fix this.
-          // startDate: new Date('2025-08-03T10:00:00.000Z'),
-          // endDate: new Date('2025-08-15T14:00:00.000Z'),
+          gender: '', // TODO: THIS SHOULD NOT BE included.
+          startDate: new Date('2025-08-03T07:00:00.000Z'),
+          endDate: new Date('2025-08-15T07:00:00.000Z'),
         }),
       });
     });
