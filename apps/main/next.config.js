@@ -113,7 +113,7 @@ const nextConfig = {
       {
         source: '/:orgId/:seriesId/:eventId/:raceId/:preemId',
         destination:
-          '/race?path=organizations/:orgId/series/:seriesId/events/:eventId/races/:raceId/preems/:preemId',
+          '/preem?path=organizations/:orgId/series/:seriesId/events/:eventId/races/:raceId/preems/:preemId',
       },
       {
         source: '/:orgId/:seriesId/:eventId/:raceId',
