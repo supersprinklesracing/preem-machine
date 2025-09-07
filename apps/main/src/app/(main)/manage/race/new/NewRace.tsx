@@ -19,7 +19,7 @@ import {
   TextInput,
   Title,
 } from '@mantine/core';
-import { DatePicker } from '@mantine/dates';
+import { DateTimePicker } from '@mantine/dates';
 import { useDebouncedValue } from '@mantine/hooks';
 import isEqual from 'fast-deep-equal';
 import { useRouter } from 'next/navigation';
@@ -155,18 +155,27 @@ export function NewRace({
                   label="Sponsors"
                   {...form.getInputProps('sponsors')}
                 />
-                <DatePicker
-                  type="range"
-                  allowSingleDateInRange
-                  value={[form.values.startDate, form.values.endDate]}
-                  onChange={([start, end]) => {
+                <DateTimePicker
+                  label="Start Date"
+                  value={form.values.startDate}
+                  onChange={(value) =>
                     form.setFieldValue(
                       'startDate',
-                      start ? new Date(start) : null,
-                    );
-                    form.setFieldValue('endDate', end ? new Date(end) : null);
-                  }}
-                  data-testid="date-picker"
+                      value ? new Date(value) : null,
+                    )
+                  }
+                  data-testid="start-date-picker"
+                />
+                <DateTimePicker
+                  label="End Date"
+                  value={form.values.endDate}
+                  onChange={(value) =>
+                    form.setFieldValue(
+                      'endDate',
+                      value ? new Date(value) : null,
+                    )
+                  }
+                  data-testid="end-date-picker"
                 />
                 <Group justify="right">
                   <Button
