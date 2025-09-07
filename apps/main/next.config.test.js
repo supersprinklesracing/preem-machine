@@ -100,6 +100,11 @@ describe('Dummy(!) Next Config', () => {
 //   ['view/user', buildUrl('/user'), buildUrl('/user')],
 //   [
 //     'view/race',
+//     buildUrl('/org1/s1/e1/r1/p1'),
+//     buildUrl('/preem?path=organizations/org1/series/s1/events/e1/races/r1/preems/p1'),
+//   ],
+//   [
+//     'view/race',
 //     buildUrl('/org1/s1/e1/r1'),
 //     buildUrl('/race?path=organizations/org1/series/s1/events/e1/races/r1'),
 //   ],
