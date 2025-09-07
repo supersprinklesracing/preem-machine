@@ -87,7 +87,7 @@ describe('NewRace component', () => {
           location: 'Test Location',
           description: 'Test Description',
           website: 'https://example.com',
-          gender: '', // TODO: THIS SHOULD NOT BE included.
+          gender: '',
           startDate: new Date('2025-08-03T00:00:00.000'),
           endDate: new Date('2025-08-15T00:00:00.000'),
         }),
