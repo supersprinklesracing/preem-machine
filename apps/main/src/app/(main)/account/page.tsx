@@ -1,40 +1,23 @@
-import { incrementCounter } from '@/actions/user-counters';
-import { verifyAuthUser } from '@/auth/user';
 import { Breadcrumbs } from '@/components/Breadcrumbs';
-import { getFirestore } from '@/firebase-admin/firebase-admin';
 import { Stack } from '@mantine/core';
 import Account from './Account';
 import { editUserAction } from './edit-user-action';
-
-async function getUserCounter(): Promise<number> {
-  const authUser = await verifyAuthUser();
-  const db = await getFirestore();
-
-  if (!authUser) {
-    throw new Error('Cannot get counter of unauthenticated user');
-  }
-
-  const snapshot = await db.collection('user-counters').doc(authUser.uid).get();
-
-  const currentUserCounter = snapshot.data();
-
-  if (!currentUserCounter) {
-    return 0;
-  }
-
-  return currentUserCounter.count;
-}
+import { verifyAuthUser } from '@/auth/user';
+import { getUserById } from '@/datastore/firestore';
 
 export default async function AccountPage() {
-  const count = await getUserCounter();
+  const authUser = await verifyAuthUser();
+  const currentUser = await getUserById(authUser.uid);
+  if (!currentUser) {
+    // This should not happen for an authenticated user who has completed registration,
+    // but it's a good safeguard.
+    throw new Error('User data not found.');
+  }
 
   return (
     <Stack>
       <Breadcrumbs brief={null} />
-      <Account
-        debugProps={{ count, incrementCounter }}
-        editUserAction={editUserAction}
-      />
+      <Account currentUser={currentUser} editUserAction={editUserAction} />
     </Stack>
   );
 }
