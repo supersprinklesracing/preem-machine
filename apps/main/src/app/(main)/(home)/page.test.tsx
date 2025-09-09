@@ -9,6 +9,17 @@ jest.mock('./Home', () => ({
   __esModule: true,
   default: jest.fn(() => <div>Mock Home</div>),
 }));
+jest.mock('next/navigation', () => ({
+  usePathname: () => '/',
+  useRouter: () => ({
+    push: () => {},
+    replace: () => {},
+    refresh: () => {},
+  }),
+  useSearchParams: () => ({
+    get: () => {},
+  }),
+}));
 jest.mock('@/datastore/firestore');
 
 const mockHomeData = {

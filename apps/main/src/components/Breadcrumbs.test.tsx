@@ -1,80 +1,34 @@
 import { render, screen } from '@/test-utils';
 import { Breadcrumbs } from './Breadcrumbs';
-import {
-  OrganizationBrief,
-  SeriesBrief,
-  EventBrief,
-  RaceBrief,
-  PreemBrief,
-} from '@/datastore/types';
+import * as useBreadcrumbs from './useBreadcrumbs';
+import { Anchor } from '@mantine/core';
+import Link from 'next/link';
+
+jest.mock('./useBreadcrumbs');
 
 describe('Breadcrumbs', () => {
-  const org1: OrganizationBrief = {
-    id: 'org1',
-    path: 'organizations/org1',
-    name: 'Test Organization 1',
-  };
+  it('should render the breadcrumbs returned by the hook', () => {
+    const mockItems = [
+      <Anchor component={Link} href="/test1" key="1">
+        Test 1
+      </Anchor>,
+      <Anchor component={Link} href="/test2" key="2">
+        Test 2
+      </Anchor>,
+    ];
+    (useBreadcrumbs.useBreadcrumbs as jest.Mock).mockReturnValue(mockItems);
 
-  const series1: SeriesBrief = {
-    id: 'series1',
-    path: 'organizations/org1/series/series1',
-    name: 'Test Series 1',
-    organizationBrief: org1,
-  };
+    render(<Breadcrumbs />);
 
-  const event1: EventBrief = {
-    id: 'event1',
-    path: 'organizations/org1/series/series1/events/event1',
-    name: 'Test Event 1',
-    seriesBrief: series1,
-  };
-
-  const race1: RaceBrief = {
-    id: 'race1',
-    path: 'organizations/org1/series/series1/events/event1/races/race1',
-    name: 'Test Race 1',
-    eventBrief: event1,
-  };
-
-  const preem1: PreemBrief = {
-    id: 'preem1',
-    path: 'organizations/org1/series/series1/events/event1/races/race1/preems/preem1',
-    name: 'Test Preem 1',
-    raceBrief: race1,
-  };
-
-  it('renders breadcrumbs for an organization', () => {
-    render(<Breadcrumbs brief={org1} />);
-    expect(screen.getByText('Test Organization 1')).toBeInTheDocument();
+    expect(screen.getByText('Test 1')).toBeInTheDocument();
+    expect(screen.getByText('Test 2')).toBeInTheDocument();
   });
 
-  it('renders breadcrumbs for a series', () => {
-    render(<Breadcrumbs brief={series1} />);
-    expect(screen.getByText('Test Organization 1')).toBeInTheDocument();
-    expect(screen.getByText('Test Series 1')).toBeInTheDocument();
-  });
+  it('should render nothing when the hook returns an empty array', () => {
+    (useBreadcrumbs.useBreadcrumbs as jest.Mock).mockReturnValue([]);
 
-  it('renders breadcrumbs for an event', () => {
-    render(<Breadcrumbs brief={event1} />);
-    expect(screen.getByText('Test Organization 1')).toBeInTheDocument();
-    expect(screen.getByText('Test Series 1')).toBeInTheDocument();
-    expect(screen.getByText('Test Event 1')).toBeInTheDocument();
-  });
+    render(<Breadcrumbs />);
 
-  it('renders breadcrumbs for a race', () => {
-    render(<Breadcrumbs brief={race1} />);
-    expect(screen.getByText('Test Organization 1')).toBeInTheDocument();
-    expect(screen.getByText('Test Series 1')).toBeInTheDocument();
-    expect(screen.getByText('Test Event 1')).toBeInTheDocument();
-    expect(screen.getByText('Test Race 1')).toBeInTheDocument();
-  });
-
-  it('renders breadcrumbs for a preem', () => {
-    render(<Breadcrumbs brief={preem1} />);
-    expect(screen.getByText('Test Organization 1')).toBeInTheDocument();
-    expect(screen.getByText('Test Series 1')).toBeInTheDocument();
-    expect(screen.getByText('Test Event 1')).toBeInTheDocument();
-    expect(screen.getByText('Test Race 1')).toBeInTheDocument();
-    expect(screen.getByText('Test Preem 1')).toBeInTheDocument();
+    expect(screen.queryByRole('navigation')).not.toBeInTheDocument();
   });
 });

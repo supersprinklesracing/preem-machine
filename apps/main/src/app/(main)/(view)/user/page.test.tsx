@@ -16,6 +16,7 @@ jest.mock('next/navigation', () => ({
   redirect: jest.fn((...args) => {
     throw new Error(`mock redirect(${args.join(',')})`);
   }),
+  usePathname: () => '/',
 }));
 jest.mock('@/auth/user');
 

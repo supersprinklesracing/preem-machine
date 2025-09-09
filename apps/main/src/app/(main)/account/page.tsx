@@ -1,5 +1,3 @@
-import { Breadcrumbs } from '@/components/Breadcrumbs';
-import { Stack } from '@mantine/core';
 import Account from './Account';
 import { editUserAction } from './edit-user-action';
 import { verifyAuthUser } from '@/auth/user';
@@ -14,10 +12,5 @@ export default async function AccountPage() {
     throw new Error('User data not found.');
   }
 
-  return (
-    <Stack>
-      <Breadcrumbs brief={null} />
-      <Account currentUser={currentUser} editUserAction={editUserAction} />
-    </Stack>
-  );
+  return <Account currentUser={currentUser} editUserAction={editUserAction} />;
 }

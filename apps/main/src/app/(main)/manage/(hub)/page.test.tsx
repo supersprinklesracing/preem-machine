@@ -9,6 +9,17 @@ jest.mock('./Hub', () => ({
   __esModule: true,
   default: jest.fn(() => <div>Mock Hub</div>),
 }));
+jest.mock('next/navigation', () => ({
+  usePathname: () => '/',
+  useRouter: () => ({
+    push: () => {},
+    replace: () => {},
+    refresh: () => {},
+  }),
+  useSearchParams: () => ({
+    get: () => {},
+  }),
+}));
 jest.mock('./hub_data');
 
 const mockHubData = {

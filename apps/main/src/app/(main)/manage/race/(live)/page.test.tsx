@@ -9,6 +9,17 @@ jest.mock('./LiveRace', () => ({
   __esModule: true,
   default: jest.fn(() => <div>Mock LiveRace</div>),
 }));
+jest.mock('next/navigation', () => ({
+  usePathname: () => '/',
+  useRouter: () => ({
+    push: () => {},
+    replace: () => {},
+    refresh: () => {},
+  }),
+  useSearchParams: () => ({
+    get: () => {},
+  }),
+}));
 
 setupMockDb();
 
