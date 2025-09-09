@@ -3,12 +3,10 @@ import { Claims } from 'next-firebase-auth-edge/lib/auth/claims';
 import { createContext, use } from 'react';
 
 export interface AuthContextUser extends UserInfo {
-  id: string;
-
-  idToken: string;
-  customToken?: string;
   emailVerified: boolean;
   customClaims: Claims;
+  token: string;
+  customToken?: string;
 }
 
 export interface AuthContextValue {

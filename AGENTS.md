@@ -59,7 +59,7 @@ This project uses `husky` and `lint-staged` to enforce code quality standards on
 
 #### Building & Running
 
-- **Run Dev Server:** `npx nx --tuiAutoExit --outputStyle=stream dev main --no-color`
+- **Run Dev Server:** `npx nx --tuiAutoExit --outputStyle=stream run @preem-machine/main:dev`
 - **Verify Build:** `npx nx --tuiAutoExit --outputStyle=stream run @preem-machine/main:build:verify --no-color`
 - **Production Bundle:** `npx nx --tuiAutoExit --outputStyle=stream run @preem-machine/main:build:production --no-color`
 - **List Project Targets:** `npx nx --tuiAutoExit --outputStyle=stream show --no-web project main`
@@ -73,6 +73,7 @@ This project uses `husky` and `lint-staged` to enforce code quality standards on
 - **E2E Tests using Playwright**
   - **Run E2E Tests:** `npx nx --tuiAutoExit --outputStyle=stream e2e e2e-main`
   - **Run Single E2E Test:** `npx nx --tuiAutoExit --outputStyle=stream e2e e2e-main -- "${TEST_FILE}"`
+  - **Update Snapshots:** `npx nx --tuiAutoExit --outputStyle=stream e2e e2e-main --update-snapshots`
 
 #### Code Style & Formatting
 
@@ -146,14 +147,6 @@ Proper quoting is essential for commands to execute correctly. Here are examples
 ### Component Unit Testing Patterns
 
 Before writing a test, always inspect the component's props (its TypeScript interface) to understand its public API.
-
-#### File Discovery and Search
-
-- **Component Files:** To find all `.tsx` component files that need testing, use:
-  ```shell
-  git ls-files 'apps/main/src/app/**/*.tsx'
-  ```
-- **Code Search:** To understand component behavior, use `git grep` to search for specific text or patterns.
 
 #### Client Components (`"use client"`)
 
@@ -233,24 +226,49 @@ import { MyComponent } from './MyComponent';
 // ...
 ```
 
+### Screenshot Testing
+
+This project uses Playwright for screenshot testing to catch visual regressions.
+
+#### Adding a New Screenshot Test
+
+1.  Create a new test file in `apps/e2e-main/src` with the `.spec.ts` extension.
+2.  In the test file, navigate to the page you want to test and use the `toHaveScreenshot` assertion:
+
+    ```typescript
+    import { test, expect } from '@playwright/test';
+    test('should take a screenshot of the about page', async ({ page }) => {
+      await page.goto('/about');
+      await expect(page).toHaveScreenshot();
+    });
+    ```
+
+#### Generating and Updating Snapshots
+
+- **First Run:** When you run a new screenshot test for the first time, it will fail because no baseline snapshot exists. This is expected. The test runner will create a new snapshot file in the `apps/e2e-main/src/snapshots` directory.
+- **Updating Snapshots:** If a test fails due to an intentional UI change, you need to update the baseline snapshot. You can do this by running the tests with the `--update-snapshots` flag:
+
+  ```shell
+  npx nx e2e e2e-main --update-snapshots
+  ```
+
+After updating the snapshots, you need to commit the new snapshot files to the repository.
+
 ## 6. Forms
 
 This project uses a standardized approach to form handling to ensure consistency, reliability, and a good user experience.
 
-### Core Technologies
+### State Management and Validation
 
-- **State Management:** Mantine Form (`@mantine/form`) is used for managing form state, including values, validation, and submission.
-- **Debouncing:** The `useDebouncedValue` hook from Mantine Hooks (`@mantine/hooks`) is used to delay updates from user input.
-
-### Implementation Guide
-
-#### State Management and Validation
+Mantine Form (`@mantine/form`) is used for managing form state, including values, validation, and submission.
 
 - **State Management:** Use the `useForm` hook from `@mantine/form` to manage form state.
 - **Validation:** Validation is handled directly within the `useForm` hook using inline functions.
 - **Reference:** For a clear example of this pattern, see `apps/main/src/app/(main)/manage/series/[seriesId]/edit/EditSeries.tsx`.
 
-#### Debouncing
+### Debouncing
+
+The `useDebouncedValue` hook from Mantine Hooks (`@mantine/hooks`) is used to delay updates from user input.
 
 To improve user experience, especially for inputs that provide a live preview (like a user profile card), input values should be debounced.
 
@@ -260,7 +278,6 @@ To improve user experience, especially for inputs that provide a live preview (l
   2.  Use the debounced value for previews or other actions that should not run on every keystroke.
   3.  The save button should be disabled until the debounced value matches the current form value to prevent saving partial input.
 
-## 7. Coding Conventions
+## 7. Environment Variables
 
-- **TypeScript:** Avoid casting to `any`.
-- **Nx Generators:** Use Nx generators to create new applications and libraries.
+When accessing environment variables, do not use `process.env.XYZ` directly in the code. Instead, all environment variable access should go through either `src/env.ts` (or other `*-env.ts` files) file. This ensures that all environment variables are documented and validated in a single place.

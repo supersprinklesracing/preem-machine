@@ -1,48 +1,26 @@
 import { AuthContextUser } from '@/auth/AuthContext';
 import { serverConfigFn } from '@/firebase-admin/config';
-import { getFirebaseAuth } from '@/firebase-admin/firebase-admin';
 import { getTokens, Tokens } from 'next-firebase-auth-edge';
-import type { Auth } from 'next-firebase-auth-edge/auth';
 import { filterStandardClaims } from 'next-firebase-auth-edge/lib/auth/claims';
-import { cookies } from 'next/headers';
+import { cookies, headers } from 'next/headers';
 import { unauthorized } from 'next/navigation';
 import { NextRequest } from 'next/server';
-
-export type AuthUserBrief = Partial<AuthContextUser> & { id: string };
-
-export const toAuthContextUser = ({
-  token,
-  customToken,
-  decodedToken,
-}: Tokens): AuthContextUser => {
-  const {
-    uid,
-    email,
-    picture: photoURL,
-    email_verified: emailVerified,
-    phone_number: phoneNumber,
-    name: displayName,
-    source_sign_in_provider: signInProvider,
-  } = decodedToken;
-
-  const customClaims = filterStandardClaims(decodedToken);
-
-  return {
-    id: uid,
-    uid,
-    email: email ?? null,
-    displayName: displayName ?? null,
-    photoURL: photoURL ?? null,
-    phoneNumber: phoneNumber ?? null,
-    emailVerified: emailVerified ?? false,
-    providerId: signInProvider,
-    customClaims,
-    idToken: token,
-    customToken,
-  };
-};
+import { ENV_E2E_TESTING } from '../env/env';
+import { AuthError } from './errors';
 
 export const getAuthUser = async () => {
+  if (ENV_E2E_TESTING) {
+    const e2eAuthUser = (await headers()).get('X-e2e-auth-user');
+    if (e2eAuthUser) {
+      const authUser = JSON.parse(e2eAuthUser) as AuthContextUser;
+      if (!authUser.uid) {
+        throw new Error(
+          `Misconfigured E2E Testing User in header: ${authUser}`,
+        );
+      }
+      return authUser;
+    }
+  }
   const serverConfig = await serverConfigFn();
   const tokens = await getTokens(await cookies(), {
     ...serverConfig,
@@ -52,7 +30,7 @@ export const getAuthUser = async () => {
     return null;
   }
 
-  return toAuthContextUser(tokens);
+  return toAuthContextUserFromTokens(tokens);
 };
 
 export const verifyAuthUser = async (): Promise<AuthContextUser> => {
@@ -63,43 +41,94 @@ export const verifyAuthUser = async (): Promise<AuthContextUser> => {
   return authUser;
 };
 
-export async function getUserFromRequest(request: NextRequest) {
+export async function getAuthUserFromRequest(request: NextRequest) {
   const serverConfig = await serverConfigFn();
   const tokens = await getTokens(request.cookies, serverConfig);
   if (!tokens) {
     throw new Error('Unauthenticated');
   }
 
-  const auth: Auth = await getFirebaseAuth();
-  const { getUser } = auth;
-  const userRecord = await getUser(tokens.decodedToken.uid);
-  return toUserFromUserRecord(userRecord);
+  // TODO: Need to figure this out.
+  // Not sure the difference between getting thie user from getUser
+  // vs getting it out of the request.
+  // const { getUser } = await getFirebaseAuth();
+  // const userRecord = await getUser(tokens.decodedToken.uid);
+  // const fromUserRecord = toAuthContextUserFromUserRecord(userRecord);
+  return toAuthContextUserFromTokens(tokens);
 }
-// eslint-disable-next-line @typescript-eslint/no-explicit-any
-export function toUserFromUserRecord(userRecord: any): AuthContextUser {
-  const {
-    uid,
-    email,
-    photoURL,
-    emailVerified,
-    phoneNumber,
-    displayName,
-    providerId,
-  } = userRecord;
 
-  const customClaims = userRecord.customClaims;
+export const verifyAuthUserFromRequest = async (
+  request: NextRequest,
+): Promise<AuthContextUser> => {
+  const authUser = await getAuthUserFromRequest(request);
+  if (!authUser) {
+    unauthorized();
+  }
+  return authUser;
+};
+
+export async function verifyUserRole(
+  request: NextRequest,
+  requiredRole: string,
+): Promise<AuthContextUser> {
+  const user = await getAuthUserFromRequest(request);
+  if (!user) {
+    unauthorized();
+  }
+
+  const roles = user.customClaims?.role;
+  if (!Array.isArray(roles) || !roles.includes(requiredRole)) {
+    throw new AuthError(
+      `Forbidden: User does not have the '${requiredRole}' role.`,
+      403,
+    );
+  }
+
+  return user;
+}
+
+const toAuthContextUserFromTokens = ({
+  token,
+  customToken,
+  decodedToken,
+}: Tokens): AuthContextUser => {
+  if (!decodedToken) {
+    throw unauthorized();
+  }
+  const customClaims = filterStandardClaims(decodedToken);
 
   return {
-    id: uid,
-    uid,
-    email: email ?? null,
-    displayName: displayName ?? null,
-    photoURL: photoURL ?? null,
-    phoneNumber: phoneNumber ?? null,
-    emailVerified: emailVerified ?? false,
-    providerId: providerId,
+    uid: decodedToken.uid,
+    email: decodedToken.email ?? null,
+    displayName: decodedToken.name ?? null,
+    photoURL: decodedToken.picture ?? null,
+    phoneNumber: decodedToken.phone_number ?? null,
+    emailVerified: decodedToken.email_verified ?? false,
+    providerId: decodedToken.source_sign_in_provider,
     customClaims,
-    idToken: '', // This will not be available from a UserRecord
-    customToken: undefined, // This will not be available from a UserRecord
+    token,
+    customToken,
+  };
+};
+
+// TODO: Need to figure this out.
+// Not sure the difference between getting thie user from getUser
+// vs getting it out of the request.
+// const { getUser } = await getFirebaseAuth();
+// const userRecord = await getUser(tokens.decodedToken.uid);
+// const fromUserRecord = toAuthContextUserFromUserRecord(userRecord);
+// eslint-disable-next-line @typescript-eslint/no-explicit-any, @typescript-eslint/no-unused-vars
+function toAuthContextUserFromUserRecord(userRecord: any): AuthContextUser {
+  return {
+    uid: userRecord.uid,
+    email: userRecord.email,
+    displayName: userRecord.displayName,
+    photoURL: userRecord.photoURL,
+    phoneNumber: userRecord.phoneNumber,
+    emailVerified: !!userRecord.emailVerified,
+    providerId: userRecord.providerData[0]?.providerId,
+    customClaims: userRecord.customClaims,
+    token: userRecord.token,
+    customToken: userRecord.customToken,
   };
 }

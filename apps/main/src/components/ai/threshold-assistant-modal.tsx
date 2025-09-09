@@ -131,11 +131,7 @@ const ThresholdAssistantModal: React.FC<ThresholdAssistantModalProps> = ({
       ) : (
         <Card withBorder radius="md" my="lg" p="xl" bg="gray.0">
           <Stack align="center">
-            <Title
-              order={1}
-              c="blue.6"
-              ff="Space Grotesk, var(--mantine-font-family)"
-            >
+            <Title order={1} c="blue.6">
               ${suggestion.suggestedThreshold}
             </Title>
             <Text size="sm" c="dimmed" ta="center">

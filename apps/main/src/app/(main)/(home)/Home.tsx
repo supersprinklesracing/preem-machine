@@ -16,9 +16,7 @@ interface Props {
 export default function Home({ eventsWithRaces, contributions }: Props) {
   return (
     <Stack>
-      <Title order={1} ff="Space Grotesk, var(--mantine-font-family)">
-        Upcoming Events
-      </Title>
+      <Title order={1}>Upcoming Events</Title>
       <Grid>
         <Grid.Col span={{ base: 12, lg: 8 }}>
           <Stack>
