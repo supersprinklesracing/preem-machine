@@ -10,6 +10,17 @@ jest.mock('./Shell/MainAppShell', () => ({
   __esModule: true,
   default: jest.fn(({ children }) => <div>Mock MainAppShell{children}</div>),
 }));
+jest.mock('next/navigation', () => ({
+  usePathname: () => '/',
+  useRouter: () => ({
+    push: () => {},
+    replace: () => {},
+    refresh: () => {},
+  }),
+  useSearchParams: () => ({
+    get: () => {},
+  }),
+}));
 jest.mock('@/datastore/firestore');
 jest.mock('@/auth/user');
 

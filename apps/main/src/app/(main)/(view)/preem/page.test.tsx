@@ -3,6 +3,17 @@ import PreemPage from './page';
 import { NotFoundError } from '@/datastore/errors';
 
 // Mock the concrete component to isolate the page component
+jest.mock('next/navigation', () => ({
+  usePathname: () => '/',
+  useRouter: () => ({
+    push: () => {},
+    replace: () => {},
+    refresh: () => {},
+  }),
+  useSearchParams: () => ({
+    get: () => {},
+  }),
+}));
 jest.mock(
   './Preem',
   () => ({

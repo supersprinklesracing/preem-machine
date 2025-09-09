@@ -3,6 +3,7 @@
 import { getAuthUser } from '@/auth/user';
 import { getEventsForUser } from '@/datastore/firestore';
 import { CurrentUser } from '@/datastore/user/UserContext';
+import { Breadcrumbs } from '@/components/Breadcrumbs';
 import AvatarCluster from './Shell/AvatarCluster';
 import MainAppShell from './Shell/MainAppShell';
 import Sidebar from './Shell/Sidebar';
@@ -21,6 +22,7 @@ export default async function Layout({ children }: MainProps) {
       avatarCluster={<AvatarCluster />}
       sidebar={<Sidebar {...{ events }} />}
     >
+      <Breadcrumbs />
       {children}
     </MainAppShell>
   );

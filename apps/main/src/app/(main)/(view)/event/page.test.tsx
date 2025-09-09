@@ -9,6 +9,17 @@ jest.mock('./Event', () => ({
   __esModule: true,
   default: jest.fn(() => <div>Mock Event</div>),
 }));
+jest.mock('next/navigation', () => ({
+  usePathname: () => '/',
+  useRouter: () => ({
+    push: () => {},
+    replace: () => {},
+    refresh: () => {},
+  }),
+  useSearchParams: () => ({
+    get: () => {},
+  }),
+}));
 
 setupMockDb();
 

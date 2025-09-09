@@ -9,6 +9,17 @@ jest.mock('./EditSeries', () => ({
   __esModule: true,
   EditSeries: jest.fn(() => <div>Mock EditSeries</div>),
 }));
+jest.mock('next/navigation', () => ({
+  usePathname: () => '/',
+  useRouter: () => ({
+    push: () => {},
+    replace: () => {},
+    refresh: () => {},
+  }),
+  useSearchParams: () => ({
+    get: () => {},
+  }),
+}));
 jest.mock('./edit-series-action', () => ({
   editSeriesAction: jest.fn(),
 }));
