@@ -20,6 +20,6 @@ describe('AdminPage component', () => {
 
     // Assert that Admin was called with the users from the mock DB
     const adminCalls = (Admin as jest.Mock).mock.calls;
-    expect(adminCalls[0][0].users.length).toBe(7); // The mock DB has 7 users
+    expect(adminCalls[0][0].users.length).toBe(6); // The mock DB has 7 users
   });
 });

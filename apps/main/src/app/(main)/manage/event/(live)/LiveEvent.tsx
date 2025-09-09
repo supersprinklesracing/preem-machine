@@ -73,9 +73,7 @@ export default function LiveEvent({ event, children }: Props) {
         {event.startDate ? format(new Date(event.startDate ?? ''), 'PP p') : ''}
       </Text>
       <Stack>
-        <Title order={2} ff="Space Grotesk, var(--mantine-font-family)">
-          Race Schedule
-        </Title>
+        <Title order={2}>Race Schedule</Title>
         <SimpleGrid cols={{ base: 1, lg: 2 }}>
           {children?.map(
             ({ race, children }) =>

@@ -174,9 +174,7 @@ export const Race: React.FC<Props> = ({ race, children }) => {
       <Grid gutter="xl">
         <Grid.Col span={{ base: 12, lg: 8 }}>
           <Group justify="space-between" mb="md">
-            <Title order={2} ff="Space Grotesk, var(--mantine-font-family)">
-              Preems
-            </Title>
+            <Title order={2}>Preems</Title>
             <Button
               component={Link}
               href={`/big-screen/${toUrlPath(race.path)}`}
@@ -210,11 +208,7 @@ export const Race: React.FC<Props> = ({ race, children }) => {
               height: 'calc(100vh - 180px)',
             }}
           >
-            <Title
-              order={2}
-              ff="Space Grotesk, var(--mantine-font-family)"
-              mb="md"
-            >
+            <Title order={2} mb="md">
               Recent Contributions
             </Title>
             <Card

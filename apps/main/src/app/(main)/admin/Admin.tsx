@@ -68,14 +68,10 @@ const Admin: React.FC<Props> = ({ users }) => {
 
   return (
     <Stack gap="xl" maw={800} mx="auto">
-      <Title order={1} ff="Space Grotesk, var(--mantine-font-family)">
-        Administrator Control Panel
-      </Title>
+      <Title order={1}>Administrator Control Panel</Title>
 
       <Card withBorder radius="md" p="lg" bg="yellow.0">
-        <Title order={3} ff="Space Grotesk, var(--mantine-font-family)">
-          User Impersonation
-        </Title>
+        <Title order={3}>User Impersonation</Title>
         <Text c="dimmed" size="sm">
           Find a user to view the application as them. This is a powerful tool
           for debugging and support.
@@ -112,9 +108,7 @@ const Admin: React.FC<Props> = ({ users }) => {
       </Card>
 
       <Card withBorder radius="md" p="lg">
-        <Title order={3} ff="Space Grotesk, var(--mantine-font-family)">
-          Direct Management
-        </Title>
+        <Title order={3}>Direct Management</Title>
         <Text c="dimmed" size="sm">
           Access and manage all data directly.
         </Text>

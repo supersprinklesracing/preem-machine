@@ -23,6 +23,10 @@ export const ENV_DEBUG_CREDENTIALS_DANGER =
   isTrue(process.env.DEBUG_CREDENTIALS_DANGER) ||
   isTrue(process.env.NEXT_PUBLIC_DEBUG_CREDENTIALS_DANGER);
 
+export const ENV_E2E_TESTING = isTrue(process.env.E2E_TESTING);
+export const ENV_E2E_TESTING_USER =
+  process.env.E2E_TESTING_USER ?? 'test-user-id-not-specified';
+
 export const ENV_IS_BUILD = process.env.NEXT_PHASE === 'phase-production-build';
 export const ENV_IS_TEST_ENV = process.env.NODE_ENV === 'test';
 export const ENV_IS_DEVELOPMENT_ENV = process.env.NODE_ENV === 'development';

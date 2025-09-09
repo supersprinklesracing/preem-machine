@@ -85,9 +85,7 @@ export const Preem: React.FC<Props> = ({ preem, children }) => {
         >
           Back to {preem.raceBrief.name}
         </Button>
-        <Title order={1} ff="Space Grotesk, var(--mantine-font-family)">
-          {preem.name}
-        </Title>
+        <Title order={1}>{preem.name}</Title>
         <Text c="dimmed">Part of {preem.raceBrief.name}</Text>
         {preem.description && <Text mt="md">{preem.description}</Text>}
       </Box>
@@ -139,11 +137,7 @@ export const Preem: React.FC<Props> = ({ preem, children }) => {
             }}
           >
             <Text c="dimmed">Current Prize Pool</Text>
-            <Title
-              order={1}
-              ff="Space Grotesk, var(--mantine-font-family)"
-              style={{ fontSize: '3.5rem' }}
-            >
+            <Title order={1} style={{ fontSize: '3.5rem' }}>
               $<AnimatedNumber value={preem.prizePool ?? 0} />
             </Title>
             <Button
@@ -159,9 +153,7 @@ export const Preem: React.FC<Props> = ({ preem, children }) => {
       </Grid>
 
       <Card withBorder padding="lg" radius="md">
-        <Title order={3} ff="Space Grotesk, var(--mantine-font-family)">
-          Contribution History
-        </Title>
+        <Title order={3}>Contribution History</Title>
         <Text c="dimmed" size="sm">
           {`${children?.length || 0} contributors have built this prize pool.`}
         </Text>

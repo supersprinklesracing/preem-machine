@@ -1,4 +1,4 @@
-import { ServiceAccount } from 'firebase-admin';
+import type { ServiceAccount } from 'firebase-admin';
 
 export interface ServiceAccountSecret {
   type: 'service_account';

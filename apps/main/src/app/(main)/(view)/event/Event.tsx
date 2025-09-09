@@ -58,9 +58,7 @@ export default function Event({ event, children }: Props) {
       <Stack>
         <Group justify="space-between">
           <Stack gap={0}>
-            <Title order={2} ff="Space Grotesk, var(--mantine-font-family)">
-              Race Schedule
-            </Title>
+            <Title order={2}>Race Schedule</Title>
           </Stack>
         </Group>
         <SimpleGrid cols={{ base: 1, lg: 2 }}>

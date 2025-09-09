@@ -51,6 +51,8 @@ firebase-debug.log
 .next
 out
 
+# Playwright / E2E Testing
+e2e-server.log
 test-output
 
 # Playwright

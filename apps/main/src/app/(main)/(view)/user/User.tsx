@@ -59,9 +59,7 @@ const User: React.FC<Props> = ({ user, contributions }) => {
               size={120}
               radius="50%"
             />
-            <Title order={2} ff="Space Grotesk, var(--mantine-font-family)">
-              {user.name}
-            </Title>
+            <Title order={2}>{user.name}</Title>
             <Group gap="xs">
               <IconMail size={16} />
               <Text c="dimmed">{user.email}</Text>
@@ -106,7 +104,7 @@ const User: React.FC<Props> = ({ user, contributions }) => {
       </Grid.Col>
 
       <Grid.Col span={{ base: 12, lg: 8 }}>
-        <Title order={1} ff="Space Grotesk, var(--mantine-font-family)" mb="lg">
+        <Title order={1} mb="lg">
           Contribution History
         </Title>
         <Card withBorder padding={0} radius="md">

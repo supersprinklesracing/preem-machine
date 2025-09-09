@@ -54,9 +54,7 @@ export default function MainAppShell({
               aria-expanded={opened}
             />
             <Link href="/" style={{ textDecoration: 'none', color: 'inherit' }}>
-              <Title order={3} ff="Space Grotesk, var(--mantine-font-family)">
-                Preem Machine
-              </Title>
+              <Title order={3}>Preem Machine</Title>
             </Link>
           </Group>
           {header}

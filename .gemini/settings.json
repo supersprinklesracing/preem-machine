@@ -1,11 +1,49 @@
 {
   "autoAccept": true,
+  "contextFileName": [
+    "AGENTS.md"
+  ],
   "preferredEditor": "vscode",
   "mcpServers": {
     "nx-mcp": {
       "command": "npx",
-      "args": ["nx-mcp@latest"]
+      "args": [
+        "nx-mcp@latest"
+      ]
     }
   },
-  "contextFileName": ["AGENTS.md"]
+  "tools": {
+    "allowed": [
+      "run_shell_command(./tools/get-latest-ci.sh)",
+      "run_shell_command(./tools/read-artifacts.sh)",
+      "run_shell_command(HUSKY=0 npm ci)",
+      "run_shell_command(git grep \"${PATTERN}\")",
+      "run_shell_command(git ls-files)",
+      "run_shell_command(husky)",
+      "run_shell_command(npm ci)",
+      "run_shell_command(nx dev apps/main)",
+      "run_shell_command(npx eslint --fix \"${FILE}\")",
+      "run_shell_command(npx nx --tuiAutoExit --outputStyle=static affected:lint --fix)",
+      "run_shell_command(npx nx --tuiAutoExit --outputStyle=static format:write --files='${FILES}')",
+      "run_shell_command(npx nx --tuiAutoExit --outputStyle=static run-many -t build)",
+      "run_shell_command(npx nx --tuiAutoExit --outputStyle=static run-many -t e2e)",
+      "run_shell_command(npx nx --tuiAutoExit --outputStyle=static run-many -t lint)",
+      "run_shell_command(npx nx --tuiAutoExit --outputStyle=static run-many -t test)",
+      "run_shell_command(npx nx --tuiAutoExit --outputStyle=stream affected:lint --fix)",
+      "run_shell_command(npx nx --tuiAutoExit --outputStyle=stream build main)",
+      "run_shell_command(npx nx --tuiAutoExit --outputStyle=stream dev main --no-color)",
+      "run_shell_command(npx nx --tuiAutoExit --outputStyle=stream e2e e2e-main)",
+      "run_shell_command(npx nx --tuiAutoExit --outputStyle=stream e2e e2e-main -- \"${TEST_FILE}\")",
+      "run_shell_command(npx nx --tuiAutoExit --outputStyle=stream format:write)",
+      "run_shell_command(npx nx --tuiAutoExit --outputStyle=stream format:write --files=\" ${FILE}\")",
+      "run_shell_command(npx nx --tuiAutoExit --outputStyle=stream run @preem-machine/main:build:production --no-color)",
+      "run_shell_command(npx nx --tuiAutoExit --outputStyle=stream run @preem-machine/main:build:verify --no-color)",
+      "run_shell_command(npx nx --tuiAutoExit --outputStyle=stream run main:test --no-color --forceExit --testFile=\" ${TEST_FILE}\")",
+      "run_shell_command(npx nx --tuiAutoExit --outputStyle=stream show --no-web project main)",
+      "run_shell_command(npx nx --tuiAutoExit --outputStyle=stream test main --no-color --forceExit)",
+      "run_shell_command(npx nx e2e e2e-main --update-snapshots)",
+      "run_shell_command(npx playwright show-report \"${REPORT_DATA_PATH}\")",
+      "run_shell_command(npx stylelint --fix)"
+    ]
+  }
 }

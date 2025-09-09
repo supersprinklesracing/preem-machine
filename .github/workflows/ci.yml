@@ -16,6 +16,9 @@ jobs:
     environment:
       name: ci
     env:
+      E2E_TESTING: ${{ secrets.E2E_TESTING }}
+      E2E_TESTING_USER: ${{ secrets.E2E_TESTING_USER }}
+      PLAYWRIGHT_HTML_OPEN: ${{ secrets.PLAYWRIGHT_HTML_OPEN }}
       AUTH_COOKIE_SIGNATURE_KEY_CURRENT: ${{ secrets.AUTH_COOKIE_SIGNATURE_KEY_CURRENT }}
       AUTH_COOKIE_SIGNATURE_KEY_PREVIOUS: ${{ secrets.AUTH_COOKIE_SIGNATURE_KEY_PREVIOUS }}
       DOTENV_SECRETS: ${{ secrets.DOTENV_SECRETS }}
@@ -33,7 +36,8 @@ jobs:
       STRIPE_API_KEY: ${{ secrets.STRIPE_API_KEY }}
 
     steps:
-      - uses: actions/checkout@v5
+      - name: Checkout
+        uses: actions/checkout@v5
         with:
           filter: tree:0
           fetch-depth: 0
@@ -45,28 +49,87 @@ jobs:
       # - run: npx nx start-ci-run --distribute-on="3 linux-medium-js" --stop-agents-after="e2e-ci"
 
       # Cache node_modules
-      - uses: actions/setup-node@v5
+      - name: Setup Node
+        uses: actions/setup-node@v5
         with:
           node-version: 22
-          cache: 'npm'
+          # cache: 'npm'
+
+      - name: Restore NPM CI Cache
+        id: node_modules-cache
+        uses: actions/cache/restore@v4
+        with:
+          path: node_modules
+          key: node-${{ runner.os }}-node-${{ hashFiles('**/package-lock.json') }}
 
       - name: NPM CI
+        if: steps.node_modules-cache.outputs.cache-hit != 'true'
         run: npm ci --legacy-peer-deps
 
       - name: Build
-        run: npx nx --tuiAutoExit --outputStyle=static run-many -t build
+        uses: raegen/nx@v0.3.6
+        with:
+          nx: run-many --target=build
 
       - name: Lint
-        run: npx nx --tuiAutoExit --outputStyle=static run-many -t lint
+        uses: raegen/nx@v0.3.6
+        with:
+          nx: run-many -t lint
 
       - name: Test
-        run: npx nx --tuiAutoExit --outputStyle=static run-many -t test
+        uses: raegen/nx@v0.3.6
+        with:
+          nx: run-many -t test
+
+      # https://github.com/microsoft/playwright/issues/7249
+      - name: E2E Playwright Deps Version
+        run: |
+          PLAYWRIGHT_VERSION="$(jq -r '.devDependencies."@playwright/test"' package.json)"
+          echo "Playwright Version: ${PLAYWRIGHT_VERSION}"
+          echo "PLAYWRIGHT_VERSION=${PLAYWRIGHT_VERSION}" >> $GITHUB_ENV
+
+      - name: Restore E2E Playwright Cache Deps
+        id: playwright-cache
+        uses: actions/cache/restore@v4
+        with:
+          path: |
+            ~/.cache/ms-playwright
+          # https://github.com/jbranchaud/til/blob/master/github-actions/cache-playwright-dependencies-across-workflows.md
+          key: playwright-${{ runner.os }}-${{ hashFiles('**/package-lock.json') }}
+          # https://github.com/microsoft/playwright/issues/7249
+          # key: playwright-${{ runner.os }}-${{ env.PLAYWRIGHT_VERSION }}
 
       - name: E2E Deps
-        run: npx playwright install --with-deps
+        # https://github.com/microsoft/playwright/issues/7249
+        if: steps.playwright-cache.outputs.cache-hit != 'true'
+        run: npx playwright install --with-deps chromium
 
       - name: E2E
-        run: npx nx --tuiAutoExit --outputStyle=static run-many -t e2e
+        run: npx nx run e2e-main:e2e -- --ignore-snapshots
+        # Use this to make sure thngs get cached.
+        # continue-on-error: true
 
-      # - run: npx nx --tuiAutoExit --outputStyle=static fix-ci
-      #   if: always()
+      - name: E2E Artifacts
+        uses: actions/upload-artifact@v4
+        if: always()
+        with:
+          name: artifacts
+          path: |
+            e2e-server.log
+            apps/e2e-main/test-output
+          retention-days: 7
+
+      - name: Save NPM CI Cache
+        if: always()
+        uses: actions/cache/save@v4
+        with:
+          path: node_modules
+          key: node-${{ runner.os }}-node-${{ hashFiles('**/package-lock.json') }}
+
+      - name: Save E2E Playwright Cache Deps
+        if: always()
+        uses: actions/cache/save@v4
+        with:
+          path: |
+            ~/.cache/ms-playwright
+          key: playwright-${{ runner.os }}-${{ hashFiles('**/package-lock.json') }}
