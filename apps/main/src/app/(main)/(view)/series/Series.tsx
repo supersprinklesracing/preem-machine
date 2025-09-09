@@ -47,9 +47,7 @@ export default function Series({ series, children: eventsWithRaces }: Props) {
       <Stack>
         <Group justify="space-between">
           <Stack gap={0}>
-            <Title order={2} ff="Space Grotesk, var(--mantine-font-family)">
-              Events
-            </Title>
+            <Title order={2}>Events</Title>
             {series.website && (
               <Group gap="xs">
                 <IconWorldWww size={16} />

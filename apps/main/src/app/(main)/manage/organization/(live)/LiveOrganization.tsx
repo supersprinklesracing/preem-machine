@@ -29,9 +29,7 @@ export default function LiveOrganization({ organization, serieses }: Props) {
         </Button>
       </Group>
       <Stack>
-        <Title order={2} ff="Space Grotesk, var(--mantine-font-family)">
-          Series Schedule
-        </Title>
+        <Title order={2}>Series Schedule</Title>
         <SimpleGrid cols={{ base: 1, lg: 2 }}>
           {serieses?.map(({ series }) => (
             <SeriesCard key={series.id} series={series}>

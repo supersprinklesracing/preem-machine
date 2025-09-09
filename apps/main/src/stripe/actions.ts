@@ -32,7 +32,7 @@ export async function createPaymentIntent(
     },
     metadata: {
       preemPath,
-      userId: authUser.id,
+      userId: authUser.uid,
       isAnonymous: String(isAnonymous),
     },
   });
