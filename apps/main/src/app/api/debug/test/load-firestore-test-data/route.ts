@@ -1,41 +1,26 @@
-import { getFirestore } from '@/firebase-admin';
+import { getFirebaseAdminApp } from '@/firebase-admin';
 import { seedFirestore } from '@/datastore/seed-firestore';
+import { ENV_E2E_TESTING } from '@/env/env';
 import { NextResponse } from 'next/server';
-import { AuthError, verifyUserRole } from '@/auth/claims';
+import { getFirestore } from 'firebase-admin/firestore';
 
-async function clearFirestore() {
-  const db = await getFirestore();
-  const collections = await db.listCollections();
-  for (const collection of collections) {
-    const docs = await collection.listDocuments();
-    for (const doc of docs) {
-      await doc.delete();
-    }
-  }
+export async function GET() {
+  return NextResponse.json({ success: true });
 }
 
-export async function POST() {
+export async function POST(request: Request) {
+  if (!ENV_E2E_TESTING) {
+    return new Response('Not found', { status: 404 });
+  }
+
   try {
-    await verifyUserRole('admin');
-
-    await clearFirestore();
-    const db = await getFirestore();
-    await seedFirestore(db);
-
-    return NextResponse.json({
-      message: 'Firestore cleared and seeded successfully.',
-    });
+    const app = await getFirebaseAdminApp();
+    await seedFirestore(getFirestore(app));
+    return NextResponse.json({ success: true });
   } catch (error) {
-    if (error instanceof AuthError) {
-      return NextResponse.json(
-        { message: error.message },
-        { status: error.status },
-      );
-    }
-
-    console.error('Error in POST handler:', error);
+    console.error('Error seeding Firestore:', error);
     return NextResponse.json(
-      { message: 'Internal Server Error' },
+      { success: false, error: (error as Error).message },
       { status: 500 },
     );
   }

@@ -2,8 +2,7 @@ import 'server-only';
 
 import { getFirestore } from '@/firebase-admin';
 import { docId, DocPath } from './paths';
-import type { firestore } from 'firebase-admin';
-import { DocumentSnapshot } from 'firebase-admin/firestore';
+import type { DocumentSnapshot } from 'firebase-admin/firestore';
 import { cache } from 'react';
 import { clientConverter } from './converters';
 import type {
@@ -60,7 +59,7 @@ const _getDoc = async <T>(path: string): Promise<ClientCompat<T>> => {
 export const getDoc = cache(_getDoc);
 
 const getPreemWithContributions = async (
-  preemDoc: firestore.DocumentSnapshot<ClientCompat<Preem>>,
+  preemDoc: DocumentSnapshot<ClientCompat<Preem>>,
 ): Promise<PreemWithContributions> => {
   const preem = preemDoc.data();
   if (!preem) {
@@ -77,7 +76,7 @@ const getPreemWithContributions = async (
 };
 
 const getRaceWithPreems = async (
-  raceDoc: firestore.DocumentSnapshot<ClientCompat<Race>>,
+  raceDoc: DocumentSnapshot<ClientCompat<Race>>,
 ): Promise<RaceWithPreems> => {
   const result: RaceWithPreems = {
     // eslint-disable-next-line @typescript-eslint/no-non-null-assertion
@@ -95,7 +94,7 @@ const getRaceWithPreems = async (
 };
 
 const getRacesForEvent = async (
-  eventDoc: firestore.DocumentSnapshot<ClientCompat<Event>>,
+  eventDoc: DocumentSnapshot<ClientCompat<Event>>,
 ): Promise<EventWithRaces> => {
   const result: EventWithRaces = {
     // eslint-disable-next-line @typescript-eslint/no-non-null-assertion
@@ -113,7 +112,7 @@ const getRacesForEvent = async (
 };
 
 const getEventsForSeries = async (
-  seriesDoc: firestore.DocumentSnapshot<ClientCompat<Series>>,
+  seriesDoc: DocumentSnapshot<ClientCompat<Series>>,
 ): Promise<SeriesWithEvents> => {
   const result: SeriesWithEvents = {
     // eslint-disable-next-line @typescript-eslint/no-non-null-assertion
@@ -131,7 +130,7 @@ const getEventsForSeries = async (
 };
 
 export const getSeriesForOrganization = async (
-  organizationDoc: firestore.DocumentSnapshot<ClientCompat<Organization>>,
+  organizationDoc: DocumentSnapshot<ClientCompat<Organization>>,
 ): Promise<SeriesWithEvents[]> => {
   const snap = await organizationDoc.ref
     .collection('series')
@@ -141,7 +140,7 @@ export const getSeriesForOrganization = async (
 };
 
 export const getOrganizationWithSeries = async (
-  organizationDoc: firestore.DocumentSnapshot<ClientCompat<Organization>>,
+  organizationDoc: DocumentSnapshot<ClientCompat<Organization>>,
 ): Promise<OrganizationWithSeries> => {
   const result: OrganizationWithSeries = {
     // eslint-disable-next-line @typescript-eslint/no-non-null-assertion
@@ -170,7 +169,7 @@ export const getUserById = cache(
       .withConverter(clientConverter<User>())
       .get();
     if (!docSnap.exists) {
-      notFound('User not found');
+      notFound('User doc not found: ' + id);
     }
     // eslint-disable-next-line @typescript-eslint/no-non-null-assertion
     return docSnap.data()!;
@@ -227,22 +226,15 @@ export const getEventsForOrganizations = cache(
       .orderBy('endDate', 'asc')
       .withConverter(clientConverter<Event>())
       .get();
-    console.log(
-      'Events',
-      eventsSnap.docs.map((doc) => doc.data()),
-    );
     return eventsSnap.docs.map((doc) => doc.data());
   },
 );
 
 export const getEventsForUser = cache(
   async (userId: string): Promise<ClientCompat<Event>[]> => {
-    console.log('Getting events for user', userId);
     const user = await getUserById(userId);
-    console.log('User', user);
     const organizationIds =
       user?.organizationRefs?.map((ref) => ref.id).filter((id) => !!id) ?? [];
-    console.log('Organization IDs', organizationIds);
     return getEventsForOrganizations(organizationIds);
   },
 );
@@ -399,7 +391,7 @@ export const getRenderableUserDataForPage = cache(async (path: DocPath) => {
   const db = await getFirestore();
   const user = await getDoc<User>(path);
   if (!user) {
-    notFound('User not found');
+    notFound('User doc not found: ' + path);
   }
 
   const contributionsSnap = await db

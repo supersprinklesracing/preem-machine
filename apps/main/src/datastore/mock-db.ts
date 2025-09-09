@@ -15,6 +15,7 @@ import {
   SeriesBrief,
   User,
 } from './types';
+import { ENV_E2E_TESTING_USER } from '@/env/env';
 
 interface DatabaseDocument extends DocumentData {
   id: string;
@@ -135,32 +136,19 @@ export const createMockDb = (firestore: Firestore): DatabaseCollections =>
   postProcessDatabase({
     users: [
       {
-        // preem-machine
-        id: 'BFGvWNXZoCWayJa0pNEL4bfhtUC3',
-        name: 'Test User',
-        email: 'test-user@example.com',
+        id: 'user-test-admin',
+        name: 'Test Admin',
+        email: 'test-admin@example.com',
         avatarUrl: 'https://placehold.co/100x100.png',
         role: 'admin',
         organizationRefs: [
           createDocRef(firestore, 'organizations', 'org-super-sprinkles'),
         ],
-        metadata: createMetadata(firestore, '2024-07-01T10:00:00Z'),
-      },
-      {
-        // preem-machine-ci
-        id: '73LhDvkigMdwJ4r7NICamtwgd0u1',
-        name: 'Test User',
-        email: 'test-user@example.com',
-        avatarUrl: 'https://placehold.co/100x100.png',
-        role: 'admin',
-        organizationRefs: [
-          createDocRef(firestore, 'organizations', 'org-super-sprinkles'),
-        ],
-        metadata: createMetadata(firestore, '2024-07-01T10:00:00Z'),
+        metadata: createMetadata(firestore, '2024-07-01T09:59:00Z'),
       },
       {
         // preem-machine-dev
-        id: 'RwgsPxLnp1bHNcxgw7MdCpm1Cuj1',
+        id: ENV_E2E_TESTING_USER,
         name: 'Test User',
         email: 'test-user@example.com',
         avatarUrl: 'https://placehold.co/100x100.png',
@@ -170,6 +158,7 @@ export const createMockDb = (firestore: Firestore): DatabaseCollections =>
         ],
         metadata: createMetadata(firestore, '2024-07-01T10:00:00Z'),
       },
+
       {
         id: 'user-alex-doe',
         name: 'Alex Doe',

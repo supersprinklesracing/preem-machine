@@ -14,7 +14,7 @@ export const getHubPageData = cache(async () => {
   const result = {
     organizations: [] as OrganizationWithSeries[],
   };
-  const organizations = await getOrganizationsForUser(authUser.id);
+  const organizations = await getOrganizationsForUser(authUser.uid);
   for (const orgForUser of organizations) {
     result.organizations.push(await getOrganizationWithSeries(orgForUser));
   }

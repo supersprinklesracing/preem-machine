@@ -1,5 +1,5 @@
 import { getFirestore } from '@/firebase-admin';
-import { Firestore } from 'firebase-admin/firestore';
+import type { Firestore } from 'firebase-admin/firestore';
 import { createMockDb } from './mock-db';
 
 // eslint-disable-next-line @typescript-eslint/no-explicit-any

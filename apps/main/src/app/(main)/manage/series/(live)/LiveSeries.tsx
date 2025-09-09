@@ -61,9 +61,7 @@ export default function LiveSeries({ series, children }: Props) {
         </Group>
       )}
       <Stack>
-        <Title order={2} ff="Space Grotesk, var(--mantine-font-family)">
-          Events Schedule
-        </Title>
+        <Title order={2}>Events Schedule</Title>
         <SimpleGrid cols={{ base: 1, lg: 2 }}>
           {children.map(({ event }) => (
             <EventCard key={event.id} event={event}>

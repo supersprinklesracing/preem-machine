@@ -72,9 +72,7 @@ export default function Organization({
       <Grid gutter="xl">
         <Grid.Col span={{ base: 12, md: 8 }}>
           <Stack>
-            <Title order={2} ff="Space Grotesk, var(--mantine-font-family)">
-              Race Series
-            </Title>
+            <Title order={2}>Race Series</Title>
             {serieses.map(({ series }) => (
               <SeriesCard key={series.id} series={series}>
                 <Button
@@ -92,9 +90,7 @@ export default function Organization({
         <Grid.Col span={{ base: 12, md: 4 }}>
           <Stack>
             <Group justify="space-between">
-              <Title order={2} ff="Space Grotesk, var(--mantine-font-family)">
-                Members
-              </Title>
+              <Title order={2}>Members</Title>
               <Button
                 variant="outline"
                 size="xs"
