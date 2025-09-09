@@ -1,7 +1,7 @@
 'use client';
 
 import { toUrlPath } from '@/datastore/paths';
-import type { Event } from '@/datastore/schema';
+import { Event } from '@/datastore/schema';
 import {
   Box,
   Divider,

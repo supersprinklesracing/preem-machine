@@ -1,4 +1,4 @@
-import type { Event } from '@/datastore/schema';
+import { Event } from '@/datastore/schema';
 import '@/matchMedia.mock';
 import { act, fireEvent, render, screen, waitFor } from '@/test-utils';
 import { EditEvent } from './EditEvent';
@@ -23,11 +23,11 @@ const mockEvent: Event = {
   seriesBrief: {
     id: 'series-1',
     path: 'organizations/org-1/series/series-1',
-    name: 'Test Series',
+    name: 'Test Series 1',
     organizationBrief: {
       id: 'org-1',
       path: 'organizations/org-1',
-      name: 'Test Org',
+      name: 'Test Organization 1',
     },
   },
 };

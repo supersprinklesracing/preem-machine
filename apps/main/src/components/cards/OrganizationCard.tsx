@@ -1,4 +1,4 @@
-import type { Organization } from '@/datastore/schema';
+import { Organization } from '@/datastore/schema';
 import { Card, Grid, Group, Stack, Title, TitleOrder } from '@mantine/core';
 import React from 'react';
 

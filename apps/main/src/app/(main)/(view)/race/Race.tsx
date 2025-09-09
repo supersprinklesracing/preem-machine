@@ -29,8 +29,7 @@ interface Props {
 }
 
 export const Race: React.FC<Props> = ({ race, children }) => {
-  const [selectedPreem, setSelectedPreem] =
-    useState<Preem | null>(null);
+  const [selectedPreem, setSelectedPreem] = useState<Preem | null>(null);
 
   const getSponsorName = ({
     preem,

@@ -1,8 +1,10 @@
 import { AuthContextUser } from '@/auth/AuthContext';
 import { AuthProvider } from '@/auth/AuthProvider';
-import { setupServerMockDb } from '@/firebase-admin/mock-db';
+import { createMockDb } from '@/datastore/mock-db';
+import { getFirestore } from '@/firebase-admin';
 import { MantineProvider } from '@mantine/core';
 import { render, RenderOptions } from '@testing-library/react';
+import type { Firestore } from 'firebase-admin/firestore';
 import React, { ReactNode } from 'react';
 import { theme } from './app/theme';
 
@@ -36,8 +38,10 @@ const customRender = (
 };
 
 export const setupMockDb = () => {
-  beforeAll(() => {
-    setupServerMockDb();
+  let firestore: Firestore;
+  beforeAll(async () => {
+    firestore = await getFirestore();
+    (firestore as any).database = createMockDb(firestore);
   });
 };
 

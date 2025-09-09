@@ -1,5 +1,5 @@
 import { PreemWithContributions } from '@/datastore/firestore';
-import type { Race } from '@/datastore/schema';
+import { Race } from '@/datastore/schema';
 import {
   Card,
   Grid,

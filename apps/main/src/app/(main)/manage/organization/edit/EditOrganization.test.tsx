@@ -1,4 +1,4 @@
-import type { Organization } from '@/datastore/schema';
+import { Organization } from '@/datastore/schema';
 import '@/matchMedia.mock';
 import { act, fireEvent, render, screen, waitFor } from '@/test-utils';
 import { EditOrganization } from './EditOrganization';

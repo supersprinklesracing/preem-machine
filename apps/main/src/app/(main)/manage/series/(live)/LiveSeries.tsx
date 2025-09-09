@@ -3,7 +3,7 @@
 import { toUrlPath } from '@/datastore/paths';
 import EventCard from '@/components/cards/EventCard';
 import { EventWithRaces } from '@/datastore/firestore';
-import type { Series } from '@/datastore/schema';
+import { Series } from '@/datastore/schema';
 import {
   Anchor,
   Button,

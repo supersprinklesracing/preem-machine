@@ -154,7 +154,7 @@ Before writing a test, always inspect the component's props (its TypeScript inte
 - **Procedure:**
   1.  Import `render` and `screen` from `@/test-utils`.
   2.  Import the component to be tested.
-  3.  Create mock data for the component's props (see `apps/main/src/datastore/types.ts`).
+  3.  Create mock data for the component's props (see `apps/main/src/datastore/schema.ts`).
   4.  Write a simple "smoke test" to ensure the component renders without errors.
   5.  Assert that a key piece of text or an element is present in the document. Example: `expect(screen.getByText('Some Text')).toBeInTheDocument();`.
 

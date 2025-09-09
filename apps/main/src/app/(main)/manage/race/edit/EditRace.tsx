@@ -3,7 +3,7 @@
 import { useActionForm } from '@/app/shared/hooks/useActionForm';
 import RaceCard from '@/components/cards/RaceCard';
 import { FormActionResult } from '@/components/forms/forms';
-import type { Race } from '@/datastore/schema';
+import { Race } from '@/datastore/schema';
 import {
   Button,
   Card,

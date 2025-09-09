@@ -4,7 +4,7 @@ import { useActionForm } from '@/app/shared/hooks/useActionForm';
 import EventCard from '@/components/cards/EventCard';
 import { FormActionResult } from '@/components/forms/forms';
 import { getSubCollectionPath, seriesPath } from '@/datastore/paths';
-import type { Event } from '@/datastore/schema';
+import { Event } from '@/datastore/schema';
 import {
   Button,
   Card,

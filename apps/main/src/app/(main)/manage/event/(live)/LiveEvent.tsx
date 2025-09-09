@@ -3,7 +3,7 @@
 import { toUrlPath } from '@/datastore/paths';
 import RaceCard from '@/components/cards/RaceCard';
 import { RaceWithPreems } from '@/datastore/firestore';
-import type { Event } from '@/datastore/schema';
+import { Event } from '@/datastore/schema';
 import {
   Anchor,
   Button,

@@ -1,7 +1,7 @@
 'use client';
 
 import { toUrlPath } from '@/datastore/paths';
-import type { Contribution, ClientCompat } from '@/datastore/types';
+import { Contribution } from '@/datastore/schema';
 import {
   Avatar,
   Card,
@@ -16,7 +16,7 @@ import Link from 'next/link';
 import { CSSProperties } from 'react';
 
 interface LiveContributionFeedProps {
-  contributions: ClientCompat<Contribution>[];
+  contributions: Contribution[];
 }
 
 export default function LiveContributionFeed({

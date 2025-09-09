@@ -1,4 +1,4 @@
-import type { Race } from '@/datastore/schema';
+import { Race } from '@/datastore/schema';
 import '@/matchMedia.mock';
 import { act, fireEvent, render, screen, waitFor } from '@/test-utils';
 import { EditRace } from './EditRace';
@@ -21,15 +21,15 @@ const mockRace: Race = {
   eventBrief: {
     id: 'event-1',
     path: 'organizations/org-1/series/series-1/events/event-1',
-    name: 'Test Event',
+    name: 'Test Event 1',
     seriesBrief: {
       id: 'series-1',
       path: 'organizations/org-1/series/series-1',
-      name: 'Test Series',
+      name: 'Test Series 1',
       organizationBrief: {
         id: 'org-1',
         path: 'organizations/org-1',
-        name: 'Test Org',
+        name: 'Test Organization 1',
       },
     },
   },

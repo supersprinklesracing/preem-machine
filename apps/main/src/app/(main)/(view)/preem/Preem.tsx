@@ -4,8 +4,7 @@ import { racePath, toUrlPath } from '@/datastore/paths';
 import AnimatedNumber from '@/components/animated-number';
 import ContributionModal from '@/components/contribution-modal';
 import PreemStatusBadge from '@/components/PreemStatusBadge';
-import { Preem as PreemType } from '@/datastore/types';
-import type { ClientCompat, Contribution } from '@/datastore/types';
+import { Preem as PreemType, Contribution } from '@/datastore/schema';
 import {
   Avatar,
   Box,
@@ -31,8 +30,8 @@ import Link from 'next/link';
 import React, { useState } from 'react';
 
 interface Props {
-  preem: ClientCompat<PreemType>;
-  children: ClientCompat<Contribution>[];
+  preem: PreemType;
+  children: Contribution[];
 }
 
 export const Preem: React.FC<Props> = ({ preem, children }) => {

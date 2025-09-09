@@ -3,7 +3,7 @@
 import { toUrlPath } from '@/datastore/paths';
 import SeriesCard from '@/components/cards/SeriesCard';
 import { SeriesWithEvents } from '@/datastore/firestore';
-import type { Organization } from '@/datastore/schema';
+import { Organization } from '@/datastore/schema';
 import { Button, Group, SimpleGrid, Stack, Title } from '@mantine/core';
 import { IconPencil } from '@tabler/icons-react';
 import Link from 'next/link';

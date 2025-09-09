@@ -6,17 +6,7 @@ export const docPathSchema = z.string().refine((val) => /^[a-zA-Z0-9-_/]+$/.test
 });
 export type DocPath = z.infer<typeof docPathSchema>;
 
-const serverTimestampSchema = z.object({
-    seconds: z.number(),
-    nanoseconds: z.number(),
-  });
-const clientTimestampSchema = z.string().datetime();
-
-const serverDocRefSchema = z.object({
-    id: z.string(),
-    path: z.string(),
-  });
-const clientDocRefSchema = z.object({
+const docRefSchema = z.object({
     id: z.string(),
     path: docPathSchema,
 });
@@ -28,45 +18,36 @@ const baseDocSchema = z.object({
 });
 
 // Metadata
-const ServerMetadataSchema = z.object({
-    created: serverTimestampSchema.optional(),
-    lastModified: serverTimestampSchema.optional(),
-    createdBy: z.lazy(() => serverDocRefSchema).optional(),
-    lastModifiedBy: z.lazy(() => serverDocRefSchema).optional(),
-});
-
-const ClientMetadataSchema = z.object({
-    created: clientTimestampSchema.optional(),
-    lastModified: clientTimestampSchema.optional(),
-    createdBy: clientDocRefSchema.optional(),
-    lastModifiedBy: clientDocRefSchema.optional(),
+const metadataSchema = z.object({
+    created: z.string().datetime().optional(),
+    lastModified: z.string().datetime().optional(),
+    createdBy: docRefSchema.optional(),
+    lastModifiedBy: docRefSchema.optional(),
 });
 
 
 // UserBrief
-export const ServerUserBriefSchema = z.object({
+export const UserBriefSchema = z.object({
     id: z.string(),
     path: docPathSchema,
     name: z.string().optional(),
     avatarUrl: z.string().url().optional(),
 });
-export const ClientUserBriefSchema = ServerUserBriefSchema;
-export type UserBrief = z.infer<typeof ClientUserBriefSchema>;
+export type UserBrief = z.infer<typeof UserBriefSchema>;
 
 
 // OrganizationBrief
-export const ServerOrganizationBriefSchema = z.object({
+export const OrganizationBriefSchema = z.object({
     id: z.string(),
     path: docPathSchema,
     name: z.string().optional(),
 });
-export const ClientOrganizationBriefSchema = ServerOrganizationBriefSchema;
-export type OrganizationBrief = z.infer<typeof ClientOrganizationBriefSchema>;
+export type OrganizationBrief = z.infer<typeof OrganizationBriefSchema>;
 
 
 // User
-export const ServerUserSchema = baseDocSchema.extend({
-    metadata: ServerMetadataSchema.optional(),
+export const UserSchema = baseDocSchema.extend({
+    metadata: metadataSchema.optional(),
     termsAccepted: z.boolean().optional(),
     name: z.string().optional(),
     email: z.string().email().optional(),
@@ -74,159 +55,93 @@ export const ServerUserSchema = baseDocSchema.extend({
     affiliation: z.string().optional(),
     raceLicenseId: z.string().optional(),
     address: z.string().optional(),
-    organizationRefs: z.array(z.lazy(() => serverDocRefSchema)).optional(),
+    organizationRefs: z.array(docRefSchema).optional(),
 });
-export const ClientUserSchema = baseDocSchema.extend({
-    metadata: ClientMetadataSchema.optional(),
-    termsAccepted: z.boolean().optional(),
-    name: z.string().optional(),
-    email: z.string().email().optional(),
-    avatarUrl: z.string().url().optional(),
-    affiliation: z.string().optional(),
-    raceLicenseId: z.string().optional(),
-    address: z.string().optional(),
-    organizationRefs: z.array(clientDocRefSchema).optional(),
-});
-export type User = z.infer<typeof ClientUserSchema>;
+export type User = z.infer<typeof UserSchema>;
 
 
 // Organization
-export const ServerOrganizationSchema = baseDocSchema.extend({
-    metadata: ServerMetadataSchema.optional(),
+export const OrganizationSchema = baseDocSchema.extend({
+    metadata: metadataSchema.optional(),
     name: z.string().optional(),
     description: z.string().optional(),
     website: z.string().url().optional(),
-    memberRefs: z.array(z.lazy(() => serverDocRefSchema)).optional(),
+    memberRefs: z.array(docRefSchema).optional(),
     stripe: z.object({
         connectAccountId: z.string().optional(),
         account: z.any().optional(),
     }).optional(),
 });
-export const ClientOrganizationSchema = baseDocSchema.extend({
-    metadata: ClientMetadataSchema.optional(),
-    name: z.string().optional(),
-    description: z.string().optional(),
-    website: z.string().url().optional(),
-    memberRefs: z.array(clientDocRefSchema).optional(),
-    stripe: z.object({
-        connectAccountId: z.string().optional(),
-        account: z.any().optional(),
-    }).optional(),
-});
-export type Organization = z.infer<typeof ClientOrganizationSchema>;
+export type Organization = z.infer<typeof OrganizationSchema>;
 
 
 // SeriesBrief
-export const ServerSeriesBriefSchema = z.object({
+export const SeriesBriefSchema = z.object({
     id: z.string(),
     path: docPathSchema,
     name: z.string().optional(),
-    startDate: serverTimestampSchema.optional(),
-    endDate: serverTimestampSchema.optional(),
-    organizationBrief: ServerOrganizationBriefSchema,
+    startDate: z.string().datetime().optional(),
+    endDate: z.string().datetime().optional(),
+    organizationBrief: OrganizationBriefSchema,
 });
-export const ClientSeriesBriefSchema = z.object({
-    id: z.string(),
-    path: docPathSchema,
-    name: z.string().optional(),
-    startDate: clientTimestampSchema.optional(),
-    endDate: clientTimestampSchema.optional(),
-    organizationBrief: ClientOrganizationBriefSchema,
-});
-export type SeriesBrief = z.infer<typeof ClientSeriesBriefSchema>;
+export type SeriesBrief = z.infer<typeof SeriesBriefSchema>;
 
 
 // Series
-export const ServerSeriesSchema = baseDocSchema.extend({
-    metadata: ServerMetadataSchema.optional(),
+export const SeriesSchema = baseDocSchema.extend({
+    metadata: metadataSchema.optional(),
     name: z.string().optional(),
     description: z.string().optional(),
     website: z.string().url().optional(),
     location: z.string().optional(),
-    startDate: serverTimestampSchema.optional(),
-    endDate: serverTimestampSchema.optional(),
-    organizationBrief: ServerOrganizationBriefSchema,
+    startDate: z.string().datetime().optional(),
+    endDate: z.string().datetime().optional(),
+    organizationBrief: OrganizationBriefSchema,
 });
-export const ClientSeriesSchema = baseDocSchema.extend({
-    metadata: ClientMetadataSchema.optional(),
-    name: z.string().optional(),
-    description: z.string().optional(),
-    website: z.string().url().optional(),
-    location: z.string().optional(),
-    startDate: clientTimestampSchema.optional(),
-    endDate: clientTimestampSchema.optional(),
-    organizationBrief: ClientOrganizationBriefSchema,
-});
-export type Series = z.infer<typeof ClientSeriesSchema>;
+export type Series = z.infer<typeof SeriesSchema>;
 
 
 // EventBrief
-export const ServerEventBriefSchema = z.object({
+export const EventBriefSchema = z.object({
     id: z.string(),
     path: docPathSchema,
     name: z.string().optional(),
-    startDate: serverTimestampSchema.optional(),
-    endDate: serverTimestampSchema.optional(),
-    seriesBrief: ServerSeriesBriefSchema,
+    startDate: z.string().datetime().optional(),
+    endDate: z.string().datetime().optional(),
+    seriesBrief: SeriesBriefSchema,
 });
-export const ClientEventBriefSchema = z.object({
-    id: z.string(),
-    path: docPathSchema,
-    name: z.string().optional(),
-    startDate: clientTimestampSchema.optional(),
-    endDate: clientTimestampSchema.optional(),
-    seriesBrief: ClientSeriesBriefSchema,
-});
-export type EventBrief = z.infer<typeof ClientEventBriefSchema>;
+export type EventBrief = z.infer<typeof EventBriefSchema>;
 
 
 // Event
-export const ServerEventSchema = baseDocSchema.extend({
-    metadata: ServerMetadataSchema.optional(),
+export const EventSchema = baseDocSchema.extend({
+    metadata: metadataSchema.optional(),
     name: z.string().optional(),
     description: z.string().optional(),
     website: z.string().url().optional(),
     location: z.string().optional(),
-    startDate: serverTimestampSchema.optional(),
-    endDate: serverTimestampSchema.optional(),
-    seriesBrief: ServerSeriesBriefSchema,
+    startDate: z.string().datetime().optional(),
+    endDate: z.string().datetime().optional(),
+    seriesBrief: SeriesBriefSchema,
 });
-export const ClientEventSchema = baseDocSchema.extend({
-    metadata: ClientMetadataSchema.optional(),
-    name: z.string().optional(),
-    description: z.string().optional(),
-    website: z.string().url().optional(),
-    location: z.string().optional(),
-    startDate: clientTimestampSchema.optional(),
-    endDate: clientTimestampSchema.optional(),
-    seriesBrief: ClientSeriesBriefSchema,
-});
-export type Event = z.infer<typeof ClientEventSchema>;
+export type Event = z.infer<typeof EventSchema>;
 
 
 // RaceBrief
-export const ServerRaceBriefSchema = z.object({
+export const RaceBriefSchema = z.object({
     id: z.string(),
     path: docPathSchema,
     name: z.string().optional(),
-    startDate: serverTimestampSchema.optional(),
-    endDate: serverTimestampSchema.optional(),
-    eventBrief: ServerEventBriefSchema,
+    startDate: z.string().datetime().optional(),
+    endDate: z.string().datetime().optional(),
+    eventBrief: EventBriefSchema,
 });
-export const ClientRaceBriefSchema = z.object({
-    id: z.string(),
-    path: docPathSchema,
-    name: z.string().optional(),
-    startDate: clientTimestampSchema.optional(),
-    endDate: clientTimestampSchema.optional(),
-    eventBrief: ClientEventBriefSchema,
-});
-export type RaceBrief = z.infer<typeof ClientRaceBriefSchema>;
+export type RaceBrief = z.infer<typeof RaceBriefSchema>;
 
 
 // Race
-export const ServerRaceSchema = baseDocSchema.extend({
-    metadata: ServerMetadataSchema.optional(),
+export const RaceSchema = baseDocSchema.extend({
+    metadata: metadataSchema.optional(),
     name: z.string().optional(),
     description: z.string().optional(),
     website: z.string().url().optional(),
@@ -241,120 +156,62 @@ export const ServerRaceSchema = baseDocSchema.extend({
     laps: z.number().optional(),
     podiums: z.number().optional(),
     sponsors: z.array(z.string()).optional(),
-    startDate: serverTimestampSchema.optional(),
-    endDate: serverTimestampSchema.optional(),
-    eventBrief: ServerEventBriefSchema,
+    startDate: z.string().datetime().optional(),
+    endDate: z.string().datetime().optional(),
+    eventBrief: EventBriefSchema,
 });
-export const ClientRaceSchema = baseDocSchema.extend({
-    metadata: ClientMetadataSchema.optional(),
-    name: z.string().optional(),
-    description: z.string().optional(),
-    website: z.string().url().optional(),
-    location: z.string().optional(),
-    category: z.string().optional(),
-    gender: z.string().optional(),
-    courseDetails: z.string().optional(),
-    maxRacers: z.number().optional(),
-    currentRacers: z.number().optional(),
-    ageCategory: z.string().optional(),
-    duration: z.string().optional(),
-    laps: z.number().optional(),
-    podiums: z.number().optional(),
-    sponsors: z.array(z.string()).optional(),
-    startDate: clientTimestampSchema.optional(),
-    endDate: clientTimestampSchema.optional(),
-    eventBrief: ClientEventBriefSchema,
-});
-export type Race = z.infer<typeof ClientRaceSchema>;
+export type Race = z.infer<typeof RaceSchema>;
 
 
 // PreemBrief
-export const ServerPreemBriefSchema = z.object({
+export const PreemBriefSchema = z.object({
     id: z.string(),
     path: docPathSchema,
     name: z.string().optional(),
-    raceBrief: ServerRaceBriefSchema,
+    raceBrief: RaceBriefSchema,
 });
-export const ClientPreemBriefSchema = z.object({
-    id: z.string(),
-    path: docPathSchema,
-    name: z.string().optional(),
-    raceBrief: ClientRaceBriefSchema,
-});
-export type PreemBrief = z.infer<typeof ClientPreemBriefSchema>;
+export type PreemBrief = z.infer<typeof PreemBriefSchema>;
 
 
 // Preem
-export const ServerPreemSchema = baseDocSchema.extend({
-    metadata: ServerMetadataSchema.optional(),
+export const PreemSchema = baseDocSchema.extend({
+    metadata: metadataSchema.optional(),
     name: z.string().optional(),
     description: z.string().optional(),
     type: z.enum(['Pooled', 'One-Shot']).optional(),
     status: z.enum(['Open', 'Minimum Met', 'Awarded']).optional(),
     prizePool: z.number().optional(),
-    timeLimit: serverTimestampSchema.optional(),
+    timeLimit: z.string().datetime().optional(),
     minimumThreshold: z.number().optional(),
-    raceBrief: ServerRaceBriefSchema,
+    raceBrief: RaceBriefSchema,
 });
-export const ClientPreemSchema = baseDocSchema.extend({
-    metadata: ClientMetadataSchema.optional(),
-    name: z.string().optional(),
-    description: z.string().optional(),
-    type: z.enum(['Pooled', 'One-Shot']).optional(),
-    status: z.enum(['Open', 'Minimum Met', 'Awarded']).optional(),
-    prizePool: z.number().optional(),
-    timeLimit: clientTimestampSchema.optional(),
-    minimumThreshold: z.number().optional(),
-    raceBrief: ClientRaceBriefSchema,
-});
-export type Preem = z.infer<typeof ClientPreemSchema>;
+export type Preem = z.infer<typeof PreemSchema>;
 
 
 // ContributionBrief
-export const ServerContributionBriefSchema = z.object({
+export const ContributionBriefSchema = z.object({
     id: z.string(),
     path: docPathSchema,
     amount: z.number().optional(),
-    date: serverTimestampSchema.optional(),
+    date: z.string().datetime().optional(),
     message: z.string().optional(),
-    preemBrief: ServerPreemBriefSchema,
+    preemBrief: PreemBriefSchema,
 });
-export const ClientContributionBriefSchema = z.object({
-    id: z.string(),
-    path: docPathSchema,
-    amount: z.number().optional(),
-    date: clientTimestampSchema.optional(),
-    message: z.string().optional(),
-    preemBrief: ClientPreemBriefSchema,
-});
-export type ContributionBrief = z.infer<typeof ClientContributionBriefSchema>;
+export type ContributionBrief = z.infer<typeof ContributionBriefSchema>;
 
 
 // Contribution
-export const ServerContributionSchema = baseDocSchema.extend({
-    metadata: ServerMetadataSchema.optional(),
+export const ContributionSchema = baseDocSchema.extend({
+    metadata: metadataSchema.optional(),
     status: z.enum(['pending', 'confirmed', 'failed']).optional(),
-    contributor: ServerUserBriefSchema.optional(),
+    contributor: UserBriefSchema.optional(),
     amount: z.number().optional(),
-    date: serverTimestampSchema.optional(),
+    date: z.string().datetime().optional(),
     message: z.string().optional(),
     isAnonymous: z.boolean().optional(),
     stripe: z.object({
         paymentIntent: z.any(),
     }).optional(),
-    preemBrief: ServerPreemBriefSchema,
+    preemBrief: PreemBriefSchema,
 });
-export const ClientContributionSchema = baseDocSchema.extend({
-    metadata: ClientMetadataSchema.optional(),
-    status: z.enum(['pending', 'confirmed', 'failed']).optional(),
-    contributor: ClientUserBriefSchema.optional(),
-    amount: z.number().optional(),
-    date: clientTimestampSchema.optional(),
-    message: z.string().optional(),
-    isAnonymous: z.boolean().optional(),
-    stripe: z.object({
-        paymentIntent: z.any(),
-    }).optional(),
-    preemBrief: ClientPreemBriefSchema,
-});
-export type Contribution = z.infer<typeof ClientContributionSchema>;
+export type Contribution = z.infer<typeof ContributionSchema>;

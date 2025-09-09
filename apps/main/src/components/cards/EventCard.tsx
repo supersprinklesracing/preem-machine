@@ -1,4 +1,4 @@
-import type { Event } from '@/datastore/schema';
+import { Event } from '@/datastore/schema';
 import { Card, Grid, Group, Stack, Title, TitleOrder } from '@mantine/core';
 import React from 'react';
 import DateStatusBadge from '../DateStatusBadge';

@@ -1,4 +1,4 @@
-import type { Series } from '@/datastore/schema';
+import { Series } from '@/datastore/schema';
 import '@/matchMedia.mock';
 import { act, fireEvent, render, screen, waitFor } from '@/test-utils';
 import { EditSeries } from './EditSeries';
@@ -37,8 +37,8 @@ describe('EditSeries component', () => {
   });
 
   it('should call editSeriesAction with the correct data on form submission', async () => {
-    const newEventAction = jest.fn(() => Promise.resolve({ ok: true, path: '' }));
-    const editSeriesAction = jest.fn(() => Promise.resolve({ ok: true, id: 'series-1', path: 'organizations/org-1/series/series-1' }));
+    const newEventAction = jest.fn(() => Promise.resolve({ path: '' }));
+    const editSeriesAction = jest.fn(() => Promise.resolve({}));
 
     render(
       <EditSeries
@@ -73,7 +73,7 @@ describe('EditSeries component', () => {
   });
 
   it('should display an error message if the action fails', async () => {
-    const newEventAction = jest.fn(() => Promise.resolve({ ok: true, path: '' }));
+    const newEventAction = jest.fn(() => Promise.resolve({ path: '' }));
     const editSeriesAction = jest.fn(() =>
       Promise.reject(new Error('Failed to save')),
     );

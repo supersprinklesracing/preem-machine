@@ -1,4 +1,4 @@
-import type { Series } from '@/datastore/schema';
+import { Series } from '@/datastore/schema';
 import { Card, Grid, Group, Stack, Title, TitleOrder } from '@mantine/core';
 import React from 'react';
 import { DateLocationDetail } from './DateLocationDetail';

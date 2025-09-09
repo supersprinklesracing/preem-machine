@@ -5,7 +5,7 @@ export const dynamic = 'force-dynamic';
 
 import AnimatedNumber from '@/components/animated-number';
 import PreemStatusBadge from '@/components/PreemStatusBadge';
-import type { Race } from '@/datastore/schema';
+import { Race } from '@/datastore/schema';
 import {
   Button,
   Card,

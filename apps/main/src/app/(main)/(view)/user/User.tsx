@@ -1,7 +1,7 @@
 'use client';
 
 import { useAuth } from '@/auth/AuthContext';
-import type { Contribution, User } from '@/datastore/schema';
+import { Contribution, User } from '@/datastore/schema';
 import {
   Avatar,
   Button,

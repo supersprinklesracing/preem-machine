@@ -2,7 +2,7 @@
 
 import { toUrlPath } from '@/datastore/paths';
 import { EventWithRaces } from '@/datastore/firestore';
-import type { Contribution } from '@/datastore/schema';
+import { Contribution } from '@/datastore/schema';
 import { Card, Grid, Stack, Text, Title } from '@mantine/core';
 import { format } from 'date-fns';
 import Link from 'next/link';

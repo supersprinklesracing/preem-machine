@@ -3,7 +3,7 @@
 import { toUrlPath } from '@/datastore/paths';
 import SeriesCard from '@/components/cards/SeriesCard';
 import { SeriesWithEvents } from '@/datastore/firestore';
-import type { ClientCompat, Organization, User } from '@/datastore/types';
+import { Organization, User } from '@/datastore/schema';
 import {
   Anchor,
   Avatar,
@@ -20,9 +20,9 @@ import { IconChevronRight, IconPlus, IconWorldWww } from '@tabler/icons-react';
 import Link from 'next/link';
 
 interface Props {
-  organization: ClientCompat<Organization>;
+  organization: Organization;
   serieses: SeriesWithEvents[];
-  members: ClientCompat<User>[];
+  members: User[];
 }
 
 export default function Organization({

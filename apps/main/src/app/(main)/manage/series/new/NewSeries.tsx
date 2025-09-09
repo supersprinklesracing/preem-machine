@@ -4,7 +4,7 @@ import { useActionForm } from '@/app/shared/hooks/useActionForm';
 import SeriesCard from '@/components/cards/SeriesCard';
 import { FormActionResult } from '@/components/forms/forms';
 import { toUrlPath } from '@/datastore/paths';
-import type { Series } from '@/datastore/schema';
+import { Series } from '@/datastore/schema';
 import {
   Button,
   Card,

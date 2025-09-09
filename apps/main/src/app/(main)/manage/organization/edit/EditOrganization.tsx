@@ -3,7 +3,7 @@
 import { useActionForm } from '@/app/shared/hooks/useActionForm';
 import OrganizationCard from '@/components/cards/OrganizationCard';
 import { FormActionResult } from '@/components/forms/forms';
-import type { Organization } from '@/datastore/schema';
+import { Organization } from '@/datastore/schema';
 import {
   Button,
   Card,
