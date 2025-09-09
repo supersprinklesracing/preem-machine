@@ -5,8 +5,8 @@ import {
   getUserById,
   OrganizationWithSeries,
 } from '@/datastore/firestore';
-import type { Organization } from '@/datastore/schema';
-import { clientOrganizationConverter } from '@/datastore/zod-converters';
+import type { Organization, User } from '@/datastore/schema';
+import { clientOrganizationConverter, clientUserConverter } from '@/datastore/zod-converters';
 import { cache } from 'react';
 
 export const getHubPageData = cache(async () => {
@@ -23,7 +23,7 @@ export const getHubPageData = cache(async () => {
 });
 
 export const getOrganizationsForUser = cache(async (userId: string) => {
-  const user = await getUserById(userId);
+  const user = await getDocSnap<User>(`users/${userId}`, clientUserConverter);
   if (!user || !user.organizationRefs) {
     return [];
   }

@@ -9,7 +9,7 @@ import {
 } from 'firebase-admin/firestore';
 
 import { isUserAuthorized } from './access';
-import { unauthorized } from './errors';
+import { notFound, unauthorized } from './errors';
 import { DocPath, asDocPath } from './paths';
 import * as schema from './schema';
 import * as conv from './zod-converters';
@@ -57,6 +57,9 @@ export const createSeries = async (
   const db = await getFirestore();
   const orgRef = db.doc(organizationPath).withConverter(conv.organizationConverter);
   const orgDoc = await orgRef.get();
+  if (!orgDoc.exists) {
+    notFound('Organization not found');
+  }
   const orgData = orgDoc.data();
   if (!orgData) {
     throw new Error('Organization not found');
@@ -86,6 +89,9 @@ export const createEvent = async (
   const db = await getFirestore();
   const seriesRef = db.doc(seriesPath).withConverter(conv.seriesConverter);
   const seriesDoc = await seriesRef.get();
+  if (!seriesDoc.exists) {
+    notFound('Series not found');
+  }
   const seriesData = seriesDoc.data();
   if (!seriesData) {
     throw new Error('Series not found');
@@ -118,6 +124,9 @@ export const createRace = async (
   const db = await getFirestore();
   const eventRef = db.doc(eventPath).withConverter(conv.eventConverter);
   const eventDoc = await eventRef.get();
+  if (!eventDoc.exists) {
+    notFound('Event not found');
+  }
   const eventData = eventDoc.data();
   if (!eventData) {
     throw new Error('Event not found');
@@ -156,6 +165,9 @@ export const createPreem = async (
   const db = await getFirestore();
   const raceRef = db.doc(racePath).withConverter(conv.raceConverter);
   const raceDoc = await raceRef.get();
+  if (!raceDoc.exists) {
+    notFound('Race not found');
+  }
   const raceData = raceDoc.data();
   if (!raceData) {
     throw new Error('Race not found');

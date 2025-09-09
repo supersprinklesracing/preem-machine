@@ -38,7 +38,7 @@ describe('EditSeries component', () => {
 
   it('should call editSeriesAction with the correct data on form submission', async () => {
     const newEventAction = jest.fn(() => Promise.resolve({ ok: true, path: '' }));
-    const editSeriesAction = jest.fn(() => Promise.resolve({ ok: true }));
+    const editSeriesAction = jest.fn(() => Promise.resolve({ ok: true, id: 'series-1', path: 'organizations/org-1/series/series-1' }));
 
     render(
       <EditSeries
