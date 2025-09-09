@@ -3,7 +3,7 @@
 import { toUrlPath } from '@/datastore/paths';
 import RaceCard from '@/components/cards/RaceCard';
 import { RaceWithPreems } from '@/datastore/firestore';
-import type { ClientCompat, Event } from '@/datastore/types';
+import type { Event } from '@/datastore/schema';
 import {
   Anchor,
   Button,
@@ -18,7 +18,7 @@ import { format } from 'date-fns';
 import Link from 'next/link';
 
 interface Props {
-  event: ClientCompat<Event>;
+  event: Event;
   children: RaceWithPreems[];
 }
 

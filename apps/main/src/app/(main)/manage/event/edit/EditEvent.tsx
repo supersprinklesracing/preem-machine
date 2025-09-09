@@ -4,7 +4,7 @@ import { useActionForm } from '@/app/shared/hooks/useActionForm';
 import EventCard from '@/components/cards/EventCard';
 import { FormActionResult } from '@/components/forms/forms';
 import { getSubCollectionPath, seriesPath } from '@/datastore/paths';
-import type { ClientCompat, Event } from '@/datastore/types';
+import type { Event } from '@/datastore/schema';
 import {
   Button,
   Card,
@@ -36,7 +36,7 @@ export function EditEvent({
   event,
 }: {
   editEventAction: (options: EditEventOptions) => Promise<FormActionResult>;
-  event: ClientCompat<Event>;
+  event: Event;
 }) {
   const router = useRouter();
   const [opened, { open, close }] = useDisclosure(false);
@@ -61,7 +61,7 @@ export function EditEvent({
 
   const racesPath = getSubCollectionPath(seriesPath(event.path), 'races');
 
-  const eventPreview: ClientCompat<Event> = {
+  const eventPreview: Event = {
     ...event,
     name: debouncedValues.name,
     location: debouncedValues.location,

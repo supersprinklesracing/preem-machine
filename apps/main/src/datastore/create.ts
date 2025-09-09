@@ -11,18 +11,8 @@ import {
 import { isUserAuthorized } from './access';
 import { unauthorized } from './errors';
 import { DocPath, asDocPath } from './paths';
-import type {
-  Event,
-  EventBrief,
-  Organization,
-  OrganizationBrief,
-  Preem,
-  Race,
-  RaceBrief,
-  Series,
-  SeriesBrief,
-  User,
-} from './types';
+import * as schema from './schema';
+import * as conv from './zod-converters';
 
 const createMetadata = (userRef: DocumentReference<DocumentData>) => ({
   'metadata.created': FieldValue.serverTimestamp(),
@@ -59,20 +49,22 @@ const createDocument = async <U>(
 export const createSeries = async (
   organizationPath: DocPath,
   series: Pick<
-    Event,
+    schema.Event,
     'name' | 'description' | 'website' | 'location' | 'startDate' | 'endDate'
   >,
   authUser: AuthContextUser,
 ) => {
   const db = await getFirestore();
-  const orgRef = db.doc(organizationPath);
+  const orgRef = db.doc(organizationPath).withConverter(conv.organizationConverter);
   const orgDoc = await orgRef.get();
-  const orgData = orgDoc.data() as Organization;
+  const orgData = orgDoc.data();
+  if (!orgData) {
+    throw new Error('Organization not found');
+  }
 
-  const organizationBrief: OrganizationBrief = {
+  const organizationBrief: schema.OrganizationBrief = {
     id: orgRef.id,
     path: asDocPath(orgRef.path),
-
     name: orgData.name,
   };
 
@@ -86,17 +78,20 @@ export const createSeries = async (
 export const createEvent = async (
   seriesPath: DocPath,
   event: Pick<
-    Event,
+    schema.Event,
     'name' | 'description' | 'website' | 'location' | 'startDate' | 'endDate'
   >,
   authUser: AuthContextUser,
 ) => {
   const db = await getFirestore();
-  const seriesRef = db.doc(seriesPath);
+  const seriesRef = db.doc(seriesPath).withConverter(conv.seriesConverter);
   const seriesDoc = await seriesRef.get();
-  const seriesData = seriesDoc.data() as Series;
+  const seriesData = seriesDoc.data();
+  if (!seriesData) {
+    throw new Error('Series not found');
+  }
 
-  const seriesBrief: SeriesBrief = {
+  const seriesBrief: schema.SeriesBrief = {
     id: seriesRef.id,
     path: asDocPath(seriesRef.path),
     name: seriesData.name,
@@ -115,20 +110,22 @@ export const createEvent = async (
 export const createRace = async (
   eventPath: DocPath,
   race: Pick<
-    Event,
+    schema.Event,
     'name' | 'description' | 'website' | 'location' | 'startDate' | 'endDate'
   >,
   authUser: AuthContextUser,
 ) => {
   const db = await getFirestore();
-  const eventRef = db.doc(eventPath);
+  const eventRef = db.doc(eventPath).withConverter(conv.eventConverter);
   const eventDoc = await eventRef.get();
-  const eventData = eventDoc.data() as Event;
+  const eventData = eventDoc.data();
+  if (!eventData) {
+    throw new Error('Event not found');
+  }
 
-  const eventBrief: EventBrief = {
+  const eventBrief: schema.EventBrief = {
     id: eventRef.id,
     path: asDocPath(eventRef.path),
-
     name: eventData.name,
     startDate: eventData.startDate,
     endDate: eventData.endDate,
@@ -145,7 +142,7 @@ export const createRace = async (
 export const createPreem = async (
   racePath: DocPath,
   preem: Pick<
-    Preem,
+    schema.Preem,
     | 'name'
     | 'description'
     | 'type'
@@ -157,11 +154,14 @@ export const createPreem = async (
   authUser: AuthContextUser,
 ) => {
   const db = await getFirestore();
-  const raceRef = db.doc(racePath);
+  const raceRef = db.doc(racePath).withConverter(conv.raceConverter);
   const raceDoc = await raceRef.get();
-  const raceData = raceDoc.data() as Race;
+  const raceData = raceDoc.data();
+  if (!raceData) {
+    throw new Error('Race not found');
+  }
 
-  const raceBrief: RaceBrief = {
+  const raceBrief: schema.RaceBrief = {
     id: raceRef.id,
     path: asDocPath(raceRef.path),
     name: raceData.name,
@@ -178,7 +178,7 @@ export const createPreem = async (
 };
 
 export const createOrganization = async (
-  organization: Pick<Organization, 'name' | 'description' | 'website'>,
+  organization: Pick<schema.Organization, 'name' | 'description' | 'website'>,
   authUser: AuthContextUser,
 ) => {
   const db = await getFirestore();
@@ -189,7 +189,7 @@ export const createOrganization = async (
 
 export const createUser = async (
   user: Pick<
-    User,
+    schema.User,
     'name' | 'email' | 'avatarUrl' | 'affiliation' | 'raceLicenseId' | 'address'
   >,
   authUser: AuthContextUser,

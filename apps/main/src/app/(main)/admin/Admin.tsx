@@ -1,7 +1,7 @@
 'use client';
 
 import { createToast } from '@/app/shared/use-toast';
-import type { ClientCompat, User } from '@/datastore/types';
+import type { User } from '@/datastore/schema';
 import {
   Box,
   Button,
@@ -17,14 +17,14 @@ import { IconSearch, IconUserCheck } from '@tabler/icons-react';
 import React, { useState } from 'react';
 
 interface Props {
-  users: ClientCompat<User>[];
+  users: User[];
 }
 
 const Admin: React.FC<Props> = ({ users }) => {
   const [search, setSearch] = useState('');
   const { toast } = createToast();
 
-  const handleImpersonate = (user: ClientCompat<User>) => {
+  const handleImpersonate = (user: User) => {
     if (!user.name) {
       return;
     }

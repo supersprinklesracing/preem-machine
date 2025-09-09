@@ -3,7 +3,7 @@
 import { organizationPath, toUrlPath } from '@/datastore/paths';
 import EventCard from '@/components/cards/EventCard';
 import { EventWithRaces } from '@/datastore/firestore';
-import { ClientCompat, Series as SeriesType } from '@/datastore/types';
+import { Series as SeriesType } from '@/datastore/schema';
 import {
   Anchor,
   Button,
@@ -18,7 +18,7 @@ import { format } from 'date-fns';
 import Link from 'next/link';
 
 interface Props {
-  series: ClientCompat<SeriesType>;
+  series: SeriesType;
   children: EventWithRaces[];
 }
 

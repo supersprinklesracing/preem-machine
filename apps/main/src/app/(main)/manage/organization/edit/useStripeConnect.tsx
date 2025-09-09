@@ -1,6 +1,6 @@
 'use client';
 
-import { ClientCompat, Organization } from '@/datastore/types';
+import { Organization } from '@/datastore/schema';
 import { useState } from 'react';
 import {
   createDashboardLink,
@@ -9,7 +9,7 @@ import {
 } from './actions';
 
 interface UseStripeConnectProps {
-  organization: ClientCompat<Organization>;
+  organization: Organization;
 }
 
 export function useStripeConnect({ organization }: UseStripeConnectProps) {

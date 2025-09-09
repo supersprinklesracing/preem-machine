@@ -3,7 +3,7 @@
 import { useActionForm } from '@/app/shared/hooks/useActionForm';
 import SeriesCard from '@/components/cards/SeriesCard';
 import { FormActionResult } from '@/components/forms/forms';
-import type { ClientCompat, Series } from '@/datastore/types';
+import type { Series } from '@/datastore/schema';
 import {
   Button,
   Card,
@@ -32,7 +32,7 @@ export function EditSeries({
   newEventAction,
 }: {
   editSeriesAction: (options: EditSeriesOptions) => Promise<FormActionResult>;
-  series: ClientCompat<Series>;
+  series: Series;
   newEventAction: (
     options: NewEventOptions,
   ) => Promise<FormActionResult<{ path: string }>>;
@@ -72,7 +72,7 @@ export function EditSeries({
 
   const [debouncedValues] = useDebouncedValue(form.values, 100);
 
-  const seriesPreview: ClientCompat<Series> = {
+  const seriesPreview: Series = {
     ...series,
     name: debouncedValues.name,
     location: debouncedValues.location,

@@ -1,9 +1,9 @@
-import { ClientCompat, Series } from '@/datastore/types';
+import { Series } from '@/datastore/schema';
 import { render, screen } from '@/test-utils';
 import '@testing-library/jest-dom';
 import SeriesCard from './SeriesCard';
 
-const mockSeries: ClientCompat<Series> = {
+const mockSeries: Series = {
   id: 'series-1',
   path: 'organizations/org-1/series/series-1',
   name: 'Test Series',

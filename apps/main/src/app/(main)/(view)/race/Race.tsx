@@ -6,7 +6,7 @@ import RaceCard from '@/components/cards/RaceCard';
 import ContributionModal from '@/components/contribution-modal';
 import PreemStatusBadge from '@/components/PreemStatusBadge';
 import { PreemWithContributions } from '@/datastore/firestore';
-import { ClientCompat, Preem, Race as RaceType } from '@/datastore/types';
+import { Preem, Race as RaceType } from '@/datastore/schema';
 import {
   Avatar,
   Box,
@@ -24,13 +24,13 @@ import Link from 'next/link';
 import React, { useState } from 'react';
 
 interface Props {
-  race: ClientCompat<RaceType>;
+  race: RaceType;
   children: PreemWithContributions[];
 }
 
 export const Race: React.FC<Props> = ({ race, children }) => {
   const [selectedPreem, setSelectedPreem] =
-    useState<ClientCompat<Preem> | null>(null);
+    useState<Preem | null>(null);
 
   const getSponsorName = ({
     preem,

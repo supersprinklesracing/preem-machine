@@ -2,7 +2,8 @@
 
 import { Breadcrumbs } from '@/components/Breadcrumbs';
 import { getDoc } from '@/datastore/firestore';
-import { Series } from '@/datastore/types';
+import { Series } from '@/datastore/schema';
+import { clientSeriesConverter } from '@/datastore/zod-converters';
 import { Stack } from '@mantine/core';
 import { newEventAction } from '../../event/new/new-event-action';
 import { EditSeries } from './EditSeries';
@@ -14,7 +15,7 @@ export default async function EditSeriesPage({
   searchParams: { path: string };
 }) {
   const { path } = searchParams;
-  const doc = await getDoc<Series>(path);
+  const doc = await getDoc<Series>(path, clientSeriesConverter);
   return (
     <Stack>
       <Breadcrumbs brief={doc} />

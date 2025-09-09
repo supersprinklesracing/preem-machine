@@ -1,5 +1,5 @@
 import { PreemWithContributions } from '@/datastore/firestore';
-import type { ClientCompat, Race } from '@/datastore/types';
+import type { Race } from '@/datastore/schema';
 import {
   Card,
   Grid,
@@ -27,7 +27,7 @@ import { toUrlPath } from '@/datastore/paths';
 const LARGE_PREEM_THRESHOLD = 100;
 
 interface RaceCardProps {
-  race: ClientCompat<Race>;
+  race: Race;
   preems: PreemWithContributions[];
   children?: React.ReactNode;
   style?: React.CSSProperties;

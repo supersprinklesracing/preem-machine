@@ -1,17 +1,12 @@
 'use client';
 
 import { DocPath, toUrlPath } from '@/datastore/paths';
-import { ClientCompat } from '@/datastore/types';
+import { User } from '@/datastore/schema';
 import { Avatar, Group, Text } from '@mantine/core';
 import Link from 'next/link';
 
 interface UserAvatarProps {
-  user?: ClientCompat<{
-    id?: string;
-    path?: DocPath;
-    name?: string;
-    avatarUrl?: string;
-  }> | null;
+  user?: User | null;
 }
 
 export default function UserAvatar({ user }: UserAvatarProps) {

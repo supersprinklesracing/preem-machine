@@ -3,7 +3,7 @@
 import { useActionForm } from '@/app/shared/hooks/useActionForm';
 import OrganizationCard from '@/components/cards/OrganizationCard';
 import { FormActionResult } from '@/components/forms/forms';
-import type { ClientCompat, Organization } from '@/datastore/types';
+import type { Organization } from '@/datastore/schema';
 import {
   Button,
   Card,
@@ -31,7 +31,7 @@ export function EditOrganization({
   editOrganizationAction: (
     options: EditOrganizationOptions,
   ) => Promise<FormActionResult>;
-  organization: ClientCompat<Organization>;
+  organization: Organization;
   stripeError?: string;
 }) {
   const router = useRouter();
@@ -52,7 +52,7 @@ export function EditOrganization({
 
   const [debouncedValues] = useDebouncedValue(form.values, 100);
 
-  const organizationPreview: ClientCompat<Organization> = {
+  const organizationPreview: Organization = {
     ...organization,
     name: debouncedValues.name,
     website: debouncedValues.website,

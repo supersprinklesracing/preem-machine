@@ -1,7 +1,7 @@
 'use client';
 
 import { useAuth } from '@/auth/AuthContext';
-import type { ClientCompat, Contribution, User } from '@/datastore/types';
+import type { Contribution, User } from '@/datastore/schema';
 import {
   Avatar,
   Button,
@@ -19,8 +19,8 @@ import Link from 'next/link';
 import React from 'react';
 
 interface Props {
-  user: ClientCompat<User>;
-  contributions: ClientCompat<Contribution>[];
+  user: User;
+  contributions: Contribution[];
 }
 
 const User: React.FC<Props> = ({ user, contributions }) => {

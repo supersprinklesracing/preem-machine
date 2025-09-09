@@ -1,4 +1,4 @@
-import type { ClientCompat, Race } from '@/datastore/types';
+import type { Race } from '@/datastore/schema';
 import '@/matchMedia.mock';
 import { act, fireEvent, render, screen, waitFor } from '@/test-utils';
 import { EditRace } from './EditRace';
@@ -10,7 +10,7 @@ jest.mock('next/navigation', () => ({
   }),
 }));
 
-const mockRace: ClientCompat<Race> = {
+const mockRace: Race = {
   id: 'race-1',
   path: 'organizations/org-1/series/series-1/events/event-1/races/race-1',
   name: 'Test Race',
@@ -21,12 +21,15 @@ const mockRace: ClientCompat<Race> = {
   eventBrief: {
     id: 'event-1',
     path: 'organizations/org-1/series/series-1/events/event-1',
+    name: 'Test Event',
     seriesBrief: {
       id: 'series-1',
       path: 'organizations/org-1/series/series-1',
+      name: 'Test Series',
       organizationBrief: {
         id: 'org-1',
         path: 'organizations/org-1',
+        name: 'Test Org',
       },
     },
   },

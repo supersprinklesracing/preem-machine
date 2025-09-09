@@ -2,7 +2,7 @@
 
 import { toUrlPath } from '@/datastore/paths';
 import { EventWithRaces } from '@/datastore/firestore';
-import type { ClientCompat, Contribution } from '@/datastore/types';
+import type { Contribution } from '@/datastore/schema';
 import { Card, Grid, Stack, Text, Title } from '@mantine/core';
 import { format } from 'date-fns';
 import Link from 'next/link';
@@ -10,7 +10,7 @@ import LiveContributionFeed from '../../shared/LiveContributionFeed';
 
 interface Props {
   eventsWithRaces: EventWithRaces[];
-  contributions: ClientCompat<Contribution>[];
+  contributions: Contribution[];
 }
 
 export default function Home({ eventsWithRaces, contributions }: Props) {

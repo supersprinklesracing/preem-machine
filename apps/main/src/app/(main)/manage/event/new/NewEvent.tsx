@@ -4,7 +4,7 @@ import { useActionForm } from '@/app/shared/hooks/useActionForm';
 import EventCard from '@/components/cards/EventCard';
 import { FormActionResult } from '@/components/forms/forms';
 import { toUrlPath } from '@/datastore/paths';
-import type { ClientCompat, Event } from '@/datastore/types';
+import type { Event } from '@/datastore/schema';
 import {
   Button,
   Card,
@@ -59,7 +59,7 @@ export function NewEvent({
 
   const [debouncedValues] = useDebouncedValue(form.values, 100);
 
-  const eventPreview: ClientCompat<Event> = {
+  const eventPreview: Event = {
     id: 'preview',
     path: 'organizations/org-1/series/series-1/events/preview',
     name: debouncedValues.name || 'Your Event Name',

@@ -1,10 +1,10 @@
-import type { ClientCompat, Series } from '@/datastore/types';
+import type { Series } from '@/datastore/schema';
 import { Card, Grid, Group, Stack, Title, TitleOrder } from '@mantine/core';
 import React from 'react';
 import { DateLocationDetail } from './DateLocationDetail';
 
 interface SeriesCardProps {
-  series: ClientCompat<Series>;
+  series: Series;
   children?: React.ReactNode;
   style?: React.CSSProperties;
   withBorder?: boolean;

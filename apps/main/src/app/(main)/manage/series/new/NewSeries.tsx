@@ -4,7 +4,7 @@ import { useActionForm } from '@/app/shared/hooks/useActionForm';
 import SeriesCard from '@/components/cards/SeriesCard';
 import { FormActionResult } from '@/components/forms/forms';
 import { toUrlPath } from '@/datastore/paths';
-import type { ClientCompat, Series } from '@/datastore/types';
+import type { Series } from '@/datastore/schema';
 import {
   Button,
   Card,
@@ -55,7 +55,7 @@ export function NewSeries({
 
   const [debouncedValues] = useDebouncedValue(form.values, 100);
 
-  const seriesPreview: ClientCompat<Series> = {
+  const seriesPreview: Series = {
     id: 'preview',
     path: 'organizations/org-1/series/preview',
     name: debouncedValues.name || 'Your Series Name',

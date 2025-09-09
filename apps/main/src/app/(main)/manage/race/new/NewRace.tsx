@@ -4,7 +4,7 @@ import { useActionForm } from '@/app/shared/hooks/useActionForm';
 import RaceCard from '@/components/cards/RaceCard';
 import { FormActionResult } from '@/components/forms/forms';
 import { toUrlPath } from '@/datastore/paths';
-import type { ClientCompat, Race } from '@/datastore/types';
+import type { Race } from '@/datastore/schema';
 import {
   Button,
   Card,
@@ -66,7 +66,7 @@ export function NewRace({
 
   const [debouncedValues] = useDebouncedValue(form.values, 100);
 
-  const racePreview: ClientCompat<Race> = {
+  const racePreview: Race = {
     id: 'preview',
     path: 'organizations/org-1/series/series-1/events/event-1/races/preview',
     name: debouncedValues.name || 'Your Race Name',

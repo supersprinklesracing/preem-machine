@@ -1,4 +1,4 @@
-import type { ClientCompat, Organization } from '@/datastore/types';
+import type { Organization } from '@/datastore/schema';
 import '@/matchMedia.mock';
 import { act, fireEvent, render, screen, waitFor } from '@/test-utils';
 import { EditOrganization } from './EditOrganization';
@@ -15,7 +15,7 @@ jest.mock('./StripeConnectCard', () => ({
   StripeConnectCard: jest.fn(() => <div>Mock StripeConnectCard</div>),
 }));
 
-const mockOrganization: ClientCompat<Organization> = {
+const mockOrganization: Organization = {
   id: 'org-1',
   path: 'organizations/org-1',
   name: 'Test Organization',

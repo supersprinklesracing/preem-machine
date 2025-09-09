@@ -3,7 +3,7 @@
 import { useActionForm } from '@/app/shared/hooks/useActionForm';
 import RaceCard from '@/components/cards/RaceCard';
 import { FormActionResult } from '@/components/forms/forms';
-import type { ClientCompat, Race } from '@/datastore/types';
+import type { Race } from '@/datastore/schema';
 import {
   Button,
   Card,
@@ -30,7 +30,7 @@ export function EditRace({
   race,
 }: {
   editRaceAction: (options: EditRaceOptions) => Promise<FormActionResult>;
-  race: ClientCompat<Race>;
+  race: Race;
 }) {
   const router = useRouter();
 
@@ -61,7 +61,7 @@ export function EditRace({
 
   const [debouncedValues] = useDebouncedValue(form.values, 100);
 
-  const racePreview: ClientCompat<Race> = {
+  const racePreview: Race = {
     ...race,
     name: debouncedValues.name,
     location: debouncedValues.location,

@@ -5,7 +5,7 @@ export const dynamic = 'force-dynamic';
 
 import AnimatedNumber from '@/components/animated-number';
 import PreemStatusBadge from '@/components/PreemStatusBadge';
-import type { ClientCompat, Race } from '@/datastore/types';
+import type { Race } from '@/datastore/schema';
 import {
   Button,
   Card,
@@ -31,7 +31,7 @@ import type { PreemWithContributions } from '@/datastore/firestore';
 import ManageRaceContributionTable from './ManageRaceContributionTable';
 
 export interface LiveRaceProps {
-  race: ClientCompat<Race>;
+  race: Race;
   children: PreemWithContributions[];
 }
 
