@@ -27,7 +27,7 @@ describe('UserPage component', () => {
   });
 
   it('should fetch user data and render the User component', async () => {
-    const searchParams = { path: 'users/user-alex-doe' };
+    const searchParams = Promise.resolve({ path: 'users/user-alex-doe' });
     const PageComponent = await UserPage({ searchParams });
     render(PageComponent);
 
@@ -38,7 +38,7 @@ describe('UserPage component', () => {
   });
 
   it('should throw NotFoundError when the user does not exist', async () => {
-    const searchParams = { path: 'users/non-existent-user' };
+    const searchParams = Promise.resolve({ path: 'users/non-existent-user' });
     expect(UserPage({ searchParams })).rejects.toThrow(NotFoundError);
   });
 
@@ -46,7 +46,7 @@ describe('UserPage component', () => {
     (auth.getAuthUser as jest.Mock).mockResolvedValue({
       uid: 'test-uid',
     });
-    const searchParams = { path: undefined };
+    const searchParams = Promise.resolve({ path: undefined });
     await expect(UserPage({ searchParams })).rejects.toThrow(
       'mock redirect(/user?path=users/test-uid)',
     );
@@ -54,7 +54,7 @@ describe('UserPage component', () => {
 
   it('should redirect to login page when no id is provided and user is not logged in', async () => {
     (auth.getAuthUser as jest.Mock).mockResolvedValue(null);
-    const searchParams = { path: undefined };
+    const searchParams = Promise.resolve({ path: undefined });
     await expect(UserPage({ searchParams })).rejects.toThrow(
       'mock redirect(/login?redirect=/user)',
     );

@@ -2,7 +2,7 @@
 
 import { getAuthUser } from '@/auth/user';
 import { Breadcrumbs } from '@/components/Breadcrumbs';
-import { getRenderableUserDataForPage } from '@/datastore/firestore';
+import { getRenderableUserDataForPage } from '@/datastore/server/query/query';
 import { getDocPathFromSearchParams } from '@/datastore/paths';
 import { Stack } from '@mantine/core';
 import { redirect } from 'next/navigation';

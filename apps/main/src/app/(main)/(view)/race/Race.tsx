@@ -5,7 +5,7 @@ import AnimatedNumber from '@/components/animated-number';
 import RaceCard from '@/components/cards/RaceCard';
 import ContributionModal from '@/components/contribution-modal';
 import PreemStatusBadge from '@/components/PreemStatusBadge';
-import { PreemWithContributions } from '@/datastore/firestore';
+import { PreemWithContributions } from '@/datastore/query-schema';
 import { Preem, Race as RaceType } from '@/datastore/schema';
 import {
   Avatar,

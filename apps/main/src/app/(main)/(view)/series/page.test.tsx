@@ -15,9 +15,9 @@ setupMockDb();
 
 describe('SeriesPage component', () => {
   it('should fetch series data and render the Series component', async () => {
-    const searchParams = {
+    const searchParams = Promise.resolve({
       path: 'organizations/org-super-sprinkles/series/series-sprinkles-2025',
-    };
+    });
     render(await SeriesPage({ searchParams }));
 
     expect(screen.getByText('Mock Series')).toBeInTheDocument();
@@ -27,9 +27,9 @@ describe('SeriesPage component', () => {
   });
 
   it('should throw NotFoundError when the series does not exist', async () => {
-    const searchParams = {
+    const searchParams = Promise.resolve({
       path: 'organizations/org-1/series/non-existent-series',
-    };
+    });
     expect(SeriesPage({ searchParams })).rejects.toThrow(NotFoundError);
   });
 });

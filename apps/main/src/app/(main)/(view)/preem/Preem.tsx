@@ -30,7 +30,19 @@ import Link from 'next/link';
 import React, { useState } from 'react';
 
 interface Props {
-  preem: PreemType;
+  preem: Pick<
+    PreemType,
+    | 'path'
+    | 'raceBrief'
+    | 'name'
+    | 'description'
+    | 'status'
+    | 'type'
+    | 'minimumThreshold'
+    | 'timeLimit'
+    | 'prizePool'
+    | 'id'
+  >;
   children: Contribution[];
 }
 

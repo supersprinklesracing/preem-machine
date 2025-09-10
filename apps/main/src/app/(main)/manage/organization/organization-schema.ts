@@ -1,11 +1,9 @@
-import { z } from 'zod';
+import { OrganizationSchema as schema } from '@/datastore/schema';
 
-export const organizationSchema = z.object({
-  name: z.string().min(2, 'Name must have at least 2 letters'),
-  description: z
-    .string()
-    .min(10, 'Description must have at least 10 letters')
-    .optional()
-    .or(z.literal('')),
-  website: z.url().optional().or(z.literal('')),
+export const organizationSchema = schema.omit({
+  id: true,
+  path: true,
+  metadata: true,
+  memberRefs: true,
+  stripe: true,
 });

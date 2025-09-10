@@ -18,8 +18,8 @@ const mockEvent: Event = {
   description: 'Test Description',
   location: 'Test Location',
   website: 'https://example.com',
-  startDate: new Date().toISOString(),
-  endDate: new Date().toISOString(),
+  startDate: new Date(),
+  endDate: new Date(),
   seriesBrief: {
     id: 'series-1',
     path: 'organizations/org-1/series/series-1',

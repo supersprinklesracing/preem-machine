@@ -36,7 +36,18 @@ export function EditEvent({
   event,
 }: {
   editEventAction: (options: EditEventOptions) => Promise<FormActionResult>;
-  event: Event;
+  event: Pick<
+    Event,
+    | 'name'
+    | 'location'
+    | 'website'
+    | 'description'
+    | 'startDate'
+    | 'endDate'
+    | 'path'
+    | 'id'
+    | 'seriesBrief'
+  >;
 }) {
   const router = useRouter();
   const [opened, { open, close }] = useDisclosure(false);
@@ -48,8 +59,8 @@ export function EditEvent({
       location: event.location ?? '',
       website: event.website ?? '',
       description: event.description ?? '',
-      startDate: event.startDate ? new Date(event.startDate) : null,
-      endDate: event.endDate ? new Date(event.endDate) : null,
+      startDate: event.startDate,
+      endDate: event.endDate,
     },
     action: (values) => editEventAction({ path: event.path, edits: values }),
     onSuccess: () => {
@@ -67,12 +78,8 @@ export function EditEvent({
     location: debouncedValues.location,
     website: debouncedValues.website,
     description: debouncedValues.description,
-    startDate: debouncedValues.startDate
-      ? new Date(debouncedValues.startDate).toISOString()
-      : undefined,
-    endDate: debouncedValues.endDate
-      ? new Date(debouncedValues.endDate).toISOString()
-      : undefined,
+    startDate: debouncedValues.startDate,
+    endDate: debouncedValues.endDate,
   };
 
   return (
@@ -113,15 +120,18 @@ export function EditEvent({
                       <DatePicker
                         type="range"
                         allowSingleDateInRange
-                        value={[form.values.startDate, form.values.endDate]}
+                        value={[
+                          form.values.startDate ?? null,
+                          form.values.endDate ?? null,
+                        ]}
                         onChange={([start, end]) => {
                           form.setFieldValue(
                             'startDate',
-                            start ? new Date(start) : null,
+                            start ? new Date(start) : undefined,
                           );
                           form.setFieldValue(
                             'endDate',
-                            end ? new Date(end) : null,
+                            end ? new Date(end) : undefined,
                           );
                         }}
                         data-testid="date-picker"
@@ -151,7 +161,7 @@ export function EditEvent({
         </SimpleGrid>
       </Stack>
       <Modal opened={opened} onClose={close} title={ADD_RACE_MODAL_TITLE}>
-        <NewRace newRaceAction={newRaceAction} path={racesPath} />
+        <NewRace event={event} newRaceAction={newRaceAction} path={racesPath} />
       </Modal>
     </Container>
   );

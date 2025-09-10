@@ -20,7 +20,7 @@ import Stripe from 'stripe';
 import { useStripeConnect } from './useStripeConnect';
 
 interface Props {
-  organization: Organization;
+  organization: Pick<Organization, 'stripe' | 'id'>;
   stripeError?: string;
 }
 

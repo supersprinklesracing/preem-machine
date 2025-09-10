@@ -16,8 +16,8 @@ const mockRace: Race = {
   name: 'Test Race',
   location: 'Test Location',
   website: 'https://example.com',
-  startDate: new Date().toISOString(),
-  endDate: new Date().toISOString(),
+  startDate: new Date(),
+  endDate: new Date(),
   eventBrief: {
     id: 'event-1',
     path: 'organizations/org-1/series/series-1/events/event-1',

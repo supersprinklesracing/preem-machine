@@ -2,7 +2,7 @@
 
 import { organizationPath, toUrlPath } from '@/datastore/paths';
 import EventCard from '@/components/cards/EventCard';
-import { EventWithRaces } from '@/datastore/firestore';
+import { EventWithRaces } from '@/datastore/query-schema';
 import { Series as SeriesType } from '@/datastore/schema';
 import {
   Anchor,
@@ -18,7 +18,17 @@ import { format } from 'date-fns';
 import Link from 'next/link';
 
 interface Props {
-  series: SeriesType;
+  series: Pick<
+    SeriesType,
+    | 'name'
+    | 'path'
+    | 'location'
+    | 'startDate'
+    | 'endDate'
+    | 'description'
+    | 'website'
+    | 'organizationBrief'
+  >;
   children: EventWithRaces[];
 }
 

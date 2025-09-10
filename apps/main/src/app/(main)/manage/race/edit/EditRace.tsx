@@ -30,7 +30,27 @@ export function EditRace({
   race,
 }: {
   editRaceAction: (options: EditRaceOptions) => Promise<FormActionResult>;
-  race: Race;
+  race: Pick<
+    Race,
+    | 'name'
+    | 'location'
+    | 'website'
+    | 'description'
+    | 'category'
+    | 'gender'
+    | 'courseDetails'
+    | 'maxRacers'
+    | 'ageCategory'
+    | 'duration'
+    | 'laps'
+    | 'podiums'
+    | 'sponsors'
+    | 'startDate'
+    | 'endDate'
+    | 'path'
+    | 'id'
+    | 'eventBrief'
+  >;
 }) {
   const router = useRouter();
 
@@ -50,8 +70,8 @@ export function EditRace({
       laps: race.laps ?? 0,
       podiums: race.podiums ?? 0,
       sponsors: race.sponsors ?? [],
-      startDate: race.startDate ? new Date(race.startDate) : null,
-      endDate: race.endDate ? new Date(race.endDate) : null,
+      startDate: race.startDate,
+      endDate: race.endDate,
     },
     action: (values) => editRaceAction({ path: race.path, edits: values }),
     onSuccess: () => {
@@ -63,21 +83,7 @@ export function EditRace({
 
   const racePreview: Race = {
     ...race,
-    name: debouncedValues.name,
-    location: debouncedValues.location,
-    website: debouncedValues.website,
-    description: debouncedValues.description,
-    startDate: debouncedValues.startDate?.toISOString(),
-    endDate: debouncedValues.endDate?.toISOString(),
-    category: debouncedValues.category,
-    gender: debouncedValues.gender,
-    courseDetails: debouncedValues.courseDetails,
-    maxRacers: debouncedValues.maxRacers,
-    ageCategory: debouncedValues.ageCategory,
-    duration: debouncedValues.duration,
-    laps: debouncedValues.laps,
-    podiums: debouncedValues.podiums,
-    sponsors: debouncedValues.sponsors,
+    ...debouncedValues,
   };
 
   return (
@@ -138,7 +144,7 @@ export function EditRace({
                   onChange={(value) =>
                     form.setFieldValue(
                       'startDate',
-                      value ? new Date(value) : null,
+                      value ? new Date(value) : undefined,
                     )
                   }
                   data-testid="start-date-picker"
@@ -149,7 +155,7 @@ export function EditRace({
                   onChange={(value) =>
                     form.setFieldValue(
                       'endDate',
-                      value ? new Date(value) : null,
+                      value ? new Date(value) : undefined,
                     )
                   }
                   data-testid="end-date-picker"

@@ -32,7 +32,18 @@ export function EditSeries({
   newEventAction,
 }: {
   editSeriesAction: (options: EditSeriesOptions) => Promise<FormActionResult>;
-  series: Series;
+  series: Pick<
+    Series,
+    | 'name'
+    | 'location'
+    | 'website'
+    | 'description'
+    | 'startDate'
+    | 'endDate'
+    | 'id'
+    | 'organizationBrief'
+    | 'path'
+  >;
   newEventAction: (
     options: NewEventOptions,
   ) => Promise<FormActionResult<{ path: string }>>;
@@ -52,8 +63,8 @@ export function EditSeries({
       location: series.location ?? '',
       website: series.website ?? '',
       description: series.description ?? '',
-      startDate: series.startDate ? new Date(series.startDate) : null,
-      endDate: series.endDate ? new Date(series.endDate) : null,
+      startDate: series.startDate,
+      endDate: series.endDate,
     },
     action: (values) => {
       if (!series.id || !series.organizationBrief?.id) {
@@ -74,12 +85,7 @@ export function EditSeries({
 
   const seriesPreview: Series = {
     ...series,
-    name: debouncedValues.name,
-    location: debouncedValues.location,
-    website: debouncedValues.website,
-    description: debouncedValues.description,
-    startDate: debouncedValues.startDate?.toISOString(),
-    endDate: debouncedValues.endDate?.toISOString(),
+    ...debouncedValues,
   };
 
   return (
@@ -110,13 +116,19 @@ export function EditSeries({
                 <DatePicker
                   type="range"
                   allowSingleDateInRange
-                  value={[form.values.startDate, form.values.endDate]}
+                  value={[
+                    form.values.startDate ?? null,
+                    form.values.endDate ?? null,
+                  ]}
                   onChange={([start, end]) => {
                     form.setFieldValue(
                       'startDate',
-                      start ? new Date(start) : null,
+                      start ? new Date(start) : undefined,
                     );
-                    form.setFieldValue('endDate', end ? new Date(end) : null);
+                    form.setFieldValue(
+                      'endDate',
+                      end ? new Date(end) : undefined,
+                    );
                   }}
                 />
                 <Group justify="right">
@@ -139,6 +151,7 @@ export function EditSeries({
       </Stack>
       <Modal opened={opened} onClose={close} title="Add New Event" size="lg">
         <NewEvent
+          series={series}
           newEventAction={newEventAction}
           path={series.path}
           onSuccess={handleNewEventSuccess}

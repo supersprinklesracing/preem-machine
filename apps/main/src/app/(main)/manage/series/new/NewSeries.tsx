@@ -4,7 +4,7 @@ import { useActionForm } from '@/app/shared/hooks/useActionForm';
 import SeriesCard from '@/components/cards/SeriesCard';
 import { FormActionResult } from '@/components/forms/forms';
 import { toUrlPath } from '@/datastore/paths';
-import { Series } from '@/datastore/schema';
+import { Organization, Series } from '@/datastore/schema';
 import {
   Button,
   Card,
@@ -25,9 +25,11 @@ import { seriesSchema } from '../series-schema';
 import { NewSeriesOptions } from './new-series-action';
 
 export function NewSeries({
+  organization,
   newSeriesAction,
   path,
 }: {
+  organization: Organization;
   newSeriesAction: (
     options: NewSeriesOptions,
   ) => Promise<FormActionResult<{ path?: string }>>;
@@ -42,8 +44,8 @@ export function NewSeries({
       location: '',
       website: '',
       description: '',
-      startDate: null,
-      endDate: null,
+      startDate: undefined,
+      endDate: undefined,
     },
     action: (values) => newSeriesAction({ path, values }),
     onSuccess: (result) => {
@@ -58,20 +60,11 @@ export function NewSeries({
   const seriesPreview: Series = {
     id: 'preview',
     path: 'organizations/org-1/series/preview',
-    name: debouncedValues.name || 'Your Series Name',
-    location: debouncedValues.location,
-    website: debouncedValues.website,
-    description: debouncedValues.description,
-    startDate: debouncedValues.startDate
-      ? new Date(debouncedValues.startDate).toISOString()
-      : undefined,
-    endDate: debouncedValues.endDate
-      ? new Date(debouncedValues.endDate).toISOString()
-      : undefined,
+    ...debouncedValues,
     organizationBrief: {
-      id: 'preview',
-      path: 'organizations/org-1',
-      name: 'Organization Name',
+      id: organization.id,
+      path: organization.path,
+      name: organization.name,
     },
   };
 
@@ -107,13 +100,19 @@ export function NewSeries({
                 <DatePicker
                   type="range"
                   allowSingleDateInRange
-                  value={[form.values.startDate, form.values.endDate]}
+                  value={[
+                    form.values.startDate ?? null,
+                    form.values.endDate ?? null,
+                  ]}
                   onChange={([start, end]) => {
                     form.setFieldValue(
                       'startDate',
-                      start ? new Date(start) : null,
+                      start ? new Date(start) : undefined,
                     );
-                    form.setFieldValue('endDate', end ? new Date(end) : null);
+                    form.setFieldValue(
+                      'endDate',
+                      end ? new Date(end) : undefined,
+                    );
                   }}
                   data-testid="date-picker"
                 />

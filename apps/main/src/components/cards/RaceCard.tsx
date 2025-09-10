@@ -1,4 +1,4 @@
-import { PreemWithContributions } from '@/datastore/firestore';
+import { PreemWithContributions } from '@/datastore/query-schema';
 import { Race } from '@/datastore/schema';
 import {
   Card,

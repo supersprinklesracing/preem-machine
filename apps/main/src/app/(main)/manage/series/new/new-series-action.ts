@@ -2,9 +2,8 @@
 
 import { verifyAuthUser } from '@/auth/user';
 import { FormActionError, FormActionResult } from '@/components/forms/forms';
-import { createSeries } from '@/datastore/create';
+import { createSeries } from '@/datastore/server/create/create';
 import { CollectionPath, DocPath } from '@/datastore/paths';
-import { getTimestampFromDate } from '@/firebase-admin/dates';
 import { revalidatePath } from 'next/cache';
 import { z } from 'zod';
 import { seriesSchema } from '../series-schema';
@@ -19,31 +18,16 @@ export async function newSeriesAction({
   values,
 }: NewSeriesOptions): Promise<FormActionResult<{ path: DocPath }>> {
   try {
-    const user = await verifyAuthUser();
+    const authUser = await verifyAuthUser();
 
-    const validation = seriesSchema.safeParse(values);
-
-    if (!validation.success) {
-      throw new FormActionError('Invalid data.');
-    }
-
-    const { startDate, endDate, ...rest } = validation.data;
-
-    const newSeriesSnapshot = await createSeries(
-      path,
-      {
-        ...rest,
-        ...(startDate ? { startDate: getTimestampFromDate(startDate) } : {}),
-        ...(endDate ? { endDate: getTimestampFromDate(endDate) } : {}),
-      },
-      user,
-    );
+    const parsedValues = seriesSchema.parse(values);
+    const newSeriesSnapshot = await createSeries(path, parsedValues, authUser);
     const newSeries = newSeriesSnapshot.data();
     if (!newSeries) {
       throw new Error('Failed to create series.');
     }
     revalidatePath(path);
-    return { path: newSeries.path };
+    return { path: newSeriesSnapshot.ref.path };
   } catch (e) {
     const message =
       e instanceof Error ? e.message : 'An unknown error occurred.';

@@ -31,7 +31,10 @@ export function EditOrganization({
   editOrganizationAction: (
     options: EditOrganizationOptions,
   ) => Promise<FormActionResult>;
-  organization: Organization;
+  organization: Pick<
+    Organization,
+    'path' | 'name' | 'website' | 'description' | 'id' | 'stripe'
+  >;
   stripeError?: string;
 }) {
   const router = useRouter();

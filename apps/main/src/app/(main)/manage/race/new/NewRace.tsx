@@ -4,7 +4,7 @@ import { useActionForm } from '@/app/shared/hooks/useActionForm';
 import RaceCard from '@/components/cards/RaceCard';
 import { FormActionResult } from '@/components/forms/forms';
 import { toUrlPath } from '@/datastore/paths';
-import { Race } from '@/datastore/schema';
+import { Event, Race } from '@/datastore/schema';
 import {
   Button,
   Card,
@@ -27,9 +27,11 @@ import { raceSchema } from '../race-schema';
 import { NewRaceOptions } from './new-race-action';
 
 export function NewRace({
+  event,
   newRaceAction,
   path,
 }: {
+  event: Event;
   newRaceAction: (
     options: NewRaceOptions,
   ) => Promise<FormActionResult<{ path?: string }>>;
@@ -53,8 +55,8 @@ export function NewRace({
       laps: 0,
       podiums: 0,
       sponsors: [],
-      startDate: null,
-      endDate: null,
+      startDate: undefined,
+      endDate: undefined,
     },
     action: (values) => newRaceAction({ path, values }),
     onSuccess: (result) => {
@@ -69,35 +71,8 @@ export function NewRace({
   const racePreview: Race = {
     id: 'preview',
     path: 'organizations/org-1/series/series-1/events/event-1/races/preview',
-    name: debouncedValues.name || 'Your Race Name',
-    location: debouncedValues.location,
-    description: debouncedValues.description,
-    startDate: debouncedValues.startDate?.toISOString(),
-    endDate: debouncedValues.endDate?.toISOString(),
-    category: debouncedValues.category,
-    gender: debouncedValues.gender,
-    courseDetails: debouncedValues.courseDetails,
-    maxRacers: debouncedValues.maxRacers,
-    ageCategory: debouncedValues.ageCategory,
-    duration: debouncedValues.duration,
-    laps: debouncedValues.laps,
-    podiums: debouncedValues.podiums,
-    sponsors: debouncedValues.sponsors,
-    eventBrief: {
-      id: 'preview',
-      path: 'organizations/org-1/series/series-1/events/preview',
-      name: 'Event Name',
-      seriesBrief: {
-        id: 'preview',
-        path: 'organizations/org-1/series/series-1',
-        name: 'Series Name',
-        organizationBrief: {
-          id: 'preview',
-          path: 'organizations/org-1',
-          name: 'Organization Name',
-        },
-      },
-    },
+    ...debouncedValues,
+    eventBrief: event,
   };
 
   return (
@@ -166,7 +141,7 @@ export function NewRace({
                     onChange={(value) =>
                       form.setFieldValue(
                         'startDate',
-                        value ? new Date(value) : null,
+                        value ? new Date(value) : undefined,
                       )
                     }
                     data-testid="start-date-picker"
@@ -179,7 +154,7 @@ export function NewRace({
                     onChange={(value) =>
                       form.setFieldValue(
                         'endDate',
-                        value ? new Date(value) : null,
+                        value ? new Date(value) : undefined,
                       )
                     }
                     data-testid="end-date-picker"

@@ -2,14 +2,14 @@
 
 import { toUrlPath } from '@/datastore/paths';
 import SeriesCard from '@/components/cards/SeriesCard';
-import { SeriesWithEvents } from '@/datastore/firestore';
+import { SeriesWithEvents } from '@/datastore/query-schema';
 import { Organization } from '@/datastore/schema';
 import { Button, Group, SimpleGrid, Stack, Title } from '@mantine/core';
 import { IconPencil } from '@tabler/icons-react';
 import Link from 'next/link';
 
 interface Props {
-  organization: Organization;
+  organization: Pick<Organization, 'name' | 'path'>;
   serieses: SeriesWithEvents[];
 }
 

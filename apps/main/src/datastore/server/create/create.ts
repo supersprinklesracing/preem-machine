@@ -8,22 +8,26 @@ import {
   type DocumentReference,
 } from 'firebase-admin/firestore';
 
-import { isUserAuthorized } from './access';
-import { converter } from './converter';
-import { unauthorized } from './errors';
-import { DocPath, asDocPath } from './paths';
-import type {
-  Event,
-  EventBrief,
-  Organization,
-  OrganizationBrief,
-  Preem,
-  Race,
-  RaceBrief,
-  Series,
-  SeriesBrief,
-  User,
-} from './schema';
+import { unauthorized } from '../../errors';
+import { DocPath, asDocPath } from '../../paths';
+import {
+  EventSchema,
+  OrganizationSchema,
+  PreemSchema,
+  RaceSchema,
+  SeriesSchema,
+  UserSchema,
+  type Event,
+  type EventBrief,
+  type Organization,
+  type OrganizationBrief,
+  type Preem,
+  type RaceBrief,
+  type SeriesBrief,
+  type User,
+} from '../../schema';
+import { isUserAuthorized } from '../access';
+import { converter } from '../converters';
 
 const createMetadata = (userRef: DocumentReference<DocumentData>) => ({
   'metadata.created': FieldValue.serverTimestamp(),
@@ -44,7 +48,7 @@ const createDocument = async <U>(
 
   const db = await getFirestore();
   const userRef = db.collection('users').doc(authUser.uid);
-  const docRef = db.doc(path).withConverter(converter<U>(db));
+  const docRef = db.doc(path);
 
   await docRef.create({
     id: path.split('/').slice(-1)[0],
@@ -66,8 +70,10 @@ export const createSeries = async (
   authUser: AuthContextUser,
 ) => {
   const db = await getFirestore();
-  const orgRef = db.doc(organizationPath);
-  const orgDoc = await orgRef.withConverter(converter<Organization>(db)).get();
+  const orgRef = db
+    .doc(organizationPath)
+    .withConverter(converter(OrganizationSchema));
+  const orgDoc = await orgRef.get();
   const orgData = orgDoc.data();
   if (!orgData) {
     throw new Error('Organization not found');
@@ -76,6 +82,7 @@ export const createSeries = async (
   const organizationBrief: OrganizationBrief = {
     id: orgRef.id,
     path: asDocPath(orgRef.path),
+
     name: orgData.name,
   };
 
@@ -95,8 +102,8 @@ export const createEvent = async (
   authUser: AuthContextUser,
 ) => {
   const db = await getFirestore();
-  const seriesRef = db.doc(seriesPath);
-  const seriesDoc = await seriesRef.withConverter(converter<Series>(db)).get();
+  const seriesRef = db.doc(seriesPath).withConverter(converter(SeriesSchema));
+  const seriesDoc = await seriesRef.get();
   const seriesData = seriesDoc.data();
   if (!seriesData) {
     throw new Error('Series not found');
@@ -127,8 +134,8 @@ export const createRace = async (
   authUser: AuthContextUser,
 ) => {
   const db = await getFirestore();
-  const eventRef = db.doc(eventPath);
-  const eventDoc = await eventRef.withConverter(converter<Event>(db)).get();
+  const eventRef = db.doc(eventPath).withConverter(converter(EventSchema));
+  const eventDoc = await eventRef.get();
   const eventData = eventDoc.data();
   if (!eventData) {
     throw new Error('Event not found');
@@ -137,6 +144,7 @@ export const createRace = async (
   const eventBrief: EventBrief = {
     id: eventRef.id,
     path: asDocPath(eventRef.path),
+
     name: eventData.name,
     startDate: eventData.startDate,
     endDate: eventData.endDate,
@@ -165,8 +173,8 @@ export const createPreem = async (
   authUser: AuthContextUser,
 ) => {
   const db = await getFirestore();
-  const raceRef = db.doc(racePath);
-  const raceDoc = await raceRef.withConverter(converter<Race>(db)).get();
+  const raceRef = db.doc(racePath).withConverter(converter(RaceSchema));
+  const raceDoc = await raceRef.get();
   const raceData = raceDoc.data();
   if (!raceData) {
     throw new Error('Race not found');
@@ -193,7 +201,10 @@ export const createOrganization = async (
   authUser: AuthContextUser,
 ) => {
   const db = await getFirestore();
-  const orgRef = db.collection('organizations').doc();
+  const orgRef = db
+    .collection('organizations')
+    .withConverter(converter(OrganizationSchema))
+    .doc();
 
   return createDocument(asDocPath(orgRef.path), organization, authUser, {});
 };
@@ -206,7 +217,10 @@ export const createUser = async (
   authUser: AuthContextUser,
 ) => {
   const db = await getFirestore();
-  const userRef = db.collection('users').doc(authUser.uid);
+  const userRef = db
+    .collection('users')
+    .withConverter(converter(UserSchema))
+    .doc(authUser.uid);
 
   return createDocument(asDocPath(userRef.path), user, authUser, {});
 };
@@ -225,7 +239,7 @@ export const createPendingContribution = async (
   }
 
   const db = await getFirestore();
-  const preemRef = db.doc(preemPath);
+  const preemRef = db.doc(preemPath).withConverter(converter(PreemSchema));
   const contributionsRef = preemRef.collection('contributions');
   const userRef = db.collection('users').doc(authUser.uid);
 

@@ -8,8 +8,8 @@ const mockSeries: Series = {
   path: 'organizations/org-1/series/series-1',
   name: 'Test Series',
   location: 'Test Location',
-  startDate: new Date('2024-01-01T00:00:00').toISOString(),
-  endDate: new Date('2024-01-31T00:00:00').toISOString(),
+  startDate: new Date('2024-01-01T00:00:00'),
+  endDate: new Date('2024-01-31T00:00:00'),
   organizationBrief: {
     id: 'org-1',
     path: 'organizations/org-1',

@@ -1,7 +1,7 @@
 'use client';
 
 import { toUrlPath } from '@/datastore/paths';
-import { EventWithRaces } from '@/datastore/firestore';
+import { EventWithRaces } from '@/datastore/query-schema';
 import { Contribution } from '@/datastore/schema';
 import { Card, Grid, Stack, Text, Title } from '@mantine/core';
 import { format } from 'date-fns';

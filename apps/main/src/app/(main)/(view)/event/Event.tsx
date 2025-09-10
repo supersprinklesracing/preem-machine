@@ -2,7 +2,7 @@
 
 import { organizationPath, seriesPath, toUrlPath } from '@/datastore/paths';
 import RaceCard from '@/components/cards/RaceCard';
-import { RaceWithPreems } from '@/datastore/firestore';
+import { RaceWithPreems } from '@/datastore/query-schema';
 import { Event as EventType } from '@/datastore/schema';
 import {
   Anchor,
@@ -18,7 +18,16 @@ import { format } from 'date-fns';
 import Link from 'next/link';
 
 interface Props {
-  event: EventType;
+  event: Pick<
+    EventType,
+    | 'name'
+    | 'seriesBrief'
+    | 'path'
+    | 'location'
+    | 'startDate'
+    | 'description'
+    | 'website'
+  >;
   children: RaceWithPreems[];
 }
 

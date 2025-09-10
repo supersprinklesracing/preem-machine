@@ -3,8 +3,8 @@ import {
   getDocSnap,
   getOrganizationWithSeries,
   getUserById,
-  OrganizationWithSeries,
-} from '@/datastore/firestore';
+} from '@/datastore/server/query/query';
+import { OrganizationWithSeries } from '@/datastore/query-schema';
 import { Organization } from '@/datastore/schema';
 import { cache } from 'react';
 

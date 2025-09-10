@@ -1,4 +1,4 @@
-import { getRenderableSeriesDataForPage } from '@/datastore/firestore';
+import { getRenderableSeriesDataForPage } from '@/datastore/server/query/query';
 import { getDocPathFromSearchParams } from '@/datastore/paths';
 import Series from './Series';
 import { Breadcrumbs } from '@/components/Breadcrumbs';

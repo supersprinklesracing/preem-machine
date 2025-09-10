@@ -1,6 +1,6 @@
 'use server';
 
-import { getDoc } from '@/datastore/firestore';
+import { getDoc } from '@/datastore/server/query/query';
 import { EditRace } from './EditRace';
 import { editRaceAction } from './edit-race-action';
 import { Race } from '@/datastore/schema';

@@ -16,7 +16,10 @@ import Link from 'next/link';
 import { CSSProperties } from 'react';
 
 interface LiveContributionFeedProps {
-  contributions: Contribution[];
+  contributions: Pick<
+    Contribution,
+    'id' | 'contributor' | 'amount' | 'preemBrief' | 'message'
+  >[];
 }
 
 export default function LiveContributionFeed({

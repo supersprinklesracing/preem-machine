@@ -27,11 +27,11 @@ import { formatDistanceToNow } from 'date-fns';
 import Link from 'next/link';
 import React from 'react';
 
-import type { PreemWithContributions } from '@/datastore/firestore';
+import type { PreemWithContributions } from '@/datastore/query-schema';
 import ManageRaceContributionTable from './ManageRaceContributionTable';
 
 export interface LiveRaceProps {
-  race: Race;
+  race: Pick<Race, 'name' | 'path' | 'startDate' | 'currentRacers'>;
   children: PreemWithContributions[];
 }
 
