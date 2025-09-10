@@ -25,6 +25,7 @@ const initializeApp = async () => {
     });
   }
 
+  console.log('XXX', JSON.stringify(serverConfig));
   if (!isServiceAccount(serverConfig.serviceAccount)) {
     throw new Error(`Invalid service account: ${serverConfig.serviceAccount}`);
   }
