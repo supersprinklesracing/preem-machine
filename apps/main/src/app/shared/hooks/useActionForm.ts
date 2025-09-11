@@ -10,6 +10,7 @@ interface UseActionFormProps<T extends z.ZodType<any, any, any>, TResult> {
   initialValues: z.infer<T>;
   action: (values: z.infer<T>) => Promise<TResult>;
   onSuccess?: (result: TResult) => void;
+  validate?: (values: z.infer<T>) => Record<string, any>;
 }
 
 export function useActionForm<T extends z.ZodType<any, any, any>, TResult>({
@@ -17,13 +18,18 @@ export function useActionForm<T extends z.ZodType<any, any, any>, TResult>({
   initialValues,
   action,
   onSuccess,
+  validate,
 }: UseActionFormProps<T, TResult>) {
   const [isLoading, setIsLoading] = useState(false);
   const [submissionError, setSubmissionError] = useState<string | null>(null);
 
   const form = useForm<z.infer<T>>({
     initialValues,
-    validate: zod4Resolver(schema),
+    validate: (values) => {
+      const zodErrors = zod4Resolver(schema)(values);
+      const customErrors = validate ? validate(values) : {};
+      return { ...zodErrors, ...customErrors };
+    },
   });
 
   const handleSubmit = async (values: z.infer<T>) => {

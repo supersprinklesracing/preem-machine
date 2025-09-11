@@ -1,16 +1,10 @@
 'use server';
 
 import { getFirestore } from '@/firebase-admin/firebase-admin';
-import { DocPath } from '../../paths';
+import { DocPath } from '../paths';
 import { Event, Race, SeriesSchema, EventSchema } from '../schema';
 import { converter } from './converters';
-
-export class DateRangeError extends Error {
-  constructor(message: string) {
-    super(message);
-    this.name = 'DateRangeError';
-  }
-}
+import { DateRangeError } from './errors';
 
 export const validateEventDateRange = async (
   event: Pick<Event, 'startDate' | 'endDate'>,
