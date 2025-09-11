@@ -166,6 +166,7 @@ export const mockDbData: DatabaseCollections = {
                                     contributor: {
                                       id: 'some-user',
                                       name: 'Some User',
+                                      path: '/some-user',
                                       avatarUrl:
                                         'https://placehold.co/100x100.png',
                                     },
@@ -199,6 +200,7 @@ export const mockDbData: DatabaseCollections = {
                                     contributor: {
                                       id: 'user-alex-doe',
                                       name: 'Alex Doe',
+                                      path: '/user-alex-doe',
                                       avatarUrl:
                                         'https://placehold.co/100x100.png',
                                     },
@@ -215,6 +217,7 @@ export const mockDbData: DatabaseCollections = {
                                     contributor: {
                                       id: 'user-jane-smith',
                                       name: 'Jane Smith',
+                                      path: '/user-jane-smith',
                                       avatarUrl:
                                         'https://placehold.co/100x100.png',
                                     },
@@ -229,6 +232,13 @@ export const mockDbData: DatabaseCollections = {
                                     ...createIdAndPath(
                                       'organizations/org-super-sprinkles/series/series-sprinkles-2025/events/event-giro-sf-2025/races/race-giro-sf-2025-masters-women/preems/preem-giro-sf-2025-masters-women-mid-sprint/contributions/contrib-4',
                                     ),
+                                    contributor: {
+                                      id: 'anonymous',
+                                      name: 'Anonymous',
+                                      path: '/',
+                                      avatarUrl:
+                                        'https://placehold.co/100x100.png',
+                                    },
                                     amount: 30,
                                     date: new Date('2024-07-09T18:15:00Z'),
                                     metadata: createMetadata(
@@ -242,6 +252,7 @@ export const mockDbData: DatabaseCollections = {
                                     contributor: {
                                       id: 'user-alex-doe',
                                       name: 'Alex Doe',
+                                      path: '/user-alex-doe',
                                       avatarUrl:
                                         'https://placehold.co/100x100.png',
                                     },
@@ -274,6 +285,7 @@ export const mockDbData: DatabaseCollections = {
                                     contributor: {
                                       id: 'user-jane-smith',
                                       name: 'Jane Smith',
+                                      path: '/user-jane-smith',
                                       avatarUrl:
                                         'https://placehold.co/100x100.png',
                                     },
