@@ -1,12 +1,16 @@
 import { setupMockDb } from '@/test-utils';
 import { validateEventDateRange, validateRaceDateRange, DateRangeError } from './validation';
-import { doc } from 'firebase/firestore';
-import { db } from '@/firebase-client/firebase-client';
+import { getFirestore } from '@/firebase-admin/firebase-admin';
+import { Timestamp, type Firestore } from 'firebase-admin/firestore';
 import { Organization, Series, Event, Race } from '@/datastore/schema';
-import { toDate } from '@/datastore/converters';
 
 describe('validation', () => {
+  let db: Firestore;
   setupMockDb();
+
+  beforeAll(async () => {
+    db = await getFirestore();
+  });
 
   describe('validateEventDateRange', () => {
     it('should not throw an error for a valid date range', async () => {
@@ -14,8 +18,8 @@ describe('validation', () => {
         id: 'series-1',
         path: 'organizations/org-1/series/series-1',
         name: 'Test Series',
-        startDate: toDate(new Date('2025-01-01')),
-        endDate: toDate(new Date('2025-01-31')),
+        startDate: Timestamp.fromDate(new Date('2025-01-01')),
+        endDate: Timestamp.fromDate(new Date('2025-01-31')),
         organizationBrief: { id: 'org-1', path: 'organizations/org-1', name: 'Test Org' },
       };
       await db.doc(series.path).set(series);
@@ -24,8 +28,8 @@ describe('validation', () => {
         id: 'event-1',
         path: 'organizations/org-1/series/series-1/events/event-1',
         name: 'Test Event',
-        startDate: toDate(new Date('2025-01-10')),
-        endDate: toDate(new Date('2025-01-20')),
+        startDate: Timestamp.fromDate(new Date('2025-01-10')),
+        endDate: Timestamp.fromDate(new Date('2025-01-20')),
         seriesBrief: series,
       };
 
@@ -37,8 +41,8 @@ describe('validation', () => {
             id: 'series-1',
             path: 'organizations/org-1/series/series-1',
             name: 'Test Series',
-            startDate: toDate(new Date('2025-01-01')),
-            endDate: toDate(new Date('2025-01-31')),
+            startDate: Timestamp.fromDate(new Date('2025-01-01')),
+            endDate: Timestamp.fromDate(new Date('2025-01-31')),
             organizationBrief: { id: 'org-1', path: 'organizations/org-1', name: 'Test Org' },
           };
           await db.doc(series.path).set(series);
@@ -47,8 +51,8 @@ describe('validation', () => {
             id: 'event-1',
             path: 'organizations/org-1/series/series-1/events/event-1',
             name: 'Test Event',
-            startDate: toDate(new Date('2024-12-31')),
-            endDate: toDate(new Date('2025-01-20')),
+            startDate: Timestamp.fromDate(new Date('2024-12-31')),
+            endDate: Timestamp.fromDate(new Date('2025-01-20')),
             seriesBrief: series,
           };
 
@@ -60,8 +64,8 @@ describe('validation', () => {
             id: 'series-1',
             path: 'organizations/org-1/series/series-1',
             name: 'Test Series',
-            startDate: toDate(new Date('2025-01-01')),
-            endDate: toDate(new Date('2025-01-31')),
+            startDate: Timestamp.fromDate(new Date('2025-01-01')),
+            endDate: Timestamp.fromDate(new Date('2025-01-31')),
             organizationBrief: { id: 'org-1', path: 'organizations/org-1', name: 'Test Org' },
           };
           await db.doc(series.path).set(series);
@@ -70,8 +74,8 @@ describe('validation', () => {
             id: 'event-1',
             path: 'organizations/org-1/series/series-1/events/event-1',
             name: 'Test Event',
-            startDate: toDate(new Date('2025-01-10')),
-            endDate: toDate(new Date('2025-02-01')),
+            startDate: Timestamp.fromDate(new Date('2025-01-10')),
+            endDate: Timestamp.fromDate(new Date('2025-02-01')),
             seriesBrief: series,
           };
 
@@ -85,14 +89,14 @@ describe('validation', () => {
             id: 'event-1',
             path: 'organizations/org-1/series/series-1/events/event-1',
             name: 'Test Event',
-            startDate: toDate(new Date('2025-01-10')),
-            endDate: toDate(new Date('2025-01-20')),
+            startDate: Timestamp.fromDate(new Date('2025-01-10')),
+            endDate: Timestamp.fromDate(new Date('2025-01-20')),
             seriesBrief: {
               id: 'series-1',
               path: 'organizations/org-1/series/series-1',
               name: 'Test Series',
-              startDate: toDate(new Date('2025-01-01')),
-              endDate: toDate(new Date('2025-01-31')),
+              startDate: Timestamp.fromDate(new Date('2025-01-01')),
+              endDate: Timestamp.fromDate(new Date('2025-01-31')),
               organizationBrief: { id: 'org-1', path: 'organizations/org-1', name: 'Test Org' },
             },
           };
@@ -102,8 +106,8 @@ describe('validation', () => {
         id: 'race-1',
         path: 'organizations/org-1/series/series-1/events/event-1/races/race-1',
         name: 'Test Race',
-        startDate: toDate(new Date('2025-01-12')),
-        endDate: toDate(new Date('2025-01-18')),
+        startDate: Timestamp.fromDate(new Date('2025-01-12')),
+        endDate: Timestamp.fromDate(new Date('2025-01-18')),
         eventBrief: event,
       };
 
@@ -115,14 +119,14 @@ describe('validation', () => {
             id: 'event-1',
             path: 'organizations/org-1/series/series-1/events/event-1',
             name: 'Test Event',
-            startDate: toDate(new Date('2025-01-10')),
-            endDate: toDate(new Date('2025-01-20')),
+            startDate: Timestamp.fromDate(new Date('2025-01-10')),
+            endDate: Timestamp.fromDate(new Date('2025-01-20')),
             seriesBrief: {
               id: 'series-1',
               path: 'organizations/org-1/series/series-1',
               name: 'Test Series',
-              startDate: toDate(new Date('2025-01-01')),
-              endDate: toDate(new Date('2025-01-31')),
+              startDate: Timestamp.fromDate(new Date('2025-01-01')),
+              endDate: Timestamp.fromDate(new Date('2025-01-31')),
               organizationBrief: { id: 'org-1', path: 'organizations/org-1', name: 'Test Org' },
             },
           };
@@ -132,8 +136,8 @@ describe('validation', () => {
         id: 'race-1',
         path: 'organizations/org-1/series/series-1/events/event-1/races/race-1',
         name: 'Test Race',
-        startDate: toDate(new Date('2025-01-09')),
-        endDate: toDate(new Date('2025-01-18')),
+        startDate: Timestamp.fromDate(new Date('2025-01-09')),
+        endDate: Timestamp.fromDate(new Date('2025-01-18')),
         eventBrief: event,
       };
 
@@ -145,14 +149,14 @@ describe('validation', () => {
             id: 'event-1',
             path: 'organizations/org-1/series/series-1/events/event-1',
             name: 'Test Event',
-            startDate: toDate(new Date('2025-01-10')),
-            endDate: toDate(new Date('2025-01-20')),
+            startDate: Timestamp.fromDate(new Date('2025-01-10')),
+            endDate: Timestamp.fromDate(new Date('2025-01-20')),
             seriesBrief: {
               id: 'series-1',
               path: 'organizations/org-1/series/series-1',
               name: 'Test Series',
-              startDate: toDate(new Date('2025-01-01')),
-              endDate: toDate(new Date('2025-01-31')),
+              startDate: Timestamp.fromDate(new Date('2025-01-01')),
+              endDate: Timestamp.fromDate(new Date('2025-01-31')),
               organizationBrief: { id: 'org-1', path: 'organizations/org-1', name: 'Test Org' },
             },
           };
@@ -162,8 +166,8 @@ describe('validation', () => {
         id: 'race-1',
         path: 'organizations/org-1/series/series-1/events/event-1/races/race-1',
         name: 'Test Race',
-        startDate: toDate(new Date('2025-01-12')),
-        endDate: toDate(new Date('2025-01-21')),
+        startDate: Timestamp.fromDate(new Date('2025-01-12')),
+        endDate: Timestamp.fromDate(new Date('2025-01-21')),
         eventBrief: event,
       };
 
