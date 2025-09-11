@@ -32,7 +32,7 @@ export default function CourseLink({ courseLink }: { courseLink?: string }) {
         document.body.removeChild(script);
       };
     }
-    return () => {};
+    return;
   }, [courseLink]);
 
   if (!courseLink) {
