@@ -1,9 +1,9 @@
-import type { ClientCompat, Organization } from '@/datastore/types';
+import { Organization } from '@/datastore/schema';
 import { Card, Grid, Group, Stack, Title, TitleOrder } from '@mantine/core';
 import React from 'react';
 
 interface OrganizationCardProps {
-  organization: ClientCompat<Organization>;
+  organization: Organization;
   children?: React.ReactNode;
   style?: React.CSSProperties;
   withBorder?: boolean;

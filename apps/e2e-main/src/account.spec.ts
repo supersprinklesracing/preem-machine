@@ -5,6 +5,8 @@ useE2eTestingUserBeforeEach();
 
 test.describe('authenticated user', () => {
   test('can access account page', async ({ page }) => {
+    // Intercept all network requests
+    // await setE2eTestingUser(page);
     await page.goto('/account');
     await expect(
       page.getByRole('heading', { name: 'Test User' }),

@@ -1,4 +1,4 @@
-import { getRenderableOrganizationDataForPage } from '@/datastore/firestore';
+import { getRenderableOrganizationDataForPage } from '@/datastore/server/query/query';
 import LiveOrganization from './LiveOrganization';
 import { Breadcrumbs } from '@/components/Breadcrumbs';
 import { Stack } from '@mantine/core';

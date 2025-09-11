@@ -3,7 +3,8 @@
 import { userSchema } from '@/app/(main)/account/user-schema';
 import { getAuthUser } from '@/auth/user';
 import { FormActionError, FormActionResult } from '@/components/forms/forms';
-import { createUser } from '@/datastore/create';
+import { createUser } from '@/datastore/server/create/create';
+import { revalidatePath } from 'next/cache';
 import { z } from 'zod';
 
 export interface NewUserOptions {
@@ -19,9 +20,14 @@ export async function newUserAction({
       throw new FormActionError('Not registered.');
     }
 
-    await createUser(values, authUser);
-
-    return {};
+    const parsedValues = userSchema.parse(values);
+    const newUserSnapshot = await createUser(parsedValues, authUser);
+    const newUser = newUserSnapshot.data();
+    if (!newUser) {
+      throw new Error('Failed to create series.');
+    }
+    revalidatePath(`users/${newUser.ref.path}`);
+    return { path: newUserSnapshot.ref.path };
   } catch (error) {
     console.error('Failed to create user document:', error);
     const message =

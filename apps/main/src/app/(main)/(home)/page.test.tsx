@@ -1,4 +1,4 @@
-import * as firestore from '@/datastore/firestore';
+import * as firestore from '@/datastore/server/query/query';
 import '@/matchMedia.mock';
 import { render, screen } from '@/test-utils';
 import Home from './Home';
@@ -9,7 +9,7 @@ jest.mock('./Home', () => ({
   __esModule: true,
   default: jest.fn(() => <div>Mock Home</div>),
 }));
-jest.mock('@/datastore/firestore');
+jest.mock('@/datastore/server/query/query');
 
 const mockHomeData = {
   upcomingEvents: [],

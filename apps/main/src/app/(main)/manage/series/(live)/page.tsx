@@ -1,4 +1,4 @@
-import { getRenderableSeriesDataForPage } from '@/datastore/firestore';
+import { getRenderableSeriesDataForPage } from '@/datastore/server/query/query';
 import LiveSeries from './LiveSeries';
 import { Breadcrumbs } from '@/components/Breadcrumbs';
 import { Stack } from '@mantine/core';

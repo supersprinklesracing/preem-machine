@@ -1,9 +1,9 @@
 import { render, screen } from '@/test-utils';
 import OrganizationCard from './OrganizationCard';
 import '@/matchMedia.mock';
-import { ClientCompat, Organization } from '@/datastore/types';
+import { Organization } from '@/datastore/schema';
 
-const mockOrganization: ClientCompat<Organization> = {
+const mockOrganization: Organization = {
   id: 'org-1',
   path: 'organizations/org-1',
   name: 'Test Organization',

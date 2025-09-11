@@ -8,21 +8,26 @@ import {
   type DocumentReference,
 } from 'firebase-admin/firestore';
 
-import { isUserAuthorized } from './access';
-import { unauthorized } from './errors';
-import { DocPath, asDocPath } from './paths';
-import type {
-  Event,
-  EventBrief,
-  Organization,
-  OrganizationBrief,
-  Preem,
-  Race,
-  RaceBrief,
-  Series,
-  SeriesBrief,
-  User,
-} from './types';
+import { unauthorized } from '../../errors';
+import { DocPath, asDocPath } from '../../paths';
+import {
+  EventSchema,
+  OrganizationSchema,
+  PreemSchema,
+  RaceSchema,
+  SeriesSchema,
+  UserSchema,
+  type Event,
+  type EventBrief,
+  type Organization,
+  type OrganizationBrief,
+  type Preem,
+  type RaceBrief,
+  type SeriesBrief,
+  type User,
+} from '../../schema';
+import { isUserAuthorized } from '../access';
+import { converter } from '../converters';
 
 const createMetadata = (userRef: DocumentReference<DocumentData>) => ({
   'metadata.created': FieldValue.serverTimestamp(),
@@ -65,9 +70,14 @@ export const createSeries = async (
   authUser: AuthContextUser,
 ) => {
   const db = await getFirestore();
-  const orgRef = db.doc(organizationPath);
+  const orgRef = db
+    .doc(organizationPath)
+    .withConverter(converter(OrganizationSchema));
   const orgDoc = await orgRef.get();
-  const orgData = orgDoc.data() as Organization;
+  const orgData = orgDoc.data();
+  if (!orgData) {
+    throw new Error('Organization not found');
+  }
 
   const organizationBrief: OrganizationBrief = {
     id: orgRef.id,
@@ -92,9 +102,12 @@ export const createEvent = async (
   authUser: AuthContextUser,
 ) => {
   const db = await getFirestore();
-  const seriesRef = db.doc(seriesPath);
+  const seriesRef = db.doc(seriesPath).withConverter(converter(SeriesSchema));
   const seriesDoc = await seriesRef.get();
-  const seriesData = seriesDoc.data() as Series;
+  const seriesData = seriesDoc.data();
+  if (!seriesData) {
+    throw new Error('Series not found');
+  }
 
   const seriesBrief: SeriesBrief = {
     id: seriesRef.id,
@@ -121,9 +134,12 @@ export const createRace = async (
   authUser: AuthContextUser,
 ) => {
   const db = await getFirestore();
-  const eventRef = db.doc(eventPath);
+  const eventRef = db.doc(eventPath).withConverter(converter(EventSchema));
   const eventDoc = await eventRef.get();
-  const eventData = eventDoc.data() as Event;
+  const eventData = eventDoc.data();
+  if (!eventData) {
+    throw new Error('Event not found');
+  }
 
   const eventBrief: EventBrief = {
     id: eventRef.id,
@@ -157,9 +173,12 @@ export const createPreem = async (
   authUser: AuthContextUser,
 ) => {
   const db = await getFirestore();
-  const raceRef = db.doc(racePath);
+  const raceRef = db.doc(racePath).withConverter(converter(RaceSchema));
   const raceDoc = await raceRef.get();
-  const raceData = raceDoc.data() as Race;
+  const raceData = raceDoc.data();
+  if (!raceData) {
+    throw new Error('Race not found');
+  }
 
   const raceBrief: RaceBrief = {
     id: raceRef.id,
@@ -182,7 +201,10 @@ export const createOrganization = async (
   authUser: AuthContextUser,
 ) => {
   const db = await getFirestore();
-  const orgRef = db.collection('organizations').doc();
+  const orgRef = db
+    .collection('organizations')
+    .withConverter(converter(OrganizationSchema))
+    .doc();
 
   return createDocument(asDocPath(orgRef.path), organization, authUser, {});
 };
@@ -195,7 +217,10 @@ export const createUser = async (
   authUser: AuthContextUser,
 ) => {
   const db = await getFirestore();
-  const userRef = db.collection('users').doc(authUser.uid);
+  const userRef = db
+    .collection('users')
+    .withConverter(converter(UserSchema))
+    .doc(authUser.uid);
 
   return createDocument(asDocPath(userRef.path), user, authUser, {});
 };
@@ -214,7 +239,7 @@ export const createPendingContribution = async (
   }
 
   const db = await getFirestore();
-  const preemRef = db.doc(preemPath);
+  const preemRef = db.doc(preemPath).withConverter(converter(PreemSchema));
   const contributionsRef = preemRef.collection('contributions');
   const userRef = db.collection('users').doc(authUser.uid);
 

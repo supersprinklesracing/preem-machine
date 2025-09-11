@@ -6,7 +6,7 @@ import {
   PreemBrief,
   RaceBrief,
   SeriesBrief,
-} from '@/datastore/types';
+} from '@/datastore/schema';
 import { Anchor, Breadcrumbs as MantineBreadcrumbs } from '@mantine/core';
 import Link from 'next/link';
 

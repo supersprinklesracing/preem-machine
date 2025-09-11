@@ -1,12 +1,8 @@
-import { z } from 'zod';
+import { UserSchema as schema } from '@/datastore/schema';
 
-export const userSchema = z.object({
-  name: z.string().min(2).optional(),
-  email: z.string().email().optional(),
-  avatarUrl: z.string().url().optional(),
-  affiliation: z.string().optional(),
-  raceLicenseId: z.string().optional(),
-  address: z.string().optional(),
-
-  termsAccepted: z.boolean().optional(),
+export const userSchema = schema.omit({
+  id: true,
+  path: true,
+  metadata: true,
+  organizationRefs: true,
 });

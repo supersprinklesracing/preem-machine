@@ -13,8 +13,8 @@ describe('DateStatusBadge', () => {
 
     render(
       <DateStatusBadge
-        startDate={futureDate.toISOString()}
-        endDate={futureDatePlusOneHour.toISOString()}
+        startDate={futureDate}
+        endDate={futureDatePlusOneHour}
       />,
     );
     expect(screen.getByText('Upcoming')).toBeInTheDocument();
@@ -27,8 +27,8 @@ describe('DateStatusBadge', () => {
 
     render(
       <DateStatusBadge
-        startDate={anHourAgo.toISOString()}
-        endDate={inAnHour.toISOString()}
+        startDate={anHourAgo}
+        endDate={inAnHour}
       />,
     );
     expect(screen.getByText('Live')).toBeInTheDocument();
@@ -41,8 +41,8 @@ describe('DateStatusBadge', () => {
 
     render(
       <DateStatusBadge
-        startDate={pastDateMinusOneHour.toISOString()}
-        endDate={pastDate.toISOString()}
+        startDate={pastDateMinusOneHour}
+        endDate={pastDate}
       />,
     );
     expect(screen.getByText('Finished')).toBeInTheDocument();

@@ -1,6 +1,6 @@
 import { AuthContextUser } from '@/auth/AuthContext';
 import { AuthProvider } from '@/auth/AuthProvider';
-import { createMockDb } from '@/datastore/mock-db';
+import { createMockDb } from '@/datastore/server/mock-db/mock-db-util';
 import { getFirestore } from '@/firebase-admin';
 import { MantineProvider } from '@mantine/core';
 import { render, RenderOptions } from '@testing-library/react';
@@ -38,6 +38,8 @@ const customRender = (
 };
 
 export const setupMockDb = () => {
+  // 'use server';
+
   let firestore: Firestore;
   beforeAll(async () => {
     firestore = await getFirestore();

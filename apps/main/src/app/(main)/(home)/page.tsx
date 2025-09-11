@@ -1,7 +1,7 @@
 'use server';
 
 import { Breadcrumbs } from '@/components/Breadcrumbs';
-import { getRenderableHomeDataForPage } from '@/datastore/firestore';
+import { getRenderableHomeDataForPage } from '@/datastore/server/query/query';
 import { Stack } from '@mantine/core';
 import Home from './Home';
 

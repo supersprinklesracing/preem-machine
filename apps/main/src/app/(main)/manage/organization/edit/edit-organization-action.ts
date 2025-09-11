@@ -3,7 +3,7 @@
 import { verifyAuthUser } from '@/auth/user';
 import { FormActionError, FormActionResult } from '@/components/forms/forms';
 import { DocPath } from '@/datastore/paths';
-import { updateOrganization } from '@/datastore/update';
+import { updateOrganization } from '@/datastore/server/update/update';
 import { z } from 'zod';
 import { organizationSchema } from '../organization-schema';
 

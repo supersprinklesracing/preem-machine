@@ -1,5 +1,5 @@
 import * as auth from '@/auth/user';
-import * as firestore from '@/datastore/firestore';
+import * as firestore from '@/datastore/server/query/query';
 import '@/matchMedia.mock';
 import { render, screen } from '@/test-utils';
 import Layout from './layout';
@@ -10,7 +10,7 @@ jest.mock('./Shell/MainAppShell', () => ({
   __esModule: true,
   default: jest.fn(({ children }) => <div>Mock MainAppShell{children}</div>),
 }));
-jest.mock('@/datastore/firestore');
+jest.mock('@/datastore/server/query/query');
 jest.mock('@/auth/user');
 
 describe('Layout component', () => {

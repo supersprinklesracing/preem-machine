@@ -10,7 +10,7 @@ const mockData = {
     description: 'This is a test event.',
     website: 'https://example.com',
     location: 'Test Location',
-    startDate: new Date().toISOString(),
+    startDate: new Date(),
     seriesBrief: {
       id: 'series-1',
       path: 'organizations/org-1/series/series-1',
@@ -29,7 +29,7 @@ const mockData = {
         path: 'organizations/org-1/series/series-1/events/event-1/races/race-1',
         name: 'Test Race 1',
         category: 'Pro',
-        startDate: new Date().toISOString(),
+        startDate: new Date(),
         eventBrief: {
           id: 'event-1',
           path: 'organizations/org-1/series/series-1/events/event-1',
@@ -44,7 +44,7 @@ const mockData = {
         path: 'organizations/org-1/series/series-1/events/event-1/races/race-2',
         name: 'Test Race 2',
         category: 'Amateur',
-        startDate: new Date().toISOString(),
+        startDate: new Date(),
         eventBrief: {
           id: 'event-1',
           path: 'organizations/org-1/series/series-1/events/event-1',

@@ -1,11 +1,11 @@
-import type { ClientCompat, Event } from '@/datastore/types';
+import { Event } from '@/datastore/schema';
 import { Card, Grid, Group, Stack, Title, TitleOrder } from '@mantine/core';
 import React from 'react';
 import DateStatusBadge from '../DateStatusBadge';
 import { DateLocationDetail } from './DateLocationDetail';
 
 interface EventCardProps {
-  event: ClientCompat<Event>;
+  event: Event;
   children?: React.ReactNode;
   style?: React.CSSProperties;
   withBorder?: boolean;

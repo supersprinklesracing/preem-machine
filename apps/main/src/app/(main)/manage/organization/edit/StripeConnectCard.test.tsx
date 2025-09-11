@@ -1,4 +1,4 @@
-import type { ClientCompat, Organization } from '@/datastore/types';
+import { Organization } from '@/datastore/schema';
 import '@/matchMedia.mock';
 import { fireEvent, render, screen } from '@/test-utils';
 import { StripeConnectCard } from './StripeConnectCard';
@@ -29,7 +29,7 @@ describe('StripeConnectCard component', () => {
   });
 
   it('should render the "Create Stripe Account" button when there is no account', () => {
-    const mockOrganization: ClientCompat<Organization> = {
+    const mockOrganization: Organization = {
       id: 'org-1',
       path: 'organizations/org-1',
     };
@@ -42,7 +42,7 @@ describe('StripeConnectCard component', () => {
   });
 
   it('should render the "Complete Onboarding" button when details are not submitted', () => {
-    const mockOrganization: ClientCompat<Organization> = {
+    const mockOrganization: Organization = {
       id: 'org-1',
       path: 'organizations/org-1',
       stripe: { account: { details_submitted: false } as any },
@@ -56,7 +56,7 @@ describe('StripeConnectCard component', () => {
   });
 
   it('should render the "View Dashboard" button when details are submitted', () => {
-    const mockOrganization: ClientCompat<Organization> = {
+    const mockOrganization: Organization = {
       id: 'org-1',
       path: 'organizations/org-1',
       stripe: { account: { details_submitted: true } as any },

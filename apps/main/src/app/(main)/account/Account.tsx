@@ -5,7 +5,7 @@ import { logout } from '@/auth/client-util';
 import { FormActionResult } from '@/components/forms/forms';
 import UpdateUserProfileCard from '@/components/UpdateUserProfileCard';
 import { toUrlPath } from '@/datastore/paths';
-import { ClientCompat, User } from '@/datastore/types';
+import { User } from '@/datastore/schema';
 import {
   Box,
   Button,
@@ -24,7 +24,7 @@ import { EditUserOptions } from './edit-user-action';
 import { userSchema } from './user-schema';
 
 export interface AccountProps {
-  currentUser: ClientCompat<User>;
+  currentUser: User;
   editUserAction: (options: EditUserOptions) => Promise<FormActionResult>;
 }
 
