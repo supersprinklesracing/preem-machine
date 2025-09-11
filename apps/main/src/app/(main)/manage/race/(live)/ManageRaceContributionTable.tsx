@@ -1,7 +1,7 @@
 'use client';
 
 import { toUrlPath } from '@/datastore/paths';
-import type { PreemWithContributions } from '@/datastore/firestore';
+import type { PreemWithContributions } from '@/datastore/query-schema';
 import { Button, Card, Group, Table, Text, Title } from '@mantine/core';
 import { formatDistanceToNow } from 'date-fns';
 import Link from 'next/link';

@@ -1,55 +1,42 @@
 import 'server-only';
 
 import { getFirestore } from '@/firebase-admin';
-import { docId, DocPath } from './paths';
-import type { DocumentSnapshot } from 'firebase-admin/firestore';
+import { docId, DocPath } from '../../paths';
+import { type DocumentSnapshot } from 'firebase-admin/firestore';
 import { cache } from 'react';
-import { clientConverter } from './converters';
-import type {
-  ClientCompat,
+import { converter } from '../converters';
+import {
   Contribution,
+  ContributionSchema,
   Event,
+  EventSchema,
   Organization,
+  OrganizationSchema,
   Preem,
+  PreemSchema,
   Race,
+  RaceSchema,
   Series,
+  SeriesSchema,
   User,
-} from './types';
-import { notFound } from './errors';
+  UserSchema,
+} from '../../schema';
+import { notFound } from '../../errors';
+import {
+  PreemWithContributions,
+  RaceWithPreems,
+  EventWithRaces,
+  SeriesWithEvents,
+  OrganizationWithSeries,
+} from '../../query-schema';
 
-export interface PreemWithContributions {
-  preem: ClientCompat<Preem>;
-  children: ClientCompat<Contribution>[];
-}
-export interface RaceWithPreems {
-  race: ClientCompat<Race>;
-  children: PreemWithContributions[];
-}
-export interface EventWithRaces {
-  event: ClientCompat<Event>;
-  children: RaceWithPreems[];
-}
-export interface SeriesWithEvents {
-  series: ClientCompat<Series>;
-  children: EventWithRaces[];
-}
-export interface OrganizationWithSeries {
-  organization: ClientCompat<Organization>;
-  children: SeriesWithEvents[];
-}
-
-const _getDocSnap = async <T>(
-  path: string,
-): Promise<DocumentSnapshot<ClientCompat<T>>> => {
+const _getDocSnap = async <T>(path: string): Promise<DocumentSnapshot<T>> => {
   const db = await getFirestore();
-
-  // The converter now correctly receives the base type `T`
-  // and will return the expected `ClientCompat<T>`.
-  return await db.doc(path).withConverter(clientConverter<T>()).get();
+  return (await db.doc(path).get()) as DocumentSnapshot<T>;
 };
 export const getDocSnap = cache(_getDocSnap);
 
-const _getDoc = async <T>(path: string): Promise<ClientCompat<T>> => {
+const _getDoc = async <T>(path: string): Promise<T> => {
   const data = (await getDocSnap<T>(path)).data();
   if (!data) {
     notFound('Doc not found');
@@ -59,7 +46,7 @@ const _getDoc = async <T>(path: string): Promise<ClientCompat<T>> => {
 export const getDoc = cache(_getDoc);
 
 const getPreemWithContributions = async (
-  preemDoc: DocumentSnapshot<ClientCompat<Preem>>,
+  preemDoc: DocumentSnapshot<Preem>,
 ): Promise<PreemWithContributions> => {
   const preem = preemDoc.data();
   if (!preem) {
@@ -67,7 +54,7 @@ const getPreemWithContributions = async (
   }
   const contributionsSnap = await preemDoc.ref
     .collection('contributions')
-    .withConverter(clientConverter<Contribution>())
+    .withConverter(converter(ContributionSchema))
     .get();
   return {
     preem,
@@ -76,7 +63,7 @@ const getPreemWithContributions = async (
 };
 
 const getRaceWithPreems = async (
-  raceDoc: DocumentSnapshot<ClientCompat<Race>>,
+  raceDoc: DocumentSnapshot<Race>,
 ): Promise<RaceWithPreems> => {
   const result: RaceWithPreems = {
     // eslint-disable-next-line @typescript-eslint/no-non-null-assertion
@@ -85,7 +72,7 @@ const getRaceWithPreems = async (
   };
   const snap = await raceDoc.ref
     .collection('preems')
-    .withConverter(clientConverter<Preem>())
+    .withConverter(converter(PreemSchema))
     .get();
   for (const doc of snap.docs) {
     result.children.push(await getPreemWithContributions(doc));
@@ -94,7 +81,7 @@ const getRaceWithPreems = async (
 };
 
 const getRacesForEvent = async (
-  eventDoc: DocumentSnapshot<ClientCompat<Event>>,
+  eventDoc: DocumentSnapshot<Event>,
 ): Promise<EventWithRaces> => {
   const result: EventWithRaces = {
     // eslint-disable-next-line @typescript-eslint/no-non-null-assertion
@@ -103,7 +90,7 @@ const getRacesForEvent = async (
   };
   const snap = await eventDoc.ref
     .collection('races')
-    .withConverter(clientConverter<Race>())
+    .withConverter(converter(RaceSchema))
     .get();
   for (const doc of snap.docs) {
     result.children.push(await getRaceWithPreems(doc));
@@ -112,7 +99,7 @@ const getRacesForEvent = async (
 };
 
 const getEventsForSeries = async (
-  seriesDoc: DocumentSnapshot<ClientCompat<Series>>,
+  seriesDoc: DocumentSnapshot<Series>,
 ): Promise<SeriesWithEvents> => {
   const result: SeriesWithEvents = {
     // eslint-disable-next-line @typescript-eslint/no-non-null-assertion
@@ -121,7 +108,7 @@ const getEventsForSeries = async (
   };
   const snap = await seriesDoc.ref
     .collection('events')
-    .withConverter(clientConverter<Event>())
+    .withConverter(converter(EventSchema))
     .get();
   for (const doc of snap.docs) {
     result.children.push(await getRacesForEvent(doc));
@@ -130,17 +117,17 @@ const getEventsForSeries = async (
 };
 
 export const getSeriesForOrganization = async (
-  organizationDoc: DocumentSnapshot<ClientCompat<Organization>>,
+  organizationDoc: DocumentSnapshot<Organization>,
 ): Promise<SeriesWithEvents[]> => {
   const snap = await organizationDoc.ref
     .collection('series')
-    .withConverter(clientConverter<Series>())
+    .withConverter(converter(SeriesSchema))
     .get();
   return Promise.all(snap.docs.map(getEventsForSeries));
 };
 
 export const getOrganizationWithSeries = async (
-  organizationDoc: DocumentSnapshot<ClientCompat<Organization>>,
+  organizationDoc: DocumentSnapshot<Organization>,
 ): Promise<OrganizationWithSeries> => {
   const result: OrganizationWithSeries = {
     // eslint-disable-next-line @typescript-eslint/no-non-null-assertion
@@ -151,30 +138,28 @@ export const getOrganizationWithSeries = async (
   return result;
 };
 
-export const getUsers = cache(async () => {
+export const getUsers = cache(async (): Promise<User[]> => {
   const db = await getFirestore();
   const usersSnap = await db
     .collection('users')
-    .withConverter(clientConverter<User>())
+    .withConverter(converter(UserSchema))
     .get();
   return usersSnap.docs.map((doc) => doc.data());
 });
 
-export const getUserById = cache(
-  async (id: string): Promise<ClientCompat<User>> => {
-    const db = await getFirestore();
-    const docSnap = await db
-      .collection('users')
-      .doc(id)
-      .withConverter(clientConverter<User>())
-      .get();
-    if (!docSnap.exists) {
-      notFound('User doc not found: ' + id);
-    }
-    // eslint-disable-next-line @typescript-eslint/no-non-null-assertion
-    return docSnap.data()!;
-  },
-);
+export const getUserById = cache(async (id: string): Promise<User> => {
+  const db = await getFirestore();
+  const docSnap = await db
+    .collection('users')
+    .doc(id)
+    .withConverter(converter(UserSchema))
+    .get();
+  if (!docSnap.exists) {
+    notFound('User doc not found: ' + id);
+  }
+  // eslint-disable-next-line @typescript-eslint/no-non-null-assertion
+  return docSnap.data()!;
+});
 
 export const getOrganizationByStripeConnectAccountId = async (
   accountId: string,
@@ -183,7 +168,7 @@ export const getOrganizationByStripeConnectAccountId = async (
   const orgsSnap = await db
     .collection('organizations')
     .where('stripe.connectAccountId', '==', accountId)
-    .withConverter(clientConverter<Organization>())
+    .withConverter(converter(OrganizationSchema))
     .limit(1)
     .get();
 
@@ -193,24 +178,22 @@ export const getOrganizationByStripeConnectAccountId = async (
   return orgsSnap.docs[0];
 };
 
-export const getUsersByIds = cache(
-  async (ids: string[]): Promise<ClientCompat<User>[]> => {
-    const uniqueIds = [...new Set(ids)];
-    if (uniqueIds.length === 0) {
-      return [];
-    }
-    const db = await getFirestore();
-    const usersSnap = await db
-      .collection('users')
-      .where('id', 'in', uniqueIds)
-      .withConverter(clientConverter<User>())
-      .get();
-    return usersSnap.docs.map((doc) => doc.data());
-  },
-);
+export const getUsersByIds = cache(async (ids: string[]): Promise<User[]> => {
+  const uniqueIds = [...new Set(ids)];
+  if (uniqueIds.length === 0) {
+    return [];
+  }
+  const db = await getFirestore();
+  const usersSnap = await db
+    .collection('users')
+    .where('id', 'in', uniqueIds)
+    .withConverter(converter(UserSchema))
+    .get();
+  return usersSnap.docs.map((doc) => doc.data());
+});
 
 export const getEventsForOrganizations = cache(
-  async (organizationIds: string[]): Promise<ClientCompat<Event>[]> => {
+  async (organizationIds: string[]): Promise<Event[]> => {
     if (organizationIds.length === 0) {
       return [];
     }
@@ -224,14 +207,15 @@ export const getEventsForOrganizations = cache(
       .where('seriesBrief.organizationBrief.id', 'in', organizationIds)
       .where('endDate', '>=', oneDayAgo)
       .orderBy('endDate', 'asc')
-      .withConverter(clientConverter<Event>())
+      .withConverter(converter(EventSchema))
       .get();
     return eventsSnap.docs.map((doc) => doc.data());
   },
 );
 
 export const getEventsForUser = cache(
-  async (userId: string): Promise<ClientCompat<Event>[]> => {
+  async (userId: string): Promise<Event[]> => {
+    console.log('Getting events for user', userId);
     const user = await getUserById(userId);
     const organizationIds =
       user?.organizationRefs?.map((ref) => ref.id).filter((id) => !!id) ?? [];
@@ -240,7 +224,11 @@ export const getEventsForUser = cache(
 );
 
 export const getRenderablePreemDataForPage = cache(async (path: DocPath) => {
-  const preemDocSnap = await getDocSnap<Preem>(path);
+  const db = await getFirestore();
+  const preemDocSnap = await db
+    .doc(path)
+    .withConverter(converter(PreemSchema))
+    .get();
   if (!preemDocSnap.exists) {
     notFound('Preem not found');
   }
@@ -249,7 +237,11 @@ export const getRenderablePreemDataForPage = cache(async (path: DocPath) => {
 });
 
 export const getRenderableRaceDataForPage = cache(async (path: DocPath) => {
-  const raceSnap = await getDocSnap<Race>(path);
+  const db = await getFirestore();
+  const raceSnap = await db
+    .doc(path)
+    .withConverter(converter(RaceSchema))
+    .get();
   if (!raceSnap.exists) {
     notFound('Race not found');
   }
@@ -278,7 +270,11 @@ export const getRacePageDataWithUsers = cache(async (path: string) => {
 
 export const getRenderableOrganizationDataForPage = cache(
   async (path: DocPath) => {
-    const orgDoc = await getDocSnap<Organization>(path);
+    const db = await getFirestore();
+    const orgDoc = await db
+      .doc(path)
+      .withConverter(converter(OrganizationSchema))
+      .get();
     if (!orgDoc.exists) {
       notFound('Org not found');
     }
@@ -290,7 +286,7 @@ export const getRenderableOrganizationDataForPage = cache(
 
     const seriesSnap = await orgDoc.ref
       .collection('series')
-      .withConverter(clientConverter<Series>())
+      .withConverter(converter(SeriesSchema))
       .get();
     const serieses = await Promise.all(seriesSnap.docs.map(getEventsForSeries));
 
@@ -305,7 +301,11 @@ export const getRenderableOrganizationDataForPage = cache(
 );
 
 export const getRenderableSeriesDataForPage = cache(async (path: DocPath) => {
-  const seriesSnap = await getDocSnap<Series>(path);
+  const db = await getFirestore();
+  const seriesSnap = await db
+    .doc(path)
+    .withConverter(converter(SeriesSchema))
+    .get();
   if (!seriesSnap.exists) {
     notFound('Series not found');
   }
@@ -314,7 +314,11 @@ export const getRenderableSeriesDataForPage = cache(async (path: DocPath) => {
 });
 
 export const getRenderableEventDataForPage = cache(async (path: DocPath) => {
-  const eventSnap = await getDocSnap<Event>(path);
+  const db = await getFirestore();
+  const eventSnap = await db
+    .doc(path)
+    .withConverter(converter(EventSchema))
+    .get();
   if (!eventSnap.exists) {
     notFound('Event not found');
   }
@@ -330,11 +334,11 @@ export const getRenderableHomeDataForPage = cache(async () => {
     .collectionGroup('events')
     .where('startDate', '>=', now)
     .orderBy('startDate', 'asc')
-    .withConverter(clientConverter<Event>())
+    .withConverter(converter(EventSchema))
     .get();
   const contributionsSnap = await db
     .collectionGroup('contributions')
-    .withConverter(clientConverter<Contribution>())
+    .withConverter(converter(ContributionSchema))
     .orderBy('date', 'desc')
     .limit(20)
     .get();
@@ -356,7 +360,7 @@ export const getRenderableHomeDataForPage = cache(async () => {
           await db
             .collectionGroup('preems')
             .where('id', 'in', preemIds)
-            .withConverter(clientConverter<Preem>())
+            .withConverter(converter(PreemSchema))
             .get()
         ).docs.map((d) => d.data())
       : [];
@@ -366,7 +370,7 @@ export const getRenderableHomeDataForPage = cache(async () => {
       acc[preem.id] = preem;
       return acc;
     },
-    {} as Record<string, ClientCompat<Preem>>,
+    {} as Record<string, Preem>,
   );
 
   const contributions = recentContributionsRaw.map((c) => {
@@ -374,7 +378,7 @@ export const getRenderableHomeDataForPage = cache(async () => {
     return {
       ...c,
       preemBrief: fullPreem,
-    } as ClientCompat<Contribution>;
+    } as Contribution;
   });
 
   const eventsWithRaces = await Promise.all(
@@ -397,10 +401,12 @@ export const getRenderableUserDataForPage = cache(async (path: DocPath) => {
   const contributionsSnap = await db
     .collectionGroup('contributions')
     .where('contributor.id', '==', docId(path))
-    .withConverter(clientConverter<Contribution>())
+    .withConverter(converter(ContributionSchema))
     .get();
 
-  const contributions = contributionsSnap.docs.map((doc) => doc.data());
+  const contributions = contributionsSnap.docs.map((doc) =>
+    doc.data(),
+  ) as Contribution[];
 
   return {
     user,
@@ -418,16 +424,16 @@ export const getRaceWithUsers = cache(
   async (
     raceId: string,
   ): Promise<{
-    race: ClientCompat<RaceWithPreems>;
-    users: ClientCompat<User>[];
+    race: RaceWithPreems;
+    users: User[];
   }> => {
-    const { race, children } = await getRenderableRaceDataForPage(raceId);
-    if (!race) {
+    const raceWithPreems = await getRenderableRaceDataForPage(raceId);
+    if (!raceWithPreems) {
       notFound('Race not found');
     }
 
     const contributorIds =
-      children
+      raceWithPreems.children
         ?.flatMap(({ children }) => children.map((c) => c.contributor?.id))
         .filter((id): id is string => !!id) ?? [];
 
@@ -436,14 +442,14 @@ export const getRaceWithUsers = cache(
       uniqueUserIds.length > 0 ? await getUsersByIds(uniqueUserIds) : [];
 
     return {
-      race: race as ClientCompat<RaceWithPreems>,
-      users: users as ClientCompat<User>[],
+      race: raceWithPreems,
+      users: users as User[],
     };
   },
 );
 
 export const getRacesForEventId = cache(
-  async (eventId: string): Promise<ClientCompat<Race>[]> => {
+  async (eventId: string): Promise<Race[]> => {
     const db = await getFirestore();
     const eventSnap = await db
       .collectionGroup('events')
@@ -455,14 +461,14 @@ export const getRacesForEventId = cache(
     }
     const racesSnap = await eventSnap.docs[0].ref
       .collection('races')
-      .withConverter(clientConverter<Race>())
+      .withConverter(converter(RaceSchema))
       .get();
     return racesSnap.docs.map((doc) => doc.data());
   },
 );
 
 export const getPreemsForRaceId = cache(
-  async (raceId: string): Promise<ClientCompat<Preem>[]> => {
+  async (raceId: string): Promise<Preem[]> => {
     const db = await getFirestore();
     const raceSnap = await db
       .collectionGroup('races')
@@ -474,14 +480,14 @@ export const getPreemsForRaceId = cache(
     }
     const preemsSnap = await raceSnap.docs[0].ref
       .collection('preems')
-      .withConverter(clientConverter<Preem>())
+      .withConverter(converter(PreemSchema))
       .get();
     return preemsSnap.docs.map((doc) => doc.data());
   },
 );
 
 export const getContributionsForPreemId = cache(
-  async (preemId: string): Promise<ClientCompat<Contribution>[]> => {
+  async (preemId: string): Promise<Contribution[]> => {
     const db = await getFirestore();
     const preemSnap = await db
       .collectionGroup('preems')
@@ -493,7 +499,7 @@ export const getContributionsForPreemId = cache(
     }
     const contributionsSnap = await preemSnap.docs[0].ref
       .collection('contributions')
-      .withConverter(clientConverter<Contribution>())
+      .withConverter(converter(ContributionSchema))
       .get();
     return contributionsSnap.docs.map((doc) => doc.data());
   },

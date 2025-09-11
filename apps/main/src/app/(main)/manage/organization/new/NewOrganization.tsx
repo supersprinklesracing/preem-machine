@@ -4,7 +4,7 @@ import { useActionForm } from '@/app/shared/hooks/useActionForm';
 import OrganizationCard from '@/components/cards/OrganizationCard';
 import { FormActionResult } from '@/components/forms/forms';
 import { toUrlPath } from '@/datastore/paths';
-import { ClientCompat, Organization } from '@/datastore/types';
+import { Organization } from '@/datastore/schema';
 import {
   Button,
   Card,
@@ -48,7 +48,7 @@ export function NewOrganization({
 
   const [debouncedValues] = useDebouncedValue(form.values, 100);
 
-  const organizationPreview: ClientCompat<Organization> = {
+  const organizationPreview: Organization = {
     id: 'preview',
     path: 'organizations/preview',
     name: debouncedValues.name || 'Your Organization Name',

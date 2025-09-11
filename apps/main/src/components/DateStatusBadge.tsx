@@ -4,8 +4,8 @@ import React from 'react';
 export type DateStatus = 'Upcoming' | 'Live' | 'Finished';
 
 interface DateStatusBadgeProps {
-  startDate?: string;
-  endDate?: string;
+  startDate?: Date;
+  endDate?: Date;
 }
 
 const statusColors: Record<DateStatus, string> = {
@@ -23,16 +23,14 @@ const DateStatusBadge: React.FC<DateStatusBadgeProps> = ({
 
   if (startDate && endDate) {
     const now = new Date();
-    const start = new Date(startDate);
-    const end = new Date(endDate);
 
-    if (now < start) {
+    if (now < startDate) {
       status = 'Upcoming';
       variant = 'filled';
-    } else if (now >= start && now <= end) {
+    } else if (now >= startDate && now <= endDate) {
       status = 'Live';
       variant = 'gradient';
-    } else if (now > end) {
+    } else if (now > endDate) {
       status = 'Finished';
     }
   }

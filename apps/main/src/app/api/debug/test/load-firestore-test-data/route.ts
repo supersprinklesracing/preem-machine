@@ -1,5 +1,5 @@
 import { getFirebaseAdminApp } from '@/firebase-admin';
-import { seedFirestore } from '@/datastore/seed-firestore';
+import { seedFirestore } from '@/datastore/server/mock-db/seed-firestore';
 import { ENV_E2E_TESTING } from '@/env/env';
 import { NextResponse } from 'next/server';
 import { getFirestore } from 'firebase-admin/firestore';

@@ -1,4 +1,4 @@
-import { getRenderableEventDataForPage } from '@/datastore/firestore';
+import { getRenderableEventDataForPage } from '@/datastore/server/query/query';
 import LiveEvent from './LiveEvent';
 import { Breadcrumbs } from '@/components/Breadcrumbs';
 import { Stack } from '@mantine/core';

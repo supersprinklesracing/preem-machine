@@ -21,8 +21,8 @@ const mockData = {
     name: 'Test Series',
     description: 'This is a test series.',
     location: 'Test Location',
-    startDate: new Date().toISOString(),
-    endDate: new Date().toISOString(),
+    startDate: new Date(),
+    endDate: new Date(),
     organizationBrief: {
       id: 'org-1',
       path: 'organizations/org-1',

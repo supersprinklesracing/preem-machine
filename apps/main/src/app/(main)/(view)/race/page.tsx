@@ -1,5 +1,5 @@
 import Race from './Race';
-import { getRenderableRaceDataForPage } from '@/datastore/firestore';
+import { getRenderableRaceDataForPage } from '@/datastore/server/query/query';
 import { getDocPathFromSearchParams } from '@/datastore/paths';
 import { Breadcrumbs } from '@/components/Breadcrumbs';
 import { Stack } from '@mantine/core';

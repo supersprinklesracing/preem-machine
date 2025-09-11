@@ -1,7 +1,7 @@
 'use client';
 
 import { toUrlPath } from '@/datastore/paths';
-import type { ClientCompat, Event } from '@/datastore/types';
+import { Event } from '@/datastore/schema';
 import {
   Box,
   Divider,
@@ -24,7 +24,7 @@ import { useMediaQuery } from '@mantine/hooks';
 import Link from 'next/link';
 
 interface SidebarProps {
-  events: ClientCompat<Event>[];
+  events: Event[];
   onLinkClick?: () => void;
 }
 

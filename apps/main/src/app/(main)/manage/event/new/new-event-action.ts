@@ -2,11 +2,10 @@
 
 import { verifyAuthUser } from '@/auth/user';
 import { FormActionError, FormActionResult } from '@/components/forms/forms';
-import { createEvent } from '@/datastore/create';
+import { createEvent } from '@/datastore/server/create/create';
 import { CollectionPath, DocPath } from '@/datastore/paths';
-import { getTimestampFromDate } from '@/firebase-admin/dates';
-import { z } from 'zod';
 import { eventSchema } from '../event-schema';
+import { z } from 'zod';
 
 export interface NewEventOptions {
   path: CollectionPath;
@@ -19,14 +18,9 @@ export async function newEventAction({
 }: NewEventOptions): Promise<FormActionResult<{ path: DocPath }>> {
   try {
     const authUser = await verifyAuthUser();
+
     const parsedValues = eventSchema.parse(values);
-    const { startDate, endDate, ...rest } = parsedValues;
-    const updates = {
-      ...rest,
-      ...(startDate ? { startDate: getTimestampFromDate(startDate) } : {}),
-      ...(endDate ? { endDate: getTimestampFromDate(endDate) } : {}),
-    };
-    const snap = await createEvent(path, updates, authUser);
+    const snap = await createEvent(path, parsedValues, authUser);
 
     return { path: snap.ref.path };
   } catch (error) {

@@ -1,5 +1,5 @@
-import { getOrganizationByStripeConnectAccountId } from '@/datastore/firestore';
-import { updateOrganizationStripeConnectAccountForWebhook } from '@/datastore/update';
+import { getOrganizationByStripeConnectAccountId } from '@/datastore/server/query/query';
+import { updateOrganizationStripeConnectAccountForWebhook } from '@/datastore/server/update/update';
 import { getStripeSecrets } from '@/secrets/secrets-env';
 import { processContribution } from '@/stripe-datastore/contributions';
 import { getStripeServer } from '@/stripe/server';

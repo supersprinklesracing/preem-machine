@@ -1,24 +1,13 @@
+/* Changes to this file should only happen from explict requests by the user; or explict confirmation. */
 'use server-only';
 
-import { getTimestampFromISODate } from '@/firebase-admin/dates';
-import type {
-  DocumentData,
-  DocumentReference,
-  Firestore,
-} from 'firebase-admin/firestore';
-import {
-  EventBrief,
-  Metadata,
-  OrganizationBrief,
-  PreemBrief,
-  RaceBrief,
-  SeriesBrief,
-  User,
-} from './types';
 import { ENV_E2E_TESTING_USER } from '@/env/env';
+import { Metadata } from './schema';
 
-interface DatabaseDocument extends DocumentData {
+interface DatabaseDocument {
   id: string;
+  path: string;
+  [key: string]: unknown;
   _collections?: DatabaseCollections;
 }
 
@@ -26,658 +15,508 @@ interface DatabaseCollections {
   [collectionName: string]: Array<DatabaseDocument> | undefined;
 }
 
-const createDocRef = <T>(
-  firestore: Firestore,
-  collection: string,
-  id: string,
-): DocumentReference<T> => {
-  return firestore.doc(`${collection}/${id}`) as DocumentReference<T>;
+const createDocRef = (path: string): { id: string; path: string } => {
+  const id = path.split('/').pop() ?? '';
+  return { id, path };
 };
 
-// Helper to create mock metadata
-const createMetadata = (firestore: Firestore, dateString: string): Metadata => {
-  const timestamp = getTimestampFromISODate(dateString);
+const createIdAndPath = (path: string): { id: string; path: string } => {
+  const id = path.split('/').pop() ?? '';
+  return { id, path };
+};
+
+const createMetadata = (dateString: string): Metadata => {
   return {
-    created: timestamp,
-    lastModified: timestamp,
-    createdBy: createDocRef<User>(firestore, 'users', 'user-test-admin'),
-    lastModifiedBy: createDocRef<User>(firestore, 'users', 'user-test-admin'),
+    created: new Date(dateString),
+    createdBy: createDocRef('users/user-test-admin'),
+    lastModified: new Date(dateString),
+    lastModifiedBy: createDocRef('users/user-test-admin'),
   };
 };
 
-const postProcessDatabase = (db: DatabaseCollections): DatabaseCollections => {
-  const organizations = db.organizations;
-  if (!organizations) {
-    return db;
-  }
-  organizations.forEach((organization) => {
-    organization.path = `organizations/${organization.id}`;
-    const organizationBrief: OrganizationBrief = {
-      id: organization.id,
-      path: organization.path,
-      name: organization.name,
-    };
-
-    const series = organization._collections?.series;
-    if (!series) return;
-
-    series.forEach((series) => {
-      series.path = `${organization.path}/series/${series.id}`;
-      series.organizationBrief = organizationBrief;
-      const seriesBrief: SeriesBrief = {
-        id: series.id,
-        path: series.path,
-        name: series.name,
-        startDate: series.startDate,
-        endDate: series.endDate,
-        organizationBrief,
-      };
-
-      const events = series._collections?.events;
-      if (!events) return;
-
-      events.forEach((event) => {
-        event.path = `${series.path}/events/${event.id}`;
-        event.seriesBrief = seriesBrief;
-        const eventBrief: EventBrief = {
-          id: event.id,
-          path: event.path,
-          name: event.name,
-          startDate: event.startDate,
-          endDate: event.endDate,
-          seriesBrief,
-        };
-
-        const races = event._collections?.races;
-        if (!races) return;
-
-        races.forEach((race) => {
-          race.path = `${event.path}/races/${race.id}`;
-          race.eventBrief = eventBrief;
-          const raceBrief: RaceBrief = {
-            id: race.id,
-            path: race.path,
-            name: race.name,
-            startDate: race.startDate,
-            endDate: race.endDate,
-            eventBrief,
-          };
-
-          const preems = race._collections?.preems;
-          if (!preems) return;
-
-          preems.forEach((preem) => {
-            preem.path = `${race.path}/preems/${preem.id}`;
-            preem.raceBrief = raceBrief;
-            const preemBrief: PreemBrief = {
-              id: preem.id,
-              path: preem.path,
-              name: preem.name,
-              raceBrief,
-            };
-
-            const contributions = preem._collections?.contributions;
-            if (!contributions) return;
-
-            contributions.forEach((contribution) => {
-              contribution.path = `${preem.path}/contributions/${contribution.id}`;
-              contribution.preemBrief = preemBrief;
-            });
-          });
-        });
-      });
-    });
-  });
-
-  return db;
+export const mockDbData: DatabaseCollections = {
+  users: [
+    {
+      ...createIdAndPath('users/user-test-admin'),
+      name: 'Test Admin',
+      email: 'test-admin@example.com',
+      avatarUrl: 'https://placehold.co/100x100.png',
+      role: 'admin',
+      organizationRefs: [createDocRef('organizations/org-super-sprinkles')],
+      metadata: createMetadata('2024-07-01T10:00:00Z'),
+    },
+    {
+      ...createIdAndPath(`users/${ENV_E2E_TESTING_USER}`),
+      name: 'Test User',
+      email: 'test-user@example.com',
+      avatarUrl: 'https://placehold.co/100x100.png',
+      role: 'admin',
+      organizationRefs: [createDocRef('organizations/org-super-sprinkles')],
+      metadata: createMetadata('2024-07-01T10:00:00Z'),
+    },
+    {
+      ...createIdAndPath('users/user-alex-doe'),
+      name: 'Alex Doe',
+      email: 'alex@example.com',
+      avatarUrl: 'https://placehold.co/100x100.png',
+      metadata: createMetadata('2024-07-01T10:01:00Z'),
+    },
+    {
+      ...createIdAndPath('users/user-bike-race-inc-admin'),
+      name: 'Bike Race Inc. Admin',
+      email: 'contact@bikerace.com',
+      avatarUrl: 'https://placehold.co/100x100.png',
+      role: 'organizer',
+      organizationRefs: [createDocRef('organizations/org-bike-race-inc')],
+      metadata: createMetadata('2024-07-01T10:02:00Z'),
+    },
+    {
+      ...createIdAndPath('users/user-jane-smith'),
+      name: 'Jane Smith',
+      email: 'jane@example.com',
+      avatarUrl: 'https://placehold.co/100x100.png',
+      role: 'contributor',
+      metadata: createMetadata('2024-07-01T10:03:00Z'),
+    },
+    {
+      ...createIdAndPath('users/some-user'),
+      name: 'Some User',
+      email: 'shop@example.com',
+      avatarUrl: 'https://placehold.co/100x100.png',
+      role: 'contributor',
+      metadata: createMetadata('2024-07-01T10:04:00Z'),
+    },
+  ],
+  organizations: [
+    {
+      ...createIdAndPath('organizations/org-super-sprinkles'),
+      name: 'Super Sprinkles Racing',
+      memberRefs: [
+        // test-user@example.com - preem-machine
+        createDocRef('users/BFGvWNXZoCWayJa0pNEL4bfhtUC3'),
+        // test-user@example.com - preem-machine-ci
+        createDocRef('users/73LhDvkigMdwJ4r7NICamtwgd0u1'),
+        // test-user@example.com - preem-machine-dev
+        createDocRef('users/RwgsPxLnp1bHNcxgw7MdCpm1Cuj1'),
+        // jlapenna.test.1@gmail.com
+        createDocRef('users/5URlCEB3ACVgem9RAdWudjRURpl2'),
+      ],
+      metadata: createMetadata('2025-01-15T12:00:00Z'),
+      _collections: {
+        series: [
+          {
+            ...createIdAndPath(
+              'organizations/org-super-sprinkles/series/series-sprinkles-2025',
+            ),
+            name: 'Sprinkles 2025',
+            location: 'Northern California',
+            website: 'https://girosf.com',
+            startDate: new Date('2025-09-01T00:00:00Z'),
+            endDate: new Date('2025-09-01T00:00:00Z'),
+            metadata: createMetadata('2025-01-15T12:01:00Z'),
+            _collections: {
+              events: [
+                {
+                  ...createIdAndPath(
+                    'organizations/org-super-sprinkles/series/series-sprinkles-2025/events/event-giro-sf-2025',
+                  ),
+                  name: 'Il Giro di San Francisco',
+                  location: "Levi's Plaza, San Francisco",
+                  startDate: new Date('2025-09-01T08:00:00Z'),
+                  endDate: new Date('2025-09-01T08:00:00Z'),
+                  metadata: createMetadata('2025-01-15T12:02:00Z'),
+                  _collections: {
+                    races: [
+                      {
+                        ...createIdAndPath(
+                          'organizations/org-super-sprinkles/series/series-sprinkles-2025/events/event-giro-sf-2025/races/race-giro-sf-2025-masters-women',
+                        ),
+                        name: 'Master Women 40+/50+',
+                        category: 'Masters',
+                        gender: 'Women',
+                        location: "Levi's Plaza, San Francisco",
+                        courseDetails: "Circuit race around Levi's Plaza.",
+                        maxRacers: 50,
+                        currentRacers: 0,
+                        ageCategory: '40+/50+',
+                        duration: '40 minutes',
+                        laps: 20,
+                        podiums: 3,
+                        sponsors: [],
+                        startDate: new Date('2025-09-01T08:00:00Z'),
+                        endDate: new Date('2025-09-01T08:00:00Z'),
+                        metadata: createMetadata('2025-01-15T12:03:00Z'),
+                        _collections: {
+                          preems: [
+                            {
+                              ...createIdAndPath(
+                                'organizations/org-super-sprinkles/series/series-sprinkles-2025/events/event-giro-sf-2025/races/race-giro-sf-2025-masters-women/preems/preem-giro-sf-2025-masters-women-first-lap',
+                              ),
+                              name: 'First Lap Leader',
+                              type: 'Pooled',
+                              status: 'Awarded',
+                              prizePool: 100,
+                              metadata: createMetadata('2025-01-15T12:04:00Z'),
+                              _collections: {
+                                contributions: [
+                                  {
+                                    ...createIdAndPath(
+                                      'organizations/org-super-sprinkles/series/series-sprinkles-2025/events/event-giro-sf-2025/races/race-giro-sf-2025-masters-women/preems/preem-giro-sf-2025-masters-women-first-lap/contributions/contrib-1',
+                                    ),
+                                    contributor: {
+                                      id: 'some-user',
+                                      name: 'Some User',
+                                      avatarUrl:
+                                        'https://placehold.co/100x100.png',
+                                    },
+                                    amount: 100,
+                                    date: new Date('2024-07-09T18:05:00Z'),
+                                    message: 'Good luck racers!',
+                                    metadata: createMetadata(
+                                      '2024-07-09T18:05:00Z',
+                                    ),
+                                  },
+                                ],
+                              },
+                            },
+                            {
+                              ...createIdAndPath(
+                                'organizations/org-super-sprinkles/series/series-sprinkles-2025/events/event-giro-sf-2025/races/race-giro-sf-2025-masters-women/preems/preem-giro-sf-2025-masters-women-mid-sprint',
+                              ),
+                              name: 'Mid-Race Sprint',
+                              type: 'Pooled',
+                              status: 'Minimum Met',
+                              prizePool: 255,
+                              minimumThreshold: 200,
+                              timeLimit: new Date('2024-07-09T19:30:00Z'),
+                              metadata: createMetadata('2025-01-15T12:05:00Z'),
+                              _collections: {
+                                contributions: [
+                                  {
+                                    ...createIdAndPath(
+                                      'organizations/org-super-sprinkles/series/series-sprinkles-2025/events/event-giro-sf-2025/races/race-giro-sf-2025-masters-women/preems/preem-giro-sf-2025-masters-women-mid-sprint/contributions/contrib-2',
+                                    ),
+                                    contributor: {
+                                      id: 'user-alex-doe',
+                                      name: 'Alex Doe',
+                                      avatarUrl:
+                                        'https://placehold.co/100x100.png',
+                                    },
+                                    amount: 50,
+                                    date: new Date('2024-07-09T18:10:00Z'),
+                                    metadata: createMetadata(
+                                      '2024-07-09T18:10:00Z',
+                                    ),
+                                  },
+                                  {
+                                    ...createIdAndPath(
+                                      'organizations/org-super-sprinkles/series/series-sprinkles-2025/events/event-giro-sf-2025/races/race-giro-sf-2025-masters-women/preems/preem-giro-sf-2025-masters-women-mid-sprint/contributions/contrib-3',
+                                    ),
+                                    contributor: {
+                                      id: 'user-jane-smith',
+                                      name: 'Jane Smith',
+                                      avatarUrl:
+                                        'https://placehold.co/100x100.png',
+                                    },
+                                    amount: 75,
+                                    date: new Date('2024-07-09T18:12:00Z'),
+                                    message: 'Lets go!',
+                                    metadata: createMetadata(
+                                      '2024-07-09T18:12:00Z',
+                                    ),
+                                  },
+                                  {
+                                    ...createIdAndPath(
+                                      'organizations/org-super-sprinkles/series/series-sprinkles-2025/events/event-giro-sf-2025/races/race-giro-sf-2025-masters-women/preems/preem-giro-sf-2025-masters-women-mid-sprint/contributions/contrib-4',
+                                    ),
+                                    amount: 30,
+                                    date: new Date('2024-07-09T18:15:00Z'),
+                                    metadata: createMetadata(
+                                      '2024-07-09T18:15:00Z',
+                                    ),
+                                  },
+                                  {
+                                    ...createIdAndPath(
+                                      'organizations/org-super-sprinkles/series/series-sprinkles-2025/events/event-giro-sf-2025/races/race-giro-sf-2025-masters-women/preems/preem-giro-sf-2025-masters-women-mid-sprint/contributions/contrib-5',
+                                    ),
+                                    contributor: {
+                                      id: 'user-alex-doe',
+                                      name: 'Alex Doe',
+                                      avatarUrl:
+                                        'https://placehold.co/100x100.png',
+                                    },
+                                    amount: 100,
+                                    date: new Date('2024-07-09T18:20:00Z'),
+                                    message: 'Making it spicy!',
+                                    metadata: createMetadata(
+                                      '2024-07-09T18:20:00Z',
+                                    ),
+                                  },
+                                ],
+                              },
+                            },
+                            {
+                              ...createIdAndPath(
+                                'organizations/org-super-sprinkles/series/series-sprinkles-2025/events/event-giro-sf-2025/races/race-giro-sf-2025-masters-women/preems/preem-giro-sf-2025-masters-women-final-lap',
+                              ),
+                              name: 'Sponsored by Bicycle Law!',
+                              type: 'One-Shot',
+                              status: 'Open',
+                              prizePool: 75,
+                              minimumThreshold: 150,
+                              metadata: createMetadata('2025-01-15T12:06:00Z'),
+                              _collections: {
+                                contributions: [
+                                  {
+                                    ...createIdAndPath(
+                                      'organizations/org-super-sprinkles/series/series-sprinkles-2025/events/event-giro-sf-2025/races/race-giro-sf-2025-masters-women/preems/preem-giro-sf-2025-masters-women-final-lap/contributions/contrib-6',
+                                    ),
+                                    contributor: {
+                                      id: 'user-jane-smith',
+                                      name: 'Jane Smith',
+                                      avatarUrl:
+                                        'https://placehold.co/100x100.png',
+                                    },
+                                    amount: 75,
+                                    date: new Date('2024-07-09T18:25:00Z'),
+                                    metadata: createMetadata(
+                                      '2024-07-09T18:25:00Z',
+                                    ),
+                                  },
+                                ],
+                              },
+                            },
+                          ],
+                        },
+                      },
+                      {
+                        ...createIdAndPath(
+                          'organizations/org-super-sprinkles/series/series-sprinkles-2025/events/event-giro-sf-2025/races/race-giro-sf-2025-juniors',
+                        ),
+                        name: 'Junior 17-18 Championship',
+                        category: 'Juniors',
+                        gender: 'Open',
+                        location: "Levi's Plaza, San Francisco",
+                        courseDetails: "Circuit race around Levi's Plaza.",
+                        maxRacers: 50,
+                        currentRacers: 0,
+                        ageCategory: '17-18',
+                        duration: '40 minutes',
+                        laps: 20,
+                        podiums: 3,
+                        sponsors: [],
+                        startDate: new Date('2025-09-01T08:45:00Z'),
+                        endDate: new Date('2025-09-01T08:45:00Z'),
+                        metadata: createMetadata('2025-01-15T12:07:00Z'),
+                        _collections: { preems: [] },
+                      },
+                    ],
+                  },
+                },
+              ],
+            },
+          },
+        ],
+      },
+    },
+    {
+      ...createIdAndPath('organizations/org-bike-race-inc'),
+      name: 'Bike Race Inc.',
+      memberRefs: [createDocRef('users/user-bike-race-inc-admin')],
+      metadata: createMetadata('2025-02-01T10:00:00Z'),
+      _collections: {
+        series: [
+          {
+            ...createIdAndPath(
+              'organizations/org-bike-race-inc/series/series-chicago-grit',
+            ),
+            name: 'Chicago Grit',
+            location: 'Chicagoland',
+            website: 'https://chicago-grit.com/',
+            startDate: new Date('2026-07-17T00:00:00Z'),
+            endDate: new Date('2026-07-26T00:00:00Z'),
+            metadata: createMetadata('2026-01-01T09:01:00Z'),
+            _collections: {
+              events: [
+                {
+                  ...createIdAndPath(
+                    'organizations/org-bike-race-inc/series/series-chicago-grit/events/event-west-dundee',
+                  ),
+                  name: 'West Dundee',
+                  location: 'West Dundee, IL',
+                  startDate: new Date('2026-07-17T10:00:00Z'),
+                  endDate: new Date('2026-07-17T10:00:00Z'),
+                  metadata: createMetadata('2026-01-01T09:02:00Z'),
+                  _collections: {
+                    races: [
+                      {
+                        ...createIdAndPath(
+                          'organizations/org-bike-race-inc/series/series-chicago-grit/events/event-west-dundee/races/race-west-dundee-pro-men',
+                        ),
+                        name: 'Pro/1/2 Men',
+                        category: 'Pro/1/2',
+                        gender: 'Men',
+                        location: 'West Dundee, IL',
+                        courseDetails:
+                          'Challenging course with the "Leg Breaker Hill".',
+                        maxRacers: 100,
+                        currentRacers: 0,
+                        ageCategory: 'All Ages',
+                        duration: '60 minutes',
+                        laps: 30,
+                        podiums: 3,
+                        sponsors: [],
+                        startDate: new Date('2026-07-17T10:00:00Z'),
+                        endDate: new Date('2026-07-17T10:00:00Z'),
+                        metadata: createMetadata('2026-01-01T09:03:00Z'),
+                        _collections: { preems: [] },
+                      },
+                      {
+                        ...createIdAndPath(
+                          'organizations/org-bike-race-inc/series/series-chicago-grit/events/event-west-dundee/races/race-west-dundee-pro-women',
+                        ),
+                        name: 'Pro/1/2/3 Women',
+                        category: 'Pro/1/2/3',
+                        gender: 'Women',
+                        location: 'West Dundee, IL',
+                        courseDetails:
+                          'Challenging course with the "Leg Breaker Hill".',
+                        maxRacers: 100,
+                        currentRacers: 0,
+                        ageCategory: 'All Ages',
+                        duration: '60 minutes',
+                        laps: 30,
+                        podiums: 3,
+                        sponsors: [],
+                        startDate: new Date('2026-07-17T11:00:00Z'),
+                        endDate: new Date('2026-07-17T11:00:00Z'),
+                        metadata: createMetadata('2026-01-01T09:04:00Z'),
+                        _collections: { preems: [] },
+                      },
+                    ],
+                  },
+                },
+                {
+                  ...createIdAndPath(
+                    'organizations/org-bike-race-inc/series/series-chicago-grit/events/event-lake-bluff',
+                  ),
+                  name: 'Lake Bluff',
+                  location: 'Lake Bluff, IL',
+                  startDate: new Date('2026-07-25T10:00:00Z'),
+                  endDate: new Date('2026-07-25T10:00:00Z'),
+                  metadata: createMetadata('2026-01-01T09:05:00Z'),
+                  _collections: {
+                    races: [
+                      {
+                        ...createIdAndPath(
+                          'organizations/org-bike-race-inc/series/series-chicago-grit/events/event-lake-bluff/races/race-lake-bluff-pro-men',
+                        ),
+                        name: 'Pro/1/2 Men',
+                        category: 'Pro/1/2',
+                        gender: 'Men',
+                        location: 'Lake Bluff, IL',
+                        courseDetails:
+                          'A technical course with a challenging chicane.',
+                        maxRacers: 100,
+                        currentRacers: 0,
+                        ageCategory: 'All Ages',
+                        duration: '60 minutes',
+                        laps: 30,
+                        podiums: 3,
+                        sponsors: [],
+                        startDate: new Date('2026-07-25T10:00:00Z'),
+                        endDate: new Date('2026-07-25T10:00:00Z'),
+                        metadata: createMetadata('2026-01-01T09:06:00Z'),
+                        _collections: { preems: [] },
+                      },
+                      {
+                        ...createIdAndPath(
+                          'organizations/org-bike-race-inc/series/series-chicago-grit/events/event-lake-bluff/races/race-lake-bluff-pro-women',
+                        ),
+                        name: 'Pro/1/2/3 Women',
+                        category: 'Pro/1/2/3',
+                        gender: 'Women',
+                        location: 'Lake Bluff, IL',
+                        courseDetails:
+                          'A technical course with a challenging chicane.',
+                        maxRacers: 100,
+                        currentRacers: 0,
+                        ageCategory: 'All Ages',
+                        duration: '60 minutes',
+                        laps: 30,
+                        podiums: 3,
+                        sponsors: [],
+                        startDate: new Date('2026-07-25T11:00:00Z'),
+                        endDate: new Date('2026-07-25T11:00:00Z'),
+                        metadata: createMetadata('2026-01-01T09:07:00Z'),
+                        _collections: { preems: [] },
+                      },
+                    ],
+                  },
+                },
+                {
+                  ...createIdAndPath(
+                    'organizations/org-bike-race-inc/series/series-chicago-grit/events/event-fulton-market',
+                  ),
+                  name: 'Fulton Market',
+                  location: 'Fulton Market, Chicago, IL',
+                  startDate: new Date('2026-07-26T10:00:00Z'),
+                  endDate: new Date('2026-07-26T10:00:00Z'),
+                  metadata: createMetadata('2026-01-01T09:08:00Z'),
+                  _collections: {
+                    races: [
+                      {
+                        ...createIdAndPath(
+                          'organizations/org-bike-race-inc/series/series-chicago-grit/events/event-fulton-market/races/race-fulton-market-pro-men',
+                        ),
+                        name: 'Pro/1/2 Men',
+                        category: 'Pro/1/2',
+                        gender: 'Men',
+                        location: 'Fulton Market, Chicago, IL',
+                        courseDetails:
+                          "A new four-corner criterium that goes under the 'L' train tracks.",
+                        maxRacers: 100,
+                        currentRacers: 0,
+                        ageCategory: 'All Ages',
+                        duration: '75 minutes',
+                        laps: 40,
+                        podiums: 3,
+                        sponsors: [],
+                        startDate: new Date('2026-07-26T16:55:00Z'),
+                        endDate: new Date('2026-07-26T16:55:00Z'),
+                        metadata: createMetadata('2026-01-01T09:09:00Z'),
+                        _collections: { preems: [] },
+                      },
+                      {
+                        ...createIdAndPath(
+                          'organizations/org-bike-race-inc/series/series-chicago-grit/events/event-fulton-market/races/race-fulton-market-pro-women',
+                        ),
+                        name: 'Pro/1/2/3 Women',
+                        category: 'Pro/1/2/3',
+                        gender: 'Women',
+                        location: 'Fulton Market, Chicago, IL',
+                        courseDetails:
+                          "A new four-corner criterium that goes under the 'L' train tracks.",
+                        maxRacers: 100,
+                        currentRacers: 0,
+                        ageCategory: 'All Ages',
+                        duration: '75 minutes',
+                        laps: 40,
+                        podiums: 3,
+                        sponsors: [],
+                        startDate: new Date('2026-07-26T15:30:00Z'),
+                        endDate: new Date('2026-07-26T15:30:00Z'),
+                        metadata: createMetadata('2026-01-01T09:10:00Z'),
+                        _collections: { preems: [] },
+                      },
+                    ],
+                  },
+                },
+              ],
+            },
+          },
+        ],
+      },
+    },
+  ],
 };
-
-export const createMockDb = (firestore: Firestore): DatabaseCollections =>
-  postProcessDatabase({
-    users: [
-      {
-        id: 'user-test-admin',
-        name: 'Test Admin',
-        email: 'test-admin@example.com',
-        avatarUrl: 'https://placehold.co/100x100.png',
-        role: 'admin',
-        organizationRefs: [
-          createDocRef(firestore, 'organizations', 'org-super-sprinkles'),
-        ],
-        metadata: createMetadata(firestore, '2024-07-01T09:59:00Z'),
-      },
-      {
-        // preem-machine-dev
-        id: ENV_E2E_TESTING_USER,
-        name: 'Test User',
-        email: 'test-user@example.com',
-        avatarUrl: 'https://placehold.co/100x100.png',
-        role: 'admin',
-        organizationRefs: [
-          createDocRef(firestore, 'organizations', 'org-super-sprinkles'),
-        ],
-        metadata: createMetadata(firestore, '2024-07-01T10:00:00Z'),
-      },
-
-      {
-        id: 'user-alex-doe',
-        name: 'Alex Doe',
-        email: 'alex@example.com',
-        avatarUrl: 'https://placehold.co/100x100.png',
-        role: 'contributor',
-        metadata: createMetadata(firestore, '2024-07-01T10:01:00Z'),
-      },
-      {
-        id: 'user-bike-race-inc-admin',
-        name: 'Bike Race Inc. Admin',
-        email: 'contact@bikerace.com',
-        avatarUrl: 'https://placehold.co/100x100.png',
-        role: 'organizer',
-        organizationRefs: [
-          createDocRef(firestore, 'organizations', 'org-bike-race-inc'),
-        ],
-        metadata: createMetadata(firestore, '2024-07-01T10:02:00Z'),
-      },
-      {
-        id: 'user-jane-smith',
-        name: 'Jane Smith',
-        email: 'jane@example.com',
-        avatarUrl: 'https://placehold.co/100x100.png',
-        role: 'contributor',
-        metadata: createMetadata(firestore, '2024-07-01T10:03:00Z'),
-      },
-      {
-        id: 'some-user',
-        name: 'Some User',
-        email: 'shop@example.com',
-        avatarUrl: 'https://placehold.co/100x100.png',
-        role: 'contributor',
-        metadata: createMetadata(firestore, '2024-07-01T10:04:00Z'),
-      },
-    ],
-    organizations: [
-      {
-        id: 'org-super-sprinkles',
-        name: 'Super Sprinkles Racing',
-        memberRefs: [
-          // test-user@example.com - preem-machine
-          createDocRef(firestore, 'users', 'BFGvWNXZoCWayJa0pNEL4bfhtUC3'),
-          // test-user@example.com - preem-machine-ci
-          createDocRef(firestore, 'users', '73LhDvkigMdwJ4r7NICamtwgd0u1'),
-          // test-user@example.com - preem-machine-dev
-          createDocRef(firestore, 'users', 'RwgsPxLnp1bHNcxgw7MdCpm1Cuj1'),
-          // jlapenna.test.1@gmail.com
-          createDocRef(firestore, 'users', '5URlCEB3ACVgem9RAdWudjRURpl2'),
-        ],
-        metadata: createMetadata(firestore, '2025-01-15T12:00:00Z'),
-        _collections: {
-          series: [
-            {
-              id: 'series-sprinkles-2025',
-              name: 'Sprinkles 2025',
-              location: 'Northern California',
-              website: 'https://girosf.com',
-              startDate: getTimestampFromISODate('2025-09-01T00:00:00Z'),
-              endDate: getTimestampFromISODate('2025-09-01T00:00:00Z'),
-              metadata: createMetadata(firestore, '2025-01-15T12:01:00Z'),
-              _collections: {
-                events: [
-                  {
-                    id: 'event-giro-sf-2025',
-                    status: 'Upcoming',
-                    name: 'Il Giro di San Francisco',
-                    location: "Levi's Plaza, San Francisco",
-                    startDate: getTimestampFromISODate('2025-09-01T08:00:00Z'),
-                    endDate: getTimestampFromISODate('2025-09-01T08:00:00Z'),
-                    metadata: createMetadata(firestore, '2025-01-15T12:02:00Z'),
-                    _collections: {
-                      races: [
-                        {
-                          id: 'race-giro-sf-2025-masters-women',
-                          status: 'Upcoming',
-                          name: 'Master Women 40+/50+',
-                          category: 'Masters',
-                          gender: 'Women',
-                          location: "Levi's Plaza, San Francisco",
-                          courseDetails: "Circuit race around Levi's Plaza.",
-                          maxRacers: 50,
-                          currentRacers: 0,
-                          ageCategory: '40+/50+',
-                          duration: '40 minutes',
-                          laps: 20,
-                          podiums: 3,
-                          sponsors: [],
-                          startDate: getTimestampFromISODate(
-                            '2025-09-01T08:00:00Z',
-                          ),
-                          endDate: getTimestampFromISODate(
-                            '2025-09-01T08:00:00Z',
-                          ),
-                          metadata: createMetadata(
-                            firestore,
-                            '2025-01-15T12:03:00Z',
-                          ),
-                          _collections: {
-                            preems: [
-                              {
-                                id: 'preem-giro-sf-2025-masters-women-first-lap',
-                                name: 'First Lap Leader',
-                                type: 'Pooled',
-                                status: 'Awarded',
-                                prizePool: 100,
-                                metadata: createMetadata(
-                                  firestore,
-                                  '2025-01-15T12:04:00Z',
-                                ),
-                                _collections: {
-                                  contributions: [
-                                    {
-                                      id: 'contrib-1',
-                                      contributor: {
-                                        id: 'some-user',
-                                        name: 'Some User',
-                                        avatarUrl:
-                                          'https://placehold.co/100x100.png',
-                                      },
-                                      amount: 100,
-                                      date: getTimestampFromISODate(
-                                        '2024-07-09T18:05:00Z',
-                                      ),
-                                      message: 'Good luck racers!',
-                                      metadata: createMetadata(
-                                        firestore,
-                                        '2024-07-09T18:05:00Z',
-                                      ),
-                                    },
-                                  ],
-                                },
-                              },
-                              {
-                                id: 'preem-giro-sf-2025-masters-women-mid-sprint',
-                                name: 'Mid-Race Sprint',
-                                type: 'Pooled',
-                                status: 'Minimum Met',
-                                prizePool: 255,
-                                minimumThreshold: 200,
-                                timeLimit: getTimestampFromISODate(
-                                  '2024-07-09T19:30:00Z',
-                                ),
-                                metadata: createMetadata(
-                                  firestore,
-                                  '2025-01-15T12:05:00Z',
-                                ),
-                                _collections: {
-                                  contributions: [
-                                    {
-                                      id: 'contrib-2',
-                                      contributor: {
-                                        id: 'user-alex-doe',
-                                        name: 'Alex Doe',
-                                        avatarUrl:
-                                          'https://placehold.co/100x100.png',
-                                      },
-                                      amount: 50,
-                                      date: getTimestampFromISODate(
-                                        '2024-07-09T18:10:00Z',
-                                      ),
-                                      metadata: createMetadata(
-                                        firestore,
-                                        '2024-07-09T18:10:00Z',
-                                      ),
-                                    },
-                                    {
-                                      id: 'contrib-3',
-                                      contributor: {
-                                        id: 'user-jane-smith',
-                                        name: 'Jane Smith',
-                                        avatarUrl:
-                                          'https://placehold.co/100x100.png',
-                                      },
-                                      amount: 75,
-                                      date: getTimestampFromISODate(
-                                        '2024-07-09T18:12:00Z',
-                                      ),
-                                      message: 'Lets go!',
-                                      metadata: createMetadata(
-                                        firestore,
-                                        '2024-07-09T18:12:00Z',
-                                      ),
-                                    },
-                                    {
-                                      id: 'contrib-4',
-                                      amount: 30,
-                                      date: getTimestampFromISODate(
-                                        '2024-07-09T18:15:00Z',
-                                      ),
-                                      metadata: createMetadata(
-                                        firestore,
-                                        '2024-07-09T18:15:00Z',
-                                      ),
-                                    },
-                                    {
-                                      id: 'contrib-5',
-                                      contributor: {
-                                        id: 'user-alex-doe',
-                                        name: 'Alex Doe',
-                                        avatarUrl:
-                                          'https://placehold.co/100x100.png',
-                                      },
-                                      amount: 100,
-                                      date: getTimestampFromISODate(
-                                        '2024-07-09T18:20:00Z',
-                                      ),
-                                      message: 'Making it spicy!',
-                                      metadata: createMetadata(
-                                        firestore,
-                                        '2024-07-09T18:20:00Z',
-                                      ),
-                                    },
-                                  ],
-                                },
-                              },
-                              {
-                                id: 'preem-giro-sf-2025-masters-women-final-lap',
-                                name: 'Sponsored by Bicycle Law!',
-                                type: 'One-Shot',
-                                status: 'Open',
-                                prizePool: 75,
-                                minimumThreshold: 150,
-                                metadata: createMetadata(
-                                  firestore,
-                                  '2025-01-15T12:06:00Z',
-                                ),
-                                _collections: {
-                                  contributions: [
-                                    {
-                                      id: 'contrib-6',
-                                      contributor: {
-                                        id: 'user-jane-smith',
-                                        name: 'Jane Smith',
-                                        avatarUrl:
-                                          'https://placehold.co/100x100.png',
-                                      },
-                                      amount: 75,
-                                      date: getTimestampFromISODate(
-                                        '2024-07-09T18:25:00Z',
-                                      ),
-                                      metadata: createMetadata(
-                                        firestore,
-                                        '2024-07-09T18:25:00Z',
-                                      ),
-                                    },
-                                  ],
-                                },
-                              },
-                            ],
-                          },
-                        },
-                        {
-                          id: 'race-giro-sf-2025-juniors',
-                          status: 'Upcoming',
-                          name: 'Junior 17-18 Championship',
-                          category: 'Juniors',
-                          gender: 'Open',
-                          location: "Levi's Plaza, San Francisco",
-                          courseDetails: "Circuit race around Levi's Plaza.",
-                          maxRacers: 50,
-                          currentRacers: 0,
-                          ageCategory: '17-18',
-                          duration: '40 minutes',
-                          laps: 20,
-                          podiums: 3,
-                          sponsors: [],
-                          startDate: getTimestampFromISODate(
-                            '2025-09-01T08:45:00Z',
-                          ),
-                          endDate: getTimestampFromISODate(
-                            '2025-09-01T08:45:00Z',
-                          ),
-                          metadata: createMetadata(
-                            firestore,
-                            '2025-01-15T12:07:00Z',
-                          ),
-                          _collections: { preems: [] },
-                        },
-                      ],
-                    },
-                  },
-                ],
-              },
-            },
-          ],
-        },
-      },
-      {
-        id: 'org-bike-race-inc',
-        name: 'Bike Race Inc.',
-        memberRefs: [
-          createDocRef(firestore, 'users', 'user-bike-race-inc-admin'),
-        ],
-        metadata: createMetadata(firestore, '2025-02-01T10:00:00Z'),
-        _collections: {
-          series: [
-            {
-              id: 'series-chicago-grit',
-              name: 'Chicago Grit',
-              location: 'Chicagoland',
-              website: 'https://chicago-grit.com/',
-              startDate: getTimestampFromISODate('2026-07-17T00:00:00Z'),
-              endDate: getTimestampFromISODate('2026-07-26T00:00:00Z'),
-              metadata: createMetadata(firestore, '2026-01-01T09:01:00Z'),
-              _collections: {
-                events: [
-                  {
-                    id: 'event-west-dundee',
-                    status: 'Upcoming',
-                    name: 'West Dundee',
-                    location: 'West Dundee, IL',
-                    startDate: getTimestampFromISODate('2026-07-17T10:00:00Z'),
-                    endDate: getTimestampFromISODate('2026-07-17T10:00:00Z'),
-                    metadata: createMetadata(firestore, '2026-01-01T09:02:00Z'),
-                    _collections: {
-                      races: [
-                        {
-                          id: 'race-west-dundee-pro-men',
-                          status: 'Upcoming',
-                          name: 'Pro/1/2 Men',
-                          category: 'Pro/1/2',
-                          gender: 'Men',
-                          location: 'West Dundee, IL',
-                          courseDetails:
-                            'Challenging course with the "Leg Breaker Hill".',
-                          maxRacers: 100,
-                          currentRacers: 0,
-                          ageCategory: 'All Ages',
-                          duration: '60 minutes',
-                          laps: 30,
-                          podiums: 3,
-                          sponsors: [],
-                          startDate: getTimestampFromISODate(
-                            '2026-07-17T10:00:00Z',
-                          ),
-                          endDate: getTimestampFromISODate(
-                            '2026-07-17T10:00:00Z',
-                          ),
-                          metadata: createMetadata(
-                            firestore,
-                            '2026-01-01T09:03:00Z',
-                          ),
-                          _collections: { preems: [] },
-                        },
-                        {
-                          id: 'race-west-dundee-pro-women',
-                          status: 'Upcoming',
-                          name: 'Pro/1/2/3 Women',
-                          category: 'Pro/1/2/3',
-                          gender: 'Women',
-                          location: 'West Dundee, IL',
-                          courseDetails:
-                            'Challenging course with the "Leg Breaker Hill".',
-                          maxRacers: 100,
-                          currentRacers: 0,
-                          ageCategory: 'All Ages',
-                          duration: '60 minutes',
-                          laps: 30,
-                          podiums: 3,
-                          sponsors: [],
-                          startDate: getTimestampFromISODate(
-                            '2026-07-17T11:00:00Z',
-                          ),
-                          endDate: getTimestampFromISODate(
-                            '2026-07-17T11:00:00Z',
-                          ),
-                          metadata: createMetadata(
-                            firestore,
-                            '2026-01-01T09:04:00Z',
-                          ),
-                          _collections: { preems: [] },
-                        },
-                      ],
-                    },
-                  },
-                  {
-                    id: 'event-lake-bluff',
-                    status: 'Upcoming',
-                    name: 'Lake Bluff',
-                    location: 'Lake Bluff, IL',
-                    startDate: getTimestampFromISODate('2026-07-25T10:00:00Z'),
-                    endDate: getTimestampFromISODate('2026-07-25T10:00:00Z'),
-                    metadata: createMetadata(firestore, '2026-01-01T09:05:00Z'),
-                    _collections: {
-                      races: [
-                        {
-                          id: 'race-lake-bluff-pro-men',
-                          status: 'Upcoming',
-                          name: 'Pro/1/2 Men',
-                          category: 'Pro/1/2',
-                          gender: 'Men',
-                          location: 'Lake Bluff, IL',
-                          courseDetails:
-                            'A technical course with a challenging chicane.',
-                          maxRacers: 100,
-                          currentRacers: 0,
-                          ageCategory: 'All Ages',
-                          duration: '60 minutes',
-                          laps: 30,
-                          podiums: 3,
-                          sponsors: [],
-                          startDate: getTimestampFromISODate(
-                            '2026-07-25T10:00:00Z',
-                          ),
-                          endDate: getTimestampFromISODate(
-                            '2026-07-25T10:00:00Z',
-                          ),
-                          metadata: createMetadata(
-                            firestore,
-                            '2026-01-01T09:06:00Z',
-                          ),
-                          _collections: { preems: [] },
-                        },
-                        {
-                          id: 'race-lake-bluff-pro-women',
-                          status: 'Upcoming',
-                          name: 'Pro/1/2/3 Women',
-                          category: 'Pro/1/2/3',
-                          gender: 'Women',
-                          location: 'Lake Bluff, IL',
-                          courseDetails:
-                            'A technical course with a challenging chicane.',
-                          maxRacers: 100,
-                          currentRacers: 0,
-                          ageCategory: 'All Ages',
-                          duration: '60 minutes',
-                          laps: 30,
-                          podiums: 3,
-                          sponsors: [],
-                          startDate: getTimestampFromISODate(
-                            '2026-07-25T11:00:00Z',
-                          ),
-                          endDate: getTimestampFromISODate(
-                            '2026-07-25T11:00:00Z',
-                          ),
-                          metadata: createMetadata(
-                            firestore,
-                            '2026-01-01T09:07:00Z',
-                          ),
-                          _collections: { preems: [] },
-                        },
-                      ],
-                    },
-                  },
-                  {
-                    id: 'event-fulton-market',
-                    status: 'Upcoming',
-                    name: 'Fulton Market',
-                    location: 'Fulton Market, Chicago, IL',
-                    startDate: getTimestampFromISODate('2026-07-26T10:00:00Z'),
-                    endDate: getTimestampFromISODate('2026-07-26T10:00:00Z'),
-                    metadata: createMetadata(firestore, '2026-01-01T09:08:00Z'),
-                    _collections: {
-                      races: [
-                        {
-                          id: 'race-fulton-market-pro-men',
-                          status: 'Upcoming',
-                          name: 'Pro/1/2 Men',
-                          category: 'Pro/1/2',
-                          gender: 'Men',
-                          location: 'Fulton Market, Chicago, IL',
-                          courseDetails:
-                            "A new four-corner criterium that goes under the 'L' train tracks.",
-                          maxRacers: 100,
-                          currentRacers: 0,
-                          ageCategory: 'All Ages',
-                          duration: '75 minutes',
-                          laps: 40,
-                          podiums: 3,
-                          sponsors: [],
-                          startDate: getTimestampFromISODate(
-                            '2026-07-26T16:55:00Z',
-                          ),
-                          endDate: getTimestampFromISODate(
-                            '2026-07-26T16:55:00Z',
-                          ),
-                          metadata: createMetadata(
-                            firestore,
-                            '2026-01-01T09:09:00Z',
-                          ),
-                          _collections: { preems: [] },
-                        },
-                        {
-                          id: 'race-fulton-market-pro-women',
-                          status: 'Upcoming',
-                          name: 'Pro/1/2/3 Women',
-                          category: 'Pro/1/2/3',
-                          gender: 'Women',
-                          location: 'Fulton Market, Chicago, IL',
-                          courseDetails:
-                            "A new four-corner criterium that goes under the 'L' train tracks.",
-                          maxRacers: 100,
-                          currentRacers: 0,
-                          ageCategory: 'All Ages',
-                          duration: '75 minutes',
-                          laps: 40,
-                          podiums: 3,
-                          sponsors: [],
-                          startDate: getTimestampFromISODate(
-                            '2026-07-26T15:30:00Z',
-                          ),
-                          endDate: getTimestampFromISODate(
-                            '2026-07-26T15:30:00Z',
-                          ),
-                          metadata: createMetadata(
-                            firestore,
-                            '2026-01-01T09:10:00Z',
-                          ),
-                          _collections: { preems: [] },
-                        },
-                      ],
-                    },
-                  },
-                ],
-              },
-            },
-          ],
-        },
-      },
-    ],
-  });

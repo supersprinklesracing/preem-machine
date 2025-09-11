@@ -1,4 +1,4 @@
-import { render, screen } from '@/test-utils';
+import { render, screen, setupMockDb } from '@/test-utils';
 import NewSeriesPage from './page';
 import '@/matchMedia.mock';
 
@@ -13,9 +13,13 @@ jest.mock('./new-series-action', () => ({
 }));
 
 describe('NewSeriesPage', () => {
+  setupMockDb();
+
   it('should render the NewSeries component', async () => {
     const PageComponent = await NewSeriesPage({
-      searchParams: { path: 'organizations/org-1/series' },
+      searchParams: Promise.resolve({
+        path: 'organizations/org-super-sprinkles',
+      }),
     });
     render(PageComponent);
     expect(screen.getByText('Mock NewSeries')).toBeInTheDocument();

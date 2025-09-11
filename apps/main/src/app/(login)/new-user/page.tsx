@@ -1,7 +1,7 @@
 'use server';
 
 import { getAuthUser } from '@/auth/user';
-import { getUserById } from '@/datastore/firestore';
+import { getUserById } from '@/datastore/server/query/query';
 import { redirect } from 'next/navigation';
 import { newUserAction } from './new-user-action';
 import NewUser from './NewUser';

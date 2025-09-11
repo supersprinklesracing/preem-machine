@@ -9,9 +9,17 @@ import {
   updateSeries,
 } from './update';
 
-import { isUserAuthorized } from './access';
+import { isUserAuthorized } from '../access';
+import { converter } from '../converters';
+import {
+  ContributionSchema,
+  OrganizationSchema,
+  PreemSchema,
+  RaceSchema,
+  SeriesSchema,
+} from '../../schema';
 
-jest.mock('./access', () => ({
+jest.mock('../access', () => ({
   isUserAuthorized: jest.fn().mockResolvedValue(true),
 }));
 
@@ -58,26 +66,27 @@ describe('update mutations', () => {
 
       expect(updates.length).toBeGreaterThanOrEqual(4);
 
-      const org = updates.find((u) => u.updates.name === 'New Org Name');
-      expect(org).toBeDefined();
+      const org = updates.find((u) => u.ref.path.includes('organizations'));
+      expect(org?.updates).toEqual({ name: 'New Org Name' });
 
-      const series = updates.find(
-        (u) => u.updates.organizationBrief?.name === 'New Org Name',
-      );
-      expect(series).toBeDefined();
+      const series = updates.find((u) => u.ref.path.includes('series'));
+      expect(series?.updates).toEqual({
+        organizationBrief: {
+          id: 'org-super-sprinkles',
+          path: 'organizations/org-super-sprinkles',
+          name: 'New Org Name',
+        },
+      });
 
-      const event = updates.find(
-        (u) =>
-          u.updates.seriesBrief?.organizationBrief?.name === 'New Org Name',
-      );
-      expect(event).toBeDefined();
+      const event = updates.find((u) => u.ref.path.includes('events'));
+      expect(
+        (event?.updates as any).seriesBrief.organizationBrief.name,
+      ).toEqual('New Org Name');
 
-      const race = updates.find(
-        (u) =>
-          u.updates.eventBrief?.seriesBrief?.organizationBrief?.name ===
-          'New Org Name',
-      );
-      expect(race).toBeDefined();
+      const race = updates.find((u) => u.ref.path.includes('races'));
+      expect(
+        (race?.updates as any).eventBrief.seriesBrief.organizationBrief.name,
+      ).toEqual('New Org Name');
     });
 
     it('should update the organization brief in a series doc', async () => {
@@ -90,8 +99,8 @@ describe('update mutations', () => {
       );
 
       const seriesDoc = await firestore
-        .collection('organizations/org-super-sprinkles/series')
-        .doc('series-sprinkles-2025')
+        .doc('organizations/org-super-sprinkles/series/series-sprinkles-2025')
+        .withConverter(converter(SeriesSchema))
         .get();
 
       const seriesData = seriesDoc.data();
@@ -112,18 +121,18 @@ describe('update mutations', () => {
 
       expect(updates.length).toBeGreaterThanOrEqual(3);
 
-      const series = updates.find((u) => u.updates.name === 'New Series Name');
-      expect(series).toBeDefined();
+      const series = updates.find((u) => u.ref.path.includes('series'));
+      expect(series?.updates).toEqual({ name: 'New Series Name' });
 
-      const event = updates.find(
-        (u) => u.updates.seriesBrief?.name === 'New Series Name',
+      const event = updates.find((u) => u.ref.path.includes('events'));
+      expect((event?.updates as any).seriesBrief.name).toEqual(
+        'New Series Name',
       );
-      expect(event).toBeDefined();
 
-      const race = updates.find(
-        (u) => u.updates.eventBrief?.seriesBrief?.name === 'New Series Name',
+      const race = updates.find((u) => u.ref.path.includes('races'));
+      expect((race?.updates as any).eventBrief.seriesBrief.name).toEqual(
+        'New Series Name',
       );
-      expect(race).toBeDefined();
     });
 
     it('should update the series brief in an event doc', async () => {
@@ -136,15 +145,15 @@ describe('update mutations', () => {
       );
 
       const eventDoc = await firestore
-        .collection(
-          'organizations/org-super-sprinkles/series/series-sprinkles-2025/events',
+        .doc(
+          'organizations/org-super-sprinkles/series/series-sprinkles-2025/events/event-giro-sf-2025',
         )
-        .doc('event-giro-sf-2025')
+        .withConverter(converter(OrganizationSchema))
         .get();
 
       const eventData = eventDoc.data();
       expect(eventData?.path).toEqual(eventDoc.ref.path);
-      expect(eventData?.seriesBrief?.name).toEqual('New Series Name');
+      expect((eventData as any)?.seriesBrief?.name).toEqual('New Series Name');
     });
   });
 
@@ -160,13 +169,11 @@ describe('update mutations', () => {
 
       expect(updates.length).toBeGreaterThanOrEqual(2);
 
-      const event = updates.find((u) => u.updates.name === 'New Event Name');
-      expect(event).toBeDefined();
+      const event = updates.find((u) => u.ref.path.includes('events'));
+      expect(event?.updates).toEqual({ name: 'New Event Name' });
 
-      const race = updates.find(
-        (u) => u.updates.eventBrief?.name === 'New Event Name',
-      );
-      expect(race).toBeDefined();
+      const race = updates.find((u) => u.ref.path.includes('races'));
+      expect((race?.updates as any).eventBrief.name).toEqual('New Event Name');
     });
 
     it('should update the event brief in a race doc', async () => {
@@ -179,10 +186,10 @@ describe('update mutations', () => {
       );
 
       const raceDoc = await firestore
-        .collection(
-          'organizations/org-super-sprinkles/series/series-sprinkles-2025/events/event-giro-sf-2025/races',
+        .doc(
+          'organizations/org-super-sprinkles/series/series-sprinkles-2025/events/event-giro-sf-2025/races/race-giro-sf-2025-masters-women',
         )
-        .doc('race-giro-sf-2025-masters-women')
+        .withConverter(converter(RaceSchema))
         .get();
 
       const raceData = raceDoc.data();
@@ -203,13 +210,11 @@ describe('update mutations', () => {
 
       expect(updates.length).toBeGreaterThanOrEqual(2);
 
-      const race = updates.find((u) => u.updates.name === 'New Race Name');
-      expect(race).toBeDefined();
+      const race = updates.find((u) => u.ref.path.includes('races'));
+      expect(race?.updates).toEqual({ name: 'New Race Name' });
 
-      const preem = updates.find(
-        (u) => u.updates.raceBrief?.name === 'New Race Name',
-      );
-      expect(preem).toBeDefined();
+      const preem = updates.find((u) => u.ref.path.includes('preems'));
+      expect((preem?.updates as any).raceBrief.name).toEqual('New Race Name');
     });
 
     it('should update the race brief in a preem doc', async () => {
@@ -222,10 +227,10 @@ describe('update mutations', () => {
       );
 
       const preemDoc = await firestore
-        .collection(
-          'organizations/org-super-sprinkles/series/series-sprinkles-2025/events/event-giro-sf-2025/races/race-giro-sf-2025-masters-women/preems',
+        .doc(
+          'organizations/org-super-sprinkles/series/series-sprinkles-2025/events/event-giro-sf-2025/races/race-giro-sf-2025-masters-women/preems/preem-giro-sf-2025-masters-women-first-lap',
         )
-        .doc('preem-giro-sf-2025-masters-women-first-lap')
+        .withConverter(converter(PreemSchema))
         .get();
 
       const preemData = preemDoc.data();
@@ -241,9 +246,10 @@ describe('update mutations', () => {
           'organizations/org-super-sprinkles/series/series-sprinkles-2025/events/event-giro-sf-2025/races/race-giro-sf-2025-masters-women/preems/preem-giro-sf-2025-masters-women-first-lap/contributions',
         )
         .doc('contribution-1')
+        .withConverter(converter(ContributionSchema))
         .set({
           path: 'organizations/org-super-sprinkles/series/series-sprinkles-2025/events/event-giro-sf-2025/races/race-giro-sf-2025-masters-women/preems/preem-giro-sf-2025-masters-women-first-lap/contributions/contribution-1',
-        });
+        } as any);
     });
 
     it('should update a preem and all its descendants and return them', async () => {
@@ -257,13 +263,15 @@ describe('update mutations', () => {
 
       expect(updates.length).toBeGreaterThanOrEqual(2);
 
-      const preem = updates.find((u) => u.updates.name === 'New Preem Name');
-      expect(preem).toBeDefined();
+      const preem = updates.find((u) => u.ref.path.includes('preems'));
+      expect(preem?.updates).toEqual({ name: 'New Preem Name' });
 
-      const contribution = updates.find(
-        (u) => u.updates.preemBrief?.name === 'New Preem Name',
+      const contribution = updates.find((u) =>
+        u.ref.path.includes('contributions'),
       );
-      expect(contribution).toBeDefined();
+      expect((contribution?.updates as any).preemBrief.name).toEqual(
+        'New Preem Name',
+      );
     });
 
     it('should update the preem brief in a contribution doc', async () => {
@@ -276,10 +284,10 @@ describe('update mutations', () => {
       );
 
       const contributionDoc = await firestore
-        .collection(
-          'organizations/org-super-sprinkles/series/series-sprinkles-2025/events/event-giro-sf-2025/races/race-giro-sf-2025-masters-women/preems/preem-giro-sf-2025-masters-women-first-lap/contributions',
+        .doc(
+          'organizations/org-super-sprinkles/series/series-sprinkles-2025/events/event-giro-sf-2025/races/race-giro-sf-2025-masters-women/preems/preem-giro-sf-2025-masters-women-first-lap/contributions/contribution-1',
         )
-        .doc('contribution-1')
+        .withConverter(converter(ContributionSchema))
         .get();
 
       const contributionData = contributionDoc.data();

@@ -1,20 +1,18 @@
 import { getFirestore } from '@/firebase-admin';
 import type { Firestore } from 'firebase-admin/firestore';
-import { createMockDb } from './mock-db';
-
-// eslint-disable-next-line @typescript-eslint/no-explicit-any
-type MockDbObject = { [key: string]: any };
+import { createMockDb } from './mock-db-util';
+import { DatabaseDocument } from './mock-db-processor';
 
 async function seedCollection(
   db: FirebaseFirestore.Firestore,
   collectionPath: string,
-  collectionData: MockDbObject,
+  docs: DatabaseDocument[],
 ) {
   const collectionRef = db.collection(collectionPath);
   const promises: Promise<unknown>[] = [];
 
-  for (const docId in collectionData) {
-    const { _collections, ...docData } = collectionData[docId];
+  for (const docId in docs) {
+    const { _collections, ...docData } = docs[docId];
     const id = docData.id;
     try {
       promises.push(collectionRef.doc(id).set(docData));
@@ -24,11 +22,15 @@ async function seedCollection(
 
     if (_collections) {
       for (const subCollectionId in _collections) {
+        const docs = _collections[subCollectionId];
+        if (!docs) {
+          continue;
+        }
         promises.push(
           seedCollection(
             db,
             `${collectionPath}/${id}/${subCollectionId}`,
-            _collections[subCollectionId],
+            docs,
           ),
         );
       }

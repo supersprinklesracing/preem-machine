@@ -1,4 +1,4 @@
-import { getRenderableOrganizationDataForPage } from '@/datastore/firestore';
+import { getRenderableOrganizationDataForPage } from '@/datastore/server/query/query';
 import { getDocPathFromSearchParams } from '@/datastore/paths';
 import Organization from './Organization';
 import { Breadcrumbs } from '@/components/Breadcrumbs';

@@ -1,9 +1,16 @@
 'use client';
 
-import { toUrlPath } from '@/datastore/paths';
 import SeriesCard from '@/components/cards/SeriesCard';
-import { SeriesWithEvents } from '@/datastore/firestore';
-import type { ClientCompat, Organization, User } from '@/datastore/types';
+import { toUrlPath } from '@/datastore/paths';
+import {
+  Contribution,
+  Event,
+  Organization as OrganizationType,
+  Preem,
+  Race,
+  Series,
+  User,
+} from '@/datastore/schema';
 import {
   Anchor,
   Avatar,
@@ -20,12 +27,30 @@ import { IconChevronRight, IconPlus, IconWorldWww } from '@tabler/icons-react';
 import Link from 'next/link';
 
 interface Props {
-  organization: ClientCompat<Organization>;
-  serieses: SeriesWithEvents[];
-  members: ClientCompat<User>[];
+  organization: Pick<
+    OrganizationType,
+    'id' | 'name' | 'description' | 'website'
+  >;
+  serieses: {
+    series: Series;
+    children: {
+      event: Pick<Event, 'id' | 'path'>;
+      children: {
+        race: Pick<Race, 'id' | 'path'>;
+        children: {
+          preem: Pick<Preem, 'id' | 'path'>;
+          children: Pick<Contribution, 'id'>[];
+        }[];
+      }[];
+    }[];
+  }[];
+  members: Pick<
+    User,
+    'id' | 'avatarUrl' | 'name' | 'email' | 'organizationRefs'
+  >[];
 }
 
-export default function Organization({
+export default function OrganizationComponent({
   organization,
   serieses,
   members,

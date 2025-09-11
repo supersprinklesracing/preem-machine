@@ -34,7 +34,7 @@ const mockPreemData = {
     type: 'Pooled',
     prizePool: 150,
     minimumThreshold: 100,
-    timeLimit: new Date().toISOString(),
+    timeLimit: new Date(),
   },
   children: [
     {
@@ -47,7 +47,7 @@ const mockPreemData = {
         avatarUrl: 'https://example.com/avatar.png',
       },
       amount: 100,
-      date: new Date().toISOString(),
+      date: new Date(),
       message: 'Go get it!',
     },
     {
@@ -59,7 +59,7 @@ const mockPreemData = {
         name: 'Jane Doe',
       },
       amount: 50,
-      date: new Date().toISOString(),
+      date: new Date(),
       message: 'Good luck!',
     },
   ],

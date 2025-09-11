@@ -33,7 +33,7 @@ import {
   getGoogleProvider,
   loginWithProvider,
   loginWithProviderUsingRedirect,
-} from './firebase';
+} from './providers';
 import { ENV_URL_PREFIX } from '@/env/env';
 
 const auth = getFirebaseAuth();
