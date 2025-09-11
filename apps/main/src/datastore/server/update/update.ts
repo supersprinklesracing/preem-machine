@@ -34,6 +34,7 @@ import {
 } from '../../schema';
 import { isUserAuthorized } from '../access';
 import { converter } from '../converters';
+import { validateEventDateRange, validateRaceDateRange } from '../validation';
 
 interface DocUpdate<T> {
   ref: DocumentReference<T>;
@@ -283,6 +284,7 @@ export const updateEvent = async (
       throw new NotFoundError("Event doesn't exist");
     }
     const { name, startDate, endDate, seriesBrief } = existingData;
+    await validateEventDateRange(updates, seriesBrief.path);
     const eventBrief: EventBrief = {
       id: ref.id,
       path: asDocPath(ref.path),
@@ -360,6 +362,7 @@ export const updateRace = async (
       throw new NotFoundError("Race doesn't exist");
     }
     const { name, startDate, endDate, eventBrief } = existingData;
+    await validateRaceDateRange(updates, eventBrief.path);
     const raceBrief: RaceBrief = {
       id: ref.id,
       path: asDocPath(ref.path),

@@ -10,6 +10,7 @@ import {
 } from './create';
 
 import { isUserAuthorized } from '../access';
+import { Series, Event } from '@/datastore/schema';
 
 jest.mock('../access', () => ({
   isUserAuthorized: jest.fn().mockResolvedValue(true),
@@ -67,13 +68,17 @@ describe('create mutations', () => {
 
   describe('createEvent', () => {
     it('should create a new event', async () => {
+      const seriesPath = 'organizations/org-super-sprinkles/series/series-sprinkles-2025';
+      const seriesDoc = await firestore.doc(seriesPath).get();
+      const series = seriesDoc.data() as Series;
+
       const newEvent = {
         name: 'New Test Event',
-        startDate: new Date('2025-01-01T00:00:00Z'),
-        endDate: new Date('2025-01-01T00:00:00Z'),
+        startDate: series.startDate,
+        endDate: series.endDate,
       };
       const doc = await createEvent(
-        'organizations/org-super-sprinkles/series/series-sprinkles-2025',
+        seriesPath,
         newEvent,
         authUser,
       );
@@ -86,13 +91,16 @@ describe('create mutations', () => {
 
   describe('createRace', () => {
     it('should create a new race', async () => {
+      const eventPath = 'organizations/org-super-sprinkles/series/series-sprinkles-2025/events/event-giro-sf-2025';
+      const eventDoc = await firestore.doc(eventPath).get();
+      const event = eventDoc.data() as Event;
       const newRace = {
         name: 'New Test Race',
-        startDate: new Date('2025-01-01T00:00:00Z'),
-        endDate: new Date('2025-01-01T00:00:00Z'),
+        startDate: event.startDate,
+        endDate: event.endDate,
       };
       const doc = await createRace(
-        'organizations/org-super-sprinkles/series/series-sprinkles-2025/events/event-giro-sf-2025',
+        eventPath,
         newRace,
         authUser,
       );
