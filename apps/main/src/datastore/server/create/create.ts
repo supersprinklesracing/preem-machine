@@ -28,6 +28,7 @@ import {
 } from '../../schema';
 import { isUserAuthorized } from '../access';
 import { converter } from '../converters';
+import { validateEventDateRange, validateRaceDateRange } from '../validation';
 
 const createMetadata = (userRef: DocumentReference<DocumentData>) => ({
   'metadata.created': FieldValue.serverTimestamp(),
@@ -120,6 +121,7 @@ export const createEvent = async (
 
   const eventRef = seriesRef.collection('events').doc();
 
+  await validateEventDateRange(event, seriesPath);
   return createDocument(asDocPath(eventRef.path), event, authUser, {
     seriesBrief,
   });
@@ -153,6 +155,7 @@ export const createRace = async (
 
   const raceRef = eventRef.collection('races').doc();
 
+  await validateRaceDateRange(race, eventPath);
   return createDocument(asDocPath(raceRef.path), race, authUser, {
     eventBrief,
   });

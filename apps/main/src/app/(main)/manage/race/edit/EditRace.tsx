@@ -56,6 +56,31 @@ export function EditRace({
 
   const { form, handleSubmit, isLoading, submissionError } = useActionForm({
     schema: raceSchema,
+    validate: (values) => {
+      console.log('validating', values);
+      if (values.startDate && values.endDate) {
+        if (values.endDate < values.startDate) {
+          return {
+            endDate: 'End date must be after start date',
+          };
+        }
+      }
+      if (race.eventBrief.startDate && values.startDate) {
+        if (values.startDate < race.eventBrief.startDate) {
+          return {
+            startDate: 'Race start date cannot be before event start date',
+          };
+        }
+      }
+      if (race.eventBrief.endDate && values.endDate) {
+        if (values.endDate > race.eventBrief.endDate) {
+          return {
+            endDate: 'Race end date cannot be after event end date',
+          };
+        }
+      }
+      return {};
+    },
     initialValues: {
       name: race.name ?? '',
       location: race.location ?? '',
