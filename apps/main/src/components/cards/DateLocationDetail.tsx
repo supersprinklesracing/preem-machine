@@ -3,7 +3,7 @@ import { IconCalendar, IconMapPin } from '@tabler/icons-react';
 import { format } from 'date-fns';
 
 interface DateLocationDetailProps {
-  startDate?: string | null;
+  startDate?: Date;
   location?: string | null;
 }
 
@@ -17,7 +17,7 @@ export const DateLocationDetail: React.FC<DateLocationDetailProps> = ({
         <Group gap="xs">
           <IconCalendar size={18} />
           <Text size="sm" fw={500}>
-            {format(new Date(startDate), 'PP p')}
+            {format(startDate, 'PP p')}
           </Text>
         </Group>
       )}

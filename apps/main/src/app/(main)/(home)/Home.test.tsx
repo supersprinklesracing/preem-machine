@@ -9,7 +9,7 @@ const mockData = {
         id: 'event-1',
         path: 'organizations/org-1/series/series-1/events/event-1',
         name: 'Test Event 1',
-        startDate: new Date().toISOString(),
+        startDate: new Date(),
         location: 'Test Location 1',
       },
       children: [
@@ -18,7 +18,7 @@ const mockData = {
             id: 'race-1',
             path: 'organizations/org-1/series/series-1/events/event-1/races/race-1',
             name: 'Test Race 1',
-            startDate: new Date().toISOString(),
+            startDate: new Date(),
             category: 'Pro',
           },
           children: [],

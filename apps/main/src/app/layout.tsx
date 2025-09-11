@@ -1,8 +1,8 @@
 'use server';
 
 import { getAuthUser } from '@/auth/user';
-import { getUserById } from '@/datastore/firestore';
-import { CurrentUserProvider } from '@/datastore/user/UserProvider';
+import { getUserById } from '@/datastore/server/query/query';
+import { CurrentUserProvider } from '@/datastore/client/UserProvider';
 import {
   ColorSchemeScript,
   MantineColorScheme,

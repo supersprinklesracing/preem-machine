@@ -55,32 +55,30 @@ This project uses `husky` and `lint-staged` to enforce code quality standards on
 
 ### Common NX Development Commands
 
-**Recommended Flags:** You **must** pass `--tuiAutoExit --outputStyle=stream` to `npx nx` commands for optimal performance in this environment.
-
 #### Building & Running
 
-- **Run Dev Server:** `npx nx --tuiAutoExit --outputStyle=stream run @preem-machine/main:dev`
-- **Verify Build:** `npx nx --tuiAutoExit --outputStyle=stream run @preem-machine/main:build:verify --no-color`
-- **Production Bundle:** `npx nx --tuiAutoExit --outputStyle=stream run @preem-machine/main:build:production --no-color`
-- **List Project Targets:** `npx nx --tuiAutoExit --outputStyle=stream show --no-web project main`
+- **Run Dev Server:** `./tools/nx/nx run @preem-machine/main:dev`
+- **Verify Build:** `./tools/nx/nx run @preem-machine/main:build:verify`
+- **Production Bundle:** `./tools/nx/nx run @preem-machine/main:build:production`
+- **List Project Targets:** `./tools/nx/nx show --no-web project main`
 
 #### Testing
 
 - **Tests using Jest**
-  - **Run All Unit Tests:** `npx nx --tuiAutoExit --outputStyle=stream test main --no-color --forceExit`
-  - **Run Single Unit Test:** `npx nx --tuiAutoExit --outputStyle=stream run main:test --no-color --forceExit --testFile="${TEST_FILE}"`
+  - **Run All Unit Tests:** `./tools/nx/nx test main`
+  - **Run Single Unit Test:** `./tools/nx/nx run main:test --testFile="${TEST_FILE}"`
 
 - **E2E Tests using Playwright**
-  - **Run E2E Tests:** `npx nx --tuiAutoExit --outputStyle=stream e2e e2e-main`
-  - **Run Single E2E Test:** `npx nx --tuiAutoExit --outputStyle=stream e2e e2e-main -- "${TEST_FILE}"`
-  - **Update Snapshots:** `npx nx --tuiAutoExit --outputStyle=stream e2e e2e-main --update-snapshots`
+  - **Run E2E Tests:** `./tools/nx/nx e2e e2e-main`
+  - **Run Single E2E Test:** `./tools/nx/nx e2e e2e-main -- "${TEST_FILE}"`
+  - **Update Snapshots:** `./tools/nx/nx e2e e2e-main --update-snapshots`
 
 #### Code Style & Formatting
 
-- **Lint & Fix All Files:** `npx nx --tuiAutoExit --outputStyle=stream affected:lint --fix`
+- **Lint & Fix All Files:** `./tools/nx/nx affected:lint --fix`
 - **Lint & Fix Single File:** `npx eslint --fix "${FILE}"`
-- **Format All Files:** `npx nx --tuiAutoExit --outputStyle=stream format:write`
-- **Format Single File:** `npx nx --tuiAutoExit --outputStyle=stream format:write --files="${FILE}"`
+- **Format All Files:** `./tools/nx/nx format:write`
+- **Format Single File:** `./tools/nx/nx format:write --files="${FILE}"`
 
 ### File System & Search Tools
 
@@ -121,9 +119,9 @@ Proper quoting is essential for commands to execute correctly. Here are examples
   - **Why it's wrong:** The tool expects a single, quoted path. Unquoted paths with fail.
   - **Correct:** `read_file "apps/main/src/app/(main)/layout.tsx"`
 
-- **Incorrect (Unittest with unquoted path):** `npx nx --tuiAutoExit --outputStyle=stream run main:test --no-color --forceExit --testFile=apps/main/src/app/(main)/layout.tsx`
+- **Incorrect (Unittest with unquoted path):** `./tools/nx/nx run main:test --no-color --testFile=apps/main/src/app/(main)/layout.tsx`
   - **Why it's wrong:** The tool expects a single, quoted path. Unquoted paths will fail.
-  - **Correct:** `npx nx --tuiAutoExit --outputStyle=stream run main:test --no-color --forceExit --testFile="apps/main/src/app/(main)/layout.tsx"`
+  - **Correct:** `./tools/nx/nx run main:test --testFile="apps/main/src/app/(main)/layout.tsx"`
 
 - **Incorrect (special characters):** `ls apps/main/src/app/(main)/layout.tsx`
   - **Why it's wrong:** Parentheses `()` are special characters. Unquoted special characters will fail.
@@ -154,7 +152,7 @@ Before writing a test, always inspect the component's props (its TypeScript inte
 - **Procedure:**
   1.  Import `render` and `screen` from `@/test-utils`.
   2.  Import the component to be tested.
-  3.  Create mock data for the component's props (see `apps/main/src/datastore/types.ts`).
+  3.  Create mock data for the component's props (see `apps/main/src/datastore/schema.ts`).
   4.  Write a simple "smoke test" to ensure the component renders without errors.
   5.  Assert that a key piece of text or an element is present in the document. Example: `expect(screen.getByText('Some Text')).toBeInTheDocument();`.
 

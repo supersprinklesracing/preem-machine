@@ -3,8 +3,8 @@
 import { AuthContextUser } from '@/auth/AuthContext';
 import { getFirestore } from '@/firebase-admin';
 import type { DocumentReference } from 'firebase-admin/firestore';
-import { asDocPath } from './paths';
-import type { Organization, User } from './types';
+import { asDocPath } from '../paths';
+import type { Organization, User } from '../schema';
 
 export async function isUserAuthorized(
   authUser: AuthContextUser,

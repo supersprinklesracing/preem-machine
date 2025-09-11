@@ -1,4 +1,4 @@
-import type { ClientCompat, Series } from '@/datastore/types';
+import { Series } from '@/datastore/schema';
 import '@/matchMedia.mock';
 import { act, fireEvent, render, screen, waitFor } from '@/test-utils';
 import { EditSeries } from './EditSeries';
@@ -11,15 +11,15 @@ jest.mock('next/navigation', () => ({
   }),
 }));
 
-const mockSeries: ClientCompat<Series> = {
+const mockSeries: Series = {
   id: 'series-1',
   path: 'organizations/org-1/series/series-1',
   name: 'Test Series',
   description: 'This is a test series description.',
   location: 'Test Location',
   website: 'https://example.com',
-  startDate: new Date().toISOString(),
-  endDate: new Date().toISOString(),
+  startDate: new Date(),
+  endDate: new Date(),
   organizationBrief: {
     id: 'org-1',
     path: 'organizations/org-1',

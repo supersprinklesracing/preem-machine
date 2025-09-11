@@ -2,11 +2,10 @@
 
 import { verifyAuthUser } from '@/auth/user';
 import { FormActionError, FormActionResult } from '@/components/forms/forms';
-import { updateRace } from '@/datastore/update';
-import { getTimestampFromDate } from '@/firebase-admin/dates';
+import { DocPath } from '@/datastore/paths';
+import { updateRace } from '@/datastore/server/update/update';
 import { z } from 'zod';
 import { raceSchema } from '../race-schema';
-import { DocPath } from '@/datastore/paths';
 
 export interface EditRaceOptions {
   path: DocPath;
@@ -20,13 +19,7 @@ export async function editRaceAction({
   try {
     const authUser = await verifyAuthUser();
     const parsedEdits = raceSchema.parse(edits);
-    const { startDate, endDate, ...rest } = parsedEdits;
-    const updates = {
-      ...rest,
-      ...(startDate ? { startDate: getTimestampFromDate(startDate) } : {}),
-      ...(endDate ? { endDate: getTimestampFromDate(endDate) } : {}),
-    };
-    await updateRace(path, updates, authUser);
+    await updateRace(path, parsedEdits, authUser);
 
     return {};
   } catch (error) {

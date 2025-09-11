@@ -2,7 +2,7 @@
 
 import { verifyAuthUser } from '@/auth/user';
 import { FormActionError, FormActionResult } from '@/components/forms/forms';
-import { createOrganization } from '@/datastore/create';
+import { createOrganization } from '@/datastore/server/create/create';
 import { DocPath } from '@/datastore/paths';
 import { revalidatePath } from 'next/cache';
 import { z } from 'zod';
@@ -30,7 +30,7 @@ export async function newOrganizationAction({
       throw new Error('Failed to create organization.');
     }
     revalidatePath('/manage');
-    return { path: newOrg.path };
+    return { path: newOrgSnapshot.ref.path };
   } catch (e) {
     const message =
       e instanceof Error ? e.message : 'An unknown error occurred.';

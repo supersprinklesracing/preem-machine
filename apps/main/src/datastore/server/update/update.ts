@@ -9,43 +9,56 @@ import {
   type Transaction,
 } from 'firebase-admin/firestore';
 import Stripe from 'stripe';
-import { isUserAuthorized } from './access';
-import { serverConverter } from './converters';
-import { NotFoundError, unauthorized } from './errors';
-import { asDocPath, getSubCollectionPath } from './paths';
-import type {
-  Contribution,
-  Event,
-  EventBrief,
-  Organization,
-  OrganizationBrief,
-  Preem,
-  PreemBrief,
-  Race,
-  RaceBrief,
-  Series,
-  SeriesBrief,
-  User,
-} from './types';
+import { z } from 'zod';
+import { NotFoundError, unauthorized } from '../../errors';
+import { asDocPath, getSubCollectionPath } from '../../paths';
+import {
+  ContributionSchema,
+  EventSchema,
+  OrganizationSchema,
+  PreemSchema,
+  RaceSchema,
+  SeriesSchema,
+  UserSchema,
+  type Event,
+  type EventBrief,
+  type Organization,
+  type OrganizationBrief,
+  type Preem,
+  type PreemBrief,
+  type Race,
+  type RaceBrief,
+  type Series,
+  type SeriesBrief,
+  type User,
+} from '../../schema';
+import { isUserAuthorized } from '../access';
+import { converter } from '../converters';
 
 interface DocUpdate<T> {
   ref: DocumentReference<T>;
   updates: Partial<T>;
 }
 
-const getDocRef = async <T>(path: string) => {
+const getDocRef = async <T extends z.ZodObject<any, any>>(
+  schema: T,
+  path: string,
+) => {
   const db = await getFirestore();
-  return db.doc(path).withConverter(serverConverter<T>());
+  return db.doc(path).withConverter(converter(schema));
 };
 
-const getCollectionRef = async <T>(path: string) => {
+const getCollectionRef = async <T extends z.ZodObject<any, any>>(
+  schema: T,
+  path: string,
+) => {
   const db = await getFirestore();
-  return db.collection(path).withConverter(serverConverter<T>());
+  return db.collection(path).withConverter(converter(schema));
 };
 
 const getUpdateMetadata = (userRef: DocumentReference<DocumentData>) => ({
-  'metaupdates.lastModified': FieldValue.serverTimestamp(),
-  'metaupdates.lastModifiedBy': userRef,
+  'metadata.lastModified': FieldValue.serverTimestamp(),
+  'metadata.lastModifiedBy': userRef,
 });
 
 export const updateUser = async (
@@ -58,7 +71,7 @@ export const updateUser = async (
   }
 
   const db = await getFirestore();
-  const docRef = db.doc(path);
+  const docRef = await getDocRef(UserSchema, path);
   await docRef.update({
     ...user,
     ...getUpdateMetadata(docRef),
@@ -76,7 +89,7 @@ export const updateOrganizationStripeConnectAccount = async (
   }
 
   const db = await getFirestore();
-  const orgRef = db.doc(path);
+  const orgRef = await getDocRef(OrganizationSchema, path);
   const userRef = db.collection('users').doc(authUser.uid);
   await orgRef.update({
     'stripe.connectAccountId': account.id,
@@ -90,11 +103,14 @@ export const updateOrganizationStripeConnectAccountForWebhook = async (
   account: Stripe.Account,
 ) => {
   const db = await getFirestore();
-  const orgRef = db.doc(`organizations/${organizationId}`);
+  const orgRef = await getDocRef(
+    OrganizationSchema,
+    `organizations/${organizationId}`,
+  );
   await orgRef.update({
     'stripe.connectAccountId': account.id,
     'stripe.account': account,
-    'metaupdates.lastModified': FieldValue.serverTimestamp(),
+    'metadata.lastModified': FieldValue.serverTimestamp(),
   });
 };
 
@@ -109,7 +125,7 @@ export const updateOrganization = async (
 
   const db = await getFirestore();
   return await db.runTransaction(async (transaction) => {
-    const ref = await getDocRef<Organization>(path);
+    const ref = await getDocRef(OrganizationSchema, path);
     const doc = await transaction.get(ref);
     const existingData = doc.data();
     if (!existingData) {
@@ -118,7 +134,7 @@ export const updateOrganization = async (
     const { name } = existingData;
     const organizationBrief: OrganizationBrief = {
       id: ref.id,
-      path: ref.path,
+      path: asDocPath(ref.path),
       name: updates.name ?? name,
     };
     transaction.update(ref, updates);
@@ -146,7 +162,7 @@ const prepareOrganizationDescendantUpdates = async (
 ): Promise<DocUpdate<unknown>[]> => {
   let updates: DocUpdate<unknown>[] = [];
   const seriesSnap = await transaction.get(
-    await getCollectionRef<Series>(getSubCollectionPath(path, 'series')),
+    await getCollectionRef(SeriesSchema, getSubCollectionPath(path, 'series')),
   );
 
   for (const doc of seriesSnap.docs) {
@@ -183,7 +199,7 @@ export const updateSeries = async (
 
   const db = await getFirestore();
   return await db.runTransaction(async (transaction) => {
-    const ref = await getDocRef<Series>(path);
+    const ref = await getDocRef(SeriesSchema, path);
     const doc = await transaction.get(ref);
     const existingData = doc.data();
     if (!existingData) {
@@ -192,7 +208,7 @@ export const updateSeries = async (
     const { name, startDate, endDate, organizationBrief } = existingData;
     const seriesBrief: SeriesBrief = {
       id: ref.id,
-      path: ref.path,
+      path: asDocPath(ref.path),
       name: updates.name ?? name,
       startDate: updates.startDate ?? startDate,
       endDate: updates.endDate ?? endDate,
@@ -223,7 +239,7 @@ const prepareSeriesDescendantUpdates = async (
 ): Promise<DocUpdate<unknown>[]> => {
   let updates: DocUpdate<unknown>[] = [];
   const eventSnap = await transaction.get(
-    await getCollectionRef<Event>(getSubCollectionPath(path, 'events')),
+    await getCollectionRef(EventSchema, getSubCollectionPath(path, 'events')),
   );
 
   for (const doc of eventSnap.docs) {
@@ -260,7 +276,7 @@ export const updateEvent = async (
 
   const db = await getFirestore();
   return await db.runTransaction(async (transaction) => {
-    const ref = await getDocRef<Event>(path);
+    const ref = await getDocRef(EventSchema, path);
     const doc = await transaction.get(ref);
     const existingData = doc.data();
     if (!existingData) {
@@ -269,7 +285,7 @@ export const updateEvent = async (
     const { name, startDate, endDate, seriesBrief } = existingData;
     const eventBrief: EventBrief = {
       id: ref.id,
-      path: ref.path,
+      path: asDocPath(ref.path),
       name: updates.name ?? name,
       startDate: updates.startDate ?? startDate,
       endDate: updates.endDate ?? endDate,
@@ -300,7 +316,7 @@ const prepareEventDescendantUpdates = async (
 ): Promise<DocUpdate<unknown>[]> => {
   let updates: DocUpdate<unknown>[] = [];
   const raceSnap = await transaction.get(
-    await getCollectionRef<Race>(getSubCollectionPath(path, 'races')),
+    await getCollectionRef(RaceSchema, getSubCollectionPath(path, 'races')),
   );
 
   for (const doc of raceSnap.docs) {
@@ -337,7 +353,7 @@ export const updateRace = async (
 
   const db = await getFirestore();
   return await db.runTransaction(async (transaction) => {
-    const ref = await getDocRef<Race>(path);
+    const ref = await getDocRef(RaceSchema, path);
     const doc = await transaction.get(ref);
     const existingData = doc.data();
     if (!existingData) {
@@ -346,7 +362,7 @@ export const updateRace = async (
     const { name, startDate, endDate, eventBrief } = existingData;
     const raceBrief: RaceBrief = {
       id: ref.id,
-      path: ref.path,
+      path: asDocPath(ref.path),
       name: updates.name ?? name,
       startDate: updates.startDate ?? startDate,
       endDate: updates.endDate ?? endDate,
@@ -377,7 +393,7 @@ const prepareRaceDescendantUpdates = async (
 ): Promise<DocUpdate<unknown>[]> => {
   let updates: DocUpdate<unknown>[] = [];
   const preemSnap = await transaction.get(
-    await getCollectionRef<Preem>(getSubCollectionPath(path, 'preems')),
+    await getCollectionRef(PreemSchema, getSubCollectionPath(path, 'preems')),
   );
 
   for (const doc of preemSnap.docs) {
@@ -409,7 +425,7 @@ export const updatePreem = async (
 
   const db = await getFirestore();
   return await db.runTransaction(async (transaction) => {
-    const ref = await getDocRef<Preem>(path);
+    const ref = await getDocRef(PreemSchema, path);
     const doc = await transaction.get(ref);
     const fullPreem = doc.data();
     if (!fullPreem) {
@@ -418,7 +434,7 @@ export const updatePreem = async (
     const { name, raceBrief } = fullPreem;
     const preemBrief: PreemBrief = {
       id: ref.id,
-      path: ref.path,
+      path: asDocPath(ref.path),
 
       name: updates.name ?? name,
       raceBrief,
@@ -450,7 +466,8 @@ const preparePreemDescendantUpdates = async (
 ): Promise<DocUpdate<unknown>[]> => {
   const updates: DocUpdate<unknown>[] = [];
   const contributionSnap = await transaction.get(
-    await getCollectionRef<Contribution>(
+    await getCollectionRef(
+      ContributionSchema,
       getSubCollectionPath(path, 'contributions'),
     ),
   );

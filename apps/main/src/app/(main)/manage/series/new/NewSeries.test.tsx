@@ -1,5 +1,5 @@
 import '@/matchMedia.mock';
-import { act, fireEvent, render, screen, waitFor } from '@/test-utils';
+import { act, fireEvent, render, screen, waitFor, within } from '@/test-utils';
 import { NewSeries } from './NewSeries';
 
 // Mock dependencies
@@ -28,6 +28,11 @@ describe('NewSeries component', () => {
 
     render(
       <NewSeries
+        organization={{
+          id: 'org-1',
+          path: 'organizations/org-1',
+          name: 'Test Organization',
+        }}
         newSeriesAction={newSeriesAction}
         path="organizations/org-1"
       />,
@@ -88,6 +93,11 @@ describe('NewSeries component', () => {
 
     render(
       <NewSeries
+        organization={{
+          id: 'org-1',
+          path: 'organizations/org-1',
+          name: 'Test Organization',
+        }}
         newSeriesAction={newSeriesAction}
         path="organizations/org-1"
       />,
@@ -95,6 +105,9 @@ describe('NewSeries component', () => {
 
     const nameInput = screen.getByTestId('name-input');
     const descriptionInput = screen.getByTestId('description-input');
+    const websiteInput = screen.getByTestId('website-input');
+    const locationInput = screen.getByTestId('location-input');
+    const datePicker = screen.getByTestId('date-picker');
     await act(async () => {
       fireEvent.change(nameInput, {
         target: { value: 'New Test Series' },
@@ -102,13 +115,27 @@ describe('NewSeries component', () => {
       fireEvent.change(descriptionInput, {
         target: { value: 'This is a test series description.' },
       });
-      jest.advanceTimersByTime(500);
+      fireEvent.change(websiteInput, {
+        target: { value: 'https://new-example.com' },
+      });
+      fireEvent.change(locationInput, {
+        target: { value: 'Outer space' },
+      });
+      fireEvent.click(datePicker);
+      const popover = await screen.findByRole('table');
+      fireEvent.click(within(popover).getByLabelText('15 August 2025'));
+      await jest.runAllTimersAsync(); // Let popover close
     });
 
     const createButton = screen.getByRole('button', { name: /create series/i });
-    fireEvent.click(createButton);
+    await waitFor(() => {
+      expect(createButton).not.toBeDisabled();
+    });
+    await act(async () => {
+      fireEvent.click(createButton);
+    });
 
     // Wait for the error message to appear
-    await screen.findByText('Failed to create');
+    expect(await screen.findByText('Failed to create')).toBeInTheDocument();
   });
 });

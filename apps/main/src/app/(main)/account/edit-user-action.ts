@@ -2,7 +2,7 @@
 
 import { verifyAuthUser } from '@/auth/user';
 import { FormActionError, FormActionResult } from '@/components/forms/forms';
-import { updateUser } from '@/datastore/update';
+import { updateUser } from '@/datastore/server/update/update';
 import { z } from 'zod';
 import { userSchema } from './user-schema';
 

@@ -22,7 +22,7 @@ const mockData = {
       id: 'event-1',
       path: 'organizations/org-1/series/series-1/events/event-1',
       name: 'Test Event',
-      startDate: new Date().toISOString(),
+      startDate: new Date(),
       location: 'Test Location',
     },
   },

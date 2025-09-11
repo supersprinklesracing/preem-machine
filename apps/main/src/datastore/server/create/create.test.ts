@@ -9,9 +9,9 @@ import {
   createSeries,
 } from './create';
 
-import { isUserAuthorized } from './access';
+import { isUserAuthorized } from '../access';
 
-jest.mock('./access', () => ({
+jest.mock('../access', () => ({
   isUserAuthorized: jest.fn().mockResolvedValue(true),
 }));
 
@@ -50,8 +50,8 @@ describe('create mutations', () => {
     it('should create a new series', async () => {
       const newSeries = {
         name: 'New Test Series',
-        startDate: '2025-01-01T00:00:00Z',
-        endDate: '2025-01-01T00:00:00Z',
+        startDate: new Date('2025-01-01T00:00:00Z'),
+        endDate: new Date('2025-01-01T00:00:00Z'),
       };
       const doc = await createSeries(
         'organizations/org-super-sprinkles',
@@ -69,8 +69,8 @@ describe('create mutations', () => {
     it('should create a new event', async () => {
       const newEvent = {
         name: 'New Test Event',
-        startDate: '2025-01-01T00:00:00Z',
-        endDate: '2025-01-01T00:00:00Z',
+        startDate: new Date('2025-01-01T00:00:00Z'),
+        endDate: new Date('2025-01-01T00:00:00Z'),
       };
       const doc = await createEvent(
         'organizations/org-super-sprinkles/series/series-sprinkles-2025',
@@ -88,8 +88,8 @@ describe('create mutations', () => {
     it('should create a new race', async () => {
       const newRace = {
         name: 'New Test Race',
-        startDate: '2025-01-01T00:00:00Z',
-        endDate: '2025-01-01T00:00:00Z',
+        startDate: new Date('2025-01-01T00:00:00Z'),
+        endDate: new Date('2025-01-01T00:00:00Z'),
       };
       const doc = await createRace(
         'organizations/org-super-sprinkles/series/series-sprinkles-2025/events/event-giro-sf-2025',

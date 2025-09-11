@@ -79,8 +79,8 @@ export function getISODateFromDate(value: Date | null | undefined) {
 }
 
 export function formatDateRange(
-  startDate: string | undefined,
-  endDate: string | undefined,
+  startDate: Date | undefined,
+  endDate: Date | undefined,
 ) {
   if (!startDate) {
     return '';

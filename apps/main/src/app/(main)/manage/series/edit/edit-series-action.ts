@@ -3,8 +3,7 @@
 import { verifyAuthUser } from '@/auth/user';
 import { FormActionError, FormActionResult } from '@/components/forms/forms';
 import { DocPath } from '@/datastore/paths';
-import { updateSeries } from '@/datastore/update';
-import { getTimestampFromDate } from '@/firebase-admin/dates';
+import { updateSeries } from '@/datastore/server/update/update';
 import { z } from 'zod';
 import { seriesSchema } from '../series-schema';
 
@@ -20,16 +19,7 @@ export async function editSeriesAction({
   try {
     const authUser = await verifyAuthUser();
     const parsedEdits = seriesSchema.parse(edits);
-    const { startDate, endDate, ...rest } = parsedEdits;
-    await updateSeries(
-      path,
-      {
-        ...rest,
-        ...(startDate ? { startDate: getTimestampFromDate(startDate) } : {}),
-        ...(endDate ? { endDate: getTimestampFromDate(endDate) } : {}),
-      },
-      authUser,
-    );
+    await updateSeries(path, parsedEdits, authUser);
 
     return {};
   } catch (error) {

@@ -1,4 +1,4 @@
-import type { ClientCompat, Event } from '@/datastore/types';
+import { Event } from '@/datastore/schema';
 import '@/matchMedia.mock';
 import { act, fireEvent, render, screen, waitFor } from '@/test-utils';
 import { EditEvent } from './EditEvent';
@@ -11,21 +11,23 @@ jest.mock('next/navigation', () => ({
   }),
 }));
 
-const mockEvent: ClientCompat<Event> = {
+const mockEvent: Event = {
   id: 'event-1',
   path: 'organizations/org-1/series/series-1/events/event-1',
   name: 'Test Event',
   description: 'Test Description',
   location: 'Test Location',
   website: 'https://example.com',
-  startDate: new Date().toISOString(),
-  endDate: new Date().toISOString(),
+  startDate: new Date(),
+  endDate: new Date(),
   seriesBrief: {
     id: 'series-1',
     path: 'organizations/org-1/series/series-1',
+    name: 'Test Series 1',
     organizationBrief: {
       id: 'org-1',
       path: 'organizations/org-1',
+      name: 'Test Organization 1',
     },
   },
 };

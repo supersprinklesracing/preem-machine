@@ -19,6 +19,14 @@ const customJestConfig: Config = {
   moduleNameMapper: {
     '^@/(.*)$': '<rootDir>/src/$1',
   },
+
+  forceExit: true,
+  reporters: process.env.IS_CI
+    ? [
+        ['github-actions', { silent: false }],
+        ['summary', {}],
+      ]
+    : [['summary', {}]],
 };
 
 // Export an async function to modify the final config

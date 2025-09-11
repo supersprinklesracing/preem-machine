@@ -80,6 +80,7 @@ describe('NewOrganization component', () => {
     // Fill out the form
     const nameInput = screen.getByTestId('name-input');
     const descriptionInput = screen.getByTestId('description-input');
+    const websiteInput = screen.getByTestId('website-input');
     await act(async () => {
       fireEvent.change(nameInput, {
         target: { value: 'New Test Organization' },
@@ -87,16 +88,27 @@ describe('NewOrganization component', () => {
       fireEvent.change(descriptionInput, {
         target: { value: 'This is a test description' },
       });
+      fireEvent.change(websiteInput, {
+        target: { value: 'https://new-example.com' },
+      });
       jest.advanceTimersByTime(500);
     });
 
-    // Click the create button
     const createButton = screen.getByRole('button', {
       name: /create organization/i,
     });
-    fireEvent.click(createButton);
+
+    // Wait for the button to be enabled
+    await waitFor(() => {
+      expect(createButton).not.toBeDisabled();
+    });
+
+    // Click the create button
+    await act(async () => {
+      fireEvent.click(createButton);
+    });
 
     // Wait for the error message to appear
-    await screen.findByText('Failed to create');
+    expect(await screen.findByText('Failed to create')).toBeInTheDocument();
   });
 });

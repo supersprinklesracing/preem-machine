@@ -5,7 +5,7 @@ export const dynamic = 'force-dynamic';
 
 import AnimatedNumber from '@/components/animated-number';
 import PreemStatusBadge from '@/components/PreemStatusBadge';
-import type { ClientCompat, Race } from '@/datastore/types';
+import { Race } from '@/datastore/schema';
 import {
   Button,
   Card,
@@ -27,11 +27,11 @@ import { formatDistanceToNow } from 'date-fns';
 import Link from 'next/link';
 import React from 'react';
 
-import type { PreemWithContributions } from '@/datastore/firestore';
+import type { PreemWithContributions } from '@/datastore/query-schema';
 import ManageRaceContributionTable from './ManageRaceContributionTable';
 
 export interface LiveRaceProps {
-  race: ClientCompat<Race>;
+  race: Pick<Race, 'name' | 'path' | 'startDate' | 'currentRacers'>;
   children: PreemWithContributions[];
 }
 

@@ -3,9 +3,9 @@ import {
   getDocSnap,
   getOrganizationWithSeries,
   getUserById,
-  OrganizationWithSeries,
-} from '@/datastore/firestore';
-import type { Organization } from '@/datastore/types';
+} from '@/datastore/server/query/query';
+import { OrganizationWithSeries } from '@/datastore/query-schema';
+import { Organization } from '@/datastore/schema';
 import { cache } from 'react';
 
 export const getHubPageData = cache(async () => {

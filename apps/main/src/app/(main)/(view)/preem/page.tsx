@@ -1,5 +1,5 @@
 import { Breadcrumbs } from '@/components/Breadcrumbs';
-import { getRenderablePreemDataForPage } from '@/datastore/firestore';
+import { getRenderablePreemDataForPage } from '@/datastore/server/query/query';
 import { getDocPathFromSearchParams } from '@/datastore/paths';
 import { Stack } from '@mantine/core';
 import Preem from './Preem';

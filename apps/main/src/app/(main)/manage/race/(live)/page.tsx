@@ -1,4 +1,4 @@
-import { getRacePageDataWithUsers } from '@/datastore/firestore';
+import { getRacePageDataWithUsers } from '@/datastore/server/query/query';
 import LiveRace from './LiveRace';
 import { Breadcrumbs } from '@/components/Breadcrumbs';
 import { Stack } from '@mantine/core';

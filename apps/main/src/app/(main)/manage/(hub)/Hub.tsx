@@ -5,7 +5,7 @@ import ThresholdAssistantModal from '@/components/ai/threshold-assistant-modal';
 import EventCard from '@/components/cards/EventCard';
 import RaceCard from '@/components/cards/RaceCard';
 import SeriesCard from '@/components/cards/SeriesCard';
-import { OrganizationWithSeries } from '@/datastore/firestore';
+import { OrganizationWithSeries } from '@/datastore/query-schema';
 import {
   Button,
   Container,

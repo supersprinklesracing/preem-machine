@@ -6,7 +6,7 @@ import {
   EventBrief,
   RaceBrief,
   PreemBrief,
-} from '@/datastore/types';
+} from '@/datastore/schema';
 
 describe('Breadcrumbs', () => {
   const org1: OrganizationBrief = {

@@ -1,8 +1,8 @@
 'use server';
 
 import { Breadcrumbs } from '@/components/Breadcrumbs';
-import { getDoc } from '@/datastore/firestore';
-import { Event } from '@/datastore/types';
+import { getDoc } from '@/datastore/server/query/query';
+import { Event } from '@/datastore/schema';
 import { Stack } from '@mantine/core';
 import { EditEvent } from './EditEvent';
 import { editEventAction } from './edit-event-action';

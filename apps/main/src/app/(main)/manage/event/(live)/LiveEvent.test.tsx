@@ -19,7 +19,7 @@ const mockData = {
     path: 'organizations/org-1/series/series-1/events/event-1',
     name: 'Test Live Event',
     location: 'Test Location',
-    startDate: new Date().toISOString(),
+    startDate: new Date(),
     seriesBrief: {
       id: 'series-1',
       path: 'organizations/org-1/series/series-1',

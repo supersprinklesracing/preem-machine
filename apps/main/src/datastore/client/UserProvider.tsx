@@ -1,10 +1,11 @@
 'use client';
 
 import { FunctionComponent, ReactNode, useMemo } from 'react';
-import { CurrentUser, CurrentUserContext } from './UserContext';
+import { User } from '../schema';
+import { CurrentUserContext } from './UserContext';
 
 export interface UserProviderProps {
-  currentUser: CurrentUser | null;
+  currentUser: User | null;
   children: ReactNode;
 }
 

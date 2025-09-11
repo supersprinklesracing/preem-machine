@@ -1,4 +1,4 @@
-import { render, screen } from '@/test-utils';
+import { render, screen, setupMockDb } from '@/test-utils';
 import NewEventPage from './page';
 import '@/matchMedia.mock';
 
@@ -13,10 +13,12 @@ jest.mock('./new-event-action', () => ({
 }));
 
 describe('NewEventPage', () => {
+  setupMockDb();
+
   it('should render the NewEvent component', async () => {
     const PageComponent = await NewEventPage({
       searchParams: Promise.resolve({
-        path: 'organizations/org-1/series/series-1',
+        path: 'organizations/org-super-sprinkles/series/series-sprinkles-2025',
       }),
     });
     render(PageComponent);

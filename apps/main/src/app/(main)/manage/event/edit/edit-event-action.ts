@@ -2,11 +2,10 @@
 
 import { verifyAuthUser } from '@/auth/user';
 import { FormActionError, FormActionResult } from '@/components/forms/forms';
-import { updateEvent } from '@/datastore/update';
-import { getTimestampFromDate } from '@/firebase-admin/dates';
+import { DocPath } from '@/datastore/paths';
+import { updateEvent } from '@/datastore/server/update/update';
 import { z } from 'zod';
 import { eventSchema } from '../event-schema';
-import { DocPath } from '@/datastore/paths';
 
 export interface EditEventOptions {
   path: DocPath;
@@ -20,13 +19,7 @@ export async function editEventAction({
   try {
     const authUser = await verifyAuthUser();
     const parsedEdits = eventSchema.parse(edits);
-    const { startDate, endDate, ...rest } = parsedEdits;
-    const updates = {
-      ...rest,
-      ...(startDate ? { startDate: getTimestampFromDate(startDate) } : {}),
-      ...(endDate ? { endDate: getTimestampFromDate(endDate) } : {}),
-    };
-    await updateEvent(path, updates, authUser);
+    await updateEvent(path, parsedEdits, authUser);
 
     return {};
   } catch (error) {

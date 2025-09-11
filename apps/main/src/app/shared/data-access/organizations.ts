@@ -1,7 +1,7 @@
 import 'server-only';
 
-import { getDoc } from '@/datastore/firestore';
-import { ClientCompat, Organization } from '@/datastore/types';
+import { getDoc } from '@/datastore/server/query/query';
+import { Organization } from '@/datastore/schema';
 import { getStripeServer } from '@/stripe/server';
 import { cache } from 'react';
 
@@ -9,7 +9,7 @@ export const getOrganizationAndRefreshStripeAccount = cache(
   async (
     id: string,
   ): Promise<{
-    organization: ClientCompat<Organization>;
+    organization: Organization;
     error?: string;
   }> => {
     const organization = await getDoc<Organization>(id);

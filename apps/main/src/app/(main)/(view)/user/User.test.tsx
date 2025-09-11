@@ -21,7 +21,7 @@ const mockUserData = {
       id: 'contrib-1',
       path: 'organizations/org-1/series/series-1/events/event-1/races/race-1/preems/preem-1/contributions/contrib-1',
       amount: 100,
-      date: new Date().toISOString(),
+      date: new Date(),
       preemBrief: {
         id: 'test-preem-1',
         path: 'organizations/org-1/series/series-1/events/event-1/races/race-1/preems/preem-1',
@@ -37,7 +37,7 @@ const mockUserData = {
       id: 'contrib-2',
       path: 'organizations/org-1/series/series-1/events/event-1/races/race-2/preems/preem-2/contributions/contrib-2',
       amount: 50,
-      date: new Date().toISOString(),
+      date: new Date(),
       preemBrief: {
         id: 'test-preem-2',
         path: 'organizations/org-1/series/series-1/events/event-1/races/race-2/preems/preem-2',

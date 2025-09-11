@@ -4,7 +4,7 @@ import { useActionForm } from '@/app/shared/hooks/useActionForm';
 import EventCard from '@/components/cards/EventCard';
 import { FormActionResult } from '@/components/forms/forms';
 import { toUrlPath } from '@/datastore/paths';
-import type { ClientCompat, Event } from '@/datastore/types';
+import { Event, Series } from '@/datastore/schema';
 import {
   Button,
   Card,
@@ -25,10 +25,12 @@ import { eventSchema } from '../event-schema';
 import { NewEventOptions } from './new-event-action';
 
 export function NewEvent({
+  series,
   newEventAction,
   path,
   onSuccess,
 }: {
+  series: Series;
   newEventAction: (
     options: NewEventOptions,
   ) => Promise<FormActionResult<{ path: string }>>;
@@ -44,8 +46,8 @@ export function NewEvent({
       description: '',
       website: '',
       location: '',
-      startDate: null,
-      endDate: null,
+      startDate: undefined,
+      endDate: undefined,
     },
     action: (values) => newEventAction({ path, values }),
     onSuccess: (result) => {
@@ -59,29 +61,11 @@ export function NewEvent({
 
   const [debouncedValues] = useDebouncedValue(form.values, 100);
 
-  const eventPreview: ClientCompat<Event> = {
+  const eventPreview: Event = {
     id: 'preview',
     path: 'organizations/org-1/series/series-1/events/preview',
-    name: debouncedValues.name || 'Your Event Name',
-    description: debouncedValues.description,
-    website: debouncedValues.website,
-    location: debouncedValues.location,
-    startDate: debouncedValues.startDate
-      ? new Date(debouncedValues.startDate).toISOString()
-      : undefined,
-    endDate: debouncedValues.endDate
-      ? new Date(debouncedValues.endDate).toISOString()
-      : undefined,
-    seriesBrief: {
-      id: 'preview',
-      path: 'organizations/org-1/series/series-1',
-      name: 'Series Name',
-      organizationBrief: {
-        id: 'preview',
-        path: 'organizations/org-1',
-        name: 'Organization Name',
-      },
-    },
+    ...debouncedValues,
+    seriesBrief: series,
   };
 
   return (
@@ -116,13 +100,19 @@ export function NewEvent({
                 <DatePicker
                   type="range"
                   allowSingleDateInRange
-                  value={[form.values.startDate, form.values.endDate]}
+                  value={[
+                    form.values.startDate ?? null,
+                    form.values.endDate ?? null,
+                  ]}
                   onChange={([start, end]) => {
                     form.setFieldValue(
                       'startDate',
-                      start ? new Date(start) : null,
+                      start ? new Date(start) : undefined,
                     );
-                    form.setFieldValue('endDate', end ? new Date(end) : null);
+                    form.setFieldValue(
+                      'endDate',
+                      end ? new Date(end) : undefined,
+                    );
                   }}
                   data-testid="date-picker"
                 />

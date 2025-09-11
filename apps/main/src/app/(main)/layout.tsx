@@ -1,14 +1,15 @@
 'use server';
 
 import { getAuthUser } from '@/auth/user';
-import { getEventsForUser } from '@/datastore/firestore';
-import { CurrentUser } from '@/datastore/user/UserContext';
+import { getEventsForUser } from '@/datastore/server/query/query';
 import AvatarCluster from './Shell/AvatarCluster';
 import MainAppShell from './Shell/MainAppShell';
 import Sidebar from './Shell/Sidebar';
 
+import { User } from '@/datastore/schema';
+
 export interface MainProps {
-  currentUser: CurrentUser | null;
+  currentUser: User | null;
   children: React.ReactNode;
 }
 

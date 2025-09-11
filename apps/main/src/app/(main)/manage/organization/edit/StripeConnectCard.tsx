@@ -1,6 +1,6 @@
 'use client';
 
-import { ClientCompat, Organization } from '@/datastore/types';
+import { Organization } from '@/datastore/schema';
 import {
   Badge,
   Button,
@@ -20,7 +20,7 @@ import Stripe from 'stripe';
 import { useStripeConnect } from './useStripeConnect';
 
 interface Props {
-  organization: ClientCompat<Organization>;
+  organization: Pick<Organization, 'stripe' | 'id'>;
   stripeError?: string;
 }
 

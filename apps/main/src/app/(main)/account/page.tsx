@@ -3,7 +3,7 @@ import { Stack } from '@mantine/core';
 import Account from './Account';
 import { editUserAction } from './edit-user-action';
 import { verifyAuthUser } from '@/auth/user';
-import { getUserById } from '@/datastore/firestore';
+import { getUserById } from '@/datastore/server/query/query';
 
 export default async function AccountPage() {
   const authUser = await verifyAuthUser();
