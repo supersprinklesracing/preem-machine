@@ -10,7 +10,7 @@ function isStravaRoute(url: string | undefined): boolean {
   try {
     const parsedUrl = new URL(url);
     return parsedUrl.hostname === 'www.strava.com' && parsedUrl.pathname.includes('/routes/');
-  } catch (e) {
+  } catch {
     return false;
   }
 }
@@ -32,7 +32,6 @@ export default function CourseLink({ courseLink }: { courseLink?: string }) {
         document.body.removeChild(script);
       };
     }
-    return () => {};
   }, [courseLink]);
 
   if (!courseLink) {
