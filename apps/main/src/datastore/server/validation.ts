@@ -1,8 +1,8 @@
 'use server';
 
 import { getFirestore } from '@/firebase-admin/firebase-admin';
-import { DocPath, getParentPath } from '../../paths';
-import { Event, Race, Series, SeriesSchema, EventSchema } from '../schema';
+import { DocPath } from '../../paths';
+import { Event, Race, SeriesSchema, EventSchema } from '../schema';
 import { converter } from './converters';
 
 export class DateRangeError extends Error {
