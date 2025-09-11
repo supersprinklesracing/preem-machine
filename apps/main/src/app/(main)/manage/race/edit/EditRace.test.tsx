@@ -16,6 +16,7 @@ const mockRace: Race = {
   name: 'Test Race',
   location: 'Test Location',
   website: 'https://example.com',
+  courseLink: 'https://strava.com/routes/123',
   startDate: new Date(),
   endDate: new Date(),
   eventBrief: {
@@ -51,8 +52,17 @@ describe('EditRace component', () => {
 
     // Change the name in the form
     const nameInput = screen.getByDisplayValue('Test Race');
+    fireEvent.change(nameInput, { target: { value: 'New Race Name' } });
+
+    // Change the course link in the form
+    const courseLinkInput = screen.getByDisplayValue(
+      'https://strava.com/routes/123',
+    );
+    fireEvent.change(courseLinkInput, {
+      target: { value: 'https://strava.com/routes/456' },
+    });
+
     await act(async () => {
-      fireEvent.change(nameInput, { target: { value: 'New Race Name' } });
       jest.advanceTimersByTime(500);
     });
 
@@ -67,6 +77,7 @@ describe('EditRace component', () => {
           path: 'organizations/org-1/series/series-1/events/event-1/races/race-1',
           edits: expect.objectContaining({
             name: 'New Race Name',
+            courseLink: 'https://strava.com/routes/456',
           }),
         }),
       );
