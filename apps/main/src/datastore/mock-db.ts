@@ -164,7 +164,7 @@ export const mockDbData: DatabaseCollections = {
                                       'organizations/org-super-sprinkles/series/series-sprinkles-2025/events/event-giro-sf-2025/races/race-giro-sf-2025-masters-women/preems/preem-giro-sf-2025-masters-women-first-lap/contributions/contrib-1',
                                     ),
                                     contributor: {
-                                      id: 'some-user',
+                                      ...createIdAndPath('users/some-user'),
                                       name: 'Some User',
                                       avatarUrl:
                                         'https://placehold.co/100x100.png',
@@ -197,7 +197,7 @@ export const mockDbData: DatabaseCollections = {
                                       'organizations/org-super-sprinkles/series/series-sprinkles-2025/events/event-giro-sf-2025/races/race-giro-sf-2025-masters-women/preems/preem-giro-sf-2025-masters-women-mid-sprint/contributions/contrib-2',
                                     ),
                                     contributor: {
-                                      id: 'user-alex-doe',
+                                      ...createIdAndPath('users/user-alex-doe'),
                                       name: 'Alex Doe',
                                       avatarUrl:
                                         'https://placehold.co/100x100.png',
@@ -213,7 +213,7 @@ export const mockDbData: DatabaseCollections = {
                                       'organizations/org-super-sprinkles/series/series-sprinkles-2025/events/event-giro-sf-2025/races/race-giro-sf-2025-masters-women/preems/preem-giro-sf-2025-masters-women-mid-sprint/contributions/contrib-3',
                                     ),
                                     contributor: {
-                                      id: 'user-jane-smith',
+                                      ...createIdAndPath('users/user-jane-smith'),
                                       name: 'Jane Smith',
                                       avatarUrl:
                                         'https://placehold.co/100x100.png',
@@ -229,6 +229,12 @@ export const mockDbData: DatabaseCollections = {
                                     ...createIdAndPath(
                                       'organizations/org-super-sprinkles/series/series-sprinkles-2025/events/event-giro-sf-2025/races/race-giro-sf-2025-masters-women/preems/preem-giro-sf-2025-masters-women-mid-sprint/contributions/contrib-4',
                                     ),
+                                    contributor: {
+                                      ...createIdAndPath('users/anonymous'),
+                                      name: 'Anonymous',
+                                      avatarUrl:
+                                        'https://placehold.co/100x100.png',
+                                    },
                                     amount: 30,
                                     date: new Date('2024-07-09T18:15:00Z'),
                                     metadata: createMetadata(
@@ -240,7 +246,7 @@ export const mockDbData: DatabaseCollections = {
                                       'organizations/org-super-sprinkles/series/series-sprinkles-2025/events/event-giro-sf-2025/races/race-giro-sf-2025-masters-women/preems/preem-giro-sf-2025-masters-women-mid-sprint/contributions/contrib-5',
                                     ),
                                     contributor: {
-                                      id: 'user-alex-doe',
+                                      ...createIdAndPath('users/user-alex-doe'),
                                       name: 'Alex Doe',
                                       avatarUrl:
                                         'https://placehold.co/100x100.png',
@@ -272,7 +278,7 @@ export const mockDbData: DatabaseCollections = {
                                       'organizations/org-super-sprinkles/series/series-sprinkles-2025/events/event-giro-sf-2025/races/race-giro-sf-2025-masters-women/preems/preem-giro-sf-2025-masters-women-final-lap/contributions/contrib-6',
                                     ),
                                     contributor: {
-                                      id: 'user-jane-smith',
+                                      ...createIdAndPath('users/user-jane-smith'),
                                       name: 'Jane Smith',
                                       avatarUrl:
                                         'https://placehold.co/100x100.png',
