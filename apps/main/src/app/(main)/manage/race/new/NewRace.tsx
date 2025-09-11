@@ -24,6 +24,7 @@ import { useDebouncedValue } from '@mantine/hooks';
 import isEqual from 'fast-deep-equal';
 import { useRouter } from 'next/navigation';
 import { raceSchema } from '../race-schema';
+import { validateRaceForm } from '../race-validation';
 import { NewRaceOptions } from './new-race-action';
 
 export function NewRace({
@@ -41,6 +42,7 @@ export function NewRace({
 
   const { form, handleSubmit, isLoading, submissionError } = useActionForm({
     schema: raceSchema,
+    validate: (values) => validateRaceForm(values, event),
     initialValues: {
       name: '',
       location: '',

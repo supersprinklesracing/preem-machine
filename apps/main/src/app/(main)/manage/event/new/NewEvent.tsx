@@ -22,6 +22,7 @@ import { useDebouncedValue } from '@mantine/hooks';
 import isEqual from 'fast-deep-equal';
 import { useRouter } from 'next/navigation';
 import { eventSchema } from '../event-schema';
+import { validateEventForm } from '../event-validation';
 import { NewEventOptions } from './new-event-action';
 
 export function NewEvent({
@@ -41,6 +42,7 @@ export function NewEvent({
 
   const { form, handleSubmit, isLoading, submissionError } = useActionForm({
     schema: eventSchema,
+    validate: (values) => validateEventForm(values, series),
     initialValues: {
       name: '',
       description: '',
