@@ -166,7 +166,7 @@ export const mockDbData: DatabaseCollections = {
                                     contributor: {
                                       id: 'some-user',
                                       name: 'Some User',
-                                      path: '/some-user',
+                                      path: 'users/some-user',
                                       avatarUrl:
                                         'https://placehold.co/100x100.png',
                                     },
@@ -200,7 +200,7 @@ export const mockDbData: DatabaseCollections = {
                                     contributor: {
                                       id: 'user-alex-doe',
                                       name: 'Alex Doe',
-                                      path: '/user-alex-doe',
+                                      path: 'users/user-alex-doe',
                                       avatarUrl:
                                         'https://placehold.co/100x100.png',
                                     },
@@ -217,7 +217,7 @@ export const mockDbData: DatabaseCollections = {
                                     contributor: {
                                       id: 'user-jane-smith',
                                       name: 'Jane Smith',
-                                      path: '/user-jane-smith',
+                                      path: 'users/user-jane-smith',
                                       avatarUrl:
                                         'https://placehold.co/100x100.png',
                                     },
@@ -235,7 +235,7 @@ export const mockDbData: DatabaseCollections = {
                                     contributor: {
                                       id: 'anonymous',
                                       name: 'Anonymous',
-                                      path: '/',
+                                      path: 'users/anonymous',
                                       avatarUrl:
                                         'https://placehold.co/100x100.png',
                                     },
@@ -252,7 +252,7 @@ export const mockDbData: DatabaseCollections = {
                                     contributor: {
                                       id: 'user-alex-doe',
                                       name: 'Alex Doe',
-                                      path: '/user-alex-doe',
+                                      path: 'users/user-alex-doe',
                                       avatarUrl:
                                         'https://placehold.co/100x100.png',
                                     },
@@ -285,7 +285,7 @@ export const mockDbData: DatabaseCollections = {
                                     contributor: {
                                       id: 'user-jane-smith',
                                       name: 'Jane Smith',
-                                      path: '/user-jane-smith',
+                                      path: 'users/user-jane-smith',
                                       avatarUrl:
                                         'https://placehold.co/100x100.png',
                                     },
