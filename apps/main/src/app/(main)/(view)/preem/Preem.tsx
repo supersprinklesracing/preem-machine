@@ -1,10 +1,11 @@
 'use client';
 
-import { racePath, toUrlPath } from '@/datastore/paths';
 import AnimatedNumber from '@/components/animated-number';
 import ContributionModal from '@/components/contribution-modal';
 import PreemStatusBadge from '@/components/PreemStatusBadge';
-import { Preem as PreemType, Contribution } from '@/datastore/schema';
+import { compareDates, formatDateTime } from '@/dates/dates';
+import { racePath, toUrlPath } from '@/datastore/paths';
+import { Contribution, Preem as PreemType } from '@/datastore/schema';
 import {
   Avatar,
   Box,
@@ -25,7 +26,6 @@ import {
   IconTarget,
   IconUsers,
 } from '@tabler/icons-react';
-import { format } from 'date-fns';
 import Link from 'next/link';
 import React, { useState } from 'react';
 
@@ -50,10 +50,7 @@ export const Preem: React.FC<Props> = ({ preem, children }) => {
   const [isModalOpen, setIsModalOpen] = useState(false);
 
   const contributionRows = [...(children || [])]
-    .sort(
-      (a, b) =>
-        new Date(b.date ?? 0).getTime() - new Date(a.date ?? 0).getTime(),
-    )
+    .sort((a, b) => compareDates(a.date ?? '', b.date ?? ''))
     .map((contribution) => {
       return (
         <Table.Tr key={contribution.id}>
@@ -72,9 +69,7 @@ export const Preem: React.FC<Props> = ({ preem, children }) => {
               ${contribution.amount?.toLocaleString()}
             </Text>
           </Table.Td>
-          <Table.Td>
-            {format(new Date(contribution.date ?? ''), 'PP p')}
-          </Table.Td>
+          <Table.Td>{formatDateTime(contribution.date)}</Table.Td>
           <Table.Td>
             <Text c="dimmed" fs="italic">
               {contribution.message || ''}
@@ -125,7 +120,7 @@ export const Preem: React.FC<Props> = ({ preem, children }) => {
                 <Group gap="xs">
                   <IconClock size={18} stroke={1.5} />
                   <Text fw={500}>
-                    Ends: {format(new Date(preem.timeLimit), 'PP p')}
+                    Ends: {formatDateTime(preem.timeLimit)}
                   </Text>
                 </Group>
               )}
