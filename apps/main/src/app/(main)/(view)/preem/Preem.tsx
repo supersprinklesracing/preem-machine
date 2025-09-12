@@ -50,7 +50,7 @@ export const Preem: React.FC<Props> = ({ preem, children }) => {
   const [isModalOpen, setIsModalOpen] = useState(false);
 
   const contributionRows = [...(children || [])]
-    .sort((a, b) => compareDates(a.date!, b.date!))
+    .sort((a, b) => compareDates(a.date ?? '', b.date ?? ''))
     .map((contribution) => {
       return (
         <Table.Tr key={contribution.id}>
