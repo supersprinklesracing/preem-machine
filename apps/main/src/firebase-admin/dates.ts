@@ -1,15 +1,13 @@
 'use server-only';
 
-import { format, fromZonedTime } from 'date-fns-tz';
+import { fromZonedTime } from 'date-fns-tz';
 import { Timestamp } from 'firebase-admin/firestore';
-
-export const LONG_FORMATTER = new Intl.DateTimeFormat('en-US', {
-  weekday: 'long',
-  year: 'numeric',
-  month: 'long',
-  day: 'numeric',
-  timeZone: 'UTC',
-});
+import {
+  formatDateAsYMD,
+  formatDateRange,
+  getISODateFromDate,
+  LONG_FORMATTER,
+} from '../../dates/dates';
 
 export function getDateFromTimestamp(value: Timestamp): Date;
 export function getDateFromTimestamp(
@@ -69,5 +67,7 @@ export function formatTimestampAsDate(
   value: Timestamp | undefined,
 ): string | undefined;
 export function formatTimestampAsDate(value: Timestamp | undefined) {
-  return value ? format(value.toDate(), 'yyyy-MM-dd') : undefined;
+  return formatDateAsYMD(getDateFromTimestamp(value));
 }
+
+export { formatDateRange, getISODateFromDate, LONG_FORMATTER };
