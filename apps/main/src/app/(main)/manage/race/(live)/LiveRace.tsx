@@ -5,6 +5,7 @@ export const dynamic = 'force-dynamic';
 
 import AnimatedNumber from '@/components/animated-number';
 import PreemStatusBadge from '@/components/PreemStatusBadge';
+import { formatDateDistance } from '@/dates/dates';
 import { Race } from '@/datastore/schema';
 import {
   Button,
@@ -23,7 +24,6 @@ import {
   IconPencil,
   IconUsers,
 } from '@tabler/icons-react';
-import { formatDistanceToNow } from 'date-fns';
 import Link from 'next/link';
 import React from 'react';
 
@@ -89,7 +89,7 @@ export const LiveRace: React.FC<LiveRaceProps> = ({ race, children }) => {
               <IconClock size={16} />
               <Text size="sm" c="dimmed">
                 {/* eslint-disable-next-line @typescript-eslint/no-non-null-assertion */}
-                Live for {formatDistanceToNow(new Date(race.startDate!))}
+                Live for {formatDateDistance(race.startDate!)}
               </Text>
             </Group>
             <Group gap="xs" mt="xs">

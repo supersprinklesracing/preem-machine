@@ -1,6 +1,7 @@
 'use client';
 
 import { useAuth } from '@/auth/AuthContext';
+import { compareDates, formatDateShort } from '@/dates/dates';
 import type { Contribution, User as UserType } from '@/datastore/schema';
 import {
   Avatar,
@@ -14,7 +15,6 @@ import {
   Title,
 } from '@mantine/core';
 import { IconEdit, IconMail, IconSettings } from '@tabler/icons-react';
-import { format } from 'date-fns';
 import Link from 'next/link';
 import React from 'react';
 
@@ -43,10 +43,10 @@ const User: React.FC<Props> = ({ user, contributions }) => {
 
   const contributionRows = contributions
     // eslint-disable-next-line @typescript-eslint/no-non-null-assertion
-    .sort((a, b) => new Date(b.date!).getTime() - new Date(a.date!).getTime())
+    .sort((a, b) => compareDates(a.date!, b.date!))
     .map((c) => (
       <Table.Tr key={c.id}>
-        <Table.Td>{c.date ? format(new Date(c.date), 'PP') : 'N/A'}</Table.Td>
+        <Table.Td>{formatDateShort(c.date)}</Table.Td>
         <Table.Td>{c.preemBrief?.raceBrief?.name}</Table.Td>
         <Table.Td>{c.preemBrief?.name}</Table.Td>
         <Table.Td>
