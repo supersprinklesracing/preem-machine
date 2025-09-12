@@ -1,6 +1,7 @@
 'use server';
 
 import type { ServiceAccountSecret } from './service-account-secret';
+import { ENV_STRIPE_ENABLED } from '../env/env';
 
 export async function getServiceAccountSecret(): Promise<ServiceAccountSecret> {
   return {
@@ -22,7 +23,12 @@ export async function getCookieSecrets() {
   };
 }
 
-export async function getStripeSecrets() {
+export async function getStripeSecrets(): Promise<
+  { apiKey: string; webhookSecret: string } | undefined
+> {
+  if (!ENV_STRIPE_ENABLED) {
+    return undefined;
+  }
   return {
     // eslint-disable-next-line @typescript-eslint/no-non-null-assertion
     apiKey: process.env.STRIPE_API_KEY!,

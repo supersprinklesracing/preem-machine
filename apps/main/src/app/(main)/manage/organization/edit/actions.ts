@@ -33,6 +33,9 @@ export async function createStripeConnectAccount(
 
   try {
     const stripe = await getStripeServer();
+    if (!stripe) {
+      throw new Error('Stripe not configured');
+    }
     const account = await stripe.accounts.create({
       type: 'express',
     });
@@ -85,6 +88,9 @@ export async function createDashboardLink(
 
   try {
     const stripe = await getStripeServer();
+    if (!stripe) {
+      throw new Error('Stripe not configured');
+    }
     const loginLink = await stripe.accounts.createLoginLink(accountId);
     return { success: true, url: loginLink.url };
   } catch (error) {
@@ -120,6 +126,9 @@ export async function createOnboardingLink(
       type: 'account_onboarding',
     };
     const stripe = await getStripeServer();
+    if (!stripe) {
+      throw new Error('Stripe not configured');
+    }
     const accountLink = await stripe.accountLinks.create(params);
     return { success: true, url: accountLink.url };
   } catch (error) {

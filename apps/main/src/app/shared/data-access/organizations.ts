@@ -18,6 +18,9 @@ export const getOrganizationAndRefreshStripeAccount = cache(
     if (organization.stripe?.connectAccountId) {
       try {
         const stripe = await getStripeServer();
+        if (!stripe) {
+          throw new Error('Stripe not configured');
+        }
         const account = await stripe.accounts.retrieve(
           organization.stripe.connectAccountId,
         );
