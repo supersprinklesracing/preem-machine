@@ -5,7 +5,6 @@ import User from './User';
 import { redirect } from 'next/navigation';
 import * as auth from '@/auth/server/auth';
 import { NotFoundError } from '@/datastore/errors';
-import '@/matchMedia.mock';
 
 // Mock dependencies
 jest.mock('./User', () => ({

@@ -1,5 +1,5 @@
 import * as hub_data from './hub_data';
-import '@/matchMedia.mock';
+
 import { render, screen } from '@/test-utils';
 import Hub from './Hub';
 import LiveOrganizationPage from './page';

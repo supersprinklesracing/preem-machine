@@ -1,4 +1,3 @@
-import '@/matchMedia.mock';
 import { render, screen, within } from '@/test-utils';
 import Home from './Home';
 
@@ -57,7 +56,9 @@ describe('Home component', () => {
     // Check for event details
     expect(screen.getByText('Test Event 1')).toBeInTheDocument();
     expect(screen.getByText('Test Location 1')).toBeInTheDocument();
-    const eventCard = screen.getByText('Test Event 1').closest('div[class*="mantine-Card-root"]');
+    const eventCard = screen
+      .getByText('Test Event 1')
+      .closest('div[class*="mantine-Card-root"]');
     const raceLink = within(eventCard).getByRole('link', {
       name: /Test Race 1/,
     });

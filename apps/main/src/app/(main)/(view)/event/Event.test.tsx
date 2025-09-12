@@ -1,4 +1,3 @@
-import '@/matchMedia.mock';
 import { render, screen } from '@/test-utils';
 import Event from './Event';
 
@@ -11,6 +10,7 @@ const mockData = {
     website: 'https://example.com',
     location: 'Test Location',
     startDate: new Date(),
+    timezone: 'America/Los_Angeles',
     seriesBrief: {
       id: 'series-1',
       path: 'organizations/org-1/series/series-1',
@@ -61,9 +61,16 @@ describe('Event component', () => {
     render(<Event {...mockData} />);
 
     // Check for event details
-    expect(screen.getByRole('heading', { name: 'Test Event' })).toBeInTheDocument();
+    expect(
+      screen.getByRole('heading', { name: 'Test Event' }),
+    ).toBeInTheDocument();
     expect(screen.getByText('This is a test event.')).toBeInTheDocument();
     expect(screen.getByText('Official Website')).toBeInTheDocument();
     expect(screen.getByText('Test Series')).toBeInTheDocument();
+  });
+
+  it('should display the timezone', () => {
+    render(<Event {...mockData} />);
+    expect(screen.getByText(/PDT/)).toBeInTheDocument();
   });
 });

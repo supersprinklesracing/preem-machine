@@ -1,5 +1,5 @@
 /* eslint-disable @eslint-react/hooks-extra/no-unnecessary-use-prefix */
-import '@/matchMedia.mock';
+
 import { render, screen } from '@/test-utils';
 import LoginPage from './page';
 

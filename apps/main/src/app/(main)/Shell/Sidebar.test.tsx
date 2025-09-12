@@ -1,4 +1,3 @@
-import '@/matchMedia.mock';
 import { fireEvent, render, screen } from '@/test-utils';
 import { useMediaQuery } from '@mantine/hooks';
 import type { SidebarData } from './Sidebar';

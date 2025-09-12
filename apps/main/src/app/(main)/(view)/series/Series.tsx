@@ -1,7 +1,7 @@
 'use client';
 
+import { DateLocationDetail } from '@/components/cards/DateLocationDetail';
 import EventCard from '@/components/cards/EventCard';
-import { formatDateShort } from '@/dates/dates';
 import { organizationPath, toUrlPath } from '@/datastore/paths';
 import { EventWithRaces } from '@/datastore/query-schema';
 import { Series as SeriesType } from '@/datastore/schema';
@@ -28,6 +28,7 @@ interface Props {
     | 'description'
     | 'website'
     | 'organizationBrief'
+    | 'timezone'
   >;
   children: EventWithRaces[];
 }
@@ -46,10 +47,9 @@ export default function Series({ series, children: eventsWithRaces }: Props) {
           {organization.name}
         </Anchor>
       </Text>
-      <Text c="dimmed">
-        {series.location} | {formatDateShort(series.startDate)} -{' '}
-        {formatDateShort(series.endDate)}
-      </Text>
+      <Group>
+        <DateLocationDetail {...series} />
+      </Group>
       {series.description && <Text>{series.description}</Text>}
       <Stack>
         <Group justify="space-between">

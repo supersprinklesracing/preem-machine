@@ -24,7 +24,11 @@ export async function newOrganizationAction({
       throw new FormActionError('Invalid data.');
     }
 
-    const newOrgSnapshot = await createOrganization(validation.data, user);
+    const newOrgSnapshot = await createOrganization(
+      'organizations',
+      validation.data,
+      user,
+    );
     const newOrg = newOrgSnapshot.data();
     if (!newOrg) {
       throw new Error('Failed to create organization.');

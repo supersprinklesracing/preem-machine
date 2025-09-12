@@ -1,4 +1,3 @@
-import '@/matchMedia.mock';
 import { fireEvent, render, screen } from '@/test-utils';
 import type { HubPageData } from './Hub';
 import Hub from './Hub';

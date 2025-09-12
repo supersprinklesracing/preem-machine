@@ -28,6 +28,7 @@ interface Props {
     | 'endDate'
     | 'description'
     | 'website'
+    | 'timezone'
   >;
   children: EventWithRaces[];
 }
@@ -59,7 +60,8 @@ export default function LiveSeries({ series, children }: Props) {
         </Anchor>
       </Text>
       <Text c="dimmed">
-        {series.location} | {formatDateRange(series.startDate, series.endDate)}
+        {series.location} |{' '}
+        {formatDateRange(series.startDate, series.endDate, series.timezone)}
       </Text>
       {series.description && <Text>{series.description}</Text>}
       {series.website && (

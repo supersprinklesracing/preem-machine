@@ -3,7 +3,6 @@ import React from 'react';
 import { NotFoundError } from '@/datastore/errors';
 import RacePage from './page';
 import Race from './Race';
-import '@/matchMedia.mock';
 
 // Mock dependencies
 jest.mock('./Race', () => ({
