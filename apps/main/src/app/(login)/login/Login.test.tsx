@@ -18,9 +18,11 @@ jest.mock('next/navigation', () => ({
   useRouter: jest.fn(() => ({
     refresh: jest.fn(),
   })),
-  useSearchParams: () => ({
-    get: jest.fn(),
-  }),
+  useSearchParams: function () {
+    return {
+      get: jest.fn(),
+    };
+  },
 }));
 
 describe('Login component', () => {

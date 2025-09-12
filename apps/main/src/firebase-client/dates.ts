@@ -1,15 +1,13 @@
 'use client';
 
-import { format, fromZonedTime } from 'date-fns-tz';
+import { fromZonedTime } from 'date-fns-tz';
 import { Timestamp } from 'firebase/firestore';
-
-export const LONG_FORMATTER = new Intl.DateTimeFormat('en-US', {
-  weekday: 'long',
-  year: 'numeric',
-  month: 'long',
-  day: 'numeric',
-  timeZone: 'UTC',
-});
+import {
+  formatDateUrl,
+  formatDateRange,
+  getISODateFromDate,
+  LONG_FORMATTER,
+} from '@/dates/dates';
 
 export function getDateFromTimestamp(value: Timestamp): Date;
 export function getDateFromTimestamp(
@@ -69,33 +67,7 @@ export function formatTimestampAsDate(
   value: Timestamp | undefined,
 ): string | undefined;
 export function formatTimestampAsDate(value: Timestamp | undefined) {
-  return value ? format(value.toDate(), 'yyyy-MM-dd') : undefined;
+  return formatDateUrl(getDateFromTimestamp(value));
 }
 
-export function getISODateFromDate(value: Date | null): string | undefined;
-export function getISODateFromDate(value: Date | undefined): string | undefined;
-export function getISODateFromDate(value: Date | null | undefined) {
-  return value ? value.toISOString() : undefined;
-}
-
-export function formatDateRange(
-  startDate: Date | undefined,
-  endDate: Date | undefined,
-) {
-  if (!startDate) {
-    return '';
-  }
-
-  const start = new Date(startDate);
-  const end = endDate ? new Date(endDate) : null;
-
-  if (end && start.toDateString() === end.toDateString()) {
-    return format(start, 'PP');
-  }
-
-  if (end) {
-    return `${format(start, 'PP')} - ${format(end, 'PP')}`;
-  }
-
-  return format(start, 'PP');
-}
+export { formatDateRange, getISODateFromDate, LONG_FORMATTER };

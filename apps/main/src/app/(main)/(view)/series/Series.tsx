@@ -1,7 +1,8 @@
 'use client';
 
-import { organizationPath, toUrlPath } from '@/datastore/paths';
 import EventCard from '@/components/cards/EventCard';
+import { formatDateShort } from '@/dates/dates';
+import { organizationPath, toUrlPath } from '@/datastore/paths';
 import { EventWithRaces } from '@/datastore/query-schema';
 import { Series as SeriesType } from '@/datastore/schema';
 import {
@@ -14,7 +15,6 @@ import {
   Title,
 } from '@mantine/core';
 import { IconChevronRight, IconWorldWww } from '@tabler/icons-react';
-import { format } from 'date-fns';
 import Link from 'next/link';
 
 interface Props {
@@ -47,11 +47,8 @@ export default function Series({ series, children: eventsWithRaces }: Props) {
         </Anchor>
       </Text>
       <Text c="dimmed">
-        {series.location} | {}
-        {series.startDate
-          ? format(new Date(series.startDate), 'PP')
-          : ''} - {}
-        {series.endDate ? format(new Date(series.endDate), 'PP') : ''}
+        {series.location} | {formatDateShort(series.startDate)} -{' '}
+        {formatDateShort(series.endDate)}
       </Text>
       {series.description && <Text>{series.description}</Text>}
       <Stack>

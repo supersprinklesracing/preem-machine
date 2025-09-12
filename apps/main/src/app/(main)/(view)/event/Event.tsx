@@ -1,7 +1,8 @@
 'use client';
 
-import { organizationPath, seriesPath, toUrlPath } from '@/datastore/paths';
 import RaceCard from '@/components/cards/RaceCard';
+import { formatDateTime } from '@/dates/dates';
+import { organizationPath, seriesPath, toUrlPath } from '@/datastore/paths';
 import { RaceWithPreems } from '@/datastore/query-schema';
 import { Event as EventType } from '@/datastore/schema';
 import {
@@ -14,7 +15,6 @@ import {
   Title,
 } from '@mantine/core';
 import { IconChevronRight, IconWorldWww } from '@tabler/icons-react';
-import { format } from 'date-fns';
 import Link from 'next/link';
 
 interface Props {
@@ -52,8 +52,7 @@ export default function Event({ event, children }: Props) {
         </Anchor>
       </Text>
       <Text c="dimmed">
-        {event.location} |{' '}
-        {event.startDate ? format(new Date(event.startDate ?? ''), 'PP p') : ''}
+        {event.location} | {formatDateTime(event.startDate)}
       </Text>
       {event.description && <Text>{event.description}</Text>}
       {event.website && (
