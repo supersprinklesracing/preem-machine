@@ -4,7 +4,7 @@ import { ActionIcon, Avatar, Group } from '@mantine/core';
 import { IconBell } from '@tabler/icons-react';
 import Link from 'next/link';
 import { use } from 'react';
-import { AuthContext } from '../../../auth/AuthContext';
+import { AuthContext } from '../../../auth/client/AuthContext';
 
 export default function AvatarCluster() {
   const auth = use(AuthContext);

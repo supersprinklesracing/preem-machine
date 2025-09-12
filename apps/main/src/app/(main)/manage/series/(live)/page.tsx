@@ -1,6 +1,6 @@
 import { getRenderableSeriesDataForPage } from '@/datastore/server/query/query';
 import LiveSeries from './LiveSeries';
-import { Breadcrumbs } from '@/components/Breadcrumbs';
+import { Breadcrumbs } from '@/components/Breadcrumbs/Breadcrumbs';
 import { Stack } from '@mantine/core';
 import { getDocPathFromSearchParams } from '@/datastore/paths';
 

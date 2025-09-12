@@ -6,7 +6,7 @@ import { EventWithRaces } from '@/datastore/query-schema';
 import { Contribution } from '@/datastore/schema';
 import { Card, Grid, Stack, Text, Title } from '@mantine/core';
 import Link from 'next/link';
-import LiveContributionFeed from '../../shared/LiveContributionFeed';
+import LiveContributionFeed from '../../../components/LiveContributionFeed/LiveContributionFeed';
 
 interface Props {
   eventsWithRaces: EventWithRaces[];

@@ -1,6 +1,6 @@
 'use server';
 
-import { getFirestore } from '@/firebase-admin/firebase-admin';
+import { getFirestore } from '@/firebase/server/firebase-admin';
 import { DocPath } from '../paths';
 import { Event, Race, SeriesSchema, EventSchema } from '../schema';
 import { converter } from './converters';
@@ -24,7 +24,9 @@ export const validateEventDateRange = async (
   }
 
   if (series.startDate && event.startDate < series.startDate) {
-    throw new DateRangeError('Event start date cannot be before series start date.');
+    throw new DateRangeError(
+      'Event start date cannot be before series start date.',
+    );
   }
 
   if (series.endDate && event.endDate > series.endDate) {
@@ -50,7 +52,9 @@ export const validateRaceDateRange = async (
   }
 
   if (event.startDate && race.startDate < event.startDate) {
-    throw new DateRangeError('Race start date cannot be before event start date.');
+    throw new DateRangeError(
+      'Race start date cannot be before event start date.',
+    );
   }
 
   if (event.endDate && race.endDate > event.endDate) {

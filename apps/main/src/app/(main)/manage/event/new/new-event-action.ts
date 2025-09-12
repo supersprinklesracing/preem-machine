@@ -1,6 +1,6 @@
 'use server';
 
-import { verifyAuthUser } from '@/auth/user';
+import { verifyAuthUser } from '@/auth/server/auth';
 import { FormActionError, FormActionResult } from '@/components/forms/forms';
 import { createEvent } from '@/datastore/server/create/create';
 import { CollectionPath, DocPath } from '@/datastore/paths';

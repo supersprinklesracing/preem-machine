@@ -1,7 +1,7 @@
 'use server';
 
-import { AuthContextUser } from '@/auth/AuthContext';
-import { getFirestore } from '@/firebase-admin';
+import { AuthContextUser } from '@/auth/user';
+import { getFirestore } from '@/firebase/server';
 import type { DocumentReference } from 'firebase-admin/firestore';
 import { asDocPath } from '../paths';
 import type { Organization, User } from '../schema';

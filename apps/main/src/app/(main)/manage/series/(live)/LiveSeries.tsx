@@ -15,7 +15,7 @@ import {
 } from '@mantine/core';
 import { IconPencil, IconWorldWww } from '@tabler/icons-react';
 import Link from 'next/link';
-import { formatDateRange } from '@/firebase-client/dates';
+import { formatDateRange } from '@/firebase/client/dates';
 
 interface Props {
   series: Pick<
