@@ -7,7 +7,7 @@ import {
   formatDateRange,
   getISODateFromDate,
   LONG_FORMATTER,
-} from '../../dates/dates';
+} from '@/dates/dates';
 
 export function getDateFromTimestamp(value: Timestamp): Date;
 export function getDateFromTimestamp(
