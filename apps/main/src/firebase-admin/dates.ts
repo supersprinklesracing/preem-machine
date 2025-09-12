@@ -3,7 +3,7 @@
 import { fromZonedTime } from 'date-fns-tz';
 import { Timestamp } from 'firebase-admin/firestore';
 import {
-  formatDateAsYMD,
+  formatDateUrl,
   formatDateRange,
   getISODateFromDate,
   LONG_FORMATTER,
@@ -67,7 +67,7 @@ export function formatTimestampAsDate(
   value: Timestamp | undefined,
 ): string | undefined;
 export function formatTimestampAsDate(value: Timestamp | undefined) {
-  return formatDateAsYMD(getDateFromTimestamp(value));
+  return formatDateUrl(getDateFromTimestamp(value));
 }
 
 export { formatDateRange, getISODateFromDate, LONG_FORMATTER };

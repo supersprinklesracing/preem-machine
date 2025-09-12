@@ -1,10 +1,11 @@
 'use client';
 
-import { toUrlPath } from '@/datastore/paths';
 import ThresholdAssistantModal from '@/components/ai/threshold-assistant-modal';
 import EventCard from '@/components/cards/EventCard';
 import RaceCard from '@/components/cards/RaceCard';
 import SeriesCard from '@/components/cards/SeriesCard';
+import { isDateAfter } from '@/dates/dates';
+import { toUrlPath } from '@/datastore/paths';
 import { OrganizationWithSeries } from '@/datastore/query-schema';
 import {
   Button,
@@ -92,11 +93,12 @@ const Hub: React.FC<Props> = ({ organizations }) => {
             const now = new Date();
             const upcomingEvents =
               eventWithRaces?.filter(
-                ({ event }) => event.endDate && new Date(event.endDate) > now,
+                ({ event }) => event.endDate && isDateAfter(event.endDate, now),
               ) ?? [];
             const pastEvents =
               eventWithRaces.filter(
-                ({ event }) => event.endDate && new Date(event.endDate) <= now,
+                ({ event }) =>
+                  event.endDate && !isDateAfter(event.endDate, now),
               ) ?? [];
 
             return (

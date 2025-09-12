@@ -1,10 +1,10 @@
 'use client';
 
+import { formatDateLong, formatTime } from '@/dates/dates';
 import { toUrlPath } from '@/datastore/paths';
 import { EventWithRaces } from '@/datastore/query-schema';
 import { Contribution } from '@/datastore/schema';
 import { Card, Grid, Stack, Text, Title } from '@mantine/core';
-import { format } from 'date-fns';
 import Link from 'next/link';
 import LiveContributionFeed from '../../shared/LiveContributionFeed';
 
@@ -38,8 +38,7 @@ export default function Home({ eventsWithRaces, contributions }: Props) {
                         {event?.name}
                       </Text>
                       <Text size="sm" c="dimmed">
-                        {event?.startDate &&
-                          format(new Date(event.startDate), 'PPP')}
+                        {formatDateLong(event?.startDate)}
                       </Text>
                       <Text size="sm" c="dimmed">
                         {event?.location}
@@ -54,9 +53,8 @@ export default function Home({ eventsWithRaces, contributions }: Props) {
                         style={{ textDecoration: 'none', color: 'inherit' }}
                       >
                         <Text size="sm">
-                          {race.startDate &&
-                            format(new Date(race.startDate), 'p')}{' '}
-                          - {race.name} ({race.category})
+                          {formatTime(race.startDate)} - {race.name} (
+                          {race.category})
                         </Text>
                       </Link>
                     ))}
