@@ -5,7 +5,7 @@ export const dynamic = 'force-dynamic';
 
 import AnimatedNumber from '@/components/animated-number';
 import PreemStatusBadge from '@/components/PreemStatusBadge';
-import { formatDateDistance } from '@/dates/dates';
+import { formatDateRelative } from '@/dates/dates';
 import { Race } from '@/datastore/schema';
 import {
   Button,
@@ -89,7 +89,7 @@ export const LiveRace: React.FC<LiveRaceProps> = ({ race, children }) => {
               <IconClock size={16} />
               <Text size="sm" c="dimmed">
                 {/* eslint-disable-next-line @typescript-eslint/no-non-null-assertion */}
-                Live for {formatDateDistance(race.startDate!)}
+                Live for {formatDateRelative(race.startDate!)}
               </Text>
             </Group>
             <Group gap="xs" mt="xs">

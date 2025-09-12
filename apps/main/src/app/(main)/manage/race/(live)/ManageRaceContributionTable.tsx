@@ -1,6 +1,6 @@
 'use client';
 
-import { formatDateDistance } from '@/dates/dates';
+import { formatDateRelative } from '@/dates/dates';
 import { toUrlPath } from '@/datastore/paths';
 import type { PreemWithContributions } from '@/datastore/query-schema';
 import { Button, Card, Group, Table, Text, Title } from '@mantine/core';
@@ -47,7 +47,7 @@ export default function ManageRaceContributionTable({
         </Table.Td>
         <Table.Td>
           <Text c="dimmed" size="xs">
-            {formatDateDistance(contribution.date, { addSuffix: true })}
+            {formatDateRelative(contribution.date, { addSuffix: true })}
           </Text>
         </Table.Td>
       </Table.Tr>

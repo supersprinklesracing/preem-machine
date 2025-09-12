@@ -42,27 +42,23 @@ export function formatDateRange(
   return formatDateShort(start);
 }
 
-export function formatDateLong(date: Date | string | undefined) {
-  if (!date) return '';
-  return format(new Date(date), 'PPP');
+function withDate(fn: (date: Date) => string) {
+  return (date: Date | string | undefined) => {
+    if (!date) return '';
+    const dateObj = typeof date === 'string' ? new Date(date) : date;
+    return fn(dateObj);
+  };
 }
 
-export function formatTime(date: Date | string | undefined) {
-  if (!date) return '';
-  return format(new Date(date), 'p');
-}
+export const formatDateLong = withDate((date) => format(date, 'PPP'));
 
-export function formatDateShort(date: Date | string | undefined) {
-  if (!date) return '';
-  return format(new Date(date), 'PP');
-}
+export const formatTime = withDate((date) => format(date, 'p'));
 
-export function formatDateTime(date: Date | string | undefined) {
-  if (!date) return '';
-  return format(new Date(date), 'PP p');
-}
+export const formatDateShort = withDate((date) => format(date, 'PP'));
 
-export function formatDateDistance(
+export const formatDateTime = withDate((date) => format(date, 'PP p'));
+
+export function formatDateRelative(
   date: Date | string | undefined,
   options?: { addSuffix?: boolean },
 ) {
