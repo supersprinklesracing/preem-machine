@@ -3,6 +3,7 @@
 import { toUrlPath } from '@/datastore/paths';
 import AnimatedNumber from '@/components/animated-number';
 import RaceCard from '@/components/cards/RaceCard';
+import CourseLink from '@/app/race/[raceId]/CourseLink';
 import ContributionModal from '@/components/contribution-modal';
 import PreemStatusBadge from '@/components/PreemStatusBadge';
 import { PreemWithContributions } from '@/datastore/query-schema';
@@ -169,7 +170,7 @@ export const Race: React.FC<Props> = ({ race, children }) => {
   return (
     <Stack gap="xl">
       {race && <RaceCard race={race} preems={children} />}
-
+      <CourseLink courseLink={race.courseLink} />
       <Grid gutter="xl">
         <Grid.Col span={{ base: 12, lg: 8 }}>
           <Group justify="space-between" mb="md">

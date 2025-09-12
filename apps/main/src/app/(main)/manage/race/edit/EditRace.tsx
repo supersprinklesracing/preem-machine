@@ -35,6 +35,7 @@ export function EditRace({
     | 'name'
     | 'location'
     | 'website'
+    | 'courseLink'
     | 'description'
     | 'category'
     | 'gender'
@@ -85,6 +86,7 @@ export function EditRace({
       name: race.name ?? '',
       location: race.location ?? '',
       website: race.website ?? '',
+      courseLink: race.courseLink ?? '',
       description: race.description ?? '',
       category: race.category ?? '',
       gender: race.gender ?? '',
@@ -129,6 +131,10 @@ export function EditRace({
                   {...form.getInputProps('location')}
                 />
                 <TextInput label="Website" {...form.getInputProps('website')} />
+                <TextInput
+                  label="Course Link"
+                  {...form.getInputProps('courseLink')}
+                />
                 <Textarea
                   label="Description"
                   {...form.getInputProps('description')}

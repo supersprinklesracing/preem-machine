@@ -143,6 +143,7 @@ export const RaceSchema = baseDocSchema.extend({
   category: z.string().optional(),
   gender: z.string().optional(),
   courseDetails: z.string().optional(),
+  courseLink: z.string().url().optional(),
   maxRacers: z.number().optional(),
   currentRacers: z.number().optional(),
   ageCategory: z.string().optional(),
