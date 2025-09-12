@@ -1,5 +1,4 @@
 process.env.E2E_TESTING = 'true';
-process.env.E2E_TESTING_USER = 'test-user-id';
 
 import { workspaceRoot } from '@nx/devkit';
 import { nxE2EPreset } from '@nx/playwright/preset';
