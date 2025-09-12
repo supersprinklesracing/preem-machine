@@ -136,6 +136,8 @@ export const mockDbData: DatabaseCollections = {
                         gender: 'Women',
                         location: "Levi's Plaza, San Francisco",
                         courseDetails: "Circuit race around Levi's Plaza.",
+                        courseLink:
+                          'https://www.strava.com/routes/3386108424387203158',
                         maxRacers: 50,
                         currentRacers: 0,
                         ageCategory: '40+/50+',
