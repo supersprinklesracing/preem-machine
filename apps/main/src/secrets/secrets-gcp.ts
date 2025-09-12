@@ -5,6 +5,7 @@ import {
   isServiceAccountSecret,
   ServiceAccountSecret,
 } from './service-account-secret';
+import { ENV_STRIPE_ENABLED } from '../env/env';
 
 let cachedClient: unknown | null = null;
 async function getSecret(name: string): Promise<string> {
@@ -48,7 +49,12 @@ export async function getCookieSecrets() {
   };
 }
 
-export async function getStripeSecrets() {
+export async function getStripeSecrets(): Promise<
+  { apiKey: string; webhookSecret: string } | undefined
+> {
+  if (!ENV_STRIPE_ENABLED) {
+    return undefined;
+  }
   return {
     apiKey: await getSecret('STRIPE_API_KEY'),
     webhookSecret: await getSecret('STRIPE_WEBHOOK_SECRET'),
