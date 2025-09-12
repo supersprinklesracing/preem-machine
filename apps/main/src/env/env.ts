@@ -11,6 +11,12 @@ const isTrue = (value: string | undefined): boolean => {
   return value?.toLowerCase() === 'true';
 };
 
+const isSet = (value: string | undefined): boolean => {
+  return typeof value === 'string' && value.trim().length > 0;
+};
+
+export const ENV_STRIPE_ENABLED = isSet(process.env.NEXT_PUBLIC_STRIPE_API_KEY);
+
 export const ENV_DOTENV_SECRETS = isTrue(process.env.DOTENV_SECRETS);
 export const ENV_USE_HTTPS = isTrue(process.env.NEXT_PUBLIC_USE_HTTPS);
 

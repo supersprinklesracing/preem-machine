@@ -21,6 +21,9 @@ export async function createPaymentIntent(
 
   // Create a PaymentIntent with the order amount and currency
   const stripe = await getStripeServer();
+  if (!stripe) {
+    throw new Error('Stripe not configured');
+  }
   const paymentIntent = await stripe.paymentIntents.create({
     amount: amount * 100, // amount in cents
     currency: 'usd',
@@ -47,6 +50,9 @@ export async function confirmContributionOptimistically(
 ) {
   try {
     const stripe = await getStripeServer();
+    if (!stripe) {
+      throw new Error('Stripe not configured');
+    }
     const paymentIntent = await stripe.paymentIntents.retrieve(paymentIntentId);
     if (paymentIntent.status === 'succeeded') {
       // No need to await this, let it run in the background

@@ -7,6 +7,14 @@ import { useStripeConnect } from './useStripeConnect';
 // Mock the useStripeConnect hook
 jest.mock('./useStripeConnect');
 
+// Mock the env
+jest.mock('@/env/env', () => ({
+  __esModule: true,
+  ...jest.requireActual('@/env/env'),
+  ENV_STRIPE_ENABLED: true,
+}));
+const mockEnv = require('@/env/env');
+
 const mockUseStripeConnect = useStripeConnect as jest.Mock;
 
 describe('StripeConnectCard component', () => {
@@ -67,5 +75,16 @@ describe('StripeConnectCard component', () => {
     fireEvent.click(dashboardButton);
 
     expect(handleDashboardLink).toHaveBeenCalledTimes(1);
+  });
+
+  it('should not render if stripe is disabled', () => {
+    mockEnv.ENV_STRIPE_ENABLED = false;
+    const mockOrganization: Organization = {
+      id: 'org-1',
+      path: 'organizations/org-1',
+    };
+    render(<StripeConnectCard organization={mockOrganization} />);
+    expect(screen.queryByText('Stripe Connect')).toBeNull();
+    mockEnv.ENV_STRIPE_ENABLED = true; // reset for other tests
   });
 });

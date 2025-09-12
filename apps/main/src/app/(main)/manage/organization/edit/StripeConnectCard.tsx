@@ -1,5 +1,6 @@
 'use client';
 
+import { ENV_STRIPE_ENABLED } from '@/env/env';
 import { Organization } from '@/datastore/schema';
 import {
   Badge,
@@ -25,6 +26,9 @@ interface Props {
 }
 
 export function StripeConnectCard({ organization, stripeError }: Props) {
+  if (!ENV_STRIPE_ENABLED) {
+    return null;
+  }
   const {
     isCreatingAccount,
     isCreatingLink,
