@@ -33,6 +33,10 @@ To set up your local environment, use `HUSKY=0 npm ci` to install the project de
 - **Commits:** Keep history clean using interactive rebase. Write meaningful commit messages.
 - **Review:** Self-review PRs before requesting a review from others.
 - **Tests:** All CI checks must pass. Add tests for new features and bug fixes.
+- **Local Verification:** Before pushing your changes and creating a pull request, you **MUST** ensure that your changes work by running the following checks locally:
+  - **Linting:** Run `./tools/nx/nx affected:lint --fix` to fix any linting issues.
+  - **Building:** Run `./tools/nx/nx run @preem-machine/main:build:verify` to ensure the project builds successfully.
+  - **Testing:** Run `./tools/nx/nx test main` to run all unit tests and ensure they pass.
 
 ### Critical: Merging Pull Requests
 
