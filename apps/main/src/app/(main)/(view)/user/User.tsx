@@ -1,6 +1,6 @@
 'use client';
 
-import { useAuth } from '@/auth/AuthContext';
+import { useAuth } from '@/auth/client/AuthContext';
 import { compareDates, formatDateShort } from '@/dates/dates';
 import type { Contribution, User as UserType } from '@/datastore/schema';
 import {

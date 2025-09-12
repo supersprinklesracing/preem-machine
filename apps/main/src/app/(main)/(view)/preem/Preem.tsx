@@ -1,8 +1,8 @@
 'use client';
 
-import AnimatedNumber from '@/components/animated-number';
-import ContributionModal from '@/components/contribution-modal';
-import PreemStatusBadge from '@/components/PreemStatusBadge';
+import AnimatedNumber from '@/components/AnimatedNumber';
+import ContributionModal from '@/components/ContributionModal';
+import PreemStatusBadge from '@/components/PreemStatusBadge/PreemStatusBadge';
 import { compareDates, formatDateTime } from '@/dates/dates';
 import { racePath, toUrlPath } from '@/datastore/paths';
 import { Contribution, Preem as PreemType } from '@/datastore/schema';
@@ -119,9 +119,7 @@ export const Preem: React.FC<Props> = ({ preem, children }) => {
               {preem.timeLimit && (
                 <Group gap="xs">
                   <IconClock size={18} stroke={1.5} />
-                  <Text fw={500}>
-                    Ends: {formatDateTime(preem.timeLimit)}
-                  </Text>
+                  <Text fw={500}>Ends: {formatDateTime(preem.timeLimit)}</Text>
                 </Group>
               )}
             </SimpleGrid>

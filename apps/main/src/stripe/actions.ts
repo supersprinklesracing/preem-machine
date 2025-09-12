@@ -1,6 +1,6 @@
 'use server';
 
-import { verifyAuthUser } from '@/auth/user';
+import { verifyAuthUser } from '@/auth/server/auth';
 import { getOrganizationFromPath } from '@/datastore/server/query/query';
 import { processContribution } from '@/stripe-datastore/contributions';
 import { getStripeServer } from './server';

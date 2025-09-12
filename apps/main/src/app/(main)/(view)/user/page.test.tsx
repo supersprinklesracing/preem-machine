@@ -3,7 +3,7 @@ import React from 'react';
 import UserPage from './page';
 import User from './User';
 import { redirect } from 'next/navigation';
-import * as auth from '@/auth/user';
+import * as auth from '@/auth/server/auth';
 import { NotFoundError } from '@/datastore/errors';
 import '@/matchMedia.mock';
 
@@ -17,7 +17,8 @@ jest.mock('next/navigation', () => ({
     throw new Error(`mock redirect(${args.join(',')})`);
   }),
 }));
-jest.mock('@/auth/user');
+jest.mock('@/auth/server/auth');
+jest.mock('@/auth/client/auth');
 
 setupMockDb();
 

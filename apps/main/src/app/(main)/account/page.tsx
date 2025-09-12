@@ -1,8 +1,8 @@
-import { Breadcrumbs } from '@/components/Breadcrumbs';
+import { Breadcrumbs } from '@/components/Breadcrumbs/Breadcrumbs';
 import { Stack } from '@mantine/core';
 import Account from './Account';
 import { editUserAction } from './edit-user-action';
-import { verifyAuthUser } from '@/auth/user';
+import { verifyAuthUser } from '@/auth/server/auth';
 import { getUserById } from '@/datastore/server/query/query';
 
 export default async function AccountPage() {

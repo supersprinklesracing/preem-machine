@@ -18,7 +18,7 @@ import {
   IconWorldWww,
 } from '@tabler/icons-react';
 import React from 'react';
-import DateStatusBadge from '../DateStatusBadge';
+import DateStatusBadge from '../DateStatusBadge/DateStatusBadge';
 import { DateLocationDetail } from './DateLocationDetail';
 import { MetadataItem, MetadataRow } from './MetadataRow';
 import Link from 'next/link';

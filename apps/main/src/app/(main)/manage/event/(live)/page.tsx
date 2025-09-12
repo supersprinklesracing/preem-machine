@@ -1,6 +1,6 @@
 import { getRenderableEventDataForPage } from '@/datastore/server/query/query';
 import LiveEvent from './LiveEvent';
-import { Breadcrumbs } from '@/components/Breadcrumbs';
+import { Breadcrumbs } from '@/components/Breadcrumbs/Breadcrumbs';
 import { Stack } from '@mantine/core';
 import { getDocPathFromSearchParams } from '@/datastore/paths';
 

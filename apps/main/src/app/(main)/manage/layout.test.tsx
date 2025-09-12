@@ -1,8 +1,9 @@
-import * as auth from '@/auth/user';
+import * as auth from '@/auth/server/auth';
 import { render, screen } from '@/test-utils';
 import ManageLayout from './layout';
 
-jest.mock('@/auth/user');
+jest.mock('@/auth/server/auth');
+jest.mock('@/auth/client/auth');
 
 describe('ManageLayout', () => {
   it('should redirect unauthenticated users', async () => {

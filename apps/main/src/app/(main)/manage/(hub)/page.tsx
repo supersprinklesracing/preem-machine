@@ -1,4 +1,4 @@
-import { Breadcrumbs } from '@/components/Breadcrumbs';
+import { Breadcrumbs } from '@/components/Breadcrumbs/Breadcrumbs';
 import { Stack } from '@mantine/core';
 import { getHubPageData } from './hub_data';
 import Hub from './Hub';

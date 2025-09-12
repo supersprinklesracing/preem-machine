@@ -1,6 +1,6 @@
 'use server';
 
-import { getAuthUser } from '@/auth/user';
+import { getAuthUser } from '@/auth/server/auth';
 import { isUserAuthorized } from '@/datastore/server/access';
 import { updateOrganizationStripeConnectAccount } from '@/datastore/server/update/update';
 import { ENV_URL_PREFIX } from '@/env/env';

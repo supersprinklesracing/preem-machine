@@ -1,8 +1,9 @@
-import * as auth from '@/auth/user';
+import * as auth from '@/auth/server/auth';
 import { render, screen } from '@/test-utils';
 import AccountLayout from './layout';
 
-jest.mock('@/auth/user');
+jest.mock('@/auth/server/auth');
+jest.mock('@/auth/client/auth');
 
 describe('AccountLayout', () => {
   it('should redirect unauthenticated users', async () => {
@@ -10,9 +11,9 @@ describe('AccountLayout', () => {
       throw new Error('unauthorized');
     });
 
-    await expect(
-      AccountLayout({ children: <div>Test</div> }),
-    ).rejects.toThrow('unauthorized');
+    await expect(AccountLayout({ children: <div>Test</div> })).rejects.toThrow(
+      'unauthorized',
+    );
   });
 
   it('should render children for authenticated users', async () => {

@@ -1,11 +1,11 @@
 'use client';
 
 import { toUrlPath } from '@/datastore/paths';
-import AnimatedNumber from '@/components/animated-number';
+import AnimatedNumber from '@/components/AnimatedNumber';
 import RaceCard from '@/components/cards/RaceCard';
-import CourseLink from '@/app/race/[raceId]/CourseLink';
-import ContributionModal from '@/components/contribution-modal';
-import PreemStatusBadge from '@/components/PreemStatusBadge';
+import CourseLink from '@/components/CourseLink/CourseLink';
+import ContributionModal from '@/components/ContributionModal';
+import PreemStatusBadge from '@/components/PreemStatusBadge/PreemStatusBadge';
 import { PreemWithContributions } from '@/datastore/query-schema';
 import { Preem, Race as RaceType } from '@/datastore/schema';
 import {
