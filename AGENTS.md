@@ -33,6 +33,7 @@ To set up your local environment, use `HUSKY=0 npm ci` to install the project de
 - **Commits:** Keep history clean using interactive rebase. Write meaningful commit messages.
 - **Review:** Self-review PRs before requesting a review from others.
 - **Tests:** All CI checks must pass. Add tests for new features and bug fixes.
+- **Local Verification:** Before pushing your changes, you **MUST** ensure that your changes work by running the local verification checks for linting, building, and testing. The commands for these checks are listed in the "Commands" section of this document.
 
 ### Critical: Merging Pull Requests
 
