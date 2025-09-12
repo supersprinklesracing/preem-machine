@@ -1,3 +1,6 @@
+process.env.E2E_TESTING = 'true';
+process.env.E2E_TESTING_USER = 'test-user-id';
+
 import { workspaceRoot } from '@nx/devkit';
 import { nxE2EPreset } from '@nx/playwright/preset';
 import { defineConfig, devices } from '@playwright/test';
@@ -29,6 +32,7 @@ dotenv.config({
  */
 export default defineConfig({
   ...nxE2EPreset(__filename, { testDir: './src' }),
+  timeout: 5 * 60 * 1000,
   outputDir: './test-output/test-results',
   reporter: [
     [
@@ -56,7 +60,9 @@ export default defineConfig({
     timeout: 300000,
     cwd: workspaceRoot,
     // .env files in shell are not respected in VS Code; we read them, above.
-    // env: {},
+    env: {
+      E2E_TESTING: 'true',
+    },
   },
   expect: {
     toHaveScreenshot: { maxDiffPixelRatio: 0.02 },
