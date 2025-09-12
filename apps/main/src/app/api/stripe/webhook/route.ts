@@ -1,6 +1,7 @@
+import { ENV_STRIPE_ENABLED } from '@/env/env';
 import { getOrganizationByStripeConnectAccountId } from '@/datastore/server/query/query';
 import { updateOrganizationStripeConnectAccountForWebhook } from '@/datastore/server/update/update';
-import { getStripeSecrets } from '@/secrets/secrets-env';
+import { getSecrets } from '@/secrets';
 import { processContribution } from '@/stripe-datastore/contributions';
 import { getStripeServer } from '@/stripe/server';
 import { headers } from 'next/headers';
@@ -8,7 +9,11 @@ import { NextResponse } from 'next/server';
 import type Stripe from 'stripe';
 
 export async function POST(req: Request) {
-  const webhookSecret = (await getStripeSecrets()).webhookSecret;
+  if (!ENV_STRIPE_ENABLED) {
+    return new NextResponse('Stripe is not enabled', { status: 500 });
+  }
+  const secrets = await getSecrets();
+  const webhookSecret = secrets.stripeSecrets?.webhookSecret;
   if (!webhookSecret) {
     return NextResponse.json(
       { error: 'Webhook secret not configured' },
@@ -25,6 +30,9 @@ export async function POST(req: Request) {
   try {
     const body = await req.text();
     const stripe = await getStripeServer();
+    if (!stripe) {
+      throw new Error('Stripe not configured');
+    }
     event = stripe.webhooks.constructEvent(body, signature, webhookSecret);
   } catch (err) {
     const errorMessage = err instanceof Error ? err.message : 'Unknown error';
