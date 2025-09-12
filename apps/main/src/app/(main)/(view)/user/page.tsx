@@ -1,7 +1,7 @@
 'use server';
 
-import { getAuthUser } from '@/auth/user';
-import { Breadcrumbs } from '@/components/Breadcrumbs';
+import { getAuthUser } from '@/auth/server/auth';
+import { Breadcrumbs } from '@/components/Breadcrumbs/Breadcrumbs';
 import { getRenderableUserDataForPage } from '@/datastore/server/query/query';
 import { getDocPathFromSearchParams } from '@/datastore/paths';
 import { Stack } from '@mantine/core';

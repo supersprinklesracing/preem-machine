@@ -1,7 +1,7 @@
-import { AuthContextUser } from '@/auth/AuthContext';
-import { AuthProvider } from '@/auth/AuthProvider';
+import { AuthContextUser } from './auth/user';
+import { AuthProvider } from '@/auth/client/AuthProvider';
 import { createMockDb } from '@/datastore/server/mock-db/mock-db-util';
-import { getFirestore } from '@/firebase-admin';
+import { getFirestore } from '@/firebase/server';
 import { MantineProvider } from '@mantine/core';
 import { render, RenderOptions } from '@testing-library/react';
 import type { Firestore } from 'firebase-admin/firestore';

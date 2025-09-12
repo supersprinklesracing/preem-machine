@@ -1,4 +1,4 @@
-import { getFirestore } from '@/firebase-admin';
+import { getFirestore } from '@/firebase/server';
 import type { Firestore } from 'firebase-admin/firestore';
 import { createMockDb } from './mock-db-util';
 import { DatabaseDocument } from './mock-db-processor';

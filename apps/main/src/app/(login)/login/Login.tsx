@@ -1,10 +1,10 @@
 'use client';
 
-import { appendRedirectParam } from '@/app/shared/redirect';
-import { useRedirectAfterLogin } from '@/app/shared/useRedirectAfterLogin';
-import { useRedirectParam } from '@/app/shared/useRedirectParam';
-import { loginWithCredential } from '@/auth/client-util';
-import { getFirebaseAuth } from '@/firebase-client';
+import { appendRedirectParam } from '@/app/(login)/redirect';
+import { useRedirectAfterLogin } from '@/app/(login)/useRedirectAfterLogin';
+import { useRedirectParam } from '@/app/(login)/useRedirectParam';
+import { loginWithCredential } from '@/auth/client/auth';
+import { getFirebaseAuth } from '@/firebase/client';
 import {
   Anchor,
   Button,

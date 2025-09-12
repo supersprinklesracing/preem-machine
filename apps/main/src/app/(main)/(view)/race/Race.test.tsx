@@ -8,15 +8,15 @@ jest.mock('@/components/cards/RaceCard', () => ({
   __esModule: true,
   default: jest.fn(() => <div>Mock RaceCard</div>),
 }));
-jest.mock('@/components/animated-number', () => ({
+jest.mock('@/components/AnimatedNumber', () => ({
   __esModule: true,
   default: jest.fn(({ value }) => <span>{value}</span>),
 }));
-jest.mock('@/components/PreemStatusBadge', () => ({
+jest.mock('@/components/PreemStatusBadge/PreemStatusBadge', () => ({
   __esModule: true,
   default: jest.fn(() => <div>Mock PreemStatusBadge</div>),
 }));
-jest.mock('@/components/contribution-modal', () => ({
+jest.mock('@/components/ContributionModal', () => ({
   __esModule: true,
   default: jest.fn(() => <div>Mock ContributionModal</div>),
 }));

@@ -1,6 +1,6 @@
 'use client';
 
-import { useActionForm } from '@/app/shared/hooks/useActionForm';
+import { useActionForm } from '@/components/forms/useActionForm';
 import RaceCard from '@/components/cards/RaceCard';
 import { FormActionResult } from '@/components/forms/forms';
 import { Race } from '@/datastore/schema';

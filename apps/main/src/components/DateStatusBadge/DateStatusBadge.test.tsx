@@ -25,12 +25,7 @@ describe('DateStatusBadge', () => {
     const anHourAgo = new Date(now.getTime() - 60 * 60 * 1000);
     const inAnHour = new Date(now.getTime() + 60 * 60 * 1000);
 
-    render(
-      <DateStatusBadge
-        startDate={anHourAgo}
-        endDate={inAnHour}
-      />,
-    );
+    render(<DateStatusBadge startDate={anHourAgo} endDate={inAnHour} />);
     expect(screen.getByText('Live')).toBeInTheDocument();
   });
 
@@ -40,10 +35,7 @@ describe('DateStatusBadge', () => {
     const pastDateMinusOneHour = new Date(pastDate.getTime() - 60 * 60 * 1000);
 
     render(
-      <DateStatusBadge
-        startDate={pastDateMinusOneHour}
-        endDate={pastDate}
-      />,
+      <DateStatusBadge startDate={pastDateMinusOneHour} endDate={pastDate} />,
     );
     expect(screen.getByText('Finished')).toBeInTheDocument();
   });

@@ -1,7 +1,7 @@
 import { getRenderableSeriesDataForPage } from '@/datastore/server/query/query';
 import { getDocPathFromSearchParams } from '@/datastore/paths';
 import Series from './Series';
-import { Breadcrumbs } from '@/components/Breadcrumbs';
+import { Breadcrumbs } from '@/components/Breadcrumbs/Breadcrumbs';
 import { Stack } from '@mantine/core';
 
 export default async function SeriesPage({

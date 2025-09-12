@@ -1,4 +1,4 @@
-import { getFirestore } from '@/firebase-admin';
+import { getFirestore } from '@/firebase/server';
 import { setupMockDb } from '@/test-utils';
 import type { Firestore } from 'firebase-admin/firestore';
 import {
@@ -68,7 +68,8 @@ describe('create mutations', () => {
 
   describe('createEvent', () => {
     it('should create a new event', async () => {
-      const seriesPath = 'organizations/org-super-sprinkles/series/series-sprinkles-2025';
+      const seriesPath =
+        'organizations/org-super-sprinkles/series/series-sprinkles-2025';
       const seriesDoc = await firestore.doc(seriesPath).get();
       const series = seriesDoc.data() as Series;
 
@@ -77,11 +78,7 @@ describe('create mutations', () => {
         startDate: series.startDate,
         endDate: series.endDate,
       };
-      const doc = await createEvent(
-        seriesPath,
-        newEvent,
-        authUser,
-      );
+      const doc = await createEvent(seriesPath, newEvent, authUser);
       const data = doc.data();
       expect(data?.path).toEqual(doc.ref.path);
       expect(data?.name).toEqual(newEvent.name);
@@ -91,7 +88,8 @@ describe('create mutations', () => {
 
   describe('createRace', () => {
     it('should create a new race', async () => {
-      const eventPath = 'organizations/org-super-sprinkles/series/series-sprinkles-2025/events/event-giro-sf-2025';
+      const eventPath =
+        'organizations/org-super-sprinkles/series/series-sprinkles-2025/events/event-giro-sf-2025';
       const eventDoc = await firestore.doc(eventPath).get();
       const event = eventDoc.data() as Event;
       const newRace = {
@@ -99,11 +97,7 @@ describe('create mutations', () => {
         startDate: event.startDate,
         endDate: event.endDate,
       };
-      const doc = await createRace(
-        eventPath,
-        newRace,
-        authUser,
-      );
+      const doc = await createRace(eventPath, newRace, authUser);
       const data = doc.data();
       expect(data?.path).toEqual(doc.ref.path);
       expect(data?.name).toEqual(newRace.name);

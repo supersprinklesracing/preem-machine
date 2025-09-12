@@ -1,6 +1,6 @@
 'use client';
 
-import { createToast } from '@/app/shared/use-toast';
+import { createToast } from './createToast';
 import { User } from '@/datastore/schema';
 import {
   Box,

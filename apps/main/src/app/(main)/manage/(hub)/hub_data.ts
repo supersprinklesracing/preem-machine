@@ -1,4 +1,4 @@
-import { verifyAuthUser } from '@/auth/user';
+import { verifyAuthUser } from '@/auth/server/auth';
 import {
   getDocSnap,
   getOrganizationWithSeries,

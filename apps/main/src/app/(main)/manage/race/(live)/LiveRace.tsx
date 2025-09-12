@@ -3,8 +3,8 @@
 import { toUrlPath } from '@/datastore/paths';
 export const dynamic = 'force-dynamic';
 
-import AnimatedNumber from '@/components/animated-number';
-import PreemStatusBadge from '@/components/PreemStatusBadge';
+import AnimatedNumber from '@/components/AnimatedNumber';
+import PreemStatusBadge from '@/components/PreemStatusBadge/PreemStatusBadge';
 import { formatDateRelative } from '@/dates/dates';
 import { Race } from '@/datastore/schema';
 import {
