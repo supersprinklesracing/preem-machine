@@ -1,6 +1,6 @@
 'use server';
 
-import { getFirestore } from '@/firebase-admin';
+import { getFirestore } from '@/firebase/server';
 import { FieldValue } from 'firebase-admin/firestore';
 import Stripe from 'stripe';
 

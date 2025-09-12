@@ -1,6 +1,6 @@
 'use server';
 
-import { getAuthUser } from '@/auth/user';
+import { getAuthUser } from '@/auth/server/auth';
 import { getUserById } from '@/datastore/server/query/query';
 import { CurrentUserProvider } from '@/datastore/client/UserProvider';
 import {
@@ -10,7 +10,7 @@ import {
   MantineProvider,
 } from '@mantine/core';
 import { cookies } from 'next/headers';
-import { AuthProvider } from '../auth/AuthProvider';
+import { AuthProvider } from '../auth/client/AuthProvider';
 import './global.css';
 import { theme } from './theme';
 

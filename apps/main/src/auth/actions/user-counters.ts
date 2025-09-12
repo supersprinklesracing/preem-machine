@@ -1,7 +1,7 @@
 'use server';
 
-import { verifyAuthUser } from '@/auth/user';
-import { getFirestore } from '@/firebase-admin/firebase-admin';
+import { verifyAuthUser } from '@/auth/server/auth';
+import { getFirestore } from '@/firebase/server/firebase-admin';
 import { revalidatePath } from 'next/cache';
 
 export async function incrementCounter() {

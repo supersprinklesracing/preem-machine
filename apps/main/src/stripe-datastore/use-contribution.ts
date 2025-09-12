@@ -1,7 +1,7 @@
 'use client';
 
-import { createToast } from '@/app/shared/use-toast';
-import { useAuth } from '@/auth/AuthContext';
+import { createToast } from '@/app/(main)/admin/createToast';
+import { useAuth } from '@/auth/client/AuthContext';
 import {
   confirmContributionOptimistically,
   createPaymentIntent,

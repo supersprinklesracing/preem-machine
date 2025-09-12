@@ -1,7 +1,7 @@
 'use server';
 
 import { userSchema } from '@/app/(main)/account/user-schema';
-import { getAuthUser } from '@/auth/user';
+import { getAuthUser } from '@/auth/server/auth';
 import { FormActionError, FormActionResult } from '@/components/forms/forms';
 import { createUser } from '@/datastore/server/create/create';
 import { revalidatePath } from 'next/cache';

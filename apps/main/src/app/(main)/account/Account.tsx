@@ -1,9 +1,9 @@
 'use client';
 
-import { useActionForm } from '@/app/shared/hooks/useActionForm';
-import { logout } from '@/auth/client-util';
+import { useActionForm } from '@/components/forms/useActionForm';
+import { logout } from '@/auth/client/auth';
 import { FormActionResult } from '@/components/forms/forms';
-import UpdateUserProfileCard from '@/components/UpdateUserProfileCard';
+import UpdateUserProfileCard from '@/components/cards/UpdateUserProfileCard';
 import { toUrlPath } from '@/datastore/paths';
 import { User } from '@/datastore/schema';
 import {

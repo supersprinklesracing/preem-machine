@@ -1,6 +1,6 @@
 'use server';
 
-import { getOrganizationAndRefreshStripeAccount } from '@/app/shared/data-access/organizations';
+import { getOrganizationAndRefreshStripeAccount } from '@/stripe-datastore/organizations';
 import { EditOrganization } from './EditOrganization';
 import { editOrganizationAction } from './edit-organization-action';
 

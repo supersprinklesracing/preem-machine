@@ -1,6 +1,6 @@
 'use client';
 
-import { useActionForm } from '@/app/shared/hooks/useActionForm';
+import { useActionForm } from '@/components/forms/useActionForm';
 import SeriesCard from '@/components/cards/SeriesCard';
 import { FormActionResult } from '@/components/forms/forms';
 import { toUrlPath } from '@/datastore/paths';

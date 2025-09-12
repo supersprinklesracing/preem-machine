@@ -1,16 +1,15 @@
-import { createToast } from '@/app/shared/use-toast';
+import { createToast } from '@/app/(main)/admin/createToast';
 import '@/matchMedia.mock';
 import { fireEvent, render, screen } from '@/test-utils';
-import type { AdminPageData } from './Admin';
 import Admin from './Admin';
 
 // Mock the toast hook
-jest.mock('@/app/shared/use-toast');
+jest.mock('./createToast');
 
 const mockToast = jest.fn();
 (createToast as jest.Mock).mockReturnValue({ toast: mockToast });
 
-const mockData: AdminPageData = {
+const mockData = {
   users: [
     {
       id: 'user-1',

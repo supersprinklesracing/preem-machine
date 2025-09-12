@@ -1,4 +1,4 @@
-import { Breadcrumbs } from '@/components/Breadcrumbs';
+import { Breadcrumbs } from '@/components/Breadcrumbs/Breadcrumbs';
 import { getUsers } from '@/datastore/server/query/query';
 import { Stack } from '@mantine/core';
 import Admin from './Admin';

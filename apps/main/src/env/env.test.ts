@@ -1,5 +1,3 @@
-import { ENV_STRIPE_ENABLED } from './env';
-
 describe('env', () => {
   const OLD_ENV = process.env;
 

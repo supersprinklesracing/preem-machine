@@ -1,5 +1,5 @@
 import { ENV_E2E_TESTING } from '@/env/env';
-import { serverConfigFn } from '@/firebase-admin/config';
+import { serverConfigFn } from '@/firebase/server/config';
 import {
   authMiddleware,
   redirectToHome,

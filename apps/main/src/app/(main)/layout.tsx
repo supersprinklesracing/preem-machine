@@ -1,6 +1,6 @@
 'use server';
 
-import { getAuthUser } from '@/auth/user';
+import { getAuthUser } from '@/auth/server/auth';
 import { getEventsForUser } from '@/datastore/server/query/query';
 import AvatarCluster from './Shell/AvatarCluster';
 import MainAppShell from './Shell/MainAppShell';

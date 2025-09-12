@@ -1,8 +1,9 @@
 import { render, screen } from '@/test-utils';
 import User from './User';
-import { AuthContextUser, useAuth } from '@/auth/AuthContext';
+import { useAuth } from '@/auth/client/AuthContext';
+import { AuthContextUser } from '@/auth/user';
 
-jest.mock('@/auth/AuthContext');
+jest.mock('@/auth/client/AuthContext');
 const useAuthMock = useAuth as jest.Mock;
 
 const mockUserData = {

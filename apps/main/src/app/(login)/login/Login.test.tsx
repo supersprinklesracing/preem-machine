@@ -11,13 +11,14 @@ jest.mock('firebase/auth', () => ({
   signInWithEmailAndPassword: jest.fn(),
   signInWithEmailLink: jest.fn(),
 }));
-jest.mock('@/firebase-client', () => ({
+jest.mock('@/firebase/client', () => ({
   getFirebaseAuth: jest.fn(),
 }));
 jest.mock('next/navigation', () => ({
   useRouter: jest.fn(() => ({
     refresh: jest.fn(),
   })),
+  // eslint-disable-next-line @eslint-react/hooks-extra/no-unnecessary-use-prefix
   useSearchParams: function () {
     return {
       get: jest.fn(),

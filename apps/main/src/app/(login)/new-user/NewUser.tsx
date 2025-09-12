@@ -1,8 +1,8 @@
 'use client';
 
-import { useActionForm } from '@/app/shared/hooks/useActionForm';
-import { useAuth } from '@/auth/AuthContext';
-import UserProfileCard from '@/components/UpdateUserProfileCard';
+import { useActionForm } from '@/components/forms/useActionForm';
+import { useAuth } from '@/auth/client/AuthContext';
+import UserProfileCard from '@/components/cards/UpdateUserProfileCard';
 import { FormActionResult } from '@/components/forms/forms';
 import {
   Box,

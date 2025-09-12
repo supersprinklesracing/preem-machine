@@ -1,8 +1,9 @@
-import * as auth from '@/auth/user';
+import * as auth from '@/auth/server/auth';
 import { render, screen } from '@/test-utils';
 import AdminLayout from './layout';
 
-jest.mock('@/auth/user');
+jest.mock('@/auth/server/auth');
+jest.mock('@/auth/client/auth');
 
 describe('AdminLayout', () => {
   it('should redirect unauthenticated users', async () => {

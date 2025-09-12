@@ -5,9 +5,9 @@ import { sendPasswordResetEmail } from 'firebase/auth';
 import Link from 'next/link';
 import * as React from 'react';
 import { useLoadingCallback } from 'react-loading-hook';
-import { getFirebaseAuth } from '@/firebase-client';
-import { appendRedirectParam } from '@/app/shared/redirect';
-import { useRedirectParam } from '@/app/shared/useRedirectParam';
+import { getFirebaseAuth } from '@/firebase/client';
+import { appendRedirectParam } from '@/app/(login)/redirect';
+import { useRedirectParam } from '@/app/(login)/useRedirectParam';
 
 export function ResetPasswordPage() {
   const [email, setEmail] = React.useState('');

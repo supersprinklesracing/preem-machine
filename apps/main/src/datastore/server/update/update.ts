@@ -1,7 +1,7 @@
 'use server';
 
-import { AuthContextUser } from '@/auth/AuthContext';
-import { getFirestore } from '@/firebase-admin/firebase-admin';
+import { AuthContextUser } from '@/auth/user';
+import { getFirestore } from '@/firebase/server/firebase-admin';
 import {
   DocumentData,
   FieldValue,

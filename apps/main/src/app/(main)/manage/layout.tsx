@@ -1,6 +1,6 @@
 'use server';
 
-import { verifyAuthUser } from '@/auth/user';
+import { verifyAuthUser } from '@/auth/server/auth';
 
 export default async function ManageLayout({
   children,

@@ -1,6 +1,6 @@
 'use server';
 
-import { Breadcrumbs } from '@/components/Breadcrumbs';
+import { Breadcrumbs } from '@/components/Breadcrumbs/Breadcrumbs';
 import { getDoc } from '@/datastore/server/query/query';
 import { Series } from '@/datastore/schema';
 import { Stack } from '@mantine/core';

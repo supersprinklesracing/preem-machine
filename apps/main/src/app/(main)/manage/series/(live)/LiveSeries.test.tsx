@@ -13,7 +13,7 @@ jest.mock('@/components/cards/EventCard', () => ({
   )),
 }));
 
-jest.mock('@/firebase-client/dates', () => ({
+jest.mock('@/firebase/client/dates', () => ({
   formatDateRange: jest.fn(() => 'formatted date range'),
 }));
 

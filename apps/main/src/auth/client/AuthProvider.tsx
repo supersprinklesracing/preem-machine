@@ -1,7 +1,8 @@
 'use client';
 
 import { FunctionComponent, ReactNode, useMemo } from 'react';
-import { AuthContext, AuthContextUser } from './AuthContext';
+import { AuthContext } from './AuthContext';
+import { AuthContextUser } from '../user';
 
 export interface AuthProviderProps {
   authUser: AuthContextUser | null;

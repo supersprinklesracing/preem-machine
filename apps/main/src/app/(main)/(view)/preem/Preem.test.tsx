@@ -2,7 +2,7 @@ import { render, screen } from '@/test-utils';
 import Preem from './Preem';
 
 jest.mock(
-  '@/components/animated-number',
+  '@/components/AnimatedNumber',
   () =>
     ({ value }: { value: number }) => <span>{value}</span>,
 );

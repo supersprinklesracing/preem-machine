@@ -1,6 +1,6 @@
 'use server';
 
-import { getAuthUser } from '@/auth/user';
+import { getAuthUser } from '@/auth/server/auth';
 import { getUserById } from '@/datastore/server/query/query';
 import { redirect } from 'next/navigation';
 import { newUserAction } from './new-user-action';
