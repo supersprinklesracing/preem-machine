@@ -1,9 +1,6 @@
 import { expect, test } from '@playwright/test';
-import { useE2eTestingUserBeforeEach } from '../e2e-test-utils';
 
-test.describe('view/event logged in user', () => {
-  useE2eTestingUserBeforeEach();
-
+test.describe('view: event', () => {
   test('basic', async ({ page }) => {
     await page.goto(
       '/org-super-sprinkles/series-sprinkles-2025/event-giro-sf-2025',

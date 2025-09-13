@@ -120,8 +120,8 @@ const nextConfig = {
 
       // ==== VIEWS ====
       {
-        source: '/user',
-        destination: '/user',
+        source: '/user/:userId',
+        destination: '/user?path=users/:userId',
       },
       {
         source: '/:orgId/:seriesId/:eventId/:raceId/:preemId',
@@ -141,6 +141,10 @@ const nextConfig = {
       {
         source: '/:orgId/:seriesId',
         destination: '/series?path=organizations/:orgId/series/:seriesId',
+      },
+      {
+        source: '/user',
+        destination: '/account',
       },
       {
         source: '/:orgId',
