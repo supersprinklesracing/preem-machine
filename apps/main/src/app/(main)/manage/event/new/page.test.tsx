@@ -17,7 +17,7 @@ describe('NewEventPage', () => {
   it('should render the NewEvent component', async () => {
     const PageComponent = await NewEventPage({
       searchParams: Promise.resolve({
-        path: 'organizations/org-super-sprinkles/series/series-sprinkles-2025',
+        path: 'organizations/org-super-sprinkles/series/series-sprinkles-2025/events',
       }),
     });
     render(PageComponent);

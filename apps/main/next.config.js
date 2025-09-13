@@ -12,7 +12,7 @@ const nextConfig = {
   experimental: {
     authInterrupts: true,
   },
-  webpack: (config, { isServer, webpack }) => {
+  webpack: (config) => {
     // This rule uses null-loader to fix the "require.extensions" error.
     config.module.rules.push({
       test: /handlebars\/lib\/index\.js$/,
@@ -33,73 +33,86 @@ const nextConfig = {
       },
 
       // ==== MANAGE ====
+      // Order is important here. Most specific routes must come first.
 
-      // manage/event/edit
+      // 7 segments
       {
-        source: '/manage/:orgId/:seriesId/:eventId/edit',
+        source: '/manage/:orgId/:seriesId/:eventId/:raceId/:preemId/edit',
         destination:
-          '/manage/event/edit?path=organizations/:orgId/series/:seriesId/events/:eventId',
+          '/manage/preem/edit?path=organizations/:orgId/series/:seriesId/events/:eventId/races/:raceId/preems/:preemId',
       },
-      // manage/new-race
       {
-        source: '/manage/:orgId/:seriesId/:eventId/race/new',
+        source: '/manage/:orgId/:seriesId/:eventId/:raceId/preem/new',
         destination:
-          '/manage/race/new?path=organizations/:orgId/series/:seriesId/events/:eventId/races',
+          '/manage/preem/new?path=organizations/:orgId/series/:seriesId/events/:eventId/races/:raceId/preems',
       },
-      // manage/race/edit
+
+      // 6 segments
       {
         source: '/manage/:orgId/:seriesId/:eventId/:raceId/edit',
         destination:
           '/manage/race/edit?path=organizations/:orgId/series/:seriesId/events/:eventId/races/:raceId',
       },
-      // manage/new-event
+      {
+        source: '/manage/:orgId/:seriesId/:eventId/race/new',
+        destination:
+          '/manage/race/new?path=organizations/:orgId/series/:seriesId/events/:eventId/races',
+      },
+      {
+        source: '/manage/:orgId/:seriesId/:eventId/:raceId/:preemId',
+        destination:
+          '/manage/preem?path=organizations/:orgId/series/:seriesId/events/:eventId/races/:raceId/preems/:preemId',
+      },
+
+      // 5 segments
+      {
+        source: '/manage/:orgId/:seriesId/:eventId/edit',
+        destination:
+          '/manage/event/edit?path=organizations/:orgId/series/:seriesId/events/:eventId',
+      },
       {
         source: '/manage/:orgId/:seriesId/event/new',
         destination:
           '/manage/event/new?path=organizations/:orgId/series/:seriesId/events',
       },
-      // manage/race/details
       {
         source: '/manage/:orgId/:seriesId/:eventId/:raceId',
         destination:
           '/manage/race?path=organizations/:orgId/series/:seriesId/events/:eventId/races/:raceId',
       },
-      // manage/series/edit
+
+      // 4 segments
       {
         source: '/manage/:orgId/:seriesId/edit',
         destination:
           '/manage/series/edit?path=organizations/:orgId/series/:seriesId',
       },
-      // manage/new-series
       {
         source: '/manage/:orgId/series/new',
         destination: '/manage/series/new?path=organizations/:orgId/series',
       },
-      // manage/event/details
       {
         source: '/manage/:orgId/:seriesId/:eventId',
         destination:
           '/manage/event?path=organizations/:orgId/series/:seriesId/events/:eventId',
       },
 
-      // manage/organization/edit
+      // 3 segments
       {
         source: '/manage/:orgId/edit',
         destination: '/manage/organization/edit?path=organizations/:orgId',
       },
-      // manage/series/details
       {
         source: '/manage/:orgId/:seriesId',
         destination:
           '/manage/series?path=organizations/:orgId/series/:seriesId',
       },
 
-      // manage/new-organization
+      // 2 segments
       {
         source: '/manage/new',
         destination: '/manage/organization/new?path=organizations',
       },
-      // manage/organization/details
       {
         source: '/manage/:orgId',
         destination: '/manage/organization?path=organizations/:orgId',
