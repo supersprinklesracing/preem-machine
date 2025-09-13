@@ -9,6 +9,15 @@ import type { NextRequest } from 'next/server';
 import { NextResponse } from 'next/server';
 
 const LOGGED_OUT_ONLY = ['/register', '/login', '/reset-password'];
+const PROTECTED_PATHS = [
+  '^/manage(/.*)?$',
+  '^/account(/.*)?$',
+  '^/admin(/.*)?$',
+].map((path) => new RegExp(path));
+
+function isProtectedRoute(pathname: string): boolean {
+  return PROTECTED_PATHS.some((path) => path.test(pathname));
+}
 
 export async function middleware(request: NextRequest) {
   // TODO: This should probably live inside handle* methods...
@@ -33,18 +42,26 @@ export async function middleware(request: NextRequest) {
       });
     },
     handleInvalidToken: async (_reason) => {
-      return redirectToLogin(request, {
-        path: '/login',
-        publicPaths: LOGGED_OUT_ONLY,
-      });
+      if (isProtectedRoute(request.nextUrl.pathname)) {
+        return redirectToLogin(request, {
+          path: '/login',
+          publicPaths: LOGGED_OUT_ONLY,
+        });
+      }
+
+      return NextResponse.next();
     },
     handleError: async (error) => {
       console.error('Unhandled authentication error', { error });
 
-      return redirectToLogin(request, {
-        path: '/login',
-        publicPaths: LOGGED_OUT_ONLY,
-      });
+      if (isProtectedRoute(request.nextUrl.pathname)) {
+        return redirectToLogin(request, {
+          path: '/login',
+          publicPaths: LOGGED_OUT_ONLY,
+        });
+      }
+
+      return NextResponse.next();
     },
   });
 }
