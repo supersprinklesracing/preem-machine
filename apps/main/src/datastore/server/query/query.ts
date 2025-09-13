@@ -204,7 +204,6 @@ export const getEventsForOrganizations = cache(
 
 export const getEventsForUser = cache(
   async (userId: string): Promise<Event[]> => {
-    console.log('Getting events for user', userId);
     const user = await getUserById(userId);
     const organizationIds =
       user?.organizationRefs?.map((ref) => ref.id).filter((id) => !!id) ?? [];
