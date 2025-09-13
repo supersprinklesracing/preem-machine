@@ -1,13 +1,7 @@
 import { act, fireEvent, render, screen, waitFor } from '@/test-utils';
 import { NewOrganization } from './NewOrganization';
 
-// Mock dependencies
-jest.mock('next/navigation', () => ({
-  // eslint-disable-next-line @eslint-react/hooks-extra/no-unnecessary-use-prefix
-  useRouter: () => ({
-    push: jest.fn(),
-  }),
-}));
+
 
 describe('NewOrganization component', () => {
   beforeEach(() => {

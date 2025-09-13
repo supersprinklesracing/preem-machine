@@ -9,6 +9,7 @@ jest.mock('./LiveOrganization', () => ({
   default: jest.fn(() => <div>Mock LiveOrganization</div>),
 }));
 
+
 setupMockDb();
 
 describe('LiveOrganizationPage component', () => {

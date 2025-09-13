@@ -5,16 +5,7 @@ import LoginPage from './page';
 
 jest.mock('./login-action');
 
-jest.mock('next/navigation', () => ({
-  useRouter: () => ({
-    push: jest.fn(),
-    refresh: jest.fn(),
-  }),
-  usePathname: () => '/',
-  useSearchParams: () => ({
-    get: jest.fn().mockReturnValue(null),
-  }),
-}));
+
 
 describe('LoginPage', () => {
   it('should render the Login component', () => {

@@ -1,13 +1,7 @@
 import { act, fireEvent, render, screen, waitFor, within } from '@/test-utils';
 import { NewSeries } from './NewSeries';
 
-// Mock dependencies
-jest.mock('next/navigation', () => ({
-  // eslint-disable-next-line @eslint-react/hooks-extra/no-unnecessary-use-prefix
-  useRouter: () => ({
-    push: jest.fn(),
-  }),
-}));
+
 
 describe('NewSeries component', () => {
   const mockDate = new Date('2025-08-15T12:00:00Z');
