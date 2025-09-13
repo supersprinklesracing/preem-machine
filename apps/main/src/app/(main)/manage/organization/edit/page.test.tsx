@@ -1,4 +1,3 @@
-import '@/matchMedia.mock';
 import { render, screen, setupMockDb } from '@/test-utils';
 import { EditOrganization } from './EditOrganization';
 import { NotFoundError } from '@/datastore/errors';

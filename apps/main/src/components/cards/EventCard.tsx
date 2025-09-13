@@ -23,6 +23,7 @@ const EventCard: React.FC<EventCardProps> = ({
 
   return (
     <Card
+      data-testid={`event-card-${event.id}`}
       withBorder={withBorder}
       padding="lg"
       radius="md"

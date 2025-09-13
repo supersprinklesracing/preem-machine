@@ -21,6 +21,7 @@ import { DatePicker } from '@mantine/dates';
 import { useDebouncedValue, useDisclosure } from '@mantine/hooks';
 import isEqual from 'fast-deep-equal';
 import { useRouter } from 'next/navigation';
+import TimezoneSelect from 'react-timezone-select';
 import { NewEventOptions } from '../../event/new/new-event-action';
 import { NewEvent } from '../../event/new/NewEvent';
 import { seriesSchema } from '../series-schema';
@@ -43,6 +44,7 @@ export function EditSeries({
     | 'id'
     | 'organizationBrief'
     | 'path'
+    | 'timezone'
   >;
   newEventAction: (
     options: NewEventOptions,
@@ -65,6 +67,8 @@ export function EditSeries({
       description: series.description ?? '',
       startDate: series.startDate,
       endDate: series.endDate,
+      timezone:
+        series.timezone ?? Intl.DateTimeFormat().resolvedOptions().timeZone,
     },
     action: (values) => {
       if (!series.id || !series.organizationBrief?.id) {
@@ -130,6 +134,15 @@ export function EditSeries({
                       end ? new Date(end) : undefined,
                     );
                   }}
+                />
+                <TimezoneSelect
+                  value={form.values.timezone || ''}
+                  onChange={(tz) =>
+                    form.setFieldValue(
+                      'timezone',
+                      typeof tz === 'string' ? tz : tz.value,
+                    )
+                  }
                 />
                 <Group justify="right">
                   <Button

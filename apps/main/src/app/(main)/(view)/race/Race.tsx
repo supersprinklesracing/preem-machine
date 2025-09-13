@@ -169,7 +169,9 @@ export const Race: React.FC<Props> = ({ race, children }) => {
 
   return (
     <Stack gap="xl">
-      {race && <RaceCard race={race} preems={children} />}
+      {race && (
+        <RaceCard data-testid="race-details" race={race} preems={children} />
+      )}
       <CourseLink courseLink={race.courseLink} />
       <Grid gutter="xl">
         <Grid.Col span={{ base: 12, lg: 8 }}>

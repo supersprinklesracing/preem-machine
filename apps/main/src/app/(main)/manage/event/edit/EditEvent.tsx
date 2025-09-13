@@ -23,6 +23,7 @@ import { DatePicker } from '@mantine/dates';
 import { useDebouncedValue, useDisclosure } from '@mantine/hooks';
 import isEqual from 'fast-deep-equal';
 import { useRouter } from 'next/navigation';
+import TimezoneSelect from 'react-timezone-select';
 import { NewRace } from '../../race/new/NewRace';
 import { newRaceAction } from '../../race/new/new-race-action';
 import { eventSchema } from '../event-schema';
@@ -48,6 +49,7 @@ export function EditEvent({
     | 'path'
     | 'id'
     | 'seriesBrief'
+    | 'timezone'
   >;
 }) {
   const router = useRouter();
@@ -63,6 +65,8 @@ export function EditEvent({
       description: event.description ?? '',
       startDate: event.startDate,
       endDate: event.endDate,
+      timezone:
+        event.timezone ?? Intl.DateTimeFormat().resolvedOptions().timeZone,
     },
     action: (values) => editEventAction({ path: event.path, edits: values }),
     onSuccess: () => {
@@ -82,6 +86,7 @@ export function EditEvent({
     description: debouncedValues.description,
     startDate: debouncedValues.startDate,
     endDate: debouncedValues.endDate,
+    timezone: debouncedValues.timezone,
   };
 
   return (
@@ -137,6 +142,16 @@ export function EditEvent({
                           );
                         }}
                         data-testid="date-picker"
+                      />
+                      <TimezoneSelect
+                        value={form.values.timezone || ''}
+                        onChange={(tz) => {
+                          if (typeof tz === 'string') {
+                            form.setFieldValue('timezone', tz);
+                          } else {
+                            form.setFieldValue('timezone', tz.value);
+                          }
+                        }}
                       />
                     </Stack>
                   </Card>

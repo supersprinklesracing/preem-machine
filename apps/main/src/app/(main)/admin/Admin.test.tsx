@@ -1,5 +1,5 @@
 import { createToast } from '@/app/(main)/admin/createToast';
-import '@/matchMedia.mock';
+
 import { fireEvent, render, screen } from '@/test-utils';
 import Admin from './Admin';
 

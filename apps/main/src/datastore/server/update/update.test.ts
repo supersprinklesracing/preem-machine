@@ -9,8 +9,6 @@ import {
   updateSeries,
 } from './update';
 
-import { isUserAuthorized } from '../access';
-import { converter } from '../converters';
 import {
   ContributionSchema,
   OrganizationSchema,
@@ -18,6 +16,8 @@ import {
   RaceSchema,
   SeriesSchema,
 } from '../../schema';
+import { isUserAuthorized } from '../access';
+import { converter } from '../converters';
 
 jest.mock('../access', () => ({
   isUserAuthorized: jest.fn().mockResolvedValue(true),
@@ -39,7 +39,7 @@ describe('update mutations', () => {
   });
 
   afterEach(() => {
-    jest.clearAllMocks();
+    jest.restoreAllMocks();
   });
 
   describe('authorization', () => {

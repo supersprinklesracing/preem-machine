@@ -1,6 +1,6 @@
 import { render, screen } from '@/test-utils';
 import OrganizationCard from './OrganizationCard';
-import '@/matchMedia.mock';
+
 import { Organization } from '@/datastore/schema';
 
 const mockOrganization: Organization = {

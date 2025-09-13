@@ -1,5 +1,5 @@
 import { Organization } from '@/datastore/schema';
-import '@/matchMedia.mock';
+
 import { fireEvent, render, screen } from '@/test-utils';
 import { StripeConnectCard } from './StripeConnectCard';
 import { useStripeConnect } from './useStripeConnect';

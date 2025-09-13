@@ -1,5 +1,5 @@
 import * as firestore from '@/datastore/server/query/query';
-import '@/matchMedia.mock';
+
 import { render, screen } from '@/test-utils';
 import Home from './Home';
 import Page from './page';

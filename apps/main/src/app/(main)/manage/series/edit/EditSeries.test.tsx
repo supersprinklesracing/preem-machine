@@ -1,5 +1,5 @@
 import { Series } from '@/datastore/schema';
-import '@/matchMedia.mock';
+
 import { act, fireEvent, render, screen, waitFor } from '@/test-utils';
 import { EditSeries } from './EditSeries';
 
@@ -20,6 +20,7 @@ const mockSeries: Series = {
   website: 'https://example.com',
   startDate: new Date(),
   endDate: new Date(),
+  timezone: 'America/New_York',
   organizationBrief: {
     id: 'org-1',
     path: 'organizations/org-1',
@@ -66,6 +67,7 @@ describe('EditSeries component', () => {
           path: 'organizations/org-1/series/series-1',
           edits: expect.objectContaining({
             name: 'New Series Name',
+            timezone: 'America/New_York',
           }),
         }),
       );

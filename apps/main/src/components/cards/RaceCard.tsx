@@ -105,6 +105,7 @@ const RaceCard: React.FC<RaceCardProps> = ({
 
   return (
     <Card
+      data-testid={`race-card-${race.id}`}
       withBorder={withBorder}
       padding="lg"
       radius="md"
@@ -177,7 +178,7 @@ const RaceCard: React.FC<RaceCardProps> = ({
             justify="space-between"
             style={{ height: '100%' }}
           >
-            <Stack visibleFrom="lg" gap="xs">
+            <Stack data-testid="race-details" visibleFrom="lg" gap="xs">
               {dateLocationDetailContent}
             </Stack>
             {children}

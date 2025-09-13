@@ -1,4 +1,3 @@
-import '@/matchMedia.mock'; // Must be imported before the tested file
 import { MantineProvider } from '@mantine/core';
 import { fireEvent, render, screen } from '@testing-library/react';
 import { theme } from '../../theme';

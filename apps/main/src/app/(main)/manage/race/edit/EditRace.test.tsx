@@ -1,5 +1,5 @@
 import { Race } from '@/datastore/schema';
-import '@/matchMedia.mock';
+
 import { act, fireEvent, render, screen, waitFor } from '@/test-utils';
 import { EditRace } from './EditRace';
 
@@ -19,6 +19,7 @@ const mockRace: Race = {
   courseLink: 'https://strava.com/routes/123',
   startDate: new Date(),
   endDate: new Date(),
+  timezone: 'America/New_York',
   eventBrief: {
     id: 'event-1',
     path: 'organizations/org-1/series/series-1/events/event-1',
@@ -78,6 +79,7 @@ describe('EditRace component', () => {
           edits: expect.objectContaining({
             name: 'New Race Name',
             courseLink: 'https://strava.com/routes/456',
+            timezone: 'America/New_York',
           }),
         }),
       );

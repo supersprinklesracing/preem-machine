@@ -1,7 +1,7 @@
 import 'server-only';
 
 import { getDoc } from '@/datastore/server/query/query';
-import { Organization } from '@/datastore/schema';
+import { Organization, OrganizationSchema } from '@/datastore/schema';
 import { getStripeServer } from '@/stripe/server';
 import { cache } from 'react';
 
@@ -12,7 +12,10 @@ export const getOrganizationAndRefreshStripeAccount = cache(
     organization: Organization;
     error?: string;
   }> => {
-    const organization = await getDoc<Organization>(id);
+    const organization = await getDoc(
+      OrganizationSchema,
+      `organizations/${id}`,
+    );
 
     // Enrich with Stripe data if a connect account exists.
     if (organization.stripe?.connectAccountId) {

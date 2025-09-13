@@ -1,7 +1,6 @@
 import { render, screen } from '@/test-utils';
 import React from 'react';
 import UserAvatar from './UserAvatar';
-import '@/matchMedia.mock';
 
 describe('UserAvatar component', () => {
   it('should render a link with the user avatar and name when a user with an ID is provided', () => {

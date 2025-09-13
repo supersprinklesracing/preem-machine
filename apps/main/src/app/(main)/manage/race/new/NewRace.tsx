@@ -23,6 +23,7 @@ import { DateTimePicker } from '@mantine/dates';
 import { useDebouncedValue } from '@mantine/hooks';
 import isEqual from 'fast-deep-equal';
 import { useRouter } from 'next/navigation';
+import TimezoneSelect from 'react-timezone-select';
 import { raceSchema } from '../race-schema';
 import { NewRaceOptions } from './new-race-action';
 
@@ -82,6 +83,8 @@ export function NewRace({
       sponsors: [],
       startDate: undefined,
       endDate: undefined,
+      timezone:
+        event.timezone ?? Intl.DateTimeFormat().resolvedOptions().timeZone,
     },
     action: (values) => newRaceAction({ path, values }),
     onSuccess: (result) => {
@@ -185,6 +188,16 @@ export function NewRace({
                     data-testid="end-date-picker"
                   />
                 </div>
+                <TimezoneSelect
+                  value={form.values.timezone || ''}
+                  onChange={(tz) => {
+                    if (typeof tz === 'string') {
+                      form.setFieldValue('timezone', tz);
+                    } else {
+                      form.setFieldValue('timezone', tz.value);
+                    }
+                  }}
+                />
                 <Group justify="right">
                   <Button
                     type="submit"

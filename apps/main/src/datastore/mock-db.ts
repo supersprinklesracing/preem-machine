@@ -113,6 +113,7 @@ export const mockDbData: DatabaseCollections = {
             website: 'https://girosf.com',
             startDate: new Date('2025-09-01T00:00:00Z'),
             endDate: new Date('2025-09-01T00:00:00Z'),
+            timezone: 'America/Los_Angeles',
             metadata: createMetadata('2025-01-15T12:01:00Z'),
             _collections: {
               events: [
@@ -124,6 +125,7 @@ export const mockDbData: DatabaseCollections = {
                   location: "Levi's Plaza, San Francisco",
                   startDate: new Date('2025-09-01T08:00:00Z'),
                   endDate: new Date('2025-09-01T08:00:00Z'),
+                  timezone: 'America/Los_Angeles',
                   metadata: createMetadata('2025-01-15T12:02:00Z'),
                   _collections: {
                     races: [
@@ -147,6 +149,7 @@ export const mockDbData: DatabaseCollections = {
                         sponsors: [],
                         startDate: new Date('2025-09-01T08:00:00Z'),
                         endDate: new Date('2025-09-01T08:00:00Z'),
+                        timezone: 'America/Los_Angeles',
                         metadata: createMetadata('2025-01-15T12:03:00Z'),
                         _collections: {
                           preems: [
@@ -215,7 +218,9 @@ export const mockDbData: DatabaseCollections = {
                                       'organizations/org-super-sprinkles/series/series-sprinkles-2025/events/event-giro-sf-2025/races/race-giro-sf-2025-masters-women/preems/preem-giro-sf-2025-masters-women-mid-sprint/contributions/contrib-3',
                                     ),
                                     contributor: {
-                                      ...createIdAndPath('users/user-jane-smith'),
+                                      ...createIdAndPath(
+                                        'users/user-jane-smith',
+                                      ),
                                       name: 'Jane Smith',
                                       avatarUrl:
                                         'https://placehold.co/100x100.png',
@@ -280,7 +285,9 @@ export const mockDbData: DatabaseCollections = {
                                       'organizations/org-super-sprinkles/series/series-sprinkles-2025/events/event-giro-sf-2025/races/race-giro-sf-2025-masters-women/preems/preem-giro-sf-2025-masters-women-final-lap/contributions/contrib-6',
                                     ),
                                     contributor: {
-                                      ...createIdAndPath('users/user-jane-smith'),
+                                      ...createIdAndPath(
+                                        'users/user-jane-smith',
+                                      ),
                                       name: 'Jane Smith',
                                       avatarUrl:
                                         'https://placehold.co/100x100.png',
@@ -315,6 +322,7 @@ export const mockDbData: DatabaseCollections = {
                         sponsors: [],
                         startDate: new Date('2025-09-01T08:45:00Z'),
                         endDate: new Date('2025-09-01T08:45:00Z'),
+                        timezone: 'America/Los_Angeles',
                         metadata: createMetadata('2025-01-15T12:07:00Z'),
                         _collections: { preems: [] },
                       },
@@ -343,6 +351,7 @@ export const mockDbData: DatabaseCollections = {
             website: 'https://chicago-grit.com/',
             startDate: new Date('2026-07-17T00:00:00Z'),
             endDate: new Date('2026-07-26T00:00:00Z'),
+            timezone: 'America/Chicago',
             metadata: createMetadata('2026-01-01T09:01:00Z'),
             _collections: {
               events: [
@@ -354,6 +363,7 @@ export const mockDbData: DatabaseCollections = {
                   location: 'West Dundee, IL',
                   startDate: new Date('2026-07-17T10:00:00Z'),
                   endDate: new Date('2026-07-17T10:00:00Z'),
+                  timezone: 'America/Chicago',
                   metadata: createMetadata('2026-01-01T09:02:00Z'),
                   _collections: {
                     races: [
@@ -376,6 +386,7 @@ export const mockDbData: DatabaseCollections = {
                         sponsors: [],
                         startDate: new Date('2026-07-17T10:00:00Z'),
                         endDate: new Date('2026-07-17T10:00:00Z'),
+                        timezone: 'America/Chicago',
                         metadata: createMetadata('2026-01-01T09:03:00Z'),
                         _collections: { preems: [] },
                       },
@@ -398,6 +409,7 @@ export const mockDbData: DatabaseCollections = {
                         sponsors: [],
                         startDate: new Date('2026-07-17T11:00:00Z'),
                         endDate: new Date('2026-07-17T11:00:00Z'),
+                        timezone: 'America/Chicago',
                         metadata: createMetadata('2026-01-01T09:04:00Z'),
                         _collections: { preems: [] },
                       },
@@ -412,6 +424,7 @@ export const mockDbData: DatabaseCollections = {
                   location: 'Lake Bluff, IL',
                   startDate: new Date('2026-07-25T10:00:00Z'),
                   endDate: new Date('2026-07-25T10:00:00Z'),
+                  timezone: 'America/Chicago',
                   metadata: createMetadata('2026-01-01T09:05:00Z'),
                   _collections: {
                     races: [
@@ -434,6 +447,7 @@ export const mockDbData: DatabaseCollections = {
                         sponsors: [],
                         startDate: new Date('2026-07-25T10:00:00Z'),
                         endDate: new Date('2026-07-25T10:00:00Z'),
+                        timezone: 'America/Chicago',
                         metadata: createMetadata('2026-01-01T09:06:00Z'),
                         _collections: { preems: [] },
                       },
@@ -456,6 +470,7 @@ export const mockDbData: DatabaseCollections = {
                         sponsors: [],
                         startDate: new Date('2026-07-25T11:00:00Z'),
                         endDate: new Date('2026-07-25T11:00:00Z'),
+                        timezone: 'America/Chicago',
                         metadata: createMetadata('2026-01-01T09:07:00Z'),
                         _collections: { preems: [] },
                       },
@@ -470,6 +485,7 @@ export const mockDbData: DatabaseCollections = {
                   location: 'Fulton Market, Chicago, IL',
                   startDate: new Date('2026-07-26T10:00:00Z'),
                   endDate: new Date('2026-07-26T10:00:00Z'),
+                  timezone: 'America/Chicago',
                   metadata: createMetadata('2026-01-01T09:08:00Z'),
                   _collections: {
                     races: [
@@ -492,6 +508,7 @@ export const mockDbData: DatabaseCollections = {
                         sponsors: [],
                         startDate: new Date('2026-07-26T16:55:00Z'),
                         endDate: new Date('2026-07-26T16:55:00Z'),
+                        timezone: 'America/Chicago',
                         metadata: createMetadata('2026-01-01T09:09:00Z'),
                         _collections: { preems: [] },
                       },
@@ -514,6 +531,7 @@ export const mockDbData: DatabaseCollections = {
                         sponsors: [],
                         startDate: new Date('2026-07-26T15:30:00Z'),
                         endDate: new Date('2026-07-26T15:30:00Z'),
+                        timezone: 'America/Chicago',
                         metadata: createMetadata('2026-01-01T09:10:00Z'),
                         _collections: { preems: [] },
                       },

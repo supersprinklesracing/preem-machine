@@ -1,7 +1,6 @@
 import { render, screen } from '@/test-utils';
 import React from 'react';
 import Series from './Series';
-import '@/matchMedia.mock';
 
 // Mock the EventCard component
 jest.mock('@/components/cards/EventCard', () => ({
@@ -23,6 +22,7 @@ const mockData = {
     location: 'Test Location',
     startDate: new Date(),
     endDate: new Date(),
+    timezone: 'America/Los_Angeles',
     organizationBrief: {
       id: 'org-1',
       path: 'organizations/org-1',
@@ -65,5 +65,10 @@ describe('Series component', () => {
     expect(
       screen.getByText('Mock EventCard: Test Event 2'),
     ).toBeInTheDocument();
+  });
+
+  it('should display the timezone', () => {
+    render(<Series {...mockData} />);
+    expect(screen.getByText(/PDT/)).toBeInTheDocument();
   });
 });

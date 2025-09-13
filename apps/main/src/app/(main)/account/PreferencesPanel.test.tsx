@@ -1,4 +1,3 @@
-import '@/matchMedia.mock';
 import { fireEvent, render, screen } from '@/test-utils';
 import { useMantineColorScheme } from '@mantine/core';
 import { PreferencesPanel } from './PreferencesPanel';

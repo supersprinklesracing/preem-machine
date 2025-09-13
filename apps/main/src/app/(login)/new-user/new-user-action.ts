@@ -21,12 +21,16 @@ export async function newUserAction({
     }
 
     const parsedValues = userSchema.parse(values);
-    const newUserSnapshot = await createUser(parsedValues, authUser);
+    const newUserSnapshot = await createUser(
+      `users/${authUser.uid}`,
+      parsedValues,
+      authUser,
+    );
     const newUser = newUserSnapshot.data();
     if (!newUser) {
       throw new Error('Failed to create series.');
     }
-    revalidatePath(`users/${newUser.ref.path}`);
+    revalidatePath(`users/${newUserSnapshot.ref.path}`);
     return { path: newUserSnapshot.ref.path };
   } catch (error) {
     console.error('Failed to create user document:', error);

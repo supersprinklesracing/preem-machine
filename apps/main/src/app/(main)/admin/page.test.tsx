@@ -1,4 +1,3 @@
-import '@/matchMedia.mock';
 import { render, screen, setupMockDb } from '@/test-utils';
 import Admin from './Admin';
 import AdminPage from './page';

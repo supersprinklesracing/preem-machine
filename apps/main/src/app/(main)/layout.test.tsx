@@ -1,6 +1,6 @@
 import * as auth from '@/auth/server/auth';
 import * as firestore from '@/datastore/server/query/query';
-import '@/matchMedia.mock';
+
 import { render, screen } from '@/test-utils';
 import Layout from './layout';
 import MainAppShell from './Shell/MainAppShell';

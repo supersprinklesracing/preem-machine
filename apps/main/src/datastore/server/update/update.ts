@@ -9,7 +9,6 @@ import {
   type Transaction,
 } from 'firebase-admin/firestore';
 import Stripe from 'stripe';
-import { z } from 'zod';
 import { NotFoundError, unauthorized } from '../../errors';
 import { asDocPath, getSubCollectionPath } from '../../paths';
 import {
@@ -33,7 +32,7 @@ import {
   type User,
 } from '../../schema';
 import { isUserAuthorized } from '../access';
-import { converter } from '../converters';
+import { getCollectionRefInternal, getDocRefInternal } from '../util';
 import { validateEventDateRange, validateRaceDateRange } from '../validation';
 
 interface DocUpdate<T> {
@@ -41,24 +40,8 @@ interface DocUpdate<T> {
   updates: Partial<T>;
 }
 
-const getDocRef = async <T extends z.ZodObject<any, any>>(
-  schema: T,
-  path: string,
-) => {
-  const db = await getFirestore();
-  return db.doc(path).withConverter(converter(schema));
-};
-
-const getCollectionRef = async <T extends z.ZodObject<any, any>>(
-  schema: T,
-  path: string,
-) => {
-  const db = await getFirestore();
-  return db.collection(path).withConverter(converter(schema));
-};
-
 const getUpdateMetadata = (userRef: DocumentReference<DocumentData>) => ({
-  'metadata.lastModified': FieldValue.serverTimestamp(),
+  'metadata.lastModified': new Date(),
   'metadata.lastModifiedBy': userRef,
 });
 
@@ -71,8 +54,7 @@ export const updateUser = async (
     unauthorized();
   }
 
-  const db = await getFirestore();
-  const docRef = await getDocRef(UserSchema, path);
+  const docRef = await getDocRefInternal(UserSchema, path);
   await docRef.update({
     ...user,
     ...getUpdateMetadata(docRef),
@@ -90,7 +72,7 @@ export const updateOrganizationStripeConnectAccount = async (
   }
 
   const db = await getFirestore();
-  const orgRef = await getDocRef(OrganizationSchema, path);
+  const orgRef = await getDocRefInternal(OrganizationSchema, path);
   const userRef = db.collection('users').doc(authUser.uid);
   await orgRef.update({
     'stripe.connectAccountId': account.id,
@@ -103,8 +85,7 @@ export const updateOrganizationStripeConnectAccountForWebhook = async (
   organizationId: string,
   account: Stripe.Account,
 ) => {
-  const db = await getFirestore();
-  const orgRef = await getDocRef(
+  const orgRef = await getDocRefInternal(
     OrganizationSchema,
     `organizations/${organizationId}`,
   );
@@ -126,7 +107,7 @@ export const updateOrganization = async (
 
   const db = await getFirestore();
   return await db.runTransaction(async (transaction) => {
-    const ref = await getDocRef(OrganizationSchema, path);
+    const ref = await getDocRefInternal(OrganizationSchema, path);
     const doc = await transaction.get(ref);
     const existingData = doc.data();
     if (!existingData) {
@@ -163,7 +144,10 @@ const prepareOrganizationDescendantUpdates = async (
 ): Promise<DocUpdate<unknown>[]> => {
   let updates: DocUpdate<unknown>[] = [];
   const seriesSnap = await transaction.get(
-    await getCollectionRef(SeriesSchema, getSubCollectionPath(path, 'series')),
+    await getCollectionRefInternal(
+      SeriesSchema,
+      getSubCollectionPath(path, 'series'),
+    ),
   );
 
   for (const doc of seriesSnap.docs) {
@@ -200,7 +184,7 @@ export const updateSeries = async (
 
   const db = await getFirestore();
   return await db.runTransaction(async (transaction) => {
-    const ref = await getDocRef(SeriesSchema, path);
+    const ref = await getDocRefInternal(SeriesSchema, path);
     const doc = await transaction.get(ref);
     const existingData = doc.data();
     if (!existingData) {
@@ -240,7 +224,10 @@ const prepareSeriesDescendantUpdates = async (
 ): Promise<DocUpdate<unknown>[]> => {
   let updates: DocUpdate<unknown>[] = [];
   const eventSnap = await transaction.get(
-    await getCollectionRef(EventSchema, getSubCollectionPath(path, 'events')),
+    await getCollectionRefInternal(
+      EventSchema,
+      getSubCollectionPath(path, 'events'),
+    ),
   );
 
   for (const doc of eventSnap.docs) {
@@ -277,7 +264,7 @@ export const updateEvent = async (
 
   const db = await getFirestore();
   return await db.runTransaction(async (transaction) => {
-    const ref = await getDocRef(EventSchema, path);
+    const ref = await getDocRefInternal(EventSchema, path);
     const doc = await transaction.get(ref);
     const existingData = doc.data();
     if (!existingData) {
@@ -318,7 +305,10 @@ const prepareEventDescendantUpdates = async (
 ): Promise<DocUpdate<unknown>[]> => {
   let updates: DocUpdate<unknown>[] = [];
   const raceSnap = await transaction.get(
-    await getCollectionRef(RaceSchema, getSubCollectionPath(path, 'races')),
+    await getCollectionRefInternal(
+      RaceSchema,
+      getSubCollectionPath(path, 'races'),
+    ),
   );
 
   for (const doc of raceSnap.docs) {
@@ -355,7 +345,7 @@ export const updateRace = async (
 
   const db = await getFirestore();
   return await db.runTransaction(async (transaction) => {
-    const ref = await getDocRef(RaceSchema, path);
+    const ref = await getDocRefInternal(RaceSchema, path);
     const doc = await transaction.get(ref);
     const existingData = doc.data();
     if (!existingData) {
@@ -396,7 +386,10 @@ const prepareRaceDescendantUpdates = async (
 ): Promise<DocUpdate<unknown>[]> => {
   let updates: DocUpdate<unknown>[] = [];
   const preemSnap = await transaction.get(
-    await getCollectionRef(PreemSchema, getSubCollectionPath(path, 'preems')),
+    await getCollectionRefInternal(
+      PreemSchema,
+      getSubCollectionPath(path, 'preems'),
+    ),
   );
 
   for (const doc of preemSnap.docs) {
@@ -428,7 +421,7 @@ export const updatePreem = async (
 
   const db = await getFirestore();
   return await db.runTransaction(async (transaction) => {
-    const ref = await getDocRef(PreemSchema, path);
+    const ref = await getDocRefInternal(PreemSchema, path);
     const doc = await transaction.get(ref);
     const fullPreem = doc.data();
     if (!fullPreem) {
@@ -469,7 +462,7 @@ const preparePreemDescendantUpdates = async (
 ): Promise<DocUpdate<unknown>[]> => {
   const updates: DocUpdate<unknown>[] = [];
   const contributionSnap = await transaction.get(
-    await getCollectionRef(
+    await getCollectionRefInternal(
       ContributionSchema,
       getSubCollectionPath(path, 'contributions'),
     ),

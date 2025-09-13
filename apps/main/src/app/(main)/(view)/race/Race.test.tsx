@@ -1,12 +1,18 @@
 import { render, screen, fireEvent } from '@/test-utils';
 import React from 'react';
 import { Race } from './Race';
-import '@/matchMedia.mock';
+
+import { DateLocationDetail } from '@/components/cards/DateLocationDetail';
 
 // Mock child components
 jest.mock('@/components/cards/RaceCard', () => ({
   __esModule: true,
-  default: jest.fn(() => <div>Mock RaceCard</div>),
+  default: jest.fn(({ race }) => (
+    <div>
+      Mock RaceCard
+      <DateLocationDetail {...race} />
+    </div>
+  )),
 }));
 jest.mock('@/components/AnimatedNumber', () => ({
   __esModule: true,
@@ -26,6 +32,8 @@ const mockData = {
     id: 'race-1',
     path: 'organizations/org-1/series/series-1/events/event-1/races/race-1',
     name: 'Test Race',
+    timezone: 'America/Los_Angeles',
+    startDate: new Date(),
   },
   children: [
     {
@@ -55,5 +63,10 @@ describe('Race component', () => {
     fireEvent.click(contributeButton);
 
     expect(screen.getByText('Mock ContributionModal')).toBeInTheDocument();
+  });
+
+  it('should display the timezone', () => {
+    render(<Race {...mockData} />);
+    expect(screen.getByText(/PDT/)).toBeInTheDocument();
   });
 });

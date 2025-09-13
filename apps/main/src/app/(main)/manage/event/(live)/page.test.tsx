@@ -1,5 +1,5 @@
 import { NotFoundError } from '@/datastore/errors';
-import '@/matchMedia.mock';
+
 import { render, screen, setupMockDb } from '@/test-utils';
 import LiveEvent from './LiveEvent';
 import LiveEventPage from './page';

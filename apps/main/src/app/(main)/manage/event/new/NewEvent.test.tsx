@@ -1,4 +1,3 @@
-import '@/matchMedia.mock';
 import {
   act,
   fireEvent,
@@ -42,6 +41,7 @@ describe('NewEvent component', () => {
           id: 'series-sprinkles-2025',
           path: 'organizations/org-super-sprinkles/series/series-sprinkles-2025',
           name: 'Test Series',
+          timezone: 'America/New_York',
           organizationBrief: {
             id: 'org-super-sprinkles',
             path: 'organizations/org-super-sprinkles',
@@ -92,6 +92,7 @@ describe('NewEvent component', () => {
         path: 'series/some-series-id',
         values: expect.objectContaining({
           name: 'New Test Event',
+          timezone: 'America/New_York',
         }),
       });
     });

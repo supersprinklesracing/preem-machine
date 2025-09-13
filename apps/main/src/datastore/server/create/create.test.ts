@@ -9,8 +9,8 @@ import {
   createSeries,
 } from './create';
 
+import { Event, Series } from '@/datastore/schema';
 import { isUserAuthorized } from '../access';
-import { Series, Event } from '@/datastore/schema';
 
 jest.mock('../access', () => ({
   isUserAuthorized: jest.fn().mockResolvedValue(true),
@@ -18,7 +18,13 @@ jest.mock('../access', () => ({
 
 describe('create mutations', () => {
   let firestore: Firestore;
-  const authUser = { uid: 'test-user' };
+  const authUser = {
+    uid: 'test-user',
+    name: 'Test User',
+    picture: 'test-url',
+    displayName: 'Test User',
+    photoURL: 'test-url',
+  };
 
   setupMockDb();
 
@@ -26,13 +32,13 @@ describe('create mutations', () => {
     firestore = await getFirestore();
   });
 
-  beforeEach(async () => {
+  beforeEach(() => {
     (isUserAuthorized as jest.Mock).mockClear();
     (isUserAuthorized as jest.Mock).mockResolvedValue(true);
   });
 
   afterEach(() => {
-    jest.clearAllMocks();
+    jest.restoreAllMocks();
   });
 
   describe('authorization', () => {

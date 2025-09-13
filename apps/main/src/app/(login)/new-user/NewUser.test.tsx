@@ -1,4 +1,3 @@
-import '@/matchMedia.mock';
 import { act, fireEvent, render, screen, waitFor } from '@/test-utils';
 import NewUser from './NewUser';
 

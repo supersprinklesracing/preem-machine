@@ -3,7 +3,6 @@ import React from 'react';
 import SeriesPage from './page';
 import Series from './Series';
 import { NotFoundError } from '@/datastore/errors';
-import '@/matchMedia.mock';
 
 // Mock dependencies
 jest.mock('./Series', () => ({
