@@ -84,6 +84,7 @@ export const SeriesBriefSchema = z.object({
   name: z.string().optional(),
   startDate: z.date().optional(),
   endDate: z.date().optional(),
+  timezone: z.string().optional(),
   organizationBrief: OrganizationBriefSchema,
 });
 export type SeriesBrief = z.infer<typeof SeriesBriefSchema>;
@@ -96,6 +97,7 @@ export const SeriesSchema = baseDocSchema.extend({
   location: z.string().optional(),
   startDate: z.date().optional(),
   endDate: z.date().optional(),
+  timezone: z.string().optional(),
   organizationBrief: OrganizationBriefSchema,
 });
 export type Series = z.infer<typeof SeriesSchema>;
@@ -107,6 +109,7 @@ export const EventBriefSchema = z.object({
   name: z.string().optional(),
   startDate: z.date().optional(),
   endDate: z.date().optional(),
+  timezone: z.string().optional(),
   seriesBrief: SeriesBriefSchema,
 });
 export type EventBrief = z.infer<typeof EventBriefSchema>;
@@ -119,6 +122,7 @@ export const EventSchema = baseDocSchema.extend({
   location: z.string().optional(),
   startDate: z.date().optional(),
   endDate: z.date().optional(),
+  timezone: z.string().optional(),
   seriesBrief: SeriesBriefSchema,
 });
 export type Event = z.infer<typeof EventSchema>;
@@ -130,6 +134,7 @@ export const RaceBriefSchema = z.object({
   name: z.string().optional(),
   startDate: z.date().optional(),
   endDate: z.date().optional(),
+  timezone: z.string().optional(),
   eventBrief: EventBriefSchema,
 });
 export type RaceBrief = z.infer<typeof RaceBriefSchema>;
@@ -153,6 +158,7 @@ export const RaceSchema = baseDocSchema.extend({
   sponsors: z.array(z.string()).optional(),
   startDate: z.date().optional(),
   endDate: z.date().optional(),
+  timezone: z.string().optional(),
   eventBrief: EventBriefSchema,
 });
 export type Race = z.infer<typeof RaceSchema>;
@@ -171,7 +177,7 @@ export const PreemSchema = baseDocSchema.extend({
   name: z.string().optional(),
   description: z.string().optional(),
   type: z.enum(['Pooled', 'One-Shot']).optional(),
-  status: z.enum(['Open', 'Minimum Met', 'Awarded']).optional(),
+  status: z.enum(['Open', 'Minimum Met', 'Awarded']).or(z.string()).optional(),
   prizePool: z.number().optional(),
   timeLimit: z.date().optional(),
   minimumThreshold: z.number().optional(),
@@ -192,7 +198,7 @@ export type ContributionBrief = z.infer<typeof ContributionBriefSchema>;
 
 // Contribution
 export const ContributionSchema = baseDocSchema.extend({
-  status: z.enum(['pending', 'confirmed', 'failed']).optional(),
+  status: z.enum(['pending', 'confirmed', 'failed']).or(z.string()).optional(),
   contributor: UserBriefSchema.optional(),
   amount: z.number().optional(),
   date: z.any().optional(),

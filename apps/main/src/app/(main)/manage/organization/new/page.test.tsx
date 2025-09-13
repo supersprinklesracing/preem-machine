@@ -1,4 +1,3 @@
-import '@/matchMedia.mock';
 import { render, screen } from '@/test-utils';
 import NewOrganizationPage from './page';
 

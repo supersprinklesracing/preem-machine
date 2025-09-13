@@ -1,4 +1,3 @@
-import '@/matchMedia.mock';
 import { act, fireEvent, render, screen, waitFor, within } from '@/test-utils';
 import { NewSeries } from './NewSeries';
 
@@ -78,6 +77,7 @@ describe('NewSeries component', () => {
           description: 'This is a test series description.',
           website: 'https://new-example.com',
           location: 'Outer space',
+          timezone: Intl.DateTimeFormat().resolvedOptions().timeZone,
           // TODO: Fix this.
           // startDate: new Date('2025-08-03T00:00:00.000Z'),
           // endDate: new Date('2025-08-15T00:00:00.000Z'),

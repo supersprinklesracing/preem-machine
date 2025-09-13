@@ -22,6 +22,7 @@ import { DateTimePicker } from '@mantine/dates';
 import { useDebouncedValue } from '@mantine/hooks';
 import isEqual from 'fast-deep-equal';
 import { useRouter } from 'next/navigation';
+import TimezoneSelect from 'react-timezone-select';
 import { raceSchema } from '../race-schema';
 import { EditRaceOptions } from './edit-race-action';
 
@@ -51,6 +52,7 @@ export function EditRace({
     | 'path'
     | 'id'
     | 'eventBrief'
+    | 'timezone'
   >;
 }) {
   const router = useRouter();
@@ -99,6 +101,8 @@ export function EditRace({
       sponsors: race.sponsors ?? [],
       startDate: race.startDate,
       endDate: race.endDate,
+      timezone:
+        race.timezone ?? Intl.DateTimeFormat().resolvedOptions().timeZone,
     },
     action: (values) => editRaceAction({ path: race.path, edits: values }),
     onSuccess: () => {
@@ -190,6 +194,15 @@ export function EditRace({
                     )
                   }
                   data-testid="end-date-picker"
+                />
+                <TimezoneSelect
+                  value={form.values.timezone || ''}
+                  onChange={(tz) =>
+                    form.setFieldValue(
+                      'timezone',
+                      typeof tz === 'string' ? tz : tz.value,
+                    )
+                  }
                 />
                 <Group justify="right">
                   <Button

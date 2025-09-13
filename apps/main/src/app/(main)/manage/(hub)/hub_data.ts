@@ -1,11 +1,11 @@
 import { verifyAuthUser } from '@/auth/server/auth';
+import { OrganizationWithSeries } from '@/datastore/query-schema';
+import { OrganizationSchema } from '@/datastore/schema';
 import {
-  getDocSnap,
   getOrganizationWithSeries,
   getUserById,
 } from '@/datastore/server/query/query';
-import { OrganizationWithSeries } from '@/datastore/query-schema';
-import { Organization } from '@/datastore/schema';
+import { getDocSnap } from '@/datastore/server/query/query';
 import { cache } from 'react';
 
 export const getHubPageData = cache(async () => {
@@ -27,6 +27,8 @@ export const getOrganizationsForUser = cache(async (userId: string) => {
     return [];
   }
   return await Promise.all(
-    user.organizationRefs.map((ref) => getDocSnap<Organization>(ref.path)),
+    user.organizationRefs.map((ref) =>
+      getDocSnap(OrganizationSchema, ref.path),
+    ),
   );
 });

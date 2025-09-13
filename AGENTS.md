@@ -67,11 +67,11 @@ This project uses `husky` and `lint-staged` to enforce code quality standards on
 
 - **Tests using Jest**
   - **Run All Unit Tests:** `./tools/nx/nx test main`
-  - **Run Single Unit Test:** `./tools/nx/nx run main:test --testFile="${TEST_FILE}"`
+  - **Run Single Unit Test:** `./tools/nx/nx run main:test --testFile='"${TEST_FILE}"'`
 
 - **E2E Tests using Playwright**
   - **Run E2E Tests:** `./tools/nx/nx e2e e2e-main`
-  - **Run Single E2E Test:** `./tools/nx/nx e2e e2e-main -- "${TEST_FILE}"`
+  - **Run Single E2E Test:** `./tools/nx/nx e2e e2e-main -- --project="chrome-desktop" "${TEST_FILE}"`
   - **Update Snapshots:** `./tools/nx/nx e2e e2e-main --update-snapshots`
 
 #### Code Style & Formatting
@@ -128,10 +128,6 @@ Proper quoting is essential for commands to execute correctly. Here are examples
   - **Why it's wrong:** Parentheses `()` are special characters. Unquoted special characters will fail.
   - **Correct:** `ls "apps/main/src/app/(main)/layout.tsx"`
 
-- **Incorrect (unnecessary escaping):** `git grep "myFunction\(\)"`
-  - **Why it's wrong:** Double escaping can lead to the pattern not being found. `git grep` handles special characters in its search pattern when quoted.
-  - **Correct:** `git grep "myFunction()"`
-
 - **Incorrect (glob patterns):** `find apps/main/src/app/(main) -name "*[]/page.tsx"`
   - **Why it's wrong:** Complex glob patterns with special characters are prone to errors.
   - **Correct:** Use the `glob` tool instead of `find` for complex pattern matching.
@@ -143,11 +139,12 @@ Proper quoting is essential for commands to execute correctly. Here are examples
 - **Unit Testing:** Jest is used for unit tests. Test files are located in `apps/main/src` and use the `.test.ts` or `.test.tsx` extension.
 - **End-to-End Testing:** Playwright is used for E2E tests, located in `apps/e2e-main/src` and use the `.spec.ts` extension.
 
-### Component Unit Testing Patterns
+### Unit Testing
+#### Component Unit Testing Patterns
 
 Before writing a test, always inspect the component's props (its TypeScript interface) to understand its public API.
 
-#### Client Components (`"use client"`)
+##### Client Components (`"use client"`)
 
 - **Reference:** `apps/main/src/components/cards/RaceCard.test.tsx`
 - **Procedure:**
@@ -157,7 +154,7 @@ Before writing a test, always inspect the component's props (its TypeScript inte
   4.  Write a simple "smoke test" to ensure the component renders without errors.
   5.  Assert that a key piece of text or an element is present in the document. Example: `expect(screen.getByText('Some Text')).toBeInTheDocument();`.
 
-#### Server Components (No `"use client"` directive)
+##### Server Components (No `"use client"` directive)
 
 - **Reference:** `apps/main/src/datastore/mock-db.test.ts`
 - **Procedure:**
@@ -168,9 +165,9 @@ Before writing a test, always inspect the component's props (its TypeScript inte
 
 For server components that interact with Firestore, refer to the **Mocking `firestore`** section below.
 
-### Jest Best Practices
+#### Jest Best Practices
 
-#### Mocking `firestore`
+##### Mocking `firestore`
 
 - **Reference:** `apps/main/src/datastore/mock-db.test.ts`
 - **Concept:** The testing strategy is to mock the entire Firestore database before tests run. This allows components to interact with a realistic, in-memory version of the database.
@@ -196,7 +193,7 @@ For server components that interact with Firestore, refer to the **Mocking `fire
 > - **Never** access the mock database directly in your tests. Your components should interact with Firestore as they normally would.
 > - Do not mock individual Firestore functions (e.g., `(firestore.getRenderableRaceDataForPage as jest.Mock).mockResolvedValue(...)`). This approach is incorrect and will not work with the Firestore instance. You **must** use `setupMockDb` to ensure the entire database is mocked correctly.
 
-#### Handling Asynchronous Operations
+##### Handling Asynchronous Operations
 
 When testing components with asynchronous behavior, follow these guidelines to avoid `act` warnings:
 
@@ -214,7 +211,7 @@ When testing components with asynchronous behavior, follow these guidelines to a
     ```
 3.  **Do NOT use `get*` queries for async content:** These are synchronous and will fail if the element is not immediately available.
 
-#### Mocking `window.matchMedia()`
+##### Mocking `window.matchMedia()`
 
 To fix `TypeError: window.matchMedia is not a function` in JSDOM, import the reusable mock at the top of your test file:
 
@@ -225,9 +222,19 @@ import { MyComponent } from './MyComponent';
 // ...
 ```
 
-### Screenshot Testing
+### E2E Testing
 
 This project uses Playwright for screenshot testing to catch visual regressions.
+
+#### Page URLs
+
+E2E tests should use the "source" URLs for pages (See `apps/e2e-main/src/next.config.test.js`).
+
+Good URLs look like:
+
+*   `manage/some-org/some-series/some-event/some-race/some-preem`
+*   `manage/some-org/some-series/some-event/race/new`
+*   `manage/some-org/some-series/edit`
 
 #### Adding a New Screenshot Test
 
@@ -252,6 +259,10 @@ This project uses Playwright for screenshot testing to catch visual regressions.
   ```
 
 After updating the snapshots, you need to commit the new snapshot files to the repository.
+
+#### Debugging tests
+
+Look for output like: `Error Context: test-output/test-results/some-test-chrome-pixel-5/error-context.md` to figure out what was on the page when the test failed. This path will be relative to apps/e2e-main, so the file path will be `apps/e2e-main/test-output/test-results/some-test-chrome-pixel-5/error-context.md`
 
 ## 6. Forms
 

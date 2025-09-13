@@ -1,10 +1,17 @@
 import 'server-only';
 
 import { getFirestore } from '@/firebase/server';
-import { docId, DocPath } from '../../paths';
 import { type DocumentSnapshot } from 'firebase-admin/firestore';
 import { cache } from 'react';
-import { converter } from '../converters';
+import { notFound } from '../../errors';
+import { docId, DocPath } from '../../paths';
+import {
+  EventWithRaces,
+  OrganizationWithSeries,
+  PreemWithContributions,
+  RaceWithPreems,
+  SeriesWithEvents,
+} from '../../query-schema';
 import {
   Contribution,
   ContributionSchema,
@@ -21,29 +28,11 @@ import {
   User,
   UserSchema,
 } from '../../schema';
-import { notFound } from '../../errors';
-import {
-  PreemWithContributions,
-  RaceWithPreems,
-  EventWithRaces,
-  SeriesWithEvents,
-  OrganizationWithSeries,
-} from '../../query-schema';
+import { converter } from '../converters';
+import { getDocInternal, getDocRefInternal, getDocSnapInternal } from '../util';
 
-const _getDocSnap = async <T>(path: string): Promise<DocumentSnapshot<T>> => {
-  const db = await getFirestore();
-  return (await db.doc(path).get()) as DocumentSnapshot<T>;
-};
-export const getDocSnap = cache(_getDocSnap);
-
-const _getDoc = async <T>(path: string): Promise<T> => {
-  const data = (await getDocSnap<T>(path)).data();
-  if (!data) {
-    notFound('Doc not found');
-  }
-  return data;
-};
-export const getDoc = cache(_getDoc);
+export const getDoc = cache(getDocInternal);
+export const getDocSnap = cache(getDocSnapInternal);
 
 const getPreemWithContributions = async (
   preemDoc: DocumentSnapshot<Preem>,
@@ -224,29 +213,23 @@ export const getEventsForUser = cache(
 );
 
 export const getRenderablePreemDataForPage = cache(async (path: DocPath) => {
-  const db = await getFirestore();
-  const preemDocSnap = await db
-    .doc(path)
-    .withConverter(converter(PreemSchema))
-    .get();
-  if (!preemDocSnap.exists) {
+  const preemDocSnap = await getDocRefInternal(PreemSchema, path);
+  const doc = await preemDocSnap.get();
+  if (!doc.exists) {
     notFound('Preem not found');
   }
 
-  return await getPreemWithContributions(preemDocSnap);
+  return await getPreemWithContributions(doc);
 });
 
 export const getRenderableRaceDataForPage = cache(async (path: DocPath) => {
-  const db = await getFirestore();
-  const raceSnap = await db
-    .doc(path)
-    .withConverter(converter(RaceSchema))
-    .get();
-  if (!raceSnap.exists) {
+  const raceSnap = await getDocRefInternal(RaceSchema, path);
+  const doc = await raceSnap.get();
+  if (!doc.exists) {
     notFound('Race not found');
   }
 
-  return await getRaceWithPreems(raceSnap);
+  return await getRaceWithPreems(doc);
 });
 
 export const getRacePageDataWithUsers = cache(async (path: string) => {
@@ -270,21 +253,18 @@ export const getRacePageDataWithUsers = cache(async (path: string) => {
 
 export const getRenderableOrganizationDataForPage = cache(
   async (path: DocPath) => {
-    const db = await getFirestore();
-    const orgDoc = await db
-      .doc(path)
-      .withConverter(converter(OrganizationSchema))
-      .get();
-    if (!orgDoc.exists) {
+    const orgDoc = await getDocRefInternal(OrganizationSchema, path);
+    const doc = await orgDoc.get();
+    if (!doc.exists) {
       notFound('Org not found');
     }
 
-    const organization = orgDoc.data();
+    const organization = doc.data();
     if (!organization) {
       notFound('Org not found');
     }
 
-    const seriesSnap = await orgDoc.ref
+    const seriesSnap = await doc.ref
       .collection('series')
       .withConverter(converter(SeriesSchema))
       .get();
@@ -301,28 +281,22 @@ export const getRenderableOrganizationDataForPage = cache(
 );
 
 export const getRenderableSeriesDataForPage = cache(async (path: DocPath) => {
-  const db = await getFirestore();
-  const seriesSnap = await db
-    .doc(path)
-    .withConverter(converter(SeriesSchema))
-    .get();
-  if (!seriesSnap.exists) {
+  const seriesSnap = await getDocRefInternal(SeriesSchema, path);
+  const doc = await seriesSnap.get();
+  if (!doc.exists) {
     notFound('Series not found');
   }
 
-  return await getEventsForSeries(seriesSnap);
+  return await getEventsForSeries(doc);
 });
 
 export const getRenderableEventDataForPage = cache(async (path: DocPath) => {
-  const db = await getFirestore();
-  const eventSnap = await db
-    .doc(path)
-    .withConverter(converter(EventSchema))
-    .get();
-  if (!eventSnap.exists) {
+  const eventSnap = await getDocRefInternal(EventSchema, path);
+  const doc = await eventSnap.get();
+  if (!doc.exists) {
     notFound('Event not found');
   }
-  return await getRacesForEvent(eventSnap);
+  return await getRacesForEvent(doc);
 });
 
 export const getRenderableHomeDataForPage = cache(async () => {
@@ -392,12 +366,12 @@ export const getRenderableHomeDataForPage = cache(async () => {
 });
 
 export const getRenderableUserDataForPage = cache(async (path: DocPath) => {
-  const db = await getFirestore();
-  const user = await getDoc<User>(path);
+  const user = await getDocInternal(UserSchema, path);
   if (!user) {
     notFound('User doc not found: ' + path);
   }
 
+  const db = await getFirestore();
   const contributionsSnap = await db
     .collectionGroup('contributions')
     .where('contributor.id', '==', docId(path))
@@ -454,6 +428,7 @@ export const getRacesForEventId = cache(
     const eventSnap = await db
       .collectionGroup('events')
       .where('id', '==', eventId)
+      .withConverter(converter(EventSchema))
       .limit(1)
       .get();
     if (eventSnap.empty) {
@@ -473,6 +448,7 @@ export const getPreemsForRaceId = cache(
     const raceSnap = await db
       .collectionGroup('races')
       .where('id', '==', raceId)
+      .withConverter(converter(RaceSchema))
       .limit(1)
       .get();
     if (raceSnap.empty) {
@@ -492,6 +468,7 @@ export const getContributionsForPreemId = cache(
     const preemSnap = await db
       .collectionGroup('preems')
       .where('id', '==', preemId)
+      .withConverter(converter(PreemSchema))
       .limit(1)
       .get();
     if (preemSnap.empty) {
@@ -510,5 +487,5 @@ export const getOrganizationFromPath = cache(async (path: string) => {
   if (pathParts.length < 2 || pathParts[0] !== 'organizations') {
     notFound(`Invalid path for getting organization: ${path}`);
   }
-  return getDoc<Organization>(`organizations/${pathParts[1]}`);
+  return getDocInternal(OrganizationSchema, `organizations/${pathParts[1]}`);
 });
