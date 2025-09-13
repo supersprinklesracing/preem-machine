@@ -1,9 +1,6 @@
 import { expect, test } from '@playwright/test';
-import { useE2eTestingUserBeforeEach } from '../e2e-test-utils';
 
-test.describe('view/race logged in user', () => {
-  useE2eTestingUserBeforeEach();
-
+test.describe('view: race', () => {
   test('basic', async ({ page }) => {
     await page.goto(
       '/org-super-sprinkles/series-sprinkles-2025/event-giro-sf-2025/race-giro-sf-2025-masters-women',

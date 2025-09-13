@@ -1,9 +1,6 @@
 import { expect, test } from '@playwright/test';
-import { useE2eTestingUserBeforeEach } from '../e2e-test-utils';
 
-test.describe('view/organization logged in user', () => {
-  useE2eTestingUserBeforeEach();
-
+test.describe('view: organization', () => {
   test('basic', async ({ page }) => {
     await page.goto('/org-super-sprinkles');
     await expect(

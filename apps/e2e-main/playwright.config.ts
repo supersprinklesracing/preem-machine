@@ -62,7 +62,7 @@ export default defineConfig({
     toHaveScreenshot: { maxDiffPixelRatio: 0.02 },
   },
 
-  globalSetup: require.resolve('./src/global.setup.ts'),
+  globalSetup: require.resolve('./src/util/global.setup.ts'),
   projects: [
     {
       name: 'chrome-desktop',
