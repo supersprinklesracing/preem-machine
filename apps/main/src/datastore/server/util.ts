@@ -39,7 +39,7 @@ export const getDocInternal = async <T extends z.ZodObject<any, any>>(
 ): Promise<z.infer<T>> => {
   const data = (await getDocSnapInternal(schema, path)).data();
   if (!data) {
-    notFound('Doc not found');
+    notFound(`Doc not found: ${path}`);
   }
   return data;
 };
