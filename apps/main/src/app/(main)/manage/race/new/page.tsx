@@ -2,7 +2,10 @@
 
 import { getDoc } from '@/datastore/server/query/query';
 import { EventSchema } from '@/datastore/schema';
-import { getDocPathFromSearchParams } from '@/datastore/paths';
+import {
+  getCollectionPathFromSearchParams,
+  getParentPath,
+} from '@/datastore/paths';
 import { NewRace } from './NewRace';
 import { newRaceAction } from './new-race-action';
 
@@ -11,7 +14,7 @@ export default async function NewRacePage({
 }: {
   searchParams: Promise<{ path: string }>;
 }) {
-  const path = getDocPathFromSearchParams(await searchParams);
-  const event = await getDoc(EventSchema, path);
+  const path = getCollectionPathFromSearchParams(await searchParams);
+  const event = await getDoc(EventSchema, getParentPath(path));
   return <NewRace event={event} newRaceAction={newRaceAction} path={path} />;
 }
