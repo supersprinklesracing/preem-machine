@@ -1,5 +1,5 @@
 import type { RaceWithPreems } from '@/datastore/query-schema';
-import '@/matchMedia.mock';
+
 import { render, screen } from '@/test-utils';
 import ManageRaceContributionTable from './ManageRaceContributionTable';
 

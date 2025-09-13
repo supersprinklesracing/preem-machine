@@ -1,5 +1,5 @@
 import { FormActionResult } from '@/components/forms/forms';
-import '@/matchMedia.mock';
+
 import { act, fireEvent, render, screen, waitFor, within } from '@/test-utils';
 import { NewRace } from './NewRace';
 
@@ -33,6 +33,7 @@ describe('NewRace component', () => {
     description: 'Test Event Description',
     startDate: new Date('2025-08-01T00:00:00.000Z'),
     endDate: new Date('2025-08-31T00:00:00.000Z'),
+    timezone: 'America/New_York',
     seriesBrief: {
       id: 'series-1',
       path: 'organizations/org-1/series/series-1',
@@ -109,6 +110,7 @@ describe('NewRace component', () => {
           website: 'https://example.com',
           startDate: new Date('2025-08-03T07:00:00.000Z'),
           endDate: new Date('2025-08-15T07:00:00.000Z'),
+          timezone: 'America/New_York',
         }),
       });
     });

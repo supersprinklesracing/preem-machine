@@ -1,7 +1,7 @@
 'use client';
 
+import { DateLocationDetail } from '@/components/cards/DateLocationDetail';
 import RaceCard from '@/components/cards/RaceCard';
-import { formatDateTime } from '@/dates/dates';
 import { organizationPath, seriesPath, toUrlPath } from '@/datastore/paths';
 import { RaceWithPreems } from '@/datastore/query-schema';
 import { Event as EventType } from '@/datastore/schema';
@@ -27,6 +27,7 @@ interface Props {
     | 'startDate'
     | 'description'
     | 'website'
+    | 'timezone'
   >;
   children: RaceWithPreems[];
 }
@@ -51,18 +52,20 @@ export default function Event({ event, children }: Props) {
           {organization.name}
         </Anchor>
       </Text>
-      <Text c="dimmed">
-        {event.location} | {formatDateTime(event.startDate)}
-      </Text>
-      {event.description && <Text>{event.description}</Text>}
-      {event.website && (
-        <Group gap="xs">
-          <IconWorldWww size={16} />
-          <Anchor href={event.website} target="_blank" size="sm">
-            Official Website
-          </Anchor>
+      <Group data-testid="event-details">
+        <Group>
+          <DateLocationDetail {...event} />
         </Group>
-      )}
+        {event.description && <Text>{event.description}</Text>}
+        {event.website && (
+          <Group gap="xs">
+            <IconWorldWww size={16} />
+            <Anchor href={event.website} target="_blank" size="sm">
+              Official Website
+            </Anchor>
+          </Group>
+        )}
+      </Group>
       <Stack>
         <Group justify="space-between">
           <Stack gap={0}>

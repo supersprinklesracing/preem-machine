@@ -1,6 +1,5 @@
 import { render, screen, setupMockDb } from '@/test-utils';
 import NewRacePage from './page';
-import '@/matchMedia.mock';
 
 jest.mock('./NewRace', () => ({
   __esModule: true,

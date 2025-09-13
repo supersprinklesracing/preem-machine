@@ -1,7 +1,6 @@
 'use client';
 
 import RaceCard from '@/components/cards/RaceCard';
-import { formatDateTime } from '@/dates/dates';
 import { toUrlPath } from '@/datastore/paths';
 import { RaceWithPreems } from '@/datastore/query-schema';
 import { Event } from '@/datastore/schema';
@@ -15,12 +14,14 @@ import {
   Title,
 } from '@mantine/core';
 import { IconChevronRight, IconPencil, IconPlus } from '@tabler/icons-react';
+import { format } from 'date-fns';
+import { formatInTimeZone } from 'date-fns-tz';
 import Link from 'next/link';
 
 interface Props {
   event: Pick<
     Event,
-    'name' | 'path' | 'seriesBrief' | 'location' | 'startDate'
+    'name' | 'path' | 'seriesBrief' | 'location' | 'startDate' | 'timezone'
   >;
   children: RaceWithPreems[];
 }
@@ -72,7 +73,16 @@ export default function LiveEvent({ event, children }: Props) {
         )}
       </Text>
       <Text c="dimmed">
-        {event.location} | {formatDateTime(event.startDate)}
+        {event.location} |{' '}
+        {event.startDate
+          ? event.timezone
+            ? formatInTimeZone(
+                new Date(event.startDate),
+                event.timezone,
+                'PP p zzz',
+              )
+            : format(new Date(event.startDate), 'PP p')
+          : ''}
       </Text>
       <Stack>
         <Title order={2}>Race Schedule</Title>

@@ -1,8 +1,8 @@
 'use server';
 
 import { Breadcrumbs } from '@/components/Breadcrumbs/Breadcrumbs';
+import { SeriesSchema } from '@/datastore/schema';
 import { getDoc } from '@/datastore/server/query/query';
-import { Series } from '@/datastore/schema';
 import { Stack } from '@mantine/core';
 import { newEventAction } from '../../event/new/new-event-action';
 import { EditSeries } from './EditSeries';
@@ -14,7 +14,7 @@ export default async function EditSeriesPage({
   searchParams: { path: string };
 }) {
   const { path } = searchParams;
-  const doc = await getDoc<Series>(path);
+  const doc = await getDoc(SeriesSchema, path);
   return (
     <Stack>
       <Breadcrumbs brief={doc} />

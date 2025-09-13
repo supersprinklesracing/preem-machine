@@ -21,6 +21,7 @@ import { DatePicker } from '@mantine/dates';
 import { useDebouncedValue } from '@mantine/hooks';
 import isEqual from 'fast-deep-equal';
 import { useRouter } from 'next/navigation';
+import TimezoneSelect from 'react-timezone-select';
 import { eventSchema } from '../event-schema';
 import { validateEventForm } from '../event-validation';
 import { NewEventOptions } from './new-event-action';
@@ -50,6 +51,8 @@ export function NewEvent({
       location: '',
       startDate: undefined,
       endDate: undefined,
+      timezone:
+        series.timezone ?? Intl.DateTimeFormat().resolvedOptions().timeZone,
     },
     action: (values) => newEventAction({ path, values }),
     onSuccess: (result) => {
@@ -117,6 +120,15 @@ export function NewEvent({
                     );
                   }}
                   data-testid="date-picker"
+                />
+                <TimezoneSelect
+                  value={form.values.timezone || ''}
+                  onChange={(tz) =>
+                    form.setFieldValue(
+                      'timezone',
+                      typeof tz === 'string' ? tz : tz.value,
+                    )
+                  }
                 />
                 <Group justify="right">
                   <Button

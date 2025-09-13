@@ -1,258 +1,231 @@
 'use server';
 
 import { AuthContextUser } from '@/auth/user';
-import { getFirestore } from '@/firebase/server/firebase-admin';
 import {
-  FieldValue,
   type DocumentData,
   type DocumentReference,
 } from 'firebase-admin/firestore';
-
 import { unauthorized } from '../../errors';
-import { DocPath, asDocPath } from '../../paths';
+import { asDocPath, CollectionPath, docId } from '../../paths';
 import {
+  ContributionSchema,
+  Event,
+  EventBriefSchema,
   EventSchema,
+  Organization,
+  OrganizationBriefSchema,
   OrganizationSchema,
+  Preem,
+  PreemBriefSchema,
   PreemSchema,
+  Race,
+  RaceBriefSchema,
   RaceSchema,
+  Series,
+  SeriesBriefSchema,
   SeriesSchema,
+  User,
   UserSchema,
-  type Event,
-  type EventBrief,
-  type Organization,
-  type OrganizationBrief,
-  type Preem,
+  type Contribution,
   type RaceBrief,
-  type SeriesBrief,
-  type User,
 } from '../../schema';
 import { isUserAuthorized } from '../access';
-import { converter } from '../converters';
+import { getDoc } from '../query/query';
+import { getCollectionRefInternal, getDocRefInternal } from '../util';
 import { validateEventDateRange, validateRaceDateRange } from '../validation';
 
-const createMetadata = (userRef: DocumentReference<DocumentData>) => ({
-  'metadata.created': FieldValue.serverTimestamp(),
-  'metadata.createdBy': userRef,
-  'metadata.lastModified': FieldValue.serverTimestamp(),
-  'metadata.lastModifiedBy': userRef,
+const getCreateMetadata = (userRef: DocumentReference<DocumentData>) => ({
+  metadata: {
+    created: new Date(),
+    lastModified: new Date(),
+    createdBy: userRef,
+    lastModifiedBy: userRef,
+  },
 });
 
-const createDocument = async <U>(
-  path: DocPath,
-  data: U,
+export const createUser = async (
+  path: CollectionPath,
+  user: Pick<User, 'name' | 'email' | 'avatarUrl'>,
   authUser: AuthContextUser,
-  briefData: Record<string, any>,
+) => {
+  const userRef = await getDocRefInternal(UserSchema, `users/${authUser.uid}`);
+  const ref = await getDocRefInternal(UserSchema, path);
+  const newUser = {
+    ...user,
+    id: ref.id,
+    path: asDocPath(ref.path),
+    ...getCreateMetadata(userRef),
+  };
+  await ref.set(newUser);
+  return ref.get();
+};
+
+export const createOrganization = async (
+  path: CollectionPath,
+  organization: Pick<Organization, 'name'>,
+  authUser: AuthContextUser,
+) => {
+  // TODO: Re-enable this in the future. Not now. We need a claim or something.
+  // if (!(await isUserAuthorized(authUser, getParentPath(path)))) {
+  //   unauthorized();
+  // }
+
+  const userRef = await getDocRefInternal(UserSchema, `users/${authUser.uid}`);
+  const ref = (await getCollectionRefInternal(OrganizationSchema, path)).doc();
+  const newOrganization = {
+    ...organization,
+    id: ref.id,
+    path: asDocPath(ref.path),
+    ...getCreateMetadata(userRef),
+  };
+  await ref.set(newOrganization);
+  return ref.get();
+};
+
+export const createSeries = async (
+  path: CollectionPath,
+  series: Pick<
+    Series,
+    'name' | 'description' | 'website' | 'location' | 'startDate' | 'endDate'
+  >,
+  authUser: AuthContextUser,
 ) => {
   if (!(await isUserAuthorized(authUser, path))) {
     unauthorized();
   }
 
-  const db = await getFirestore();
-  const userRef = db.collection('users').doc(authUser.uid);
-  const docRef = db.doc(path);
-
-  await docRef.create({
-    id: path.split('/').slice(-1)[0],
-    path,
-    ...data,
-    ...briefData,
-    ...createMetadata(userRef),
-  });
-
-  return docRef.get();
-};
-
-export const createSeries = async (
-  organizationPath: DocPath,
-  series: Pick<
-    Event,
-    'name' | 'description' | 'website' | 'location' | 'startDate' | 'endDate'
-  >,
-  authUser: AuthContextUser,
-) => {
-  const db = await getFirestore();
-  const orgRef = db
-    .doc(organizationPath)
-    .withConverter(converter(OrganizationSchema));
-  const orgDoc = await orgRef.get();
-  const orgData = orgDoc.data();
-  if (!orgData) {
-    throw new Error('Organization not found');
-  }
-
-  const organizationBrief: OrganizationBrief = {
-    id: orgRef.id,
-    path: asDocPath(orgRef.path),
-
-    name: orgData.name,
-  };
-
-  const seriesRef = orgRef.collection('series').doc();
-
-  return createDocument(asDocPath(seriesRef.path), series, authUser, {
+  const userRef = await getDocRefInternal(UserSchema, `users/${authUser.uid}`);
+  const organization = await getDoc(OrganizationSchema, path);
+  const organizationBrief = OrganizationBriefSchema.parse(organization);
+  const ref = (
+    await getCollectionRefInternal(SeriesSchema, `${path}/series`)
+  ).doc();
+  const newSeries = {
+    ...series,
+    id: ref.id,
+    path: asDocPath(ref.path),
     organizationBrief,
-  });
+    ...getCreateMetadata(userRef),
+  };
+  await ref.set(newSeries);
+  return ref.get();
 };
 
 export const createEvent = async (
-  seriesPath: DocPath,
+  path: CollectionPath,
   event: Pick<
     Event,
     'name' | 'description' | 'website' | 'location' | 'startDate' | 'endDate'
   >,
   authUser: AuthContextUser,
 ) => {
-  const db = await getFirestore();
-  const seriesRef = db.doc(seriesPath).withConverter(converter(SeriesSchema));
-  const seriesDoc = await seriesRef.get();
-  const seriesData = seriesDoc.data();
-  if (!seriesData) {
-    throw new Error('Series not found');
+  if (!(await isUserAuthorized(authUser, path))) {
+    unauthorized();
   }
 
-  const seriesBrief: SeriesBrief = {
-    id: seriesRef.id,
-    path: asDocPath(seriesRef.path),
-    name: seriesData.name,
-    startDate: seriesData.startDate,
-    endDate: seriesData.endDate,
-    organizationBrief: seriesData.organizationBrief,
-  };
-
-  const eventRef = seriesRef.collection('events').doc();
-
-  await validateEventDateRange(event, seriesPath);
-  return createDocument(asDocPath(eventRef.path), event, authUser, {
+  const userRef = await getDocRefInternal(UserSchema, `users/${authUser.uid}`);
+  const series = await getDoc(SeriesSchema, path);
+  await validateEventDateRange(event, series.path);
+  const seriesBrief = SeriesBriefSchema.parse(series);
+  const ref = (
+    await getCollectionRefInternal(EventSchema, `${path}/events`)
+  ).doc();
+  const newEvent = {
+    ...event,
+    id: ref.id,
+    path: asDocPath(ref.path),
     seriesBrief,
-  });
+    ...getCreateMetadata(userRef),
+  };
+  await ref.set(newEvent);
+  return ref.get();
 };
 
 export const createRace = async (
-  eventPath: DocPath,
+  path: CollectionPath,
   race: Pick<
-    Event,
+    Race,
     'name' | 'description' | 'website' | 'location' | 'startDate' | 'endDate'
   >,
   authUser: AuthContextUser,
 ) => {
-  const db = await getFirestore();
-  const eventRef = db.doc(eventPath).withConverter(converter(EventSchema));
-  const eventDoc = await eventRef.get();
-  const eventData = eventDoc.data();
-  if (!eventData) {
-    throw new Error('Event not found');
+  if (!(await isUserAuthorized(authUser, path))) {
+    unauthorized();
   }
 
-  const eventBrief: EventBrief = {
-    id: eventRef.id,
-    path: asDocPath(eventRef.path),
-
-    name: eventData.name,
-    startDate: eventData.startDate,
-    endDate: eventData.endDate,
-    seriesBrief: eventData.seriesBrief,
-  };
-
-  const raceRef = eventRef.collection('races').doc();
-
-  await validateRaceDateRange(race, eventPath);
-  return createDocument(asDocPath(raceRef.path), race, authUser, {
+  const userRef = await getDocRefInternal(UserSchema, `users/${authUser.uid}`);
+  const event = await getDoc(EventSchema, path);
+  await validateRaceDateRange(race, event.path);
+  const eventBrief = EventBriefSchema.parse(event);
+  const ref = (
+    await getCollectionRefInternal(RaceSchema, `${path}/races`)
+  ).doc();
+  const newRace = {
+    ...race,
+    id: ref.id,
+    path: asDocPath(ref.path),
     eventBrief,
-  });
+    ...getCreateMetadata(userRef),
+  };
+  await ref.set(newRace);
+  return ref.get();
 };
 
 export const createPreem = async (
-  racePath: DocPath,
-  preem: Pick<
-    Preem,
-    | 'name'
-    | 'description'
-    | 'type'
-    | 'status'
-    | 'prizePool'
-    | 'timeLimit'
-    | 'minimumThreshold'
-  >,
+  path: CollectionPath,
+  preem: Pick<Preem, 'name' | 'description'>,
   authUser: AuthContextUser,
 ) => {
-  const db = await getFirestore();
-  const raceRef = db.doc(racePath).withConverter(converter(RaceSchema));
-  const raceDoc = await raceRef.get();
-  const raceData = raceDoc.data();
-  if (!raceData) {
-    throw new Error('Race not found');
+  if (!(await isUserAuthorized(authUser, path))) {
+    unauthorized();
   }
 
-  const raceBrief: RaceBrief = {
-    id: raceRef.id,
-    path: asDocPath(raceRef.path),
-    name: raceData.name,
-    startDate: raceData.startDate,
-    endDate: raceData.endDate,
-    eventBrief: raceData.eventBrief,
-  };
-
-  const preemRef = raceRef.collection('preems').doc();
-
-  return createDocument(asDocPath(preemRef.path), preem, authUser, {
+  const userRef = await getDocRefInternal(UserSchema, `users/${authUser.uid}`);
+  const race = await getDoc(RaceSchema, path);
+  const raceBrief: RaceBrief = RaceBriefSchema.parse(race);
+  const ref = (
+    await getCollectionRefInternal(PreemSchema, `${path}/preems`)
+  ).doc();
+  const newPreem = {
+    ...preem,
+    id: ref.id,
+    path: asDocPath(ref.path),
     raceBrief,
-  });
-};
-
-export const createOrganization = async (
-  organization: Pick<Organization, 'name' | 'description' | 'website'>,
-  authUser: AuthContextUser,
-) => {
-  const db = await getFirestore();
-  const orgRef = db
-    .collection('organizations')
-    .withConverter(converter(OrganizationSchema))
-    .doc();
-
-  return createDocument(asDocPath(orgRef.path), organization, authUser, {});
-};
-
-export const createUser = async (
-  user: Pick<
-    User,
-    'name' | 'email' | 'avatarUrl' | 'affiliation' | 'raceLicenseId' | 'address'
-  >,
-  authUser: AuthContextUser,
-) => {
-  const db = await getFirestore();
-  const userRef = db
-    .collection('users')
-    .withConverter(converter(UserSchema))
-    .doc(authUser.uid);
-
-  return createDocument(asDocPath(userRef.path), user, authUser, {});
+    ...getCreateMetadata(userRef),
+  };
+  await ref.set(newPreem);
+  return ref.get();
 };
 
 export const createPendingContribution = async (
-  preemPath: DocPath,
-  {
-    amount,
-    message,
-    isAnonymous,
-  }: { amount: number; message: string; isAnonymous: boolean },
+  path: CollectionPath,
+  contribution: Pick<Contribution, 'amount' | 'message' | 'isAnonymous'>,
   authUser: AuthContextUser,
 ) => {
   if (!authUser.uid) {
     unauthorized();
   }
 
-  const db = await getFirestore();
-  const preemRef = db.doc(preemPath).withConverter(converter(PreemSchema));
-  const contributionsRef = preemRef.collection('contributions');
-  const userRef = db.collection('users').doc(authUser.uid);
-
-  const docRef = await contributionsRef.add({
-    amount,
-    message,
+  const userRef = await getDocRefInternal(UserSchema, `users/${authUser.uid}`);
+  const preem = await getDoc(PreemSchema, path);
+  const preemBrief = PreemBriefSchema.parse(preem);
+  const ref = (
+    await getCollectionRefInternal(ContributionSchema, `${path}/contributions`)
+  ).doc();
+  const newContribution = {
+    ...contribution,
+    id: ref.id,
+    path: asDocPath(ref.path),
     status: 'pending',
-    contributor: isAnonymous ? null : userRef,
-    ...createMetadata(userRef),
-  });
-
-  await docRef.update({ path: docRef.path });
+    preemBrief,
+    contributor: {
+      id: docId(userRef.path),
+      path: asDocPath(userRef.path),
+      name: authUser.displayName ?? undefined,
+      avatarUrl: authUser.photoURL ?? undefined,
+    },
+    ...getCreateMetadata(userRef),
+  };
+  await ref.set(newContribution);
+  return ref.get();
 };
