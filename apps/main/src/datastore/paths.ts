@@ -232,7 +232,15 @@ export const toUrlPath = (path: DocPath): UrlPath => {
   return segments.filter((_, i) => i % 2 !== 0).join('/');
 };
 
-export const getParentCollectionPath = (path: DocPath): CollectionPath => {
+export const getParentPath = (path: string): string => {
+  const segments = path.split('/');
+  if (segments.length < 2) {
+    throw new InvalidPathError(`Path is too short to have a parent: ${path}`);
+  }
+  return segments.slice(0, -1).join('/');
+};
+
+export const getParentPathAsCollectionPath = (path: DocPath): CollectionPath => {
   return path.split('/').slice(0, -1).join('/');
 };
 
