@@ -1,4 +1,4 @@
-import { render, screen } from '@/test-utils';
+import { render, screen, setupMockDb } from '@/test-utils';
 import NewOrganizationPage from './page';
 
 jest.mock('./NewOrganization', () => ({
@@ -12,8 +12,11 @@ jest.mock('./new-organization-action', () => ({
 }));
 
 describe('NewOrganizationPage', () => {
+  setupMockDb();
   it('should render the NewOrganization component', async () => {
-    const PageComponent = await NewOrganizationPage();
+    const PageComponent = await NewOrganizationPage({
+      searchParams: Promise.resolve({ path: 'organizations' }),
+    });
     render(PageComponent);
     expect(screen.getByText('Mock NewOrganization')).toBeInTheDocument();
   });

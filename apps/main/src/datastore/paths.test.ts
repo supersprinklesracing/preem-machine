@@ -1,6 +1,6 @@
 import {
   toUrlPath,
-  getParentCollectionPath,
+  getParentPathAsCollectionPath,
   getCollectionGroup,
   toDocPath,
   isDocPath,
@@ -177,11 +177,13 @@ describe('paths', () => {
     });
   });
 
-  describe('getParentCollectionPath', () => {
+  describe('getParentPathAsCollectionPath', () => {
     it('should return the collection path from a doc path', () => {
       const docPath = 'organizations/id/events/eventid';
       const expectedCollectionPath = 'organizations/id/events';
-      expect(getParentCollectionPath(docPath)).toEqual(expectedCollectionPath);
+      expect(getParentPathAsCollectionPath(docPath)).toEqual(
+        expectedCollectionPath,
+      );
     });
 
     it('should handle longer paths', () => {
@@ -189,7 +191,9 @@ describe('paths', () => {
         'organizations/org-super-sprinkles/events/il-giro/races/juniors';
       const expectedCollectionPath =
         'organizations/org-super-sprinkles/events/il-giro/races';
-      expect(getParentCollectionPath(docPath)).toEqual(expectedCollectionPath);
+      expect(getParentPathAsCollectionPath(docPath)).toEqual(
+        expectedCollectionPath,
+      );
     });
   });
 
