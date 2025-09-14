@@ -9,6 +9,7 @@ jest.mock('./Event', () => ({
   default: jest.fn(() => <div>Mock Event</div>),
 }));
 
+
 setupMockDb();
 
 describe('EventPage component', () => {

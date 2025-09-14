@@ -3,13 +3,7 @@ import { FormActionResult } from '@/components/forms/forms';
 import { act, fireEvent, render, screen, waitFor, within } from '@/test-utils';
 import { NewRace } from './NewRace';
 
-// Mock dependencies
-jest.mock('next/navigation', () => ({
-  // eslint-disable-next-line @eslint-react/hooks-extra/no-unnecessary-use-prefix
-  useRouter: () => ({
-    push: jest.fn(),
-  }),
-}));
+
 
 describe('NewRace component', () => {
   beforeEach(() => {
