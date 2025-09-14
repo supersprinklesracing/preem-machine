@@ -3,6 +3,7 @@
 import { useActionForm } from '@/components/forms/useActionForm';
 import OrganizationCard from '@/components/cards/OrganizationCard';
 import { FormActionResult } from '@/components/forms/forms';
+import MultiPanelLayout from '@/components/layout/MultiPanelLayout';
 import { toUrlPath } from '@/datastore/paths';
 import { Organization } from '@/datastore/schema';
 import {
@@ -60,43 +61,46 @@ export function NewOrganization({
     <Container>
       <Stack>
         <Title order={1}>Create Organization</Title>
-        <SimpleGrid cols={{ base: 1, md: 2 }}>
-          <Card withBorder>
-            <form onSubmit={form.onSubmit(handleSubmit)}>
-              <Stack>
-                <TextInput
-                  label="Organization Name"
-                  required
-                  {...form.getInputProps('name')}
-                  data-testid="name-input"
-                />
-                <TextInput
-                  label="Website"
-                  {...form.getInputProps('website')}
-                  data-testid="website-input"
-                />
-                <Textarea
-                  label="Description"
-                  {...form.getInputProps('description')}
-                  data-testid="description-input"
-                />
-                <Group justify="right">
-                  <Button
-                    type="submit"
-                    loading={isLoading}
-                    disabled={
-                      !form.isValid() || !isEqual(form.values, debouncedValues)
-                    }
-                  >
-                    Create Organization
-                  </Button>
-                </Group>
-                {submissionError && <p>{submissionError}</p>}
-              </Stack>
-            </form>
-          </Card>
-          <OrganizationCard organization={organizationPreview} />
-        </SimpleGrid>
+        <MultiPanelLayout
+          leftPanel={
+            <Card withBorder>
+              <form onSubmit={form.onSubmit(handleSubmit)}>
+                <Stack>
+                  <TextInput
+                    label="Organization Name"
+                    required
+                    {...form.getInputProps('name')}
+                    data-testid="name-input"
+                  />
+                  <TextInput
+                    label="Website"
+                    {...form.getInputProps('website')}
+                    data-testid="website-input"
+                  />
+                  <Textarea
+                    label="Description"
+                    {...form.getInputProps('description')}
+                    data-testid="description-input"
+                  />
+                  <Group justify="right">
+                    <Button
+                      type="submit"
+                      loading={isLoading}
+                      disabled={
+                        !form.isValid() ||
+                        !isEqual(form.values, debouncedValues)
+                      }
+                    >
+                      Create Organization
+                    </Button>
+                  </Group>
+                  {submissionError && <p>{submissionError}</p>}
+                </Stack>
+              </form>
+            </Card>
+          }
+          rightPanel={<OrganizationCard organization={organizationPreview} />}
+        />
       </Stack>
     </Container>
   );

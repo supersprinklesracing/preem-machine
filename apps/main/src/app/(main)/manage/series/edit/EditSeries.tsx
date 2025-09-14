@@ -3,6 +3,7 @@
 import { useActionForm } from '@/components/forms/useActionForm';
 import SeriesCard from '@/components/cards/SeriesCard';
 import { FormActionResult } from '@/components/forms/forms';
+import MultiPanelLayout from '@/components/layout/MultiPanelLayout';
 import { Series } from '@/datastore/schema';
 import {
   Button,
@@ -99,68 +100,74 @@ export function EditSeries({
           <Title order={1}>Edit Series</Title>
           <Button onClick={open}>Add Event</Button>
         </Group>
-        <SimpleGrid cols={{ base: 1, md: 2 }}>
-          <Card withBorder>
-            <form onSubmit={form.onSubmit(handleSubmit)}>
-              <Stack>
-                <TextInput
-                  label="Series Name"
-                  required
-                  {...form.getInputProps('name')}
-                />
-                <TextInput
-                  label="Location"
-                  {...form.getInputProps('location')}
-                />
-                <TextInput label="Website" {...form.getInputProps('website')} />
-                <Textarea
-                  label="Description"
-                  {...form.getInputProps('description')}
-                />
-                <DatePicker
-                  type="range"
-                  allowSingleDateInRange
-                  value={[
-                    form.values.startDate ?? null,
-                    form.values.endDate ?? null,
-                  ]}
-                  onChange={([start, end]) => {
-                    form.setFieldValue(
-                      'startDate',
-                      start ? new Date(start) : undefined,
-                    );
-                    form.setFieldValue(
-                      'endDate',
-                      end ? new Date(end) : undefined,
-                    );
-                  }}
-                />
-                <TimezoneSelect
-                  value={form.values.timezone || ''}
-                  onChange={(tz) =>
-                    form.setFieldValue(
-                      'timezone',
-                      typeof tz === 'string' ? tz : tz.value,
-                    )
-                  }
-                />
-                <Group justify="right">
-                  <Button
-                    type="submit"
-                    loading={isLoading}
-                    disabled={
-                      !form.isValid() || !isEqual(form.values, debouncedValues)
+        <MultiPanelLayout
+          leftPanel={
+            <Card withBorder>
+              <form onSubmit={form.onSubmit(handleSubmit)}>
+                <Stack>
+                  <TextInput
+                    label="Series Name"
+                    required
+                    {...form.getInputProps('name')}
+                  />
+                  <TextInput
+                    label="Location"
+                    {...form.getInputProps('location')}
+                  />
+                  <TextInput
+                    label="Website"
+                    {...form.getInputProps('website')}
+                  />
+                  <Textarea
+                    label="Description"
+                    {...form.getInputProps('description')}
+                  />
+                  <DatePicker
+                    type="range"
+                    allowSingleDateInRange
+                    value={[
+                      form.values.startDate ?? null,
+                      form.values.endDate ?? null,
+                    ]}
+                    onChange={([start, end]) => {
+                      form.setFieldValue(
+                        'startDate',
+                        start ? new Date(start) : undefined,
+                      );
+                      form.setFieldValue(
+                        'endDate',
+                        end ? new Date(end) : undefined,
+                      );
+                    }}
+                  />
+                  <TimezoneSelect
+                    value={form.values.timezone || ''}
+                    onChange={(tz) =>
+                      form.setFieldValue(
+                        'timezone',
+                        typeof tz === 'string' ? tz : tz.value,
+                      )
                     }
-                  >
-                    Save Changes
-                  </Button>
-                </Group>
-                {submissionError && <Text c="red">{submissionError}</Text>}
-              </Stack>
-            </form>
-          </Card>
-          <SeriesCard series={seriesPreview} />
-        </SimpleGrid>
+                  />
+                  <Group justify="right">
+                    <Button
+                      type="submit"
+                      loading={isLoading}
+                      disabled={
+                        !form.isValid() ||
+                        !isEqual(form.values, debouncedValues)
+                      }
+                    >
+                      Save Changes
+                    </Button>
+                  </Group>
+                  {submissionError && <Text c="red">{submissionError}</Text>}
+                </Stack>
+              </form>
+            </Card>
+          }
+          rightPanel={<SeriesCard series={seriesPreview} />}
+        />
       </Stack>
       <Modal opened={opened} onClose={close} title="Add New Event" size="lg">
         <NewEvent

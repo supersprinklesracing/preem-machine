@@ -2,6 +2,7 @@
 
 import { FormActionResult } from '@/components/forms/forms';
 import { useActionForm } from '@/components/forms/useActionForm';
+import MultiPanelLayout from '@/components/layout/MultiPanelLayout';
 import { DocPath, toUrlPath } from '@/datastore/paths';
 import { Race } from '@/datastore/schema';
 import {
@@ -71,65 +72,70 @@ export function NewPreem({
     <Container>
       <Stack>
         <Title order={1}>Create Preem</Title>
-        <SimpleGrid cols={{ base: 1, md: 2 }}>
-          <Card withBorder>
-            <form onSubmit={form.onSubmit(handleSubmit)}>
-              <Stack>
-                <TextInput
-                  label="Preem Name"
-                  required
-                  {...form.getInputProps('name')}
-                  data-testid="name-input"
-                />
-                <Textarea
-                  label="Description"
-                  {...form.getInputProps('description')}
-                  data-testid="description-input"
-                />
-                <Select
-                  label="Type"
-                  data={['Pooled', 'One-Shot']}
-                  {...form.getInputProps('type')}
-                />
-                <Select
-                  label="Status"
-                  data={['Open', 'Minimum Met', 'Awarded']}
-                  {...form.getInputProps('status')}
-                />
-                <NumberInput
-                  label="Prize Pool"
-                  {...form.getInputProps('prizePool')}
-                />
-                <DateTimePicker
-                  label="Time Limit"
-                  value={form.values.timeLimit}
-                  onChange={(value) =>
-                    form.setFieldValue(
-                      'timeLimit',
-                      value ? new Date(value) : undefined,
-                    )
-                  }
-                />
-                <NumberInput
-                  label="Minimum Threshold"
-                  {...form.getInputProps('minimumThreshold')}
-                />
+        <MultiPanelLayout
+          leftPanel={
+            <Card withBorder>
+              <form onSubmit={form.onSubmit(handleSubmit)}>
+                <Stack>
+                  <TextInput
+                    label="Preem Name"
+                    required
+                    {...form.getInputProps('name')}
+                    data-testid="name-input"
+                  />
+                  <Textarea
+                    label="Description"
+                    {...form.getInputProps('description')}
+                    data-testid="description-input"
+                  />
+                  <Select
+                    label="Type"
+                    data={['Pooled', 'One-Shot']}
+                    {...form.getInputProps('type')}
+                  />
+                  <Select
+                    label="Status"
+                    data={['Open', 'Minimum Met', 'Awarded']}
+                    {...form.getInputProps('status')}
+                  />
+                  <NumberInput
+                    label="Prize Pool"
+                    {...form.getInputProps('prizePool')}
+                  />
+                  <DateTimePicker
+                    label="Time Limit"
+                    value={form.values.timeLimit}
+                    onChange={(value) =>
+                      form.setFieldValue(
+                        'timeLimit',
+                        value ? new Date(value) : undefined,
+                      )
+                    }
+                  />
+                  <NumberInput
+                    label="Minimum Threshold"
+                    {...form.getInputProps('minimumThreshold')}
+                  />
 
-                <Group justify="right">
-                  <Button
-                    type="submit"
-                    loading={isLoading}
-                    disabled={!form.isValid() || !form.isDirty()}
-                  >
-                    Create Preem
-                  </Button>
-                </Group>
-                {submissionError && <Text c="red">{submissionError}</Text>}
-              </Stack>
-            </form>
-          </Card>
-          {/* <PreemCard preem={preemPreview} /> */}
-        </SimpleGrid>
+                  <Group justify="right">
+                    <Button
+                      type="submit"
+                      loading={isLoading}
+                      disabled={!form.isValid() || !form.isDirty()}
+                    >
+                      Create Preem
+                    </Button>
+                  </Group>
+                  {submissionError && <Text c="red">{submissionError}</Text>}
+                </Stack>
+              </form>
+            </Card>
+          }
+          rightPanel={
+            // <PreemCard preem={preemPreview} />
+            <></>
+          }
+        />
       </Stack>
     </Container>
   );

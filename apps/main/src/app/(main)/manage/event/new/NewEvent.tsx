@@ -3,6 +3,7 @@
 import { useActionForm } from '@/components/forms/useActionForm';
 import EventCard from '@/components/cards/EventCard';
 import { FormActionResult } from '@/components/forms/forms';
+import MultiPanelLayout from '@/components/layout/MultiPanelLayout';
 import { toUrlPath } from '@/datastore/paths';
 import { Event, Series } from '@/datastore/schema';
 import {
@@ -10,7 +11,6 @@ import {
   Card,
   Container,
   Group,
-  SimpleGrid,
   Stack,
   Text,
   Textarea,
@@ -77,76 +77,79 @@ export function NewEvent({
     <Container>
       <Stack>
         <Title order={1}>Create Event</Title>
-        <SimpleGrid cols={{ base: 1, md: 2 }}>
-          <Card withBorder>
-            <form onSubmit={form.onSubmit(handleSubmit)}>
-              <Stack>
-                <TextInput
-                  label="Event Name"
-                  required
-                  {...form.getInputProps('name')}
-                  data-testid="name-input"
-                />
-                <Textarea
-                  label="Description"
-                  {...form.getInputProps('description')}
-                  data-testid="description-input"
-                />
-                <TextInput
-                  label="Website"
-                  {...form.getInputProps('website')}
-                  data-testid="website-input"
-                />
-                <TextInput
-                  label="Location"
-                  {...form.getInputProps('location')}
-                  data-testid="location-input"
-                />
-                <DatePicker
-                  type="range"
-                  allowSingleDateInRange
-                  value={[
-                    form.values.startDate ?? null,
-                    form.values.endDate ?? null,
-                  ]}
-                  onChange={([start, end]) => {
-                    form.setFieldValue(
-                      'startDate',
-                      start ? new Date(start) : undefined,
-                    );
-                    form.setFieldValue(
-                      'endDate',
-                      end ? new Date(end) : undefined,
-                    );
-                  }}
-                  data-testid="date-picker"
-                />
-                <TimezoneSelect
-                  value={form.values.timezone || ''}
-                  onChange={(tz) =>
-                    form.setFieldValue(
-                      'timezone',
-                      typeof tz === 'string' ? tz : tz.value,
-                    )
-                  }
-                />
-                <Group justify="right">
-                  <Button
-                    type="submit"
-                    loading={isLoading}
-                    disabled={
-                      !form.isValid() || !isEqual(form.values, debouncedValues)
+        <MultiPanelLayout
+          leftPanel={
+            <Card withBorder>
+              <form onSubmit={form.onSubmit(handleSubmit)}>
+                <Stack>
+                  <TextInput
+                    label="Event Name"
+                    required
+                    {...form.getInputProps('name')}
+                    data-testid="name-input"
+                  />
+                  <Textarea
+                    label="Description"
+                    {...form.getInputProps('description')}
+                    data-testid="description-input"
+                  />
+                  <TextInput
+                    label="Website"
+                    {...form.getInputProps('website')}
+                    data-testid="website-input"
+                  />
+                  <TextInput
+                    label="Location"
+                    {...form.getInputProps('location')}
+                    data-testid="location-input"
+                  />
+                  <DatePicker
+                    type="range"
+                    allowSingleDateInRange
+                    value={[
+                      form.values.startDate ?? null,
+                      form.values.endDate ?? null,
+                    ]}
+                    onChange={([start, end]) => {
+                      form.setFieldValue(
+                        'startDate',
+                        start ? new Date(start) : undefined,
+                      );
+                      form.setFieldValue(
+                        'endDate',
+                        end ? new Date(end) : undefined,
+                      );
+                    }}
+                    data-testid="date-picker"
+                  />
+                  <TimezoneSelect
+                    value={form.values.timezone || ''}
+                    onChange={(tz) =>
+                      form.setFieldValue(
+                        'timezone',
+                        typeof tz === 'string' ? tz : tz.value,
+                      )
                     }
-                  >
-                    Create Event
-                  </Button>
-                </Group>
-                {submissionError && <Text c="red">{submissionError}</Text>}
-              </Stack>
-            </form>
-          </Card>
-          <EventCard event={eventPreview} />
-        </SimpleGrid>
+                  />
+                  <Group justify="right">
+                    <Button
+                      type="submit"
+                      loading={isLoading}
+                      disabled={
+                        !form.isValid() ||
+                        !isEqual(form.values, debouncedValues)
+                      }
+                    >
+                      Create Event
+                    </Button>
+                  </Group>
+                  {submissionError && <Text c="red">{submissionError}</Text>}
+                </Stack>
+              </form>
+            </Card>
+          }
+          rightPanel={<EventCard event={eventPreview} />}
+        />
       </Stack>
     </Container>
   );

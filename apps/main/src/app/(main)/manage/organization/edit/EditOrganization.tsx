@@ -3,6 +3,7 @@
 import { useActionForm } from '@/components/forms/useActionForm';
 import OrganizationCard from '@/components/cards/OrganizationCard';
 import { FormActionResult } from '@/components/forms/forms';
+import MultiPanelLayout from '@/components/layout/MultiPanelLayout';
 import { Organization } from '@/datastore/schema';
 import {
   Button,
@@ -66,47 +67,49 @@ export function EditOrganization({
     <Container>
       <Stack>
         <Title order={1}>Edit Organization</Title>
-        <SimpleGrid cols={{ base: 1, md: 2 }}>
-          <Stack>
-            <Card withBorder>
-              <form onSubmit={form.onSubmit(handleSubmit)}>
-                <Stack>
-                  <TextInput
-                    label="Organization Name"
-                    required
-                    {...form.getInputProps('name')}
-                  />
-                  <TextInput
-                    label="Website"
-                    {...form.getInputProps('website')}
-                  />
-                  <Textarea
-                    label="Description"
-                    {...form.getInputProps('description')}
-                  />
-                  <Group justify="right">
-                    <Button
-                      type="submit"
-                      loading={isLoading}
-                      disabled={
-                        !form.isValid() ||
-                        !isEqual(form.values, debouncedValues)
-                      }
-                    >
-                      Save Changes
-                    </Button>
-                  </Group>
-                  {submissionError && <Text c="red">{submissionError}</Text>}
-                </Stack>
-              </form>
-            </Card>
-            <StripeConnectCard
-              organization={organization}
-              stripeError={stripeError}
-            />
-          </Stack>
-          <OrganizationCard organization={organizationPreview} />
-        </SimpleGrid>
+        <MultiPanelLayout
+          leftPanel={
+            <Stack>
+              <Card withBorder>
+                <form onSubmit={form.onSubmit(handleSubmit)}>
+                  <Stack>
+                    <TextInput
+                      label="Organization Name"
+                      required
+                      {...form.getInputProps('name')}
+                    />
+                    <TextInput
+                      label="Website"
+                      {...form.getInputProps('website')}
+                    />
+                    <Textarea
+                      label="Description"
+                      {...form.getInputProps('description')}
+                    />
+                    <Group justify="right">
+                      <Button
+                        type="submit"
+                        loading={isLoading}
+                        disabled={
+                          !form.isValid() ||
+                          !isEqual(form.values, debouncedValues)
+                        }
+                      >
+                        Save Changes
+                      </Button>
+                    </Group>
+                    {submissionError && <Text c="red">{submissionError}</Text>}
+                  </Stack>
+                </form>
+              </Card>
+              <StripeConnectCard
+                organization={organization}
+                stripeError={stripeError}
+              />
+            </Stack>
+          }
+          rightPanel={<OrganizationCard organization={organizationPreview} />}
+        />
       </Stack>
     </Container>
   );
