@@ -250,6 +250,37 @@ export const getRacePageDataWithUsers = cache(async (path: string) => {
   };
 });
 
+export const getPreemPageDataWithUsers = cache(async (path: string) => {
+  const { preem, children } = await getRenderablePreemDataForPage(path);
+
+  const contributorIds =
+    children
+      .map((c) => c.contributor?.id)
+      .filter((id): id is string => !!id) ?? [];
+
+  const uniqueUserIds = [...new Set(contributorIds)];
+  const users =
+    uniqueUserIds.length > 0 ? await getUsersByIds(uniqueUserIds) : [];
+  const usersMap = users.reduce(
+    (acc, user) => {
+      acc[user.id] = user;
+      return acc;
+    },
+    {} as Record<string, User>,
+  );
+
+  const childrenWithUsers = children.map((c) => ({
+    contribution: c,
+    contributor: c.contributor?.id ? usersMap[c.contributor.id] : undefined,
+  }));
+
+  return {
+    preem,
+    children: childrenWithUsers,
+    users,
+  };
+});
+
 export const getRenderableOrganizationDataForPage = cache(
   async (path: DocPath) => {
     const orgDoc = await getDocRefInternal(OrganizationSchema, path);
