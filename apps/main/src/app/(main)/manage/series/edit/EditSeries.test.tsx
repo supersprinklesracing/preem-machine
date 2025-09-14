@@ -3,13 +3,7 @@ import { Series } from '@/datastore/schema';
 import { act, fireEvent, render, screen, waitFor } from '@/test-utils';
 import { EditSeries } from './EditSeries';
 
-// Mock next/navigation
-jest.mock('next/navigation', () => ({
-  // eslint-disable-next-line @eslint-react/hooks-extra/no-unnecessary-use-prefix
-  useRouter: () => ({
-    refresh: jest.fn(),
-  }),
-}));
+
 
 const mockSeries: Series = {
   id: 'series-1',

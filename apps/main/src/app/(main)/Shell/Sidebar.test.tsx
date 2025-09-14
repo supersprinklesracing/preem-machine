@@ -3,10 +3,7 @@ import { useMediaQuery } from '@mantine/hooks';
 import type { SidebarData } from './Sidebar';
 import Sidebar from './Sidebar';
 
-// Mock next/navigation
-jest.mock('next/navigation', () => ({
-  usePathname: jest.fn(() => '/'),
-}));
+
 
 // Mock @mantine/hooks
 jest.mock('@mantine/hooks', () => ({

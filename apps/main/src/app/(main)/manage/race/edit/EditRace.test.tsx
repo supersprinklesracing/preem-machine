@@ -3,12 +3,7 @@ import { Race } from '@/datastore/schema';
 import { act, fireEvent, render, screen, waitFor } from '@/test-utils';
 import { EditRace } from './EditRace';
 
-// Mock next/navigation
-jest.mock('next/navigation', () => ({
-  useRouter: () => ({
-    refresh: jest.fn(),
-  }),
-}));
+
 
 const mockRace: Race = {
   id: 'race-1',

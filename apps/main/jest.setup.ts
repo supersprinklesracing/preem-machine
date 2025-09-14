@@ -1,7 +1,6 @@
 import '@testing-library/jest-dom';
 
 import './src/matchMedia.mock';
-import './src/TimezoneSelect.mock';
 
 import fetchMock from 'jest-fetch-mock';
 fetchMock.enableMocks();

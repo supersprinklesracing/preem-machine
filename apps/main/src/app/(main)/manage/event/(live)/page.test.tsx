@@ -10,6 +10,7 @@ jest.mock('./LiveEvent', () => ({
   default: jest.fn(() => <div>Mock LiveEvent</div>),
 }));
 
+
 setupMockDb();
 
 describe('LiveEventPage component', () => {

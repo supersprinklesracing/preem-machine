@@ -8,6 +8,7 @@ jest.mock('./Admin', () => ({
   default: jest.fn(() => <div>Mock Admin</div>),
 }));
 
+
 setupMockDb();
 
 describe('AdminPage component', () => {

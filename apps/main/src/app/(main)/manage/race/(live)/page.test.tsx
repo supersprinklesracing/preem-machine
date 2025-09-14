@@ -9,6 +9,7 @@ jest.mock('./LiveRace', () => ({
   default: jest.fn(() => <div>Mock LiveRace</div>),
 }));
 
+
 setupMockDb();
 
 describe('LiveRacePage component', () => {

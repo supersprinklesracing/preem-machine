@@ -24,9 +24,9 @@ const customJestConfig: Config = {
   reporters: process.env.IS_CI
     ? [
         ['github-actions', { silent: false }],
-        ['summary', {}],
+        ['default', {}],
       ]
-    : [['summary', {}]],
+    : [['default', {}]],
 };
 
 // Export an async function to modify the final config

@@ -3,13 +3,7 @@ import { Organization } from '@/datastore/schema';
 import { act, fireEvent, render, screen, waitFor } from '@/test-utils';
 import { EditOrganization } from './EditOrganization';
 
-// Mock dependencies
-jest.mock('next/navigation', () => ({
-  // eslint-disable-next-line @eslint-react/hooks-extra/no-unnecessary-use-prefix
-  useRouter: () => ({
-    refresh: jest.fn(),
-  }),
-}));
+
 jest.mock('./StripeConnectCard', () => ({
   __esModule: true,
   StripeConnectCard: jest.fn(() => <div>Mock StripeConnectCard</div>),
