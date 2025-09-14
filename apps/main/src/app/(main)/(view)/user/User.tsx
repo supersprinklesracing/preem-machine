@@ -1,10 +1,10 @@
 'use client';
 
+import { UserAvatarIcon } from '@/components/UserAvatar/UserAvatar';
 import { useAuth } from '@/auth/client/AuthContext';
 import { compareDates, formatDateShort } from '@/dates/dates';
 import type { Contribution, User as UserType } from '@/datastore/schema';
 import {
-  Avatar,
   Button,
   Card,
   Grid,
@@ -22,6 +22,7 @@ interface Props {
   user: Pick<
     UserType,
     | 'id'
+    | 'path'
     | 'name'
     | 'email'
     | 'avatarUrl'
@@ -62,12 +63,7 @@ const User: React.FC<Props> = ({ user, contributions }) => {
       <Grid.Col span={{ base: 12, lg: 4 }}>
         <Card withBorder padding="lg" radius="md">
           <Stack align="center" ta="center">
-            <Avatar
-              src={user.avatarUrl}
-              alt={user.name}
-              size={120}
-              radius="50%"
-            />
+            <UserAvatarIcon user={user} size="xl" />
             <Title order={2}>{user.name}</Title>
             <Group gap="xs">
               <IconMail size={16} />
