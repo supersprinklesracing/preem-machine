@@ -18,6 +18,7 @@ const customJestConfig: Config = {
   setupFilesAfterEnv: ['<rootDir>/jest.setup.ts'],
   moduleNameMapper: {
     '^@/(.*)$': '<rootDir>/src/$1',
+    '^@mantine/dates$': '<rootDir>/src/mantine-dates-mock.tsx',
   },
 
   forceExit: true,

@@ -5,31 +5,6 @@ import { NewRace } from './NewRace';
 
 
 
-jest.mock('@mantine/dates', () => ({
-  DateTimePicker: (props: any) => {
-    const { value, onChange, 'data-testid': dataTestId, ...rest } = props;
-    const handleChange = (event: React.ChangeEvent<HTMLInputElement>) => {
-      const newDate = new Date(event.target.value);
-      onChange(newDate);
-    };
-    return (
-      <input
-        type="datetime-local"
-        data-testid={dataTestId}
-        value={
-          value
-            ? new Date(value.getTime() - value.getTimezoneOffset() * 60000)
-                .toISOString()
-                .slice(0, 16)
-            : ''
-        }
-        onChange={handleChange}
-        {...rest}
-      />
-    );
-  },
-}));
-
 describe('NewRace component', () => {
   beforeEach(() => {
     jest.useFakeTimers();

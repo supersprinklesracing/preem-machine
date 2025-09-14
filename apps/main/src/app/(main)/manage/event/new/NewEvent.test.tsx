@@ -9,52 +9,6 @@ import {
 } from '@/test-utils';
 import { NewEvent } from './NewEvent';
 
-jest.mock('@mantine/dates', () => ({
-  DatePicker: (props: any) => {
-    const { value, onChange, type, ...rest } = props;
-    const handleDateChange =
-      (index: number) => (event: React.ChangeEvent<HTMLInputElement>) => {
-        const newDate = new Date(event.target.value);
-        if (type === 'range') {
-          const newValue = [...(value || [null, null])];
-          newValue[index] = newDate;
-          onChange(newValue);
-        } else {
-          onChange(newDate);
-        }
-      };
-
-    if (type === 'range') {
-      const [startDate, endDate] = value || [null, null];
-      return (
-        <div {...rest}>
-          <input
-            type="date"
-            value={startDate ? startDate.toISOString().split('T')[0] : ''}
-            onChange={handleDateChange(0)}
-            data-testid="start-date-input"
-          />
-          <input
-            type="date"
-            value={endDate ? endDate.toISOString().split('T')[0] : ''}
-            onChange={handleDateChange(1)}
-            data-testid="end-date-input"
-          />
-        </div>
-      );
-    }
-
-    return (
-      <input
-        type="date"
-        value={value ? value.toISOString().split('T')[0] : ''}
-        onChange={handleDateChange(0)}
-        data-testid="date-picker"
-      />
-    );
-  },
-}));
-
 describe('NewEvent component', () => {
   setupMockDb();
 

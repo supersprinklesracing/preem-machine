@@ -12,30 +12,6 @@ jest.mock('next/navigation', () => ({
   }),
 }));
 
-jest.mock('@mantine/dates', () => ({
-  DateTimePicker: (props: any) => {
-    const { value, onChange, ...rest } = props;
-    const handleChange = (event: React.ChangeEvent<HTMLInputElement>) => {
-      const newDate = new Date(event.target.value);
-      onChange(newDate);
-    };
-    return (
-      <input
-        type="datetime-local"
-        value={
-          value
-            ? new Date(value.getTime() - value.getTimezoneOffset() * 60000)
-                .toISOString()
-                .slice(0, 16)
-            : ''
-        }
-        onChange={handleChange}
-        {...rest}
-      />
-    );
-  },
-}));
-
 const mockPreem: Preem = {
   id: 'preem-1',
   path: 'organizations/org-1/series/series-1/events/event-1/races/race-1/preems/preem-1',
