@@ -115,8 +115,12 @@ describe('NewSeries component', () => {
       fireEvent.change(locationInput, {
         target: { value: 'Outer space' },
       });
+    });
+    await act(async () => {
       fireEvent.click(datePicker);
-      const popover = await screen.findByRole('table');
+    });
+    const popover = await screen.findByRole('table');
+    await act(async () => {
       fireEvent.click(within(popover).getByLabelText('15 August 2025'));
       await jest.runAllTimersAsync(); // Let popover close
     });
