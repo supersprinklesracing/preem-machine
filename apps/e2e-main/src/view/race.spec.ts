@@ -8,6 +8,6 @@ test.describe('view: race', () => {
     await expect(
       page.getByRole('heading', { name: 'Master Women 40+/50+' }),
     ).toBeVisible();
-    await expect(page).toHaveScreenshot();
+    await expect(page).toHaveScreenshot({ fullPage: true });
   });
 });

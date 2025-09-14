@@ -6,6 +6,6 @@ test.describe('view: organization', () => {
     await expect(
       page.getByRole('heading', { name: 'Super Sprinkles Racing' }),
     ).toBeVisible();
-    await expect(page).toHaveScreenshot();
+    await expect(page).toHaveScreenshot({ fullPage: true });
   });
 });

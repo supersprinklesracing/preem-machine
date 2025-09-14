@@ -11,6 +11,6 @@ test.describe('account', () => {
     await expect(
       page.getByRole('heading', { name: 'Test User' }),
     ).toBeVisible();
-    await expect(page).toHaveScreenshot();
+    await expect(page).toHaveScreenshot({ fullPage: true });
   });
 });
