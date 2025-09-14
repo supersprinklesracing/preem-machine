@@ -16,7 +16,7 @@ const isSet = (value: string | undefined): boolean => {
 };
 
 export const ENV_STRIPE_ENABLED = isTrue(
-  process.env.NEXT_PUBLIC_STRIPE_ENABLED
+  process.env.NEXT_PUBLIC_STRIPE_ENABLED,
 );
 
 export const ENV_DOTENV_SECRETS = isTrue(process.env.DOTENV_SECRETS);
@@ -30,8 +30,13 @@ export const ENV_DEBUG_AUTH = isTrue(process.env.NEXT_PUBLIC_DEBUG_AUTH);
 export const ENV_DEBUG_CREDENTIALS_DANGER =
   isTrue(process.env.DEBUG_CREDENTIALS_DANGER) ||
   isTrue(process.env.NEXT_PUBLIC_DEBUG_CREDENTIALS_DANGER);
+export const ENV_DEBUG_LINKS =
+  isTrue(process.env.NEXT_PUBLIC_DEBUG_LINKS) ||
+  isTrue(process.env.DEBUG_LINKS);
 
-export const ENV_E2E_TESTING = isTrue(process.env.E2E_TESTING);
+export const ENV_E2E_TESTING =
+  isTrue(process.env.E2E_TESTING) ||
+  isTrue(process.env.NEXT_PUBLIC_E2E_TESTING);
 export const ENV_E2E_TESTING_USER =
   process.env.E2E_TESTING_USER ?? 'test-user-id-not-specified';
 

@@ -2,6 +2,7 @@
 
 import { toUrlPath } from '@/datastore/paths';
 import { Event } from '@/datastore/schema';
+import { ENV_DEBUG_LINKS, ENV_E2E_TESTING } from '@/env/env';
 import {
   Box,
   Divider,
@@ -89,113 +90,119 @@ const Sidebar: React.FC<SidebarProps> = ({ events, onLinkClick }) => {
             component={Link}
             onClick={handleLinkClick}
           />
-          <Divider my="sm" />
-          <Box p="xs" style={{ borderRadius: 'var(--mantine-radius-md)' }}>
-            <NavLink
-              label="Debug"
-              leftSection={<IconBug size={18} />}
-              defaultOpened
-            >
-              <NavLink href="/admin" label="Admin" onClick={handleLinkClick} />
-            </NavLink>
-            <NavLink
-              label="Details"
-              leftSection={<IconDeviceTv size={18} />}
-              defaultOpened
-            >
+          {ENV_DEBUG_LINKS && (
+            <Box p="xs" style={{ borderRadius: 'var(--mantine-radius-md)' }}>
+              <Divider my="sm" />
               <NavLink
-                href="/user"
-                label="User"
-                component={Link}
-                onClick={handleLinkClick}
-              />
-              {/* "/org-super-sprinkles/series-sprinkles-2025/event-giro-sf-2025/race-giro-sf-2025-masters-women/preem-giro-sf-2025-masters-women-mid-sprint/contrib-2" */}
+                label="Debug"
+                leftSection={<IconBug size={18} />}
+                defaultOpened
+              >
+                <NavLink
+                  href="/admin"
+                  label="Admin"
+                  onClick={handleLinkClick}
+                />
+              </NavLink>
               <NavLink
-                href="/org-super-sprinkles"
-                label="Organization"
-                component={Link}
-                onClick={handleLinkClick}
-              />
+                label="Details"
+                leftSection={<IconDeviceTv size={18} />}
+                defaultOpened
+              >
+                <NavLink
+                  href="/user"
+                  label="User"
+                  component={Link}
+                  onClick={handleLinkClick}
+                />
+                {/* "/org-super-sprinkles/series-sprinkles-2025/event-giro-sf-2025/race-giro-sf-2025-masters-women/preem-giro-sf-2025-masters-women-mid-sprint/contrib-2" */}
+                <NavLink
+                  href="/org-super-sprinkles"
+                  label="Organization"
+                  component={Link}
+                  onClick={handleLinkClick}
+                />
+                <NavLink
+                  href="/org-super-sprinkles/series-sprinkles-2025"
+                  label="Series"
+                  component={Link}
+                  onClick={handleLinkClick}
+                />
+                <NavLink
+                  href="/org-super-sprinkles/series-sprinkles-2025/event-giro-sf-2025"
+                  label="Event"
+                  component={Link}
+                  onClick={handleLinkClick}
+                />
+                <NavLink
+                  href="/org-super-sprinkles/series-sprinkles-2025/event-giro-sf-2025/race-giro-sf-2025-masters-women"
+                  label="Race"
+                  component={Link}
+                  onClick={handleLinkClick}
+                />
+                <NavLink
+                  href="/org-super-sprinkles/series-sprinkles-2025/event-giro-sf-2025/race-giro-sf-2025-masters-women/preem-giro-sf-2025-masters-women-mid-sprint"
+                  label="Preem"
+                  component={Link}
+                  onClick={handleLinkClick}
+                />
+              </NavLink>
               <NavLink
-                href="/org-super-sprinkles/series-sprinkles-2025"
-                label="Series"
-                component={Link}
-                onClick={handleLinkClick}
-              />
-              <NavLink
-                href="/org-super-sprinkles/series-sprinkles-2025/event-giro-sf-2025"
-                label="Event"
-                component={Link}
-                onClick={handleLinkClick}
-              />
-              <NavLink
-                href="/org-super-sprinkles/series-sprinkles-2025/event-giro-sf-2025/race-giro-sf-2025-masters-women"
-                label="Race"
-                component={Link}
-                onClick={handleLinkClick}
-              />
-              <NavLink
-                href="/org-super-sprinkles/series-sprinkles-2025/event-giro-sf-2025/race-giro-sf-2025-masters-women/preem-giro-sf-2025-masters-women-mid-sprint"
-                label="Preem"
-                component={Link}
-                onClick={handleLinkClick}
-              />
-            </NavLink>
-            <NavLink
-              label="Manage"
-              leftSection={<IconCrown size={18} />}
-              defaultOpened
-            >
-              <NavLink
-                href="/manage/org-super-sprinkles"
-                label="Organization (Live)"
-                component={Link}
-                onClick={handleLinkClick}
-              />
-              <NavLink
-                href="/manage/org-super-sprinkles/edit"
-                label="Organization (Edit)"
-                component={Link}
-                onClick={handleLinkClick}
-              />
-              <NavLink
-                href="/manage/org-super-sprinkles/series-sprinkles-2025"
-                label="Series (Live)"
-                component={Link}
-                onClick={handleLinkClick}
-              />
-              <NavLink
-                href="/manage/org-super-sprinkles/series-sprinkles-2025/edit"
-                label="Series (Edit)"
-                component={Link}
-                onClick={handleLinkClick}
-              />
-              <NavLink
-                href="/manage/org-super-sprinkles/series-sprinkles-2025/event-giro-sf-2025"
-                label="Event (Live)"
-                component={Link}
-                onClick={handleLinkClick}
-              />
-              <NavLink
-                href="/manage/org-super-sprinkles/series-sprinkles-2025/event-giro-sf-2025/edit"
-                label="Event (Edit)"
-                component={Link}
-                onClick={handleLinkClick}
-              />
-              <NavLink
-                href="/manage/org-super-sprinkles/series-sprinkles-2025/event-giro-sf-2025/race-giro-sf-2025-masters-women"
-                label="Race (Live)"
-                component={Link}
-                onClick={handleLinkClick}
-              />
-              <NavLink
-                href="/manage/org-super-sprinkles/series-sprinkles-2025/event-giro-sf-2025/race-giro-sf-2025-masters-women/edit"
-                label="Race (Edit)"
-                component={Link}
-                onClick={handleLinkClick}
-              />
-            </NavLink>
-          </Box>
+                label="Manage"
+                leftSection={<IconCrown size={18} />}
+                defaultOpened
+              >
+                <NavLink
+                  href="/manage/org-super-sprinkles"
+                  label="Organization (Live)"
+                  component={Link}
+                  onClick={handleLinkClick}
+                />
+                <NavLink
+                  href="/manage/org-super-sprinkles/edit"
+                  label="Organization (Edit)"
+                  component={Link}
+                  onClick={handleLinkClick}
+                />
+                <NavLink
+                  href="/manage/org-super-sprinkles/series-sprinkles-2025"
+                  label="Series (Live)"
+                  component={Link}
+                  onClick={handleLinkClick}
+                />
+                <NavLink
+                  href="/manage/org-super-sprinkles/series-sprinkles-2025/edit"
+                  label="Series (Edit)"
+                  component={Link}
+                  onClick={handleLinkClick}
+                />
+                <NavLink
+                  href="/manage/org-super-sprinkles/series-sprinkles-2025/event-giro-sf-2025"
+                  label="Event (Live)"
+                  component={Link}
+                  onClick={handleLinkClick}
+                />
+                <NavLink
+                  href="/manage/org-super-sprinkles/series-sprinkles-2025/event-giro-sf-2025/edit"
+                  label="Event (Edit)"
+                  component={Link}
+                  onClick={handleLinkClick}
+                />
+                <NavLink
+                  href="/manage/org-super-sprinkles/series-sprinkles-2025/event-giro-sf-2025/race-giro-sf-2025-masters-women"
+                  label="Race (Live)"
+                  component={Link}
+                  onClick={handleLinkClick}
+                />
+                <NavLink
+                  href="/manage/org-super-sprinkles/series-sprinkles-2025/event-giro-sf-2025/race-giro-sf-2025-masters-women/edit"
+                  label="Race (Edit)"
+                  component={Link}
+                  onClick={handleLinkClick}
+                />
+              </NavLink>
+            </Box>
+          )}
         </div>
       </Stack>
     </ScrollArea>
