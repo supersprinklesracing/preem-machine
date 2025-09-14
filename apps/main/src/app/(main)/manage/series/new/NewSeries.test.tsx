@@ -1,7 +1,51 @@
 import { act, fireEvent, render, screen, waitFor, within } from '@/test-utils';
 import { NewSeries } from './NewSeries';
 
+jest.mock('@mantine/dates', () => ({
+  DatePicker: (props: any) => {
+    const { value, onChange, type, ...rest } = props;
+    const handleDateChange =
+      (index: number) => (event: React.ChangeEvent<HTMLInputElement>) => {
+        const newDate = new Date(event.target.value);
+        if (type === 'range') {
+          const newValue = [...(value || [null, null])];
+          newValue[index] = newDate;
+          onChange(newValue);
+        } else {
+          onChange(newDate);
+        }
+      };
 
+    if (type === 'range') {
+      const [startDate, endDate] = value || [null, null];
+      return (
+        <div {...rest}>
+          <input
+            type="date"
+            value={startDate ? startDate.toISOString().split('T')[0] : ''}
+            onChange={handleDateChange(0)}
+            data-testid="start-date-input"
+          />
+          <input
+            type="date"
+            value={endDate ? endDate.toISOString().split('T')[0] : ''}
+            onChange={handleDateChange(1)}
+            data-testid="end-date-input"
+          />
+        </div>
+      );
+    }
+
+    return (
+      <input
+        type="date"
+        value={value ? value.toISOString().split('T')[0] : ''}
+        onChange={handleDateChange(0)}
+        data-testid="date-picker"
+      />
+    );
+  },
+}));
 
 describe('NewSeries component', () => {
   const mockDate = new Date('2025-08-15T12:00:00Z');
@@ -36,7 +80,8 @@ describe('NewSeries component', () => {
     const descriptionInput = screen.getByTestId('description-input');
     const websiteInput = screen.getByTestId('website-input');
     const locationInput = screen.getByTestId('location-input');
-    const datePicker = screen.getByTestId('date-picker');
+    const startDateInput = screen.getByTestId('start-date-input');
+    const endDateInput = screen.getByTestId('end-date-input');
 
     await act(async () => {
       fireEvent.change(nameInput, {
@@ -51,17 +96,18 @@ describe('NewSeries component', () => {
       fireEvent.change(locationInput, {
         target: { value: 'Outer space' },
       });
-
-      // Select a date range
-      fireEvent.click(datePicker);
-      // fireEvent.click(screen.getAllByText('3')[0]);
-      // fireEvent.click(screen.getAllByText('15')[0]);
-
-      jest.advanceTimersByTime(500);
+      fireEvent.change(startDateInput, {
+        target: { value: '2025-08-03' },
+      });
+      fireEvent.change(endDateInput, {
+        target: { value: '2025-08-15' },
+      });
     });
 
     const createButton = screen.getByRole('button', { name: /create series/i });
-    fireEvent.click(createButton);
+    await act(async () => {
+      fireEvent.click(createButton);
+    });
 
     await waitFor(() => {
       expect(newSeriesAction).toHaveBeenCalledWith({
@@ -72,9 +118,8 @@ describe('NewSeries component', () => {
           website: 'https://new-example.com',
           location: 'Outer space',
           timezone: Intl.DateTimeFormat().resolvedOptions().timeZone,
-          // TODO: Fix this.
-          // startDate: new Date('2025-08-03T00:00:00.000Z'),
-          // endDate: new Date('2025-08-15T00:00:00.000Z'),
+          startDate: new Date('2025-08-03T00:00:00.000Z'),
+          endDate: new Date('2025-08-15T00:00:00.000Z'),
         }),
       });
     });
@@ -101,7 +146,9 @@ describe('NewSeries component', () => {
     const descriptionInput = screen.getByTestId('description-input');
     const websiteInput = screen.getByTestId('website-input');
     const locationInput = screen.getByTestId('location-input');
-    const datePicker = screen.getByTestId('date-picker');
+    const startDateInput = screen.getByTestId('start-date-input');
+    const endDateInput = screen.getByTestId('end-date-input');
+
     await act(async () => {
       fireEvent.change(nameInput, {
         target: { value: 'New Test Series' },
@@ -115,14 +162,12 @@ describe('NewSeries component', () => {
       fireEvent.change(locationInput, {
         target: { value: 'Outer space' },
       });
-    });
-    await act(async () => {
-      fireEvent.click(datePicker);
-    });
-    const popover = await screen.findByRole('table');
-    await act(async () => {
-      fireEvent.click(within(popover).getByLabelText('15 August 2025'));
-      await jest.runAllTimersAsync(); // Let popover close
+      fireEvent.change(startDateInput, {
+        target: { value: '2025-08-03' },
+      });
+      fireEvent.change(endDateInput, {
+        target: { value: '2025-08-15' },
+      });
     });
 
     const createButton = screen.getByRole('button', { name: /create series/i });

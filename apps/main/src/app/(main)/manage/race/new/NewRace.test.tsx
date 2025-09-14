@@ -5,6 +5,31 @@ import { NewRace } from './NewRace';
 
 
 
+jest.mock('@mantine/dates', () => ({
+  DateTimePicker: (props: any) => {
+    const { value, onChange, 'data-testid': dataTestId, ...rest } = props;
+    const handleChange = (event: React.ChangeEvent<HTMLInputElement>) => {
+      const newDate = new Date(event.target.value);
+      onChange(newDate);
+    };
+    return (
+      <input
+        type="datetime-local"
+        data-testid={dataTestId}
+        value={
+          value
+            ? new Date(value.getTime() - value.getTimezoneOffset() * 60000)
+                .toISOString()
+                .slice(0, 16)
+            : ''
+        }
+        onChange={handleChange}
+        {...rest}
+      />
+    );
+  },
+}));
+
 describe('NewRace component', () => {
   beforeEach(() => {
     jest.useFakeTimers();
@@ -40,7 +65,7 @@ describe('NewRace component', () => {
     },
   };
 
-  it.skip('should call newRaceAction with the correct data on form submission', async () => {
+  it('should call newRaceAction with the correct data on form submission', async () => {
     const newRaceAction = jest.fn(
       (): Promise<FormActionResult<{ path?: string }>> =>
         Promise.resolve({
@@ -61,8 +86,8 @@ describe('NewRace component', () => {
     const descriptionInput = screen.getByTestId('description-input');
     const websiteInput = screen.getByTestId('website-input');
     const locationInput = screen.getByTestId('location-input');
-    const startDateWrapper = screen.getByTestId('start-date-wrapper');
-    const endDateWrapper = screen.getByTestId('end-date-wrapper');
+    const startDatePicker = screen.getByTestId('start-date-picker');
+    const endDatePicker = screen.getByTestId('end-date-picker');
 
     await act(async () => {
       fireEvent.change(nameInput, {
@@ -77,20 +102,16 @@ describe('NewRace component', () => {
       fireEvent.change(descriptionInput, {
         target: { value: 'Test Description' },
       });
+      fireEvent.change(startDatePicker, {
+        target: { value: '2025-08-03T10:00' },
+      });
+      fireEvent.change(endDatePicker, {
+        target: { value: '2025-08-15T14:00' },
+      });
+    });
 
-      // --- Start Date ---
-      fireEvent.click(within(startDateWrapper).getByRole('button'));
-      let popover = await screen.findByRole('table');
-      fireEvent.click(within(popover).getByLabelText('3 August 2025'));
-      await jest.runAllTimersAsync(); // Let popover close
-
-      // --- End Date ---
-      fireEvent.click(within(endDateWrapper).getByRole('button'));
-      popover = await screen.findByRole('table');
-      fireEvent.click(within(popover).getByLabelText('15 August 2025'));
-      await jest.runAllTimersAsync();
-
-      const createButton = screen.getByRole('button', { name: /create race/i });
+    const createButton = screen.getByRole('button', { name: /create race/i });
+    await act(async () => {
       fireEvent.click(createButton);
     });
 
@@ -102,15 +123,15 @@ describe('NewRace component', () => {
           location: 'Test Location',
           description: 'Test Description',
           website: 'https://example.com',
-          startDate: new Date('2025-08-03T07:00:00.000Z'),
-          endDate: new Date('2025-08-15T07:00:00.000Z'),
+          startDate: new Date('2025-08-03T10:00:00.000Z'),
+          endDate: new Date('2025-08-15T14:00:00.000Z'),
           timezone: 'America/New_York',
         }),
       });
     });
   });
 
-  it.skip('should display an error message if the action fails', async () => {
+  it('should display an error message if the action fails', async () => {
     const newRaceAction = jest.fn(() =>
       Promise.reject(new Error('Failed to create')),
     );
@@ -137,10 +158,10 @@ describe('NewRace component', () => {
       target: { value: 'Test Description' },
     });
     fireEvent.change(screen.getByTestId('start-date-picker'), {
-      target: { value: '2025-08-03T10:00:00.000Z' },
+      target: { value: '2025-08-03T10:00' },
     });
     fireEvent.change(screen.getByTestId('end-date-picker'), {
-      target: { value: '2025-08-15T14:00:00.000Z' },
+      target: { value: '2025-08-15T14:00' },
     });
 
     await waitFor(() => {

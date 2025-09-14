@@ -9,7 +9,51 @@ import {
 } from '@/test-utils';
 import { NewEvent } from './NewEvent';
 
+jest.mock('@mantine/dates', () => ({
+  DatePicker: (props: any) => {
+    const { value, onChange, type, ...rest } = props;
+    const handleDateChange =
+      (index: number) => (event: React.ChangeEvent<HTMLInputElement>) => {
+        const newDate = new Date(event.target.value);
+        if (type === 'range') {
+          const newValue = [...(value || [null, null])];
+          newValue[index] = newDate;
+          onChange(newValue);
+        } else {
+          onChange(newDate);
+        }
+      };
 
+    if (type === 'range') {
+      const [startDate, endDate] = value || [null, null];
+      return (
+        <div {...rest}>
+          <input
+            type="date"
+            value={startDate ? startDate.toISOString().split('T')[0] : ''}
+            onChange={handleDateChange(0)}
+            data-testid="start-date-input"
+          />
+          <input
+            type="date"
+            value={endDate ? endDate.toISOString().split('T')[0] : ''}
+            onChange={handleDateChange(1)}
+            data-testid="end-date-input"
+          />
+        </div>
+      );
+    }
+
+    return (
+      <input
+        type="date"
+        value={value ? value.toISOString().split('T')[0] : ''}
+        onChange={handleDateChange(0)}
+        data-testid="date-picker"
+      />
+    );
+  },
+}));
 
 describe('NewEvent component', () => {
   setupMockDb();
@@ -92,7 +136,7 @@ describe('NewEvent component', () => {
     });
   });
 
-  it.skip('should display an error message if the action fails', async () => {
+  it('should display an error message if the action fails', async () => {
     const newEventAction = jest.fn(() =>
       Promise.reject(new Error('Failed to create')),
     );
@@ -103,6 +147,7 @@ describe('NewEvent component', () => {
           id: 'series-sprinkles-2025',
           path: 'organizations/org-super-sprinkles/series/series-sprinkles-2025',
           name: 'Test Series',
+          timezone: 'America/New_York',
           organizationBrief: {
             id: 'org-super-sprinkles',
             path: 'organizations/org-super-sprinkles',
@@ -116,7 +161,7 @@ describe('NewEvent component', () => {
 
     const nameInput = screen.getByTestId('name-input');
     const descriptionInput = screen.getByTestId('description-input');
-    const datePicker = screen.getByTestId('date-picker');
+    const startDateInput = screen.getByTestId('start-date-input');
 
     await act(async () => {
       fireEvent.change(nameInput, {
@@ -125,10 +170,9 @@ describe('NewEvent component', () => {
       fireEvent.change(descriptionInput, {
         target: { value: 'This is a test description' },
       });
-      fireEvent.click(datePicker);
-      const popover = await screen.findByRole('table');
-      fireEvent.click(within(popover).getByLabelText('15 August 2025'));
-      await jest.runAllTimersAsync(); // Let popover close
+      fireEvent.change(startDateInput, {
+        target: { value: '2025-08-15' },
+      });
     });
 
     const createButton = screen.getByRole('button', {
@@ -140,7 +184,5 @@ describe('NewEvent component', () => {
 
     // Wait for the error message to appear
     await screen.findByText('Failed to create');
-    console.log(document.body.innerHTML);
-    expect(screen.getByText('Failed to create')).toBeInTheDocument();
   });
 });
