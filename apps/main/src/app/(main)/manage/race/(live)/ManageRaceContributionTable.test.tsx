@@ -4,9 +4,8 @@ import { render, screen } from '@/test-utils';
 import ManageRaceContributionTable from './ManageRaceContributionTable';
 
 // Mock child components
-jest.mock('./UserAvatar', () => ({
-  __esModule: true,
-  default: jest.fn(() => <div>Mock UserAvatar</div>),
+jest.mock('@/components/UserAvatar/UserAvatar', () => ({
+  UserAvatar: jest.fn(() => <div>Mock UserAvatar</div>),
 }));
 
 const mockRace: RaceWithPreems = {

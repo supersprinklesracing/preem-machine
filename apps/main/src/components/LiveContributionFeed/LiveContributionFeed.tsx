@@ -1,9 +1,9 @@
 'use client';
 
+import { UserAvatarIcon } from '@/components/UserAvatar/UserAvatar';
 import { toUrlPath } from '@/datastore/paths';
 import { Contribution } from '@/datastore/schema';
 import {
-  Avatar,
   Card,
   Group,
   Stack,
@@ -44,15 +44,7 @@ export default function LiveContributionFeed({
     const contributor = c.contributor;
     return (
       <Group key={c.id} wrap="nowrap">
-        <Link
-          href={contributor?.path ? `/${toUrlPath(contributor.path)}` : '#'}
-        >
-          <Avatar
-            src={contributor?.avatarUrl}
-            alt={contributor?.name}
-            radius="xl"
-          />
-        </Link>
+        <UserAvatarIcon user={contributor} />
         <div>
           <Text size="sm">
             <Text
