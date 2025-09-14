@@ -11,7 +11,7 @@ test.describe('manage: event', () => {
     await expect(
       page.getByRole('heading', { name: 'Il Giro di San Francisco' }),
     ).toBeVisible();
-    await expect(page).toHaveScreenshot();
+    await expect(page).toHaveScreenshot({ fullPage: true });
   });
 
   test('new', async ({ page }) => {
@@ -22,7 +22,7 @@ test.describe('manage: event', () => {
       page.getByRole('heading', { name: 'Create Event' }),
     ).toBeVisible();
     // TODO: Look for the parent document in the dom.
-    await expect(page).toHaveScreenshot();
+    await expect(page).toHaveScreenshot({ fullPage: true });
   });
 
   test('edit', async ({ page }) => {
@@ -35,6 +35,6 @@ test.describe('manage: event', () => {
     await expect(
       page.getByRole('heading', { name: 'Il Giro di San Francisco' }),
     ).toBeVisible();
-    await expect(page).toHaveScreenshot();
+    await expect(page).toHaveScreenshot({ fullPage: true });
   });
 });

@@ -45,7 +45,6 @@ export default defineConfig({
     /** Use a consistent TZ. */
     locale: 'en-US',
     timezoneId: 'America/Los_Angeles',
-    screenshot: { fullPage: true },
   },
   /* Run your local dev server before starting the tests */
   webServer: {
