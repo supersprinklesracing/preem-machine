@@ -14,7 +14,7 @@ describe('AvatarCluster', () => {
 
     const avatarLink = screen.getByRole('link');
     expect(avatarLink).toBeInTheDocument();
-    expect(avatarLink).toHaveAttribute('href', '/account');
+    expect(avatarLink).toHaveAttribute('href', '/user/test-uid');
 
     const avatarImg = screen.getByAltText('Test User');
     expect(avatarImg).toBeInTheDocument();

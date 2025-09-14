@@ -1,6 +1,7 @@
 'use client';
 
 import { toUrlPath } from '@/datastore/paths';
+import { UserAvatarIcon } from '@/components/UserAvatar/UserAvatar';
 import AnimatedNumber from '@/components/AnimatedNumber';
 import RaceCard from '@/components/cards/RaceCard';
 import CourseLink from '@/components/CourseLink/CourseLink';
@@ -9,7 +10,6 @@ import PreemStatusBadge from '@/components/PreemStatusBadge/PreemStatusBadge';
 import { PreemWithContributions } from '@/datastore/query-schema';
 import { Preem, Race as RaceType } from '@/datastore/schema';
 import {
-  Avatar,
   Box,
   Button,
   Card,
@@ -118,15 +118,7 @@ export const Race: React.FC<Props> = ({ race, children }) => {
     return (
       <Box key={c.id} mb="md">
         <Group>
-          <Link
-            href={contributor.path ? `/${toUrlPath(contributor.path)}` : '#'}
-          >
-            <Avatar
-              src={contributor.avatarUrl}
-              alt={contributor.name}
-              radius="xl"
-            />
-          </Link>
+          {contributor.path && <UserAvatarIcon user={contributor} />}
           <div>
             <Text size="sm">
               <Text

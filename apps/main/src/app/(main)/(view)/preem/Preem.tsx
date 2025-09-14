@@ -3,11 +3,11 @@
 import AnimatedNumber from '@/components/AnimatedNumber';
 import ContributionModal from '@/components/ContributionModal';
 import PreemStatusBadge from '@/components/PreemStatusBadge/PreemStatusBadge';
+import { UserAvatar } from '@/components/UserAvatar/UserAvatar';
 import { compareDates, formatDateTime } from '@/dates/dates';
 import { racePath, toUrlPath } from '@/datastore/paths';
 import { Contribution, Preem as PreemType } from '@/datastore/schema';
 import {
-  Avatar,
   Box,
   Button,
   Card,
@@ -55,14 +55,7 @@ export const Preem: React.FC<Props> = ({ preem, children }) => {
       return (
         <Table.Tr key={contribution.id}>
           <Table.Td>
-            <Group>
-              <Avatar
-                src={contribution.contributor?.avatarUrl}
-                alt={contribution.contributor?.name}
-                radius="xl"
-              />
-              <Text fw={500}>{contribution.contributor?.name}</Text>
-            </Group>
+            <UserAvatar user={contribution.contributor} />
           </Table.Td>
           <Table.Td>
             <Text c="green" fw={600}>

@@ -1,6 +1,7 @@
 'use client';
 
 import SeriesCard from '@/components/cards/SeriesCard';
+import { UserAvatar } from '@/components/UserAvatar/UserAvatar';
 import { toUrlPath } from '@/datastore/paths';
 import {
   Contribution,
@@ -13,7 +14,6 @@ import {
 } from '@/datastore/schema';
 import {
   Anchor,
-  Avatar,
   Button,
   Card,
   Grid,
@@ -46,7 +46,7 @@ interface Props {
   }[];
   members: Pick<
     User,
-    'id' | 'avatarUrl' | 'name' | 'email' | 'organizationRefs'
+    'id' | 'avatarUrl' | 'name' | 'email' | 'organizationRefs' | 'path'
   >[];
 }
 
@@ -58,17 +58,7 @@ export default function OrganizationComponent({
   const memberRows = members.map((member) => (
     <Table.Tr key={member.id}>
       <Table.Td>
-        <Group>
-          <Avatar src={member.avatarUrl} radius="xl" />
-          <div>
-            <Text size="sm" fw={500}>
-              {member.name}
-            </Text>
-            <Text size="xs" c="dimmed">
-              {member.email}
-            </Text>
-          </div>
-        </Group>
+        <UserAvatar user={member} />
       </Table.Td>
       <Table.Td>
         <Text size="sm">

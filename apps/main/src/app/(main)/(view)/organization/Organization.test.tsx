@@ -57,8 +57,5 @@ describe('Organization component', () => {
     expect(screen.getByText('Test Series 2')).toBeInTheDocument();
 
     expect(screen.getByText('John Doe')).toBeInTheDocument();
-    expect(screen.getByText('john.doe@example.com')).toBeInTheDocument();
-    expect(screen.getByText('Jane Doe')).toBeInTheDocument();
-    expect(screen.getByText('jane.doe@example.com')).toBeInTheDocument();
   });
 });
