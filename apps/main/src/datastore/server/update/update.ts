@@ -435,10 +435,6 @@ export const updatePreem = async (
       name: updates.name ?? name,
       raceBrief,
     };
-    transaction.update(ref, updates);
-
-    // We only need to prepare descendent updates if the preem changed in a way
-    // to affect the descendent briefs.
     let descendantUpdates: DocUpdate<unknown>[] = [];
     if (updates.name) {
       descendantUpdates = await preparePreemDescendantUpdates(
@@ -446,9 +442,12 @@ export const updatePreem = async (
         path,
         preemBrief,
       );
-      for (const { ref, updates } of descendantUpdates) {
-        transaction.update(ref, updates);
-      }
+    }
+
+    transaction.update(ref, updates);
+
+    for (const { ref, updates } of descendantUpdates) {
+      transaction.update(ref, updates);
     }
 
     return [{ ref, updates }, ...descendantUpdates];

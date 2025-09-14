@@ -6,7 +6,7 @@ import {
   type DocumentReference,
 } from 'firebase-admin/firestore';
 import { unauthorized } from '../../errors';
-import { asDocPath, CollectionPath, docId } from '../../paths';
+import { asDocPath, CollectionPath, docId, DocPath } from '../../paths';
 import {
   ContributionSchema,
   Event,
@@ -172,7 +172,7 @@ export const createRace = async (
 };
 
 export const createPreem = async (
-  path: CollectionPath,
+  path: DocPath,
   preem: Pick<Preem, 'name' | 'description'>,
   authUser: AuthContextUser,
 ) => {

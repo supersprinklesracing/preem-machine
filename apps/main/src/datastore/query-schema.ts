@@ -5,7 +5,13 @@ import {
   Event,
   Series,
   Organization,
+  User,
 } from './schema';
+
+export interface ContributionWithUser {
+  contribution: Contribution;
+  contributor?: User;
+}
 
 export interface PreemWithContributions {
   preem: Preem;
