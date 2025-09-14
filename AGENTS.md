@@ -66,8 +66,8 @@ This project uses `husky` and `lint-staged` to enforce code quality standards on
 #### Testing
 
 - **Tests using Jest**
-  - **Run All Unit Tests:** `./tools/nx/nx test main`
-  - **Run Single Unit Test:** `./tools/nx/nx run main:test --testFile='"${TEST_FILE}"'`
+  - **Run All Unit Tests:** `tools/test.sh`
+  - **Run Single Unit Test:** `tools/test.sh --testFile='"${TEST_FILE}"'`
 
 - **E2E Tests using Playwright**
   - **Run E2E Tests:** `./tools/nx/nx e2e e2e-main`
@@ -120,9 +120,9 @@ Proper quoting is essential for commands to execute correctly. Here are examples
   - **Why it's wrong:** The tool expects a single, quoted path. Unquoted paths with fail.
   - **Correct:** `read_file "apps/main/src/app/(main)/layout.tsx"`
 
-- **Incorrect (Unittest with unquoted path):** `./tools/nx/nx run main:test --no-color --testFile=apps/main/src/app/(main)/layout.tsx`
+- **Incorrect (Unittest with unquoted path):** `tools/test.sh --no-color --testFile=apps/main/src/app/(main)/layout.tsx`
   - **Why it's wrong:** The tool expects a single, quoted path. Unquoted paths will fail.
-  - **Correct:** `./tools/nx/nx run main:test --testFile="apps/main/src/app/(main)/layout.tsx"`
+  - **Correct:** `tools/test.sh --testFile="apps/main/src/app/(main)/layout.tsx"`
 
 - **Incorrect (special characters):** `ls apps/main/src/app/(main)/layout.tsx`
   - **Why it's wrong:** Parentheses `()` are special characters. Unquoted special characters will fail.

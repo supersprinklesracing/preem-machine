@@ -1,11 +1,7 @@
-/* eslint-disable @eslint-react/hooks-extra/no-unnecessary-use-prefix */
-
 import { render, screen } from '@/test-utils';
 import LoginPage from './page';
 
 jest.mock('./login-action');
-
-
 
 describe('LoginPage', () => {
   it('should render the Login component', () => {

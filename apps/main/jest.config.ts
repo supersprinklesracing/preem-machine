@@ -21,14 +21,12 @@ const customJestConfig: Config = {
   },
 
   forceExit: true,
-  ...(process.env.IS_CI
-    ? {
-        reporters: [
-          ['github-actions', { silent: false }],
-          ['summary', {}],
-        ],
-      }
-    : {}),
+  reporters: process.env.IS_CI
+    ? [
+        ['github-actions', { silent: false }],
+        ['default', {}],
+      ]
+    : [['default', {}]],
 };
 
 // Export an async function to modify the final config
