@@ -8,6 +8,6 @@ test.describe('view: event', () => {
     await expect(
       page.getByRole('heading', { name: 'Il Giro di San Francisco' }),
     ).toBeVisible();
-    await expect(page).toHaveScreenshot();
+    await expect(page).toHaveScreenshot({ fullPage: true });
   });
 });

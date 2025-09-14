@@ -8,6 +8,6 @@ test.describe('view: preem', () => {
     await expect(
       page.getByRole('heading', { name: 'First Lap Leader' }),
     ).toBeVisible();
-    await expect(page).toHaveScreenshot();
+    await expect(page).toHaveScreenshot({ fullPage: true });
   });
 });

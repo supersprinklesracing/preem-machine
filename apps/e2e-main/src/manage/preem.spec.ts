@@ -11,7 +11,7 @@ test.describe('manage: preem', () => {
     await expect(
       page.getByRole('heading', { name: 'First Lap Leader', level: 1 }),
     ).toBeVisible();
-    await expect(page).toHaveScreenshot();
+    await expect(page).toHaveScreenshot({ fullPage: true });
   });
 
   test('new', async ({ page }) => {
@@ -21,7 +21,7 @@ test.describe('manage: preem', () => {
     await expect(
       page.getByRole('heading', { name: 'Create Preem' }),
     ).toBeVisible();
-    await expect(page).toHaveScreenshot();
+    await expect(page).toHaveScreenshot({ fullPage: true });
   });
 
   test('edit', async ({ page }) => {
@@ -34,6 +34,6 @@ test.describe('manage: preem', () => {
     await expect(
       page.getByRole('heading', { name: 'First Lap Leader', level: 3 }),
     ).toBeVisible();
-    await expect(page).toHaveScreenshot();
+    await expect(page).toHaveScreenshot({ fullPage: true });
   });
 });

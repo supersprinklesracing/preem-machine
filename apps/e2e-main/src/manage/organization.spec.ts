@@ -9,7 +9,7 @@ test.describe('manage: organization', () => {
     await expect(
       page.getByRole('heading', { name: 'Super Sprinkles Racing' }),
     ).toBeVisible();
-    await expect(page).toHaveScreenshot();
+    await expect(page).toHaveScreenshot({ fullPage: true });
   });
 
   test('new', async ({ page }) => {
@@ -17,7 +17,7 @@ test.describe('manage: organization', () => {
     await expect(
       page.getByRole('heading', { name: 'Create Organization' }),
     ).toBeVisible();
-    await expect(page).toHaveScreenshot();
+    await expect(page).toHaveScreenshot({ fullPage: true });
   });
 
   test('edit', async ({ page }) => {
@@ -28,6 +28,6 @@ test.describe('manage: organization', () => {
     await expect(
       page.getByRole('heading', { name: 'Super Sprinkles Racing', level: 3 }),
     ).toBeVisible();
-    await expect(page).toHaveScreenshot();
+    await expect(page).toHaveScreenshot({ fullPage: true });
   });
 });

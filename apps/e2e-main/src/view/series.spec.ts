@@ -6,6 +6,6 @@ test.describe('view: series', () => {
     await expect(
       page.getByRole('heading', { name: 'Sprinkles 2025' }),
     ).toBeVisible();
-    await expect(page).toHaveScreenshot();
+    await expect(page).toHaveScreenshot({ fullPage: true });
   });
 });

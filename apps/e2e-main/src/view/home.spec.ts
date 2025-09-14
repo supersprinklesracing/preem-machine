@@ -6,6 +6,6 @@ test.describe('view: home', () => {
     await expect(
       page.getByRole('heading', { name: 'Upcoming Events' }),
     ).toBeVisible();
-    await expect(page).toHaveScreenshot();
+    await expect(page).toHaveScreenshot({ fullPage: true });
   });
 });

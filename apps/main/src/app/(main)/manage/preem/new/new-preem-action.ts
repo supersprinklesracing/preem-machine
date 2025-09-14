@@ -3,7 +3,7 @@
 import { verifyAuthUser } from '@/auth/server/auth';
 import { FormActionError, FormActionResult } from '@/components/forms/forms';
 import { createPreem } from '@/datastore/server/create/create';
-import { CollectionPath, DocPath } from '@/datastore/paths';
+import { DocPath } from '@/datastore/paths';
 import { revalidatePath } from 'next/cache';
 import { z } from 'zod';
 import { preemSchema } from '../preem-schema';

@@ -9,6 +9,6 @@ test.describe('manage: hub', () => {
     await expect(
       page.getByRole('heading', { name: 'Organizer Hub' }),
     ).toBeVisible();
-    await expect(page).toHaveScreenshot();
+    await expect(page).toHaveScreenshot({ fullPage: true });
   });
 });
