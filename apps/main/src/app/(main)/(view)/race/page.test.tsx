@@ -10,6 +10,7 @@ jest.mock('./Race', () => ({
   default: jest.fn(() => <div>Mock Race</div>),
 }));
 
+
 setupMockDb();
 
 describe('RacePage component', () => {

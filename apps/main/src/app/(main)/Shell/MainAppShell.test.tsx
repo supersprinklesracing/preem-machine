@@ -10,10 +10,7 @@ jest.mock('@mantine/hooks', () => ({
   useMediaQuery: jest.fn(),
 }));
 
-// Mock the usePathname hook
-jest.mock('next/navigation', () => ({
-  usePathname: jest.fn(),
-}));
+
 
 describe('MainAppShell', () => {
   it('opens and closes the sidebar when the burger is clicked', () => {

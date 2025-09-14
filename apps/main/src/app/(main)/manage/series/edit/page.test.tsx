@@ -8,6 +8,7 @@ jest.mock('./EditSeries', () => ({
   __esModule: true,
   EditSeries: jest.fn(() => <div>Mock EditSeries</div>),
 }));
+
 jest.mock('./edit-series-action', () => ({
   editSeriesAction: jest.fn(),
 }));

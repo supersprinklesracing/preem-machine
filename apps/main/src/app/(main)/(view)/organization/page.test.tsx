@@ -10,6 +10,7 @@ jest.mock('./Organization', () => ({
   default: jest.fn(() => <div>Mock Organization</div>),
 }));
 
+
 setupMockDb();
 
 describe('OrganizationPage component', () => {

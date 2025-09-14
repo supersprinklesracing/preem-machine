@@ -1,13 +1,7 @@
 import { act, fireEvent, render, screen, waitFor, within } from '@/test-utils';
 import { NewSeries } from './NewSeries';
 
-// Mock dependencies
-jest.mock('next/navigation', () => ({
-  // eslint-disable-next-line @eslint-react/hooks-extra/no-unnecessary-use-prefix
-  useRouter: () => ({
-    push: jest.fn(),
-  }),
-}));
+
 
 describe('NewSeries component', () => {
   const mockDate = new Date('2025-08-15T12:00:00Z');
@@ -121,8 +115,12 @@ describe('NewSeries component', () => {
       fireEvent.change(locationInput, {
         target: { value: 'Outer space' },
       });
+    });
+    await act(async () => {
       fireEvent.click(datePicker);
-      const popover = await screen.findByRole('table');
+    });
+    const popover = await screen.findByRole('table');
+    await act(async () => {
       fireEvent.click(within(popover).getByLabelText('15 August 2025'));
       await jest.runAllTimersAsync(); // Let popover close
     });
