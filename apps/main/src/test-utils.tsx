@@ -1,6 +1,7 @@
 import { AuthContextUser } from './auth/user';
 import { AuthProvider } from '@/auth/client/AuthProvider';
 import { createMockDb } from '@/datastore/server/mock-db/mock-db-util';
+import { DatabaseCollections } from '@/datastore/server/mock-db/mock-db-processor';
 import { getFirestore } from '@/firebase/server';
 import { MantineProvider } from '@mantine/core';
 import { render, RenderOptions } from '@testing-library/react';
@@ -37,13 +38,17 @@ const customRender = (
   });
 };
 
+interface MockFirestore extends Firestore {
+  database: DatabaseCollections;
+}
+
 export const setupMockDb = () => {
   // 'use server';
 
-  let firestore: Firestore;
+  let firestore: MockFirestore;
   beforeAll(async () => {
-    firestore = await getFirestore();
-    (firestore as any).database = createMockDb(firestore);
+    firestore = (await getFirestore()) as MockFirestore;
+    firestore.database = createMockDb(firestore);
   });
 };
 

@@ -10,8 +10,9 @@ import {
 } from './update';
 
 import {
+  Contribution,
   ContributionSchema,
-  OrganizationSchema,
+  EventSchema,
   PreemSchema,
   RaceSchema,
   SeriesSchema,
@@ -79,14 +80,14 @@ describe('update mutations', () => {
       });
 
       const event = updates.find((u) => u.ref.path.includes('events'));
-      expect(
-        (event?.updates as any).seriesBrief.organizationBrief.name,
-      ).toEqual('New Org Name');
+      expect(event?.updates.seriesBrief.organizationBrief.name).toEqual(
+        'New Org Name',
+      );
 
       const race = updates.find((u) => u.ref.path.includes('races'));
-      expect(
-        (race?.updates as any).eventBrief.seriesBrief.organizationBrief.name,
-      ).toEqual('New Org Name');
+      expect(race?.updates.eventBrief.seriesBrief.organizationBrief.name).toEqual(
+        'New Org Name',
+      );
     });
 
     it('should update the organization brief in a series doc', async () => {
@@ -125,12 +126,10 @@ describe('update mutations', () => {
       expect(series?.updates).toEqual({ name: 'New Series Name' });
 
       const event = updates.find((u) => u.ref.path.includes('events'));
-      expect((event?.updates as any).seriesBrief.name).toEqual(
-        'New Series Name',
-      );
+      expect(event?.updates.seriesBrief.name).toEqual('New Series Name');
 
       const race = updates.find((u) => u.ref.path.includes('races'));
-      expect((race?.updates as any).eventBrief.seriesBrief.name).toEqual(
+      expect(race?.updates.eventBrief.seriesBrief.name).toEqual(
         'New Series Name',
       );
     });
@@ -148,12 +147,12 @@ describe('update mutations', () => {
         .doc(
           'organizations/org-super-sprinkles/series/series-sprinkles-2025/events/event-giro-sf-2025',
         )
-        .withConverter(converter(OrganizationSchema))
+        .withConverter(converter(EventSchema))
         .get();
 
       const eventData = eventDoc.data();
       expect(eventData?.path).toEqual(eventDoc.ref.path);
-      expect((eventData as any)?.seriesBrief?.name).toEqual('New Series Name');
+      expect(eventData?.seriesBrief?.name).toEqual('New Series Name');
     });
   });
 
@@ -173,7 +172,7 @@ describe('update mutations', () => {
       expect(event?.updates).toEqual({ name: 'New Event Name' });
 
       const race = updates.find((u) => u.ref.path.includes('races'));
-      expect((race?.updates as any).eventBrief.name).toEqual('New Event Name');
+      expect(race?.updates.eventBrief.name).toEqual('New Event Name');
     });
 
     it('should update the event brief in a race doc', async () => {
@@ -214,7 +213,7 @@ describe('update mutations', () => {
       expect(race?.updates).toEqual({ name: 'New Race Name' });
 
       const preem = updates.find((u) => u.ref.path.includes('preems'));
-      expect((preem?.updates as any).raceBrief.name).toEqual('New Race Name');
+      expect(preem?.updates.raceBrief.name).toEqual('New Race Name');
     });
 
     it('should update the race brief in a preem doc', async () => {
@@ -249,7 +248,7 @@ describe('update mutations', () => {
         .withConverter(converter(ContributionSchema))
         .set({
           path: 'organizations/org-super-sprinkles/series/series-sprinkles-2025/events/event-giro-sf-2025/races/race-giro-sf-2025-masters-women/preems/preem-giro-sf-2025-masters-women-first-lap/contributions/contribution-1',
-        } as any);
+        } as Partial<Contribution>);
     });
 
     it('should update a preem and all its descendants and return them', async () => {
@@ -269,9 +268,7 @@ describe('update mutations', () => {
       const contribution = updates.find((u) =>
         u.ref.path.includes('contributions'),
       );
-      expect((contribution?.updates as any).preemBrief.name).toEqual(
-        'New Preem Name',
-      );
+      expect(contribution?.updates.preemBrief.name).toEqual('New Preem Name');
     });
 
     it('should update the preem brief in a contribution doc', async () => {

@@ -161,7 +161,12 @@ describe('create mutations', () => {
         isAnonymous: false,
       };
       await expect(
-        createPendingContribution('preem-path', contribution, {} as any),
+        createPendingContribution(
+          'preem-path',
+          contribution,
+          // eslint-disable-next-line @typescript-eslint/no-explicit-any
+          {} as any,
+        ),
       ).rejects.toThrow('Unauthorized');
     });
   });

@@ -1,5 +1,7 @@
+/* eslint-disable @typescript-eslint/no-explicit-any */
 import {
   DocumentData,
+  Firestore,
   FirestoreDataConverter,
   QueryDocumentSnapshot,
 } from 'firebase-admin/firestore';
@@ -29,7 +31,7 @@ function serialize(data: any): any {
   return data;
 }
 
-function deserialize(data: any, firestore: any): any {
+function deserialize(data: any, firestore: Firestore): any {
   if (data === null || data === undefined) {
     return data;
   }
@@ -55,7 +57,7 @@ function deserialize(data: any, firestore: any): any {
 
 export const converter = <T extends z.ZodTypeAny>(
   schema: T,
-  firestore: any,
+  firestore: Firestore,
 ): FirestoreDataConverter<z.infer<T>> => ({
   toFirestore: (data: z.infer<T>): DocumentData => {
     const parsedData = schema.parse(data);

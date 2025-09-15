@@ -28,13 +28,8 @@ export const useContribution = () => {
   const { authUser } = useAuth();
   const [isProcessing, setIsProcessing] = useState(false);
 
-  const handleContribute = async ({
-    amount,
-    message,
-    isAnonymous,
-    preem,
-    onSuccess,
-  }: ContributionDetails) => {
+  const handleContribute = async (contributionDetails: ContributionDetails) => {
+    const { amount, isAnonymous, preem, onSuccess } = contributionDetails;
     if (!stripe || !elements || !authUser) {
       console.error('Stripe, Elements, or Auth User not available');
       return;

@@ -1,13 +1,16 @@
+import { AuthContextUser } from '@/auth/user';
 import { act, fireEvent, render, screen, waitFor } from '@/test-utils';
 import NewUser from './NewUser';
 
-
-
-const mockAuthUser = {
+const mockAuthUser: AuthContextUser = {
   uid: 'test-uid',
   email: 'test@example.com',
   displayName: 'Test User',
   photoURL: 'https://example.com/avatar.png',
+  providerId: 'password',
+  emailVerified: true,
+  token: 'mock-token',
+  customClaims: {},
 };
 
 describe('NewUser component', () => {
@@ -22,7 +25,7 @@ describe('NewUser component', () => {
   it('should call newUserAction with the correct data on form submission', async () => {
     const mockNewUserAction = jest.fn(() => Promise.resolve({}));
     render(<NewUser newUserAction={mockNewUserAction} />, {
-      authUser: mockAuthUser as any,
+      authUser: mockAuthUser,
     });
 
     // Change the name in the form

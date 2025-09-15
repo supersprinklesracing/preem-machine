@@ -1,6 +1,10 @@
 import { z } from 'zod';
 import { converter as firebaseConverter } from './converters';
-import { Timestamp } from 'firebase-admin/firestore';
+import {
+  DocumentData,
+  QueryDocumentSnapshot,
+  Timestamp,
+} from 'firebase-admin/firestore';
 
 // Mock Zod schema for testing
 const testSchema = z.object({
@@ -17,11 +21,12 @@ const testSchema = z.object({
 type TestType = z.infer<typeof testSchema>;
 
 // Mock Firestore snapshot
-const mockSnapshot = (data: any) => ({
-  id: 'test-id',
-  ref: { path: 'test/test-id' },
-  data: () => data,
-});
+const mockSnapshot = (data: DocumentData) =>
+  ({
+    id: 'test-id',
+    ref: { path: 'test/test-id' },
+    data: () => data,
+  } as unknown as QueryDocumentSnapshot);
 
 describe('converter', () => {
   const converter = firebaseConverter(testSchema);
@@ -36,7 +41,7 @@ describe('converter', () => {
       },
     };
 
-    const result = converter.fromFirestore(mockSnapshot(firestoreData) as any);
+    const result = converter.fromFirestore(mockSnapshot(firestoreData));
 
     expect(result).toEqual({
       id: 'test-id',

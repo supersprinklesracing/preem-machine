@@ -48,12 +48,6 @@ export async function getAuthUserFromRequest(request: NextRequest) {
     throw new Error('Unauthenticated');
   }
 
-  // TODO: Need to figure this out.
-  // Not sure the difference between getting thie user from getUser
-  // vs getting it out of the request.
-  // const { getUser } = await getFirebaseAuth();
-  // const userRecord = await getUser(tokens.decodedToken.uid);
-  // const fromUserRecord = toAuthContextUserFromUserRecord(userRecord);
   return toAuthContextUserFromTokens(tokens);
 }
 
@@ -111,24 +105,3 @@ const toAuthContextUserFromTokens = ({
   };
 };
 
-// TODO: Need to figure this out.
-// Not sure the difference between getting thie user from getUser
-// vs getting it out of the request.
-// const { getUser } = await getFirebaseAuth();
-// const userRecord = await getUser(tokens.decodedToken.uid);
-// const fromUserRecord = toAuthContextUserFromUserRecord(userRecord);
-// eslint-disable-next-line @typescript-eslint/no-explicit-any, @typescript-eslint/no-unused-vars
-function toAuthContextUserFromUserRecord(userRecord: any): AuthContextUser {
-  return {
-    uid: userRecord.uid,
-    email: userRecord.email,
-    displayName: userRecord.displayName,
-    photoURL: userRecord.photoURL,
-    phoneNumber: userRecord.phoneNumber,
-    emailVerified: !!userRecord.emailVerified,
-    providerId: userRecord.providerData[0]?.providerId,
-    customClaims: userRecord.customClaims,
-    token: userRecord.token,
-    customToken: userRecord.customToken,
-  };
-}

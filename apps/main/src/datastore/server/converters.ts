@@ -33,6 +33,7 @@ const firestoreToZod = (data: DocumentData): DocumentData => {
  * @template T - A Zod object schema.
  * @param schema - The Zod schema to use for parsing and validation.
  */
+// eslint-disable-next-line @typescript-eslint/no-explicit-any
 export const converter = <T extends z.ZodObject<any, any>>(
   schema: T,
 ): FirestoreDataConverter<z.infer<T>> => ({
