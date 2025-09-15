@@ -13,7 +13,7 @@ const MultiPanelLayout: React.FC<MultiPanelLayoutProps> = ({
   bottomPanel,
 }) => {
   return (
-    <Grid>
+    <Grid gutter="md">
       <Grid.Col span={{ base: 12, md: 6 }}>{leftPanel}</Grid.Col>
       <Grid.Col span={{ base: 12, md: 6 }}>{rightPanel}</Grid.Col>
       {bottomPanel && <Grid.Col span={12}>{bottomPanel}</Grid.Col>}

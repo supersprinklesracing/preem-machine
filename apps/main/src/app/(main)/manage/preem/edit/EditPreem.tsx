@@ -1,5 +1,7 @@
 'use client';
 
+import PreemCard from '../../../(view)/preem/PreemCard';
+import PreemCard from '@/app/(main)/(view)/preem/PreemCard';
 import { FormActionResult } from '@/components/forms/forms';
 import { useActionForm } from '@/components/forms/useActionForm';
 import MultiPanelLayout from '@/components/layout/MultiPanelLayout';
@@ -55,10 +57,10 @@ export function EditPreem({
 
   const [debouncedValues] = useDebouncedValue(form.values, 100);
 
-  // const preemPreview: Preem = {
-  //   ...preem,
-  //   ...debouncedValues,
-  // };
+  const preemPreview: Preem = {
+    ...preem,
+    ...debouncedValues,
+  };
 
   return (
     <Container fluid>
@@ -123,8 +125,7 @@ export function EditPreem({
             </Card>
           }
           rightPanel={
-            // <PreemCard preem={preemPreview} />
-            <></>
+            <PreemCard preem={preemPreview} />
           }
         />
       </Stack>

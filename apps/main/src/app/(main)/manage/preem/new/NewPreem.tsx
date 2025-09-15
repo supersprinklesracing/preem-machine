@@ -1,10 +1,11 @@
 'use client';
 
+import PreemCard from '../../../(view)/preem/PreemCard';
 import { FormActionResult } from '@/components/forms/forms';
 import { useActionForm } from '@/components/forms/useActionForm';
 import MultiPanelLayout from '@/components/layout/MultiPanelLayout';
 import { DocPath, toUrlPath } from '@/datastore/paths';
-import { Race } from '@/datastore/schema';
+import { Preem, Race } from '@/datastore/schema';
 import {
   Button,
   Card,
@@ -61,12 +62,12 @@ export function NewPreem({
 
   const [debouncedValues] = useDebouncedValue(form.values, 100);
 
-  // const preemPreview: Preem = {
-  //   id: 'preview',
-  //   path: 'organizations/org-1/series/series-1/events/event-1/races/race-1/preems/preview',
-  //   ...debouncedValues,
-  //   raceBrief: race,
-  // };
+  const preemPreview: Preem = {
+    id: 'preview',
+    path: 'organizations/org-1/series/series-1/events/event-1/races/race-1/preems/preview',
+    ...debouncedValues,
+    raceBrief: race,
+  };
 
   return (
     <Container>
@@ -132,8 +133,7 @@ export function NewPreem({
             </Card>
           }
           rightPanel={
-            // <PreemCard preem={preemPreview} />
-            <></>
+            <PreemCard preem={preemPreview} />
           }
         />
       </Stack>
