@@ -15,14 +15,14 @@ setupMockDb();
 describe('SeriesPage component', () => {
   it('should fetch series data and render the Series component', async () => {
     const searchParams = Promise.resolve({
-      path: 'organizations/org-super-sprinkles/series/series-sprinkles-2025',
+      path: 'organizations/super-sprinkles/series/sprinkles-2025',
     });
     render(await SeriesPage({ searchParams }));
 
     expect(screen.getByText('Mock Series')).toBeInTheDocument();
 
     const seriesCalls = (Series as jest.Mock).mock.calls;
-    expect(seriesCalls[0][0].series.id).toBe('series-sprinkles-2025');
+    expect(seriesCalls[0][0].series.id).toBe('sprinkles-2025');
   });
 
   it('should throw NotFoundError when the series does not exist', async () => {

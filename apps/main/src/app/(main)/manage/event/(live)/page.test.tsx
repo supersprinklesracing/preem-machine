@@ -10,13 +10,12 @@ jest.mock('./LiveEvent', () => ({
   default: jest.fn(() => <div>Mock LiveEvent</div>),
 }));
 
-
 setupMockDb();
 
 describe('LiveEventPage component', () => {
   it('should fetch event data and render the LiveEvent component', async () => {
     const searchParams = {
-      path: 'organizations/org-super-sprinkles/series/series-sprinkles-2025/events/event-giro-sf-2025',
+      path: 'organizations/super-sprinkles/series/sprinkles-2025/events/giro-sf-2025',
     };
     const PageComponent = await LiveEventPage({ searchParams });
     render(PageComponent);
@@ -24,7 +23,7 @@ describe('LiveEventPage component', () => {
     expect(screen.getByText('Mock LiveEvent')).toBeInTheDocument();
 
     const liveEventCalls = (LiveEvent as jest.Mock).mock.calls;
-    expect(liveEventCalls[0][0].event.id).toBe('event-giro-sf-2025');
+    expect(liveEventCalls[0][0].event.id).toBe('giro-sf-2025');
   });
 
   it('should throw NotFoundError when the event does not exist', async () => {

@@ -17,7 +17,7 @@ describe('NewPreemPage', () => {
   it('should render the NewPreem component', async () => {
     const PageComponent = await NewPreemPage({
       searchParams: Promise.resolve({
-      path: 'organizations/org-super-sprinkles/series/series-sprinkles-2025/events/event-giro-sf-2025/races/race-giro-sf-2025-masters-women/preems',
+        path: 'organizations/super-sprinkles/series/sprinkles-2025/events/giro-sf-2025/races/masters-women/preems',
       }),
     });
     render(PageComponent);

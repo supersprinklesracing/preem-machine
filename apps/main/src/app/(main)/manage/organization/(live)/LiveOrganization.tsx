@@ -32,7 +32,7 @@ export default function LiveOrganization({ organization, serieses }: Props) {
         <Title order={2}>Series Schedule</Title>
         <SimpleGrid cols={{ base: 1, lg: 2 }}>
           {serieses?.map(({ series }) => (
-            <SeriesCard key={series.id} series={series}>
+            <SeriesCard key={series.path} series={series}>
               <Button
                 component={Link}
                 href={`/manage/${toUrlPath(series.path)}`}

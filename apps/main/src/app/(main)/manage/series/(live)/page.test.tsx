@@ -14,7 +14,7 @@ setupMockDb();
 describe('LiveSeriesPage component', () => {
   it('should fetch series data and render the LiveSeries component', async () => {
     const searchParams = {
-      path: 'organizations/org-super-sprinkles/series/series-sprinkles-2025',
+      path: 'organizations/super-sprinkles/series/sprinkles-2025',
     };
     const PageComponent = await LiveSeriesPage({ searchParams });
     render(PageComponent);
@@ -22,7 +22,7 @@ describe('LiveSeriesPage component', () => {
     expect(screen.getByText('Mock LiveSeries')).toBeInTheDocument();
 
     const liveSeriesCalls = (LiveSeries as jest.Mock).mock.calls;
-    expect(liveSeriesCalls[0][0].series.id).toBe('series-sprinkles-2025');
+    expect(liveSeriesCalls[0][0].series.id).toBe('sprinkles-2025');
   });
 
   it('should throw NotFoundError when the series does not exist', async () => {

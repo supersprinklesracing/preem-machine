@@ -48,7 +48,7 @@ describe('create mutations', () => {
         name: 'New Test Series',
       };
       await expect(
-        createSeries('organizations/org-super-sprinkles', newSeries, authUser),
+        createSeries('organizations/super-sprinkles', newSeries, authUser),
       ).rejects.toThrow('Unauthorized');
     });
   });
@@ -61,7 +61,7 @@ describe('create mutations', () => {
         endDate: new Date('2025-01-01T00:00:00Z'),
       };
       const doc = await createSeries(
-        'organizations/org-super-sprinkles',
+        'organizations/super-sprinkles',
         newSeries,
         authUser,
       );
@@ -74,8 +74,7 @@ describe('create mutations', () => {
 
   describe('createEvent', () => {
     it('should create a new event', async () => {
-      const seriesPath =
-        'organizations/org-super-sprinkles/series/series-sprinkles-2025';
+      const seriesPath = 'organizations/super-sprinkles/series/sprinkles-2025';
       const seriesDoc = await firestore.doc(seriesPath).get();
       const series = seriesDoc.data() as Series;
 
@@ -95,7 +94,7 @@ describe('create mutations', () => {
   describe('createRace', () => {
     it('should create a new race', async () => {
       const eventPath =
-        'organizations/org-super-sprinkles/series/series-sprinkles-2025/events/event-giro-sf-2025';
+        'organizations/super-sprinkles/series/sprinkles-2025/events/giro-sf-2025';
       const eventDoc = await firestore.doc(eventPath).get();
       const event = eventDoc.data() as Event;
       const newRace = {
@@ -117,7 +116,7 @@ describe('create mutations', () => {
         name: 'New Test Preem',
       };
       const doc = await createPreem(
-        'organizations/org-super-sprinkles/series/series-sprinkles-2025/events/event-giro-sf-2025/races/race-giro-sf-2025-masters-women',
+        'organizations/super-sprinkles/series/sprinkles-2025/events/giro-sf-2025/races/masters-women',
         newPreem,
         authUser,
       );
@@ -136,14 +135,14 @@ describe('create mutations', () => {
         isAnonymous: false,
       };
       await createPendingContribution(
-        'organizations/org-super-sprinkles/series/series-sprinkles-2025/events/event-giro-sf-2025/races/race-giro-sf-2025-masters-women/preems/preem-giro-sf-2025-masters-women-first-lap',
+        'organizations/super-sprinkles/series/sprinkles-2025/events/giro-sf-2025/races/masters-women/preems/first-lap',
         contribution,
         authUser,
       );
 
       const snapshot = await firestore
         .collection(
-          'organizations/org-super-sprinkles/series/series-sprinkles-2025/events/event-giro-sf-2025/races/race-giro-sf-2025-masters-women/preems/preem-giro-sf-2025-masters-women-first-lap/contributions',
+          'organizations/super-sprinkles/series/sprinkles-2025/events/giro-sf-2025/races/masters-women/preems/first-lap/contributions',
         )
         .get();
 

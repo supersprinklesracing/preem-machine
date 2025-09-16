@@ -11,9 +11,7 @@ test.describe('account', () => {
     // Intercept all network requests
     // await setE2eTestingUser(page);
     await page.goto('/account');
-    await expect(
-      page.getByRole('heading', { name: 'Test User' }),
-    ).toBeVisible();
+    await expect(page.getByRole('heading', { name: 'E2E User' })).toBeVisible();
     await expect(page).toHaveScreenshot({ fullPage: true });
   });
 });
