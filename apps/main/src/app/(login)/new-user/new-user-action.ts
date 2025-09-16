@@ -1,9 +1,10 @@
 'use server';
 
 import { userSchema } from '@/app/(main)/account/user-schema';
-import { verifyUserContext } from '@/user/server/user';
 import { FormActionError, FormActionResult } from '@/components/forms/forms';
+import { unauthorized } from '@/datastore/errors';
 import { createUser } from '@/datastore/server/create/create';
+import { getUserContext } from '@/user/server/user';
 import { revalidatePath } from 'next/cache';
 import { z } from 'zod';
 
@@ -15,7 +16,10 @@ export async function newUserAction({
   values,
 }: NewUserOptions): Promise<FormActionResult> {
   try {
-    const {authUser} = await verifyUserContext();
+    const {authUser} = await getUserContext();
+    if (!authUser) {
+      unauthorized();
+    }
     const parsedValues = userSchema.parse(values);
     const newUserSnapshot = await createUser(
       parsedValues,
