@@ -25,12 +25,3 @@ export async function logout() {
     headers,
   });
 }
-
-export async function checkEmailVerification() {
-  const headers: Record<string, string> = {};
-
-  await fetch('/api/check-email-verification', {
-    method: 'GET',
-    headers,
-  });
-}

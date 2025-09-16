@@ -24,26 +24,25 @@ import { EditUserOptions } from './edit-user-action';
 import { userSchema } from './user-schema';
 
 export interface AccountProps {
-  currentUser: User;
+  user: User;
   editUserAction: (options: EditUserOptions) => Promise<FormActionResult>;
 }
 
-export default function Account({ currentUser, editUserAction }: AccountProps) {
+export default function Account({ user, editUserAction }: AccountProps) {
   const router = useRouter();
 
   const { form, handleSubmit, isLoading, submissionError } = useActionForm({
     schema: userSchema,
     initialValues: {
-      name: currentUser?.name ?? '',
-      email: currentUser?.email ?? '',
-      avatarUrl: currentUser?.avatarUrl ?? '',
-      affiliation: currentUser?.affiliation ?? '',
-      raceLicenseId: currentUser?.raceLicenseId ?? '',
-      address: currentUser?.address ?? '',
+      name: user?.name ?? '',
+      email: user?.email ?? '',
+      avatarUrl: user?.avatarUrl ?? '',
+      affiliation: user?.affiliation ?? '',
+      raceLicenseId: user?.raceLicenseId ?? '',
+      address: user?.address ?? '',
       termsAccepted: false,
     },
-    action: (values) =>
-      editUserAction({ path: currentUser.path, edits: values }),
+    action: (values) => editUserAction({ path: user.path, edits: values }),
     onSuccess: () => {
       router.refresh();
     },
@@ -66,10 +65,10 @@ export default function Account({ currentUser, editUserAction }: AccountProps) {
                 Save Changes
               </Button>
               {submissionError && <Text c="red">{submissionError}</Text>}
-              {currentUser && (
+              {user && (
                 <Button
                   variant="outline"
-                  onClick={() => router.push(toUrlPath(currentUser.path))}
+                  onClick={() => router.push(toUrlPath(user.path))}
                 >
                   View Public Profile
                 </Button>

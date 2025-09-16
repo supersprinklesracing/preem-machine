@@ -46,13 +46,10 @@ const getUpdateMetadata = (userRef: DocumentReference<DocumentData>) => ({
 });
 
 export const updateUser = async (
-  path: string,
   user: Pick<User, 'name' | 'affiliation' | 'raceLicenseId' | 'address'>,
   authUser: AuthUser,
 ) => {
-  if (!(await isUserAuthorized(authUser, path))) {
-    unauthorized();
-  }
+  const path = `users/${authUser.uid}`;
 
   const docRef = await getDocRefInternal(UserSchema, path);
   await docRef.update({

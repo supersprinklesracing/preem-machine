@@ -1,12 +1,12 @@
 'use server';
 
-import { verifyAuthUser } from '@/auth/server/auth';
 import { isUserAuthorized } from '@/datastore/server/access';
 import { updateOrganizationStripeConnectAccount } from '@/datastore/server/update/update';
 import { ENV_URL_PREFIX } from '@/env/env';
 import { getStripeServer } from '@/stripe/server';
+import { verifyUserContext } from '@/user/server/user';
 import { revalidatePath } from 'next/cache';
-import { default as Stripe } from 'stripe';
+import { Stripe } from 'stripe';
 
 export async function createStripeConnectAccount(
   organizationId: string,
@@ -15,7 +15,7 @@ export async function createStripeConnectAccount(
   error?: string;
   accountId?: string;
 }> {
-  const authUser = await verifyAuthUser();
+  const { authUser } = await verifyUserContext();
 
   // Although the mutation also checks for authorization, we check it here first
   // to prevent creating a Stripe account unnecessarily if the user is not authorized.
@@ -42,7 +42,7 @@ export async function createStripeConnectAccount(
       authUser,
     );
 
-    revalidatePath(`/manage/organization/${organizationId}/edit`);
+    revalidatePath(`/manage/${organizationId}/edit`);
 
     return {
       success: true,
@@ -64,12 +64,11 @@ export async function createStripeConnectAccount(
     return { success: false, error: errorMessage };
   }
 }
-
 export async function createDashboardLink(
   accountId: string,
   organizationId: string,
 ): Promise<{ success: boolean; error?: string; url?: string }> {
-  const authUser = await verifyAuthUser();
+  const { authUser } = await verifyUserContext();
 
   const authorized = await isUserAuthorized(
     authUser,
@@ -93,12 +92,11 @@ export async function createDashboardLink(
     return { success: false, error: errorMessage };
   }
 }
-
 export async function createOnboardingLink(
   accountId: string,
   organizationId: string,
 ): Promise<{ success: boolean; error?: string; url?: string }> {
-  const authUser = await verifyAuthUser();
+  const { authUser } = await verifyUserContext();
 
   const authorized = await isUserAuthorized(
     authUser,

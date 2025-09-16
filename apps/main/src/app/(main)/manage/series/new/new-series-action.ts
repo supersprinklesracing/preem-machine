@@ -1,6 +1,6 @@
 'use server';
 
-import { verifyAuthUser } from '@/auth/server/auth';
+import { verifyUserContext } from '@/user/server/user';
 import { FormActionError, FormActionResult } from '@/components/forms/forms';
 import { createSeries } from '@/datastore/server/create/create';
 import { CollectionPath, DocPath } from '@/datastore/paths';
@@ -18,7 +18,7 @@ export async function newSeriesAction({
   values,
 }: NewSeriesOptions): Promise<FormActionResult<{ path: DocPath }>> {
   try {
-    const authUser = await verifyAuthUser();
+    const { authUser } = await verifyUserContext();
 
     const parsedValues = seriesSchema.parse(values);
     const newSeriesSnapshot = await createSeries(path, parsedValues, authUser);

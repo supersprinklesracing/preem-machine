@@ -1,6 +1,6 @@
 'use server';
 
-import { verifyAuthUser } from '@/auth/server/auth';
+import { verifyUserContext } from '@/user/server/user';
 import { FormActionError, FormActionResult } from '@/components/forms/forms';
 import { DocPath } from '@/datastore/paths';
 import { updateOrganization } from '@/datastore/server/update/update';
@@ -17,7 +17,7 @@ export async function editOrganizationAction({
   edits: organization,
 }: EditOrganizationOptions): Promise<FormActionResult> {
   try {
-    const authUser = await verifyAuthUser();
+    const { authUser } = await verifyUserContext();
     const parsedOrganization = organizationSchema.parse(organization);
     await updateOrganization(path, parsedOrganization, authUser);
 

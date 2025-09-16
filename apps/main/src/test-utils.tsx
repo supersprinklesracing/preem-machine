@@ -1,5 +1,6 @@
 import { createMockDb } from '@/datastore/server/mock-db/mock-db-util';
 import { getFirestore } from '@/firebase/server';
+import * as userServer from '@/user/server/user';
 import { MantineProvider } from '@mantine/core';
 import { render, RenderOptions } from '@testing-library/react';
 import type { Firestore } from 'firebase-admin/firestore';
@@ -7,6 +8,23 @@ import React, { ReactNode } from 'react';
 import { theme } from './app/theme';
 import { UserContextValue } from './user/client/UserContext';
 import { UserProvider } from './user/client/UserProvider';
+
+jest.mock('@/user/server/user');
+
+export function setupUserContext() {
+  const mockedGetUserContext = userServer.getUserContext as jest.Mock;
+  const mockedVerifyUserContext = userServer.verifyUserContext as jest.Mock;
+
+  beforeEach(() => {
+    mockedGetUserContext.mockResolvedValue({ authUser: null, user: null });
+    mockedVerifyUserContext.mockResolvedValue({ authUser: null, user: null });
+  });
+
+  return {
+    mockedGetUserContext,
+    mockedVerifyUserContext,
+  };
+}
 
 const AllTheProviders = function AllTheProviders({
   children,
