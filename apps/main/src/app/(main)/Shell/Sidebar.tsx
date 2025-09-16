@@ -17,7 +17,6 @@ import {
   IconCrown,
   IconDeviceTv,
   IconHome,
-  IconUser,
 } from '@tabler/icons-react';
 import { usePathname } from 'next/navigation';
 import React from 'react';
@@ -53,19 +52,20 @@ const Sidebar: React.FC<SidebarProps> = ({ events, onLinkClick }) => {
             onClick={handleLinkClick}
           />
           <NavLink
-            href="/manage"
-            label="Live Hub"
-            leftSection={<IconCrown size={18} />}
-            active={pathname.startsWith('/manage')}
-            component={Link}
-            onClick={handleLinkClick}
-          />
-          <NavLink
-            label="Events"
+            label="Hub"
             leftSection={<IconBike size={18} />}
             active={pathname.startsWith('/manage')}
             defaultOpened
           >
+            <NavLink
+              href="/manage"
+              label="Overview"
+              leftSection={<IconCrown size={18} />}
+              active={pathname.startsWith('/manage')}
+              component={Link}
+              opened={true}
+              onClick={handleLinkClick}
+            />
             {events.map((event) => {
               const href = `/manage/${toUrlPath(event.path)}`;
               return (
@@ -82,14 +82,6 @@ const Sidebar: React.FC<SidebarProps> = ({ events, onLinkClick }) => {
           </NavLink>
         </div>
         <div>
-          <NavLink
-            href="/user"
-            label="My Profile"
-            leftSection={<IconUser size={18} />}
-            active={pathname.startsWith('/user')}
-            component={Link}
-            onClick={handleLinkClick}
-          />
           {ENV_DEBUG_LINKS && (
             <Box p="xs" style={{ borderRadius: 'var(--mantine-radius-md)' }}>
               <Divider my="sm" />
