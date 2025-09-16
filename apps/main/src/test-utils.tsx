@@ -8,8 +8,39 @@ import React, { ReactNode } from 'react';
 import { theme } from './app/theme';
 import { UserContextValue } from './user/client/UserContext';
 import { UserProvider } from './user/client/UserProvider';
+import { AuthUser } from './auth/user';
+import { User } from './datastore/schema';
+import { ENV_E2E_TESTING_USER } from './env/env';
 
 jest.mock('@/user/server/user');
+
+export const MOCK_AUTH_USER: AuthUser = {
+  uid: ENV_E2E_TESTING_USER,
+  displayName: 'Test User',
+  email: 'test-user@example.com',
+  phoneNumber: null,
+  photoURL: 'https://placehold.co/100x100.png',
+  providerId: 'password',
+  emailVerified: false,
+  token: 'mockValue',
+  customClaims: {}
+}
+
+export const MOCK_USER: User = {
+  id: ENV_E2E_TESTING_USER,
+  path: `users/${ENV_E2E_TESTING_USER}`,
+  name: 'Test User',
+  email: 'test-user@example.com',
+  avatarUrl: 'https://placehold.co/100x100.png',
+  organizationRefs: [
+    {
+      id: 'org-super-sprinkles',
+      path: 'organizations/org-super-sprinkles',
+    },
+  ],
+};
+
+export const MOCK_USER_CONTEXT = {authUser: MOCK_AUTH_USER, user: MOCK_USER};
 
 export function setupUserContext() {
   const mockedGetUserContext = userServer.getUserContext as jest.Mock;

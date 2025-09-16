@@ -3,7 +3,7 @@
 import { FormActionResult } from '@/components/forms/forms';
 import { useActionForm } from '@/components/forms/useActionForm';
 import { DocPath, toUrlPath } from '@/datastore/paths';
-import { Race } from '@/datastore/schema';
+import { Race, Preem } from '@/datastore/schema';
 import {
   Button,
   Card,
@@ -21,6 +21,7 @@ import {
 import { DateTimePicker } from '@mantine/dates';
 import { useDebouncedValue } from '@mantine/hooks';
 import { useRouter } from 'next/navigation';
+import PreemCard from '@/components/cards/PreemCard';
 import { preemSchema } from '../preem-schema';
 import { validatePreemForm } from '../preem-validation';
 import { NewPreemOptions } from './new-preem-action';
@@ -60,12 +61,12 @@ export function NewPreem({
 
   const [debouncedValues] = useDebouncedValue(form.values, 100);
 
-  // const preemPreview: Preem = {
-  //   id: 'preview',
-  //   path: 'organizations/org-1/series/series-1/events/event-1/races/race-1/preems/preview',
-  //   ...debouncedValues,
-  //   raceBrief: race,
-  // };
+  const preemPreview: Preem = {
+    id: 'preview',
+    path: 'organizations/org-1/series/series-1/events/event-1/races/race-1/preems/preview',
+    raceBrief: race,
+    ...debouncedValues,
+  };
 
   return (
     <Container>
@@ -128,7 +129,7 @@ export function NewPreem({
               </Stack>
             </form>
           </Card>
-          {/* <PreemCard preem={preemPreview} /> */}
+          <PreemCard preem={preemPreview} />
         </SimpleGrid>
       </Stack>
     </Container>

@@ -1,14 +1,12 @@
-import { act, fireEvent, render, screen, waitFor } from '@/test-utils';
+import {
+  act,
+  fireEvent,
+  render,
+  screen,
+  waitFor,
+  MOCK_AUTH_USER,
+} from '@/test-utils';
 import NewUser from './NewUser';
-
-
-
-const mockAuthUser = {
-  uid: 'test-uid',
-  email: 'test@example.com',
-  displayName: 'Test User',
-  photoURL: 'https://example.com/avatar.png',
-};
 
 describe('NewUser component', () => {
   beforeEach(() => {
@@ -22,7 +20,7 @@ describe('NewUser component', () => {
   it('should call newUserAction with the correct data on form submission', async () => {
     const mockNewUserAction = jest.fn(() => Promise.resolve({}));
     render(<NewUser newUserAction={mockNewUserAction} />, {
-      userContext: { authUser: mockAuthUser as any, user: null },
+      userContext: { authUser: MOCK_AUTH_USER, user: null },
     });
 
     // Change the name in the form
@@ -48,8 +46,8 @@ describe('NewUser component', () => {
       expect(mockNewUserAction).toHaveBeenCalledWith({
         values: {
           name: 'New Name',
-          email: 'test@example.com',
-          avatarUrl: 'https://example.com/avatar.png',
+          email: 'test-user@example.com',
+          avatarUrl: 'https://placehold.co/100x100.png',
           termsAccepted: true,
           affiliation: '',
           raceLicenseId: '',

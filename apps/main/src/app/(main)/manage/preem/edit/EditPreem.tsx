@@ -1,5 +1,6 @@
 'use client';
 
+import PreemCard from '@/components/cards/PreemCard';
 import { FormActionResult } from '@/components/forms/forms';
 import { useActionForm } from '@/components/forms/useActionForm';
 import { toUrlPath } from '@/datastore/paths';
@@ -54,10 +55,10 @@ export function EditPreem({
 
   const [debouncedValues] = useDebouncedValue(form.values, 100);
 
-  // const preemPreview: Preem = {
-  //   ...preem,
-  //   ...debouncedValues,
-  // };
+  const preemPreview: Preem = {
+    ...preem,
+    ...debouncedValues,
+  };
 
   return (
     <Container fluid>
@@ -119,7 +120,7 @@ export function EditPreem({
               </Stack>
             </form>
           </Card>
-          {/* <PreemCard preem={preemPreview} /> */}
+          <PreemCard preem={preemPreview} />
         </SimpleGrid>
       </Stack>
     </Container>
