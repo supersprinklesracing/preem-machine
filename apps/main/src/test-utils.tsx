@@ -23,8 +23,8 @@ export const MOCK_AUTH_USER: AuthUser = {
   providerId: 'password',
   emailVerified: false,
   token: 'mockValue',
-  customClaims: {}
-}
+  customClaims: {},
+};
 
 export const MOCK_USER: User = {
   id: ENV_E2E_TESTING_USER,
@@ -40,20 +40,23 @@ export const MOCK_USER: User = {
   ],
 };
 
-export const MOCK_USER_CONTEXT = {authUser: MOCK_AUTH_USER, user: MOCK_USER};
+export const MOCK_USER_CONTEXT = { authUser: MOCK_AUTH_USER, user: MOCK_USER };
 
 export function setupUserContext() {
   const mockedGetUserContext = userServer.getUserContext as jest.Mock;
   const mockedVerifyUserContext = userServer.verifyUserContext as jest.Mock;
+  const mockedValidUserContext = userServer.validUserContext as jest.Mock;
 
   beforeEach(() => {
     mockedGetUserContext.mockResolvedValue({ authUser: null, user: null });
     mockedVerifyUserContext.mockResolvedValue({ authUser: null, user: null });
+    mockedValidUserContext.mockResolvedValue({ authUser: null, user: null });
   });
 
   return {
     mockedGetUserContext,
     mockedVerifyUserContext,
+    mockedValidUserContext,
   };
 }
 
