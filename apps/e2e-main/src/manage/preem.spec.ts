@@ -32,7 +32,11 @@ test.describe('manage: preem', () => {
       page.getByRole('heading', { name: 'Edit Preem' }),
     ).toBeVisible();
     await expect(
-      page.getByRole('heading', { name: 'First Lap Leader', level: 3 }),
+      page
+        .getByTestId(
+          'preem-card-preem-giro-sf-2025-masters-women-first-lap',
+        )
+        .getByRole('heading', { name: 'First Lap Leader', level: 3 }),
     ).toBeVisible();
     await expect(page).toHaveScreenshot({ fullPage: true });
   });

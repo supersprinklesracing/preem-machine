@@ -1,26 +1,23 @@
-import { User } from '@/datastore/schema';
-import { render, screen } from '@/test-utils';
+import { MOCK_USER_CONTEXT, render, screen } from '@/test-utils';
 import AvatarCluster from './AvatarCluster';
 
 describe('AvatarCluster', () => {
   it('should render the user avatar when a user is logged in', () => {
-    const user: User = {
-      id: 'test-uid',
-      path: 'users/test-uid',
-      email: 'test@example.com',
-      name: 'Test User',
-      avatarUrl: 'https://example.com/avatar.png',
-    };
-
-    render(<AvatarCluster />, { userContext: { authUser: null, user } });
+    render(<AvatarCluster />, { userContext: MOCK_USER_CONTEXT });
 
     const avatarLink = screen.getByRole('link');
     expect(avatarLink).toBeInTheDocument();
-    expect(avatarLink).toHaveAttribute('href', '/user/test-uid');
+    expect(avatarLink).toHaveAttribute(
+      'href',
+      `/user/${MOCK_USER_CONTEXT.authUser.uid}`,
+    );
 
     const avatarImg = screen.getByAltText('Test User');
     expect(avatarImg).toBeInTheDocument();
-    expect(avatarImg).toHaveAttribute('src', 'https://example.com/avatar.png');
+    expect(avatarImg).toHaveAttribute(
+      'src',
+      'https://placehold.co/100x100.png',
+    );
   });
 
   it('should render a logged-out avatar that links to the login page', () => {
