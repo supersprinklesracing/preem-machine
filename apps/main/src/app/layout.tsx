@@ -1,8 +1,8 @@
 'use server';
 
 import { getAuthUser } from '@/auth/server/auth';
-import { getUserById } from '@/datastore/server/query/query';
-import { CurrentUserProvider } from '@/datastore/client/UserProvider';
+import { UserProvider } from '@/user/client/UserProvider';
+import { getUser } from '@/user/server/user';
 import {
   ColorSchemeScript,
   MantineColorScheme,
@@ -10,7 +10,6 @@ import {
   MantineProvider,
 } from '@mantine/core';
 import { cookies } from 'next/headers';
-import { AuthProvider } from '../auth/client/AuthProvider';
 import './global.css';
 import { theme } from './theme';
 
@@ -20,9 +19,8 @@ export default async function RootLayout({
   children: React.ReactNode;
 }) {
   const authUser = await getAuthUser();
-  const currentUser = authUser
-    ? ((await getUserById(authUser.uid)) ?? null)
-    : null;
+  const user = await getUser();
+  const userContext = { authUser, user };
 
   const colorScheme = ((await cookies()).get('mantine-color-scheme')?.value ||
     'dark') as MantineColorScheme;
@@ -33,13 +31,11 @@ export default async function RootLayout({
         <ColorSchemeScript defaultColorScheme={colorScheme} />
       </head>
       <body>
-        <AuthProvider authUser={authUser}>
-          <CurrentUserProvider currentUser={currentUser}>
-            <MantineProvider theme={theme} defaultColorScheme={colorScheme}>
-              {children}
-            </MantineProvider>
-          </CurrentUserProvider>
-        </AuthProvider>
+        <UserProvider userContext={userContext}>
+          <MantineProvider theme={theme} defaultColorScheme={colorScheme}>
+            {children}
+          </MantineProvider>
+        </UserProvider>
       </body>
     </html>
   );

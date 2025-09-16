@@ -1,13 +1,12 @@
 'use client';
 
 import { UserAvatarIcon } from '@/components/UserAvatar/UserAvatar';
+import { useUserContext } from '@/user/client/UserContext';
 import { ActionIcon, Group } from '@mantine/core';
 import { IconBell } from '@tabler/icons-react';
-import { use } from 'react';
-import { AuthContext } from '../../../auth/client/AuthContext';
 
 export default function AvatarCluster() {
-  const auth = use(AuthContext);
+  const { user } = useUserContext();
 
   return (
     <Group>
@@ -19,14 +18,13 @@ export default function AvatarCluster() {
           </ActionIcon>
         )
       }
-      {auth.authUser && (
+      {user && (
         <UserAvatarIcon
           user={{
-            id: auth.authUser.uid,
-            path: `users/${auth.authUser.uid}`,
-            name: auth.authUser.displayName ?? 'User',
-            avatarUrl:
-              auth.authUser.photoURL ?? 'https://placehold.co/40x40.png',
+            id: user.id,
+            path: user.path,
+            name: user.name,
+            avatarUrl: user.avatarUrl ?? 'https://placehold.co/40x40.png',
           }}
         />
       )}

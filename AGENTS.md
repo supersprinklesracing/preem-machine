@@ -60,7 +60,7 @@ This project uses `husky` and `lint-staged` to enforce code quality standards on
 
 - **Run Dev Server:** `./tools/nx/nx run @preem-machine/main:dev`
 - **Verify Build:** `./tools/nx/nx run @preem-machine/main:build:verify`
-- **Production Bundle:** `./tools/nx/nx run @preem-machine/main:build:production`
+- **Production Bundle:** `./tools/nx/nx run @preem-machine/main:build`
 - **List Project Targets:** `./tools/nx/nx show --no-web project main`
 
 #### Testing

@@ -1,6 +1,6 @@
 'use server';
 
-import { getAuthUser } from '@/auth/server/auth';
+import { verifyAuthUser } from '@/auth/server/auth';
 import { isUserAuthorized } from '@/datastore/server/access';
 import { updateOrganizationStripeConnectAccount } from '@/datastore/server/update/update';
 import { ENV_URL_PREFIX } from '@/env/env';
@@ -15,11 +15,7 @@ export async function createStripeConnectAccount(
   error?: string;
   accountId?: string;
 }> {
-  const authUser = await getAuthUser();
-  if (!authUser) {
-    // This should be caught by middleware, but as a safeguard:
-    return { success: false, error: 'User not authenticated' };
-  }
+  const authUser = await verifyAuthUser();
 
   // Although the mutation also checks for authorization, we check it here first
   // to prevent creating a Stripe account unnecessarily if the user is not authorized.
@@ -73,10 +69,7 @@ export async function createDashboardLink(
   accountId: string,
   organizationId: string,
 ): Promise<{ success: boolean; error?: string; url?: string }> {
-  const authUser = await getAuthUser();
-  if (!authUser) {
-    return { success: false, error: 'User not authenticated' };
-  }
+  const authUser = await verifyAuthUser();
 
   const authorized = await isUserAuthorized(
     authUser,
@@ -105,10 +98,7 @@ export async function createOnboardingLink(
   accountId: string,
   organizationId: string,
 ): Promise<{ success: boolean; error?: string; url?: string }> {
-  const authUser = await getAuthUser();
-  if (!authUser) {
-    return { success: false, error: 'User not authenticated' };
-  }
+  const authUser = await verifyAuthUser();
 
   const authorized = await isUserAuthorized(
     authUser,
