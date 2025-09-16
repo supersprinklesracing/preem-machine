@@ -1,11 +1,11 @@
 'use client';
 
 import { createToast } from '@/app/(main)/admin/createToast';
-import { useAuth } from '@/auth/client/AuthContext';
 import {
   confirmContributionOptimistically,
   createPaymentIntent,
 } from '@/stripe/actions';
+import { useUserContext } from '@/user/client/UserContext';
 import { useElements, useStripe } from '@stripe/react-stripe-js';
 import { useState } from 'react';
 
@@ -25,7 +25,7 @@ export const useContribution = () => {
   const stripe = useStripe();
   const elements = useElements();
   const { toast } = createToast();
-  const { authUser } = useAuth();
+  const { authUser } = useUserContext();
   const [isProcessing, setIsProcessing] = useState(false);
 
   const handleContribute = async ({

@@ -1,21 +1,21 @@
 'use server';
 
-import { AuthContextUser } from '@/auth/user';
+import { AuthUser } from '@/auth/user';
 import { getFirestore } from '@/firebase/server';
 import type { DocumentReference } from 'firebase-admin/firestore';
 import { asDocPath } from '../paths';
 import type { Organization, User } from '../schema';
 
 export async function isUserAuthorized(
-  authUser: AuthContextUser,
+  authUser: AuthUser,
   path: string,
 ): Promise<boolean>;
 export async function isUserAuthorized(
-  authUser: AuthContextUser,
+  authUser: AuthUser,
   docRef: DocumentReference,
 ): Promise<boolean>;
 export async function isUserAuthorized(
-  authUser: AuthContextUser,
+  authUser: AuthUser,
   docRefOrPath: DocumentReference | string,
 ): Promise<boolean> {
   const db = await getFirestore();

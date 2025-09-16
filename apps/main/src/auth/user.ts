@@ -1,6 +1,6 @@
 import { Claims } from 'next-firebase-auth-edge/lib/auth/claims';
 
-export interface AuthContextUser {
+export interface AuthUser {
   /**
    * The display name of the user.
    */

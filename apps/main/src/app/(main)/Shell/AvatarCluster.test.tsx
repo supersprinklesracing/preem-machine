@@ -1,16 +1,18 @@
+import { User } from '@/datastore/schema';
 import { render, screen } from '@/test-utils';
 import AvatarCluster from './AvatarCluster';
 
 describe('AvatarCluster', () => {
   it('should render the user avatar when a user is logged in', () => {
-    const mockUser = {
-      uid: 'test-uid',
+    const user: User = {
+      id: 'test-uid',
+      path: 'users/test-uid',
       email: 'test@example.com',
-      displayName: 'Test User',
-      photoURL: 'https://example.com/avatar.png',
+      name: 'Test User',
+      avatarUrl: 'https://example.com/avatar.png',
     };
 
-    render(<AvatarCluster />, { authUser: mockUser });
+    render(<AvatarCluster />, { userContext: { authUser: null, user } });
 
     const avatarLink = screen.getByRole('link');
     expect(avatarLink).toBeInTheDocument();
@@ -22,7 +24,7 @@ describe('AvatarCluster', () => {
   });
 
   it('should not render an avatar when no user is logged in', () => {
-    render(<AvatarCluster />, { authUser: null });
+    render(<AvatarCluster />, { userContext: { authUser: null, user: null } });
     expect(screen.queryByRole('link')).not.toBeInTheDocument();
   });
 });

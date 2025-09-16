@@ -1,10 +1,5 @@
 import { render, screen } from '@/test-utils';
 import User from './User';
-import { useAuth } from '@/auth/client/AuthContext';
-import { AuthContextUser } from '@/auth/user';
-
-jest.mock('@/auth/client/AuthContext');
-const useAuthMock = useAuth as jest.Mock;
 
 const mockUserData = {
   user: {
@@ -55,7 +50,6 @@ const mockUserData = {
 
 describe('User component', () => {
   it('renders user details and contributions correctly', () => {
-    useAuthMock.mockReturnValue({ authUser: null });
     render(<User {...mockUserData} />);
 
     expect(screen.getByText('John Doe')).toBeInTheDocument();
@@ -75,36 +69,38 @@ describe('User component', () => {
   });
 
   it('shows "Go to My Account" button for own profile', () => {
-    const authUser: AuthContextUser = {
+    const authUser = {
       uid: 'user-1',
       email: 'john.doe@example.com',
       emailVerified: true,
-      idToken: 'idToken1',
+      token: 'idToken1',
       customClaims: {},
       displayName: null,
       phoneNumber: null,
       photoURL: null,
       providerId: '',
     };
-    useAuthMock.mockReturnValue({ authUser });
-    render(<User {...mockUserData} />);
+    render(<User {...mockUserData} />, {
+      userContext: { authUser, user: null },
+    });
     expect(screen.getByText('Go to My Account')).toBeInTheDocument();
   });
 
   it('shows "Edit Profile" button for other users profile', () => {
-    const authUser: AuthContextUser = {
+    const authUser = {
       uid: 'user-2',
       email: 'jane.doe@example.com',
       emailVerified: true,
-      idToken: 'idToken2',
+      token: 'idToken2',
       customClaims: {},
       displayName: null,
       phoneNumber: null,
       photoURL: null,
       providerId: '',
     };
-    useAuthMock.mockReturnValue({ authUser });
-    render(<User {...mockUserData} />);
+    render(<User {...mockUserData} />, {
+      userContext: { authUser, user: null },
+    });
     expect(screen.getByText('Edit Profile')).toBeInTheDocument();
   });
 });

@@ -22,7 +22,7 @@ describe('NewUser component', () => {
   it('should call newUserAction with the correct data on form submission', async () => {
     const mockNewUserAction = jest.fn(() => Promise.resolve({}));
     render(<NewUser newUserAction={mockNewUserAction} />, {
-      authUser: mockAuthUser as any,
+      userContext: { authUser: mockAuthUser as any, user: null },
     });
 
     // Change the name in the form
