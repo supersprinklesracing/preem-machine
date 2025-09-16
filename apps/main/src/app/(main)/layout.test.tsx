@@ -11,7 +11,7 @@ jest.mock('./Shell/MainAppShell', () => ({
 jest.mock('@/datastore/server/query/query');
 
 describe('Layout component', () => {
-  const { mockedGetUserContext } = setupUserContext();
+  const { mockedValidUserContext } = setupUserContext();
 
   beforeEach(() => {
     (firestore.getEventsForUser as jest.Mock).mockClear();
@@ -19,7 +19,7 @@ describe('Layout component', () => {
 
   it('should fetch data and render the MainAppShell for an authenticated user', async () => {
     // Mock the return values of the data fetching functions
-    mockedGetUserContext.mockResolvedValue({
+    mockedValidUserContext.mockResolvedValue({
       authUser: { uid: 'test-uid' },
       user: { id: 'test-uid' },
     });
@@ -37,7 +37,7 @@ describe('Layout component', () => {
 
   it('should render the MainAppShell for an unauthenticated user', async () => {
     // Mock the return values of the data fetching functions
-    mockedGetUserContext.mockResolvedValue({
+    mockedValidUserContext.mockResolvedValue({
       authUser: null,
       user: null,
     });

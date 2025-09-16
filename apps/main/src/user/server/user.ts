@@ -29,8 +29,8 @@ const getUser = async (): Promise<User | null> => {
 export const getUserContext = async (): Promise<UserContextValue> => {
   const authUser = await getAuthUser();
   const user = authUser ? await getUser() : null;
-  return {authUser, user};
-}
+  return { authUser, user };
+};
 
 export const verifyUserContext = async () => {
   const authUser = await getAuthUser();
@@ -41,7 +41,24 @@ export const verifyUserContext = async () => {
   if (!user) {
     redirect('/new-user');
   }
-  return {authUser, user};
+  return { authUser, user };
+};
+
+export const validUserContext = async () => {
+  // A user may either be authorized and have a user profile; or they must be
+  // unauthorized.
+  const authUser = await getAuthUser();
+  const user = await getUser();
+  if (authUser && user) {
+    return { authUser, user };
+  } else if (authUser && !user) {
+    redirect('/new-user');
+  } else if (!authUser && user) {
+    // This can't ever really happen, cause getUser calls getAuthUser.
+    throw Error('Unexpected user state!');
+  } else {
+    return { authUser, user };
+  }
 };
 
 export const hasUserRole = async (
@@ -49,7 +66,7 @@ export const hasUserRole = async (
   authUser: AuthUser,
 ): Promise<boolean> => {
   const roles = authUser.customClaims?.role;
-  if (Array.isArray(roles)  && roles.includes(requiredRole)) {
+  if (Array.isArray(roles) && roles.includes(requiredRole)) {
     return true;
   }
 
