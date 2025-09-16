@@ -22,7 +22,7 @@ export default function Home({ eventsWithRaces, contributions }: Props) {
           <Stack>
             {eventsWithRaces.map(({ event, children }) => (
               <Card
-                key={event?.id}
+                key={event?.path}
                 shadow="sm"
                 padding="lg"
                 radius="md"
@@ -48,7 +48,7 @@ export default function Home({ eventsWithRaces, contributions }: Props) {
                   <Stack gap="xs" mt="md">
                     {children.map(({ race }) => (
                       <Link
-                        key={race.id}
+                        key={race.path}
                         href={`/${toUrlPath(race.path)}`}
                         style={{ textDecoration: 'none', color: 'inherit' }}
                       >

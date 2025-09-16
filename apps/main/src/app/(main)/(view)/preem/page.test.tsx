@@ -24,7 +24,7 @@ describe('PreemPage component', () => {
   it('should fetch preem data and render the Preem component', async () => {
     const PageComponent = await PreemPage({
       searchParams: Promise.resolve({
-        path: 'organizations/org-super-sprinkles/series/series-sprinkles-2025/events/event-giro-sf-2025/races/race-giro-sf-2025-masters-women/preems/preem-giro-sf-2025-masters-women-first-lap',
+        path: 'organizations/super-sprinkles/series/sprinkles-2025/events/giro-sf-2025/races/masters-women/preems/first-lap',
       }),
     });
     render(PageComponent);
@@ -33,9 +33,7 @@ describe('PreemPage component', () => {
     expect(
       screen.getByRole('heading', { name: 'First Lap Leader' }),
     ).toBeInTheDocument();
-    expect(screen.getByTestId('preem-id')).toHaveTextContent(
-      'preem-giro-sf-2025-masters-women-first-lap',
-    );
+    expect(screen.getByTestId('preem-id')).toHaveTextContent('first-lap');
     expect(screen.getByTestId('contributions-count')).toHaveTextContent('1');
   });
 

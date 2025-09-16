@@ -16,39 +16,41 @@ export default function ManagePreemContributionTable({
 }: LiveContributionsProps) {
   const liveContributions = children.filter((c) => !!c?.contributor) ?? [];
 
-  const contributionRows = liveContributions.map(({ contribution, contributor }) => {
-    return (
-      <Table.Tr key={contribution.id}>
-        <Table.Td>
-          <UserAvatar user={contributor} />
-        </Table.Td>
-        <Table.Td>
-          <Text c="green" fw={600}>
-            ${contribution.amount}
-          </Text>
-        </Table.Td>
-        <Table.Td>
-          <Text
-            component={Link}
-            href={`/${toUrlPath(contribution.preemBrief.path)}`}
-            style={{ textDecoration: 'none', color: 'inherit' }}
-          >
-            {contribution.preemBrief?.name}
-          </Text>
-        </Table.Td>
-        <Table.Td>
-          <Text fs="italic" c="dimmed">
-            {contribution.message}
-          </Text>
-        </Table.Td>
-        <Table.Td>
-          <Text c="dimmed" size="xs">
-            {formatDateRelative(contribution.date, { addSuffix: true })}
-          </Text>
-        </Table.Td>
-      </Table.Tr>
-    );
-  });
+  const contributionRows = liveContributions.map(
+    ({ contribution, contributor }) => {
+      return (
+        <Table.Tr key={contribution.path}>
+          <Table.Td>
+            <UserAvatar user={contributor} />
+          </Table.Td>
+          <Table.Td>
+            <Text c="green" fw={600}>
+              ${contribution.amount}
+            </Text>
+          </Table.Td>
+          <Table.Td>
+            <Text
+              component={Link}
+              href={`/${toUrlPath(contribution.preemBrief.path)}`}
+              style={{ textDecoration: 'none', color: 'inherit' }}
+            >
+              {contribution.preemBrief?.name}
+            </Text>
+          </Table.Td>
+          <Table.Td>
+            <Text fs="italic" c="dimmed">
+              {contribution.message}
+            </Text>
+          </Table.Td>
+          <Table.Td>
+            <Text c="dimmed" size="xs">
+              {formatDateRelative(contribution.date, { addSuffix: true })}
+            </Text>
+          </Table.Td>
+        </Table.Tr>
+      );
+    },
+  );
 
   return (
     <Card withBorder padding="lg" radius="md">

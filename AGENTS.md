@@ -288,3 +288,36 @@ To improve user experience, especially for inputs that provide a live preview (l
 ## 7. Environment Variables
 
 When accessing environment variables, do not use `process.env.XYZ` directly in the code. Instead, all environment variable access should go through either `src/env.ts` (or other `*-env.ts` files) file. This ensures that all environment variables are documented and validated in a single place.
+
+## 8. Firestore Data Modeling Notes
+
+### Critical: ID vs. Path Uniqueness
+
+A key architectural concept to understand in this project is the difference between a Firestore Document ID and a Document Path, especially when using collection group queries.
+
+*   **Document ID:** A Document ID (e.g., `giro-sf-2025`) is **only unique within its parent collection**. It is perfectly valid to have two different documents with the same ID if they are in different collections (e.g., `.../series/series-A/events/giro-sf-2025` and `.../series/series-B/events/giro-sf-2025`).
+
+*   **Document Path:** A Document Path (e.g., `organizations/super-sprinkles/series/sprinkles-2025/events/giro-sf-2025`) is the full path from the root of the database to the document. It is **always globally unique**.
+
+### The Collection Group Query Problem
+
+Several queries in this application use `collectionGroup()` to fetch documents from all collections with a specific name (e.g., `events`). This is a powerful feature, but it can lead to subtle bugs if not handled correctly.
+
+**Problem:** A `collectionGroup('events')` query will fetch documents from `.../series-A/events/` and `.../series-B/events/`. If both series contain an event with the ID `giro-sf-202s`, the query will return both documents. If you then attempt to de-duplicate or key this data using only the `id` field, you will encounter errors or incorrect UI rendering.
+
+**Solution:** When processing the results of a `collectionGroup` query, you **MUST** use the document's `path` as the unique identifier for operations like React keys or de-duplication. The `id` is not sufficient.
+
+**Example (Incorrect):**
+```typescript
+const uniqueDocs = docs.filter(
+  (doc, index, self) => index === self.findIndex((t) => t.id === doc.id),
+);
+```
+
+**Example (Correct):**
+```typescript
+const uniqueDocs = docs.filter(
+  (doc, index, self) =>
+    index === self.findIndex((t) => t.ref.path === doc.ref.path),
+);
+```

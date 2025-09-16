@@ -23,7 +23,7 @@ test.describe('view', () => {
     test('basic', async ({ page }) => {
       await page.goto(`/user/${ENV_E2E_TESTING_USER}`);
       await expect(
-        page.getByRole('heading', { name: 'Test User' }),
+        page.getByRole('heading', { name: 'E2E User' }),
       ).toBeVisible();
       await expect(page).toHaveScreenshot({ fullPage: true });
     });

@@ -90,7 +90,7 @@ export default function LiveEvent({ event, children }: Props) {
           {children?.map(
             ({ race, children }) =>
               race && (
-                <RaceCard key={race.id} race={race} preems={children}>
+                <RaceCard key={race.path} race={race} preems={children}>
                   <Button
                     component={Link}
                     href={`/manage/${toUrlPath(race.path)}`}

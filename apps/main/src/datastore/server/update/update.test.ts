@@ -49,7 +49,7 @@ describe('update mutations', () => {
 
     it('should throw an error if the user is not authorized', async () => {
       await expect(
-        updateOrganization('organizations/org-super-sprinkles', {}, authUser),
+        updateOrganization('organizations/super-sprinkles', {}, authUser),
       ).rejects.toThrow('Unauthorized');
     });
   });
@@ -57,7 +57,7 @@ describe('update mutations', () => {
   describe('updateOrganization', () => {
     it('should update an organization and all its descendants and return them', async () => {
       const updates = await updateOrganization(
-        'organizations/org-super-sprinkles',
+        'organizations/super-sprinkles',
         {
           name: 'New Org Name',
         },
@@ -72,8 +72,8 @@ describe('update mutations', () => {
       const series = updates.find((u) => u.ref.path.includes('series'));
       expect(series?.updates).toEqual({
         organizationBrief: {
-          id: 'org-super-sprinkles',
-          path: 'organizations/org-super-sprinkles',
+          id: 'super-sprinkles',
+          path: 'organizations/super-sprinkles',
           name: 'New Org Name',
         },
       });
@@ -91,7 +91,7 @@ describe('update mutations', () => {
 
     it('should update the organization brief in a series doc', async () => {
       await updateOrganization(
-        'organizations/org-super-sprinkles',
+        'organizations/super-sprinkles',
         {
           name: 'New Org Name',
         },
@@ -99,7 +99,7 @@ describe('update mutations', () => {
       );
 
       const seriesDoc = await firestore
-        .doc('organizations/org-super-sprinkles/series/series-sprinkles-2025')
+        .doc('organizations/super-sprinkles/series/sprinkles-2025')
         .withConverter(converter(SeriesSchema))
         .get();
 
@@ -112,7 +112,7 @@ describe('update mutations', () => {
   describe('updateSeries', () => {
     it('should update a series and all its descendants and return them', async () => {
       const updates = await updateSeries(
-        'organizations/org-super-sprinkles/series/series-sprinkles-2025',
+        'organizations/super-sprinkles/series/sprinkles-2025',
         {
           name: 'New Series Name',
         },
@@ -137,7 +137,7 @@ describe('update mutations', () => {
 
     it('should update the series brief in an event doc', async () => {
       await updateSeries(
-        'organizations/org-super-sprinkles/series/series-sprinkles-2025',
+        'organizations/super-sprinkles/series/sprinkles-2025',
         {
           name: 'New Series Name',
         },
@@ -146,7 +146,7 @@ describe('update mutations', () => {
 
       const eventDoc = await firestore
         .doc(
-          'organizations/org-super-sprinkles/series/series-sprinkles-2025/events/event-giro-sf-2025',
+          'organizations/super-sprinkles/series/sprinkles-2025/events/giro-sf-2025',
         )
         .withConverter(converter(OrganizationSchema))
         .get();
@@ -160,7 +160,7 @@ describe('update mutations', () => {
   describe('updateEvent', () => {
     it('should update an event and all its descendants and return them', async () => {
       const updates = await updateEvent(
-        'organizations/org-super-sprinkles/series/series-sprinkles-2025/events/event-giro-sf-2025',
+        'organizations/super-sprinkles/series/sprinkles-2025/events/giro-sf-2025',
         {
           name: 'New Event Name',
         },
@@ -178,7 +178,7 @@ describe('update mutations', () => {
 
     it('should update the event brief in a race doc', async () => {
       await updateEvent(
-        'organizations/org-super-sprinkles/series/series-sprinkles-2025/events/event-giro-sf-2025',
+        'organizations/super-sprinkles/series/sprinkles-2025/events/giro-sf-2025',
         {
           name: 'New Event Name',
         },
@@ -187,7 +187,7 @@ describe('update mutations', () => {
 
       const raceDoc = await firestore
         .doc(
-          'organizations/org-super-sprinkles/series/series-sprinkles-2025/events/event-giro-sf-2025/races/race-giro-sf-2025-masters-women',
+          'organizations/super-sprinkles/series/sprinkles-2025/events/giro-sf-2025/races/masters-women',
         )
         .withConverter(converter(RaceSchema))
         .get();
@@ -201,7 +201,7 @@ describe('update mutations', () => {
   describe('updateRace', () => {
     it('should update a race and all its descendants and return them', async () => {
       const updates = await updateRace(
-        'organizations/org-super-sprinkles/series/series-sprinkles-2025/events/event-giro-sf-2025/races/race-giro-sf-2025-masters-women',
+        'organizations/super-sprinkles/series/sprinkles-2025/events/giro-sf-2025/races/masters-women',
         {
           name: 'New Race Name',
         },
@@ -219,7 +219,7 @@ describe('update mutations', () => {
 
     it('should update the race brief in a preem doc', async () => {
       await updateRace(
-        'organizations/org-super-sprinkles/series/series-sprinkles-2025/events/event-giro-sf-2025/races/race-giro-sf-2025-masters-women',
+        'organizations/super-sprinkles/series/sprinkles-2025/events/giro-sf-2025/races/masters-women',
         {
           name: 'New Race Name',
         },
@@ -228,7 +228,7 @@ describe('update mutations', () => {
 
       const preemDoc = await firestore
         .doc(
-          'organizations/org-super-sprinkles/series/series-sprinkles-2025/events/event-giro-sf-2025/races/race-giro-sf-2025-masters-women/preems/preem-giro-sf-2025-masters-women-first-lap',
+          'organizations/super-sprinkles/series/sprinkles-2025/events/giro-sf-2025/races/masters-women/preems/first-lap',
         )
         .withConverter(converter(PreemSchema))
         .get();
@@ -243,18 +243,18 @@ describe('update mutations', () => {
     beforeEach(async () => {
       await firestore
         .collection(
-          'organizations/org-super-sprinkles/series/series-sprinkles-2025/events/event-giro-sf-2025/races/race-giro-sf-2025-masters-women/preems/preem-giro-sf-2025-masters-women-first-lap/contributions',
+          'organizations/super-sprinkles/series/sprinkles-2025/events/giro-sf-2025/races/masters-women/preems/first-lap/contributions',
         )
         .doc('contribution-1')
         .withConverter(converter(ContributionSchema))
         .set({
-          path: 'organizations/org-super-sprinkles/series/series-sprinkles-2025/events/event-giro-sf-2025/races/race-giro-sf-2025-masters-women/preems/preem-giro-sf-2025-masters-women-first-lap/contributions/contribution-1',
+          path: 'organizations/super-sprinkles/series/sprinkles-2025/events/giro-sf-2025/races/masters-women/preems/first-lap/contributions/contribution-1',
         } as any);
     });
 
     it('should update a preem and all its descendants and return them', async () => {
       const updates = await updatePreem(
-        'organizations/org-super-sprinkles/series/series-sprinkles-2025/events/event-giro-sf-2025/races/race-giro-sf-2025-masters-women/preems/preem-giro-sf-2025-masters-women-first-lap',
+        'organizations/super-sprinkles/series/sprinkles-2025/events/giro-sf-2025/races/masters-women/preems/first-lap',
         {
           name: 'New Preem Name',
         },
@@ -276,7 +276,7 @@ describe('update mutations', () => {
 
     it('should update the preem brief in a contribution doc', async () => {
       await updatePreem(
-        'organizations/org-super-sprinkles/series/series-sprinkles-2025/events/event-giro-sf-2025/races/race-giro-sf-2025-masters-women/preems/preem-giro-sf-2025-masters-women-first-lap',
+        'organizations/super-sprinkles/series/sprinkles-2025/events/giro-sf-2025/races/masters-women/preems/first-lap',
         {
           name: 'New Preem Name',
         },
@@ -285,7 +285,7 @@ describe('update mutations', () => {
 
       const contributionDoc = await firestore
         .doc(
-          'organizations/org-super-sprinkles/series/series-sprinkles-2025/events/event-giro-sf-2025/races/race-giro-sf-2025-masters-women/preems/preem-giro-sf-2025-masters-women-first-lap/contributions/contribution-1',
+          'organizations/super-sprinkles/series/sprinkles-2025/events/giro-sf-2025/races/masters-women/preems/first-lap/contributions/contribution-1',
         )
         .withConverter(converter(ContributionSchema))
         .get();
