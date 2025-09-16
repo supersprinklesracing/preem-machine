@@ -11,6 +11,6 @@ describe('firestore-mocks', () => {
   });
   it('Basic query', async () => {
     const querySnapshot = await firestore.collection('users').get();
-    expect(querySnapshot.size).toBe(6);
+    expect(querySnapshot.size).toBe(7);
   });
 });

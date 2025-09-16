@@ -1,4 +1,3 @@
-
 import { Preem } from '@/datastore/schema';
 import { act, fireEvent, render, screen, waitFor } from '@/test-utils';
 import { EditPreem } from './EditPreem';
@@ -14,7 +13,7 @@ jest.mock('next/navigation', () => ({
 
 const mockPreem: Preem = {
   id: 'preem-1',
-  path: 'organizations/org-1/series/series-1/events/event-1/races/race-1/preems/preem-1',
+  path: 'organizations/org-super-sprinkles/series/series-sprinkles-2025/events/event-giro-sf-2025/races/race-giro-sf-2025-masters-women/preems/preem-giro-sf-2025-masters-women-first-lap',
   name: 'Test Preem',
   description: 'Test Description',
   type: 'Pooled',
@@ -27,6 +26,7 @@ const mockPreem: Preem = {
     path: 'organizations/org-1/series/series-1/events/event-1/races/race-1',
     name: 'Test Race',
     startDate: new Date('2025-09-01T12:00:00Z'),
+    endDate: new Date('2025-09-02T12:00:00Z'),
     eventBrief: {
       id: 'event-1',
       path: 'organizations/org-1/series/series-1/events/event-1',
@@ -74,7 +74,7 @@ describe('EditPreem component', () => {
     await waitFor(() => {
       expect(editPreemAction).toHaveBeenCalledWith(
         expect.objectContaining({
-          path: 'organizations/org-1/series/series-1/events/event-1/races/race-1/preems/preem-1',
+          path: 'organizations/org-super-sprinkles/series/series-sprinkles-2025/events/event-giro-sf-2025/races/race-giro-sf-2025-masters-women/preems/preem-giro-sf-2025-masters-women-first-lap',
           edits: expect.objectContaining({
             name: 'New Preem Name',
             description: 'New Description',
@@ -85,7 +85,7 @@ describe('EditPreem component', () => {
 
     await waitFor(() => {
       expect(mockRouterPush).toHaveBeenCalledWith(
-        '/manage/org-1/series-1/event-1/race-1/preem-1',
+        '/manage/org-super-sprinkles/series-sprinkles-2025/event-giro-sf-2025/race-giro-sf-2025-masters-women/preem-giro-sf-2025-masters-women-first-lap',
       );
     });
   });
@@ -130,7 +130,7 @@ describe('EditPreem component', () => {
     const timeLimitInput = screen.getByLabelText('Time Limit');
     await act(async () => {
       fireEvent.change(timeLimitInput, {
-        target: { value: 'September 1, 2025 1:00 PM' },
+        target: { value: 'September 1, 2028 1:00 PM' },
       });
       fireEvent.blur(timeLimitInput);
       jest.runAllTimers();

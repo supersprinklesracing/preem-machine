@@ -15,24 +15,21 @@ export interface NewUserOptions {
 export async function newUserAction({
   values,
 }: NewUserOptions): Promise<FormActionResult> {
+  let authUser;
   try {
-    const {authUser} = await getUserContext();
+    authUser = (await getUserContext()).authUser;
     if (!authUser) {
-      unauthorized();
+      unauthorized('Not authenticated');
     }
     const parsedValues = userSchema.parse(values);
-    const newUserSnapshot = await createUser(
-      parsedValues,
-      authUser,
-    );
+    const newUserSnapshot = await createUser(parsedValues, authUser);
     const newUser = newUserSnapshot.data();
     if (!newUser) {
-      throw new Error('Failed to create user.');
+      throw new Error(`Failed to create user document`);
     }
     revalidatePath(`user/${newUserSnapshot.ref.id}`);
     return { path: newUserSnapshot.ref.path };
   } catch (error) {
-    console.error('Failed to create user document:', error);
     const message =
       error instanceof Error ? error.message : 'An unknown error occurred.';
     throw new FormActionError(`Failed to save profile: ${message}`);
