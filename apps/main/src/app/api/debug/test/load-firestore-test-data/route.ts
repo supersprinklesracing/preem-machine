@@ -1,8 +1,6 @@
-import { getFirebaseAdminApp } from '@/firebase/server';
 import { seedFirestore } from '@/datastore/server/mock-db/seed-firestore';
 import { ENV_E2E_TESTING } from '@/env/env';
 import { NextResponse } from 'next/server';
-import { getFirestore } from 'firebase-admin/firestore';
 
 export async function POST(_request: Request) {
   if (!ENV_E2E_TESTING) {
@@ -10,8 +8,7 @@ export async function POST(_request: Request) {
   }
 
   try {
-    const app = await getFirebaseAdminApp();
-    await seedFirestore(getFirestore(app));
+    await seedFirestore();
     return NextResponse.json({ success: true });
   } catch (error) {
     console.error('Error seeding Firestore:', error);
