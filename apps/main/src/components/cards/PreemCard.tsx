@@ -1,5 +1,8 @@
-import { Preem } from '@/datastore/schema';
+import { toUrlPath } from '@/datastore/paths';
+import { Contribution, Preem } from '@/datastore/schema';
+import { getSponsorName } from '@/datastore/sponsors';
 import {
+  Anchor,
   Card,
   Grid,
   Group,
@@ -7,30 +10,32 @@ import {
   Text,
   Title,
   TitleOrder,
-  Anchor,
 } from '@mantine/core';
-import {
-  IconSparkles,
-} from '@tabler/icons-react';
+import { IconSparkles, IconTag, IconUser } from '@tabler/icons-react';
+import Link from 'next/link';
 import React from 'react';
 import { MetadataItem, MetadataRow } from './MetadataRow';
-import Link from 'next/link';
-import { toUrlPath } from '@/datastore/paths';
 
 interface PreemCardProps {
   preem: Preem;
+  contributions?: Contribution[];
+
   children?: React.ReactNode;
   style?: React.CSSProperties;
   withBorder?: boolean;
   titleOrder?: TitleOrder;
+  hideBrief?: boolean;
 }
 
 const PreemCard: React.FC<PreemCardProps> = ({
   preem,
+  contributions,
+
   children,
   style,
   withBorder = true,
   titleOrder = 3,
+  hideBrief,
 }) => {
   const metadataItems: MetadataItem[] = [];
   if (preem.prizePool && preem.prizePool > 0) {
@@ -58,6 +63,23 @@ const PreemCard: React.FC<PreemCardProps> = ({
     });
   }
 
+  if (preem.type) {
+    metadataItems.push({
+      key: 'type',
+      icon: <IconTag size={18} />,
+      label: <Text size="sm">{preem.type}</Text>,
+    });
+  }
+
+  const sponsorName = getSponsorName({ preem, children: contributions ?? [] });
+  if (sponsorName) {
+    metadataItems.push({
+      key: 'sponsor',
+      icon: <IconUser size={18} />,
+      label: <Text size="sm">{sponsorName}</Text>,
+    });
+  }
+
   return (
     <Card
       data-testid={`preem-card-${preem.id}`}
@@ -80,15 +102,17 @@ const PreemCard: React.FC<PreemCardProps> = ({
                   <Group align="center" gap="md">
                     <Title order={titleOrder}>{preem.name}</Title>
                   </Group>
-                  <Text c="dimmed">
-                    Part of{' '}
-                    <Anchor
-                      component={Link}
-                      href={`/${toUrlPath(preem.raceBrief.path)}`}
-                    >
-                      {preem.raceBrief.name}
-                    </Anchor>
-                  </Text>
+                  {!hideBrief && (
+                    <Text c="dimmed">
+                      Part of{' '}
+                      <Anchor
+                        component={Link}
+                        href={`/${toUrlPath(preem.raceBrief.path)}`}
+                      >
+                        {preem.raceBrief.name}
+                      </Anchor>
+                    </Text>
+                  )}
                 </div>
               </Group>
 
