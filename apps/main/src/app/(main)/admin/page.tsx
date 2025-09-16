@@ -1,14 +1,19 @@
-import { Breadcrumbs } from '@/components/Breadcrumbs/Breadcrumbs';
-import { getUsers } from '@/datastore/server/query/query';
-import { Stack } from '@mantine/core';
-import Admin from './Admin';
+import { getOrganizations, getUsers } from '@/datastore/server/query/query';
+import { Admin } from './Admin';
+import { verifyUserContext, hasUserRole } from '@/user/server/user';
+import { redirect } from 'next/navigation';
 
-export default async function AdminPage() {
+async function AdminPage() {
+  const { authUser } = await verifyUserContext();
+  const isAdmin = await hasUserRole('admin', authUser);
+
+  if (!isAdmin) {
+    redirect('/');
+  }
+
   const users = await getUsers();
-  return (
-    <Stack>
-      <Breadcrumbs brief={null} />
-      <Admin users={users} />
-    </Stack>
-  );
+  const organizations = await getOrganizations();
+  return <Admin users={users} organizations={organizations} />;
 }
+
+export default AdminPage;
