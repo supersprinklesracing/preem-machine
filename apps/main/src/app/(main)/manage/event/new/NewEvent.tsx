@@ -5,7 +5,7 @@ import EventCard from '@/components/cards/EventCard';
 import { FormActionResult } from '@/components/forms/forms';
 import { toUrlPath } from '@/datastore/paths';
 import { Event, Series } from '@/datastore/schema';
-import { TwoColumnLayout } from '@/components/layout/TwoColumnLayout';
+import { MultiPanelLayout } from '@/components/layout/MultiPanelLayout';
 import {
   Button,
   Card,
@@ -77,7 +77,7 @@ export function NewEvent({
     <Container>
       <Stack>
         <Title order={1}>Create Event</Title>
-        <TwoColumnLayout
+        <MultiPanelLayout
           leftPanel={
             <Card withBorder>
               <form onSubmit={form.onSubmit(handleSubmit)}>

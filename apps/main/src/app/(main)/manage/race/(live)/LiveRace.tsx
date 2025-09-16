@@ -4,10 +4,14 @@ import { toUrlPath } from '@/datastore/paths';
 export const dynamic = 'force-dynamic';
 
 import AnimatedNumber from '@/components/AnimatedNumber';
+import ContributionsCard from '@/components/cards/ContributionsCard';
+import PreemCard from '@/components/cards/PreemCard';
 import PreemStatusBadge from '@/components/PreemStatusBadge/PreemStatusBadge';
-import { formatDateRelative } from '@/dates/dates';
+import type { PreemWithContributions } from '@/datastore/query-schema';
 import { Race } from '@/datastore/schema';
+import { formatDateRelative } from '@/dates/dates';
 import {
+  Box,
   Button,
   Card,
   Grid,
@@ -26,9 +30,6 @@ import {
 } from '@tabler/icons-react';
 import Link from 'next/link';
 import React from 'react';
-
-import type { PreemWithContributions } from '@/datastore/query-schema';
-import ManageRaceContributionTable from './ManageRaceContributionTable';
 
 export interface LiveRaceProps {
   race: Pick<Race, 'name' | 'path' | 'startDate' | 'currentRacers'>;
@@ -63,6 +64,29 @@ export const LiveRace: React.FC<LiveRaceProps> = ({ race, children }) => {
       </Table.Td>
     </Table.Tr>
   ));
+
+  const preemCards = children?.map((preemWithContributions) => {
+    const { preem, children } = preemWithContributions;
+    return (
+      <PreemCard
+        key={preem.path}
+        preem={preem}
+        contributions={children}
+        hideBrief
+      >
+        <Button
+          size="xs"
+          variant="outline"
+          disabled={preem.status === 'Awarded'}
+          leftSection={<IconAward size={14} />}
+          mt="md"
+          fullWidth
+        >
+          Mark as Awarded
+        </Button>
+      </PreemCard>
+    );
+  });
 
   return (
     <Stack gap="lg">
@@ -113,22 +137,29 @@ export const LiveRace: React.FC<LiveRaceProps> = ({ race, children }) => {
         <Grid.Col span={{ base: 12, md: 8 }}>
           <Card withBorder padding="lg" radius="md">
             <Title order={3}>Preem Management</Title>
-            <Table mt="md" highlightOnHover>
-              <Table.Thead>
-                <Table.Tr>
-                  <Table.Th>Preem</Table.Th>
-                  <Table.Th>Prize Pool</Table.Th>
-                  <Table.Th>Status</Table.Th>
-                  <Table.Th />
-                </Table.Tr>
-              </Table.Thead>
-              <Table.Tbody>{preemRows}</Table.Tbody>
-            </Table>
+            {/* Desktop view */}
+            <Box visibleFrom="sm">
+              <Table mt="md" highlightOnHover>
+                <Table.Thead>
+                  <Table.Tr>
+                    <Table.Th>Preem</Table.Th>
+                    <Table.Th>Prize Pool</Table.Th>
+                    <Table.Th>Status</Table.Th>
+                    <Table.Th />
+                  </Table.Tr>
+                </Table.Thead>
+                <Table.Tbody>{preemRows}</Table.Tbody>
+              </Table>
+            </Box>
+            {/* Mobile view */}
+            <Box hiddenFrom="sm" mt="md">
+              <Stack>{preemCards}</Stack>
+            </Box>
           </Card>
         </Grid.Col>
       </Grid>
 
-      <ManageRaceContributionTable children={children} />
+      <ContributionsCard children={children} />
     </Stack>
   );
 };

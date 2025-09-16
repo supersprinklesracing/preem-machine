@@ -1,12 +1,13 @@
 'use client';
 
-import { toUrlPath } from '@/datastore/paths';
-import { UserAvatarIcon } from '@/components/UserAvatar/UserAvatar';
 import AnimatedNumber from '@/components/AnimatedNumber';
 import RaceCard from '@/components/cards/RaceCard';
-import CourseLink from '@/components/CourseLink/CourseLink';
 import ContributionModal from '@/components/ContributionModal';
+import CourseLink from '@/components/CourseLink/CourseLink';
+import { MultiPanelLayout } from '@/components/layout/MultiPanelLayout';
 import PreemStatusBadge from '@/components/PreemStatusBadge/PreemStatusBadge';
+import { UserAvatarIcon } from '@/components/UserAvatar/UserAvatar';
+import { toUrlPath } from '@/datastore/paths';
 import { PreemWithContributions } from '@/datastore/query-schema';
 import { Preem, Race as RaceType } from '@/datastore/schema';
 import {
@@ -23,6 +24,8 @@ import {
 import { IconCurrencyDollar, IconDeviceTv } from '@tabler/icons-react';
 import Link from 'next/link';
 import React, { useState } from 'react';
+import { getSponsorName } from '@/datastore/sponsors';
+import PreemCard from '@/components/cards/PreemCard';
 
 interface Props {
   race: RaceType;
@@ -31,17 +34,6 @@ interface Props {
 
 export const Race: React.FC<Props> = ({ race, children }) => {
   const [selectedPreem, setSelectedPreem] = useState<Preem | null>(null);
-
-  const getSponsorName = ({
-    preem,
-    children: contributions,
-  }: PreemWithContributions) => {
-    const name = contributions[0]?.contributor?.name;
-    if (preem?.type === 'One-Shot' && name) {
-      return name || 'A Sponsor';
-    }
-    return 'Community Pooled';
-  };
 
   const allContributions = children
     .flatMap((p) =>
@@ -61,7 +53,7 @@ export const Race: React.FC<Props> = ({ race, children }) => {
       return null;
     }
     return (
-      <Table.Tr key={preem.id} style={{ cursor: 'pointer' }}>
+      <Table.Tr key={preem.id}>
         <Table.Td>
           <Link
             href={`/${toUrlPath(preem.path)}`}
@@ -77,7 +69,7 @@ export const Race: React.FC<Props> = ({ race, children }) => {
             $<AnimatedNumber value={preem.prizePool ?? 0} />
           </Text>
         </Table.Td>
-        <Table.Td>{getSponsorName(preemWithContributions)}</Table.Td>
+        <Table.Td>{getSponsorName(preemWithContributions) ?? ''}</Table.Td>
         <Table.Td>
           <PreemStatusBadge status={preem.status || 'Open'} />
         </Table.Td>
@@ -98,6 +90,28 @@ export const Race: React.FC<Props> = ({ race, children }) => {
           </Group>
         </Table.Td>
       </Table.Tr>
+    );
+  });
+
+  const preemCards = children.map((preemWithContributions) => {
+    const { preem, children } = preemWithContributions;
+    if (!preem) {
+      return null;
+    }
+    return (
+      <PreemCard key={preem.id} preem={preem} contributions={children}>
+        <Button
+          variant="filled"
+          color="yellow"
+          size="xs"
+          onClick={() => setSelectedPreem(preem)}
+          leftSection={<IconCurrencyDollar size={14} />}
+          fullWidth
+          mt="md"
+        >
+          Contribute
+        </Button>
+      </PreemCard>
     );
   });
 
@@ -160,62 +174,73 @@ export const Race: React.FC<Props> = ({ race, children }) => {
   });
 
   return (
-    <Stack gap="xl">
-      {race && (
-        <RaceCard data-testid="race-details" race={race} preems={children} />
-      )}
-      <CourseLink courseLink={race.courseLink} />
-      <Grid gutter="xl">
-        <Grid.Col span={{ base: 12, lg: 8 }}>
-          <Group justify="space-between" mb="md">
-            <Title order={2}>Preems</Title>
-            <Button
-              component={Link}
-              href={`/big-screen/${toUrlPath(race.path)}`}
-              variant="outline"
-              leftSection={<IconDeviceTv size={16} />}
-            >
-              Big Screen
-            </Button>
-          </Group>
-          <Card withBorder padding={0} radius="md">
-            <Table highlightOnHover>
-              <Table.Thead>
-                <Table.Tr>
-                  <Table.Th>Preem</Table.Th>
-                  <Table.Th>Type</Table.Th>
-                  <Table.Th>Prize Pool</Table.Th>
-                  <Table.Th>Sponsored By</Table.Th>
-                  <Table.Th>Status</Table.Th>
-                  <Table.Th />
-                </Table.Tr>
-              </Table.Thead>
-              <Table.Tbody>{preemRows}</Table.Tbody>
-            </Table>
-          </Card>
-        </Grid.Col>
-        <Grid.Col span={{ base: 12, lg: 4 }}>
-          <div
-            style={{
-              position: 'sticky',
-              top: '80px',
-              height: 'calc(100vh - 180px)',
-            }}
-          >
-            <Title order={2} mb="md">
-              Recent Contributions
-            </Title>
-            <Card
-              withBorder
-              padding="lg"
-              radius="md"
-              style={{ height: '100%', overflowY: 'auto' }}
-            >
-              {contributionItems}
-            </Card>
-          </div>
-        </Grid.Col>
-      </Grid>
+    <>
+      <MultiPanelLayout
+        leftPanel={
+          <RaceCard data-testid="race-details" race={race} preems={children} />
+        }
+        rightPanel={<CourseLink courseLink={race.courseLink} />}
+        bottomPanel={
+          <Grid gutter="xl">
+            <Grid.Col span={{ base: 12, lg: 8 }}>
+              <Group justify="space-between" mb="md">
+                <Title order={2}>Preems</Title>
+                <Button
+                  component={Link}
+                  href={`/big-screen/${toUrlPath(race.path)}`}
+                  variant="outline"
+                  leftSection={<IconDeviceTv size={16} />}
+                >
+                  Big Screen
+                </Button>
+              </Group>
+              <Card withBorder padding="md" radius="md">
+                {/* Desktop view */}
+                <Box visibleFrom="sm">
+                  <Table highlightOnHover>
+                    <Table.Thead>
+                      <Table.Tr>
+                        <Table.Th>Preem</Table.Th>
+                        <Table.Th>Type</Table.Th>
+                        <Table.Th>Prize Pool</Table.Th>
+                        <Table.Th>Sponsored By</Table.Th>
+                        <Table.Th>Status</Table.Th>
+                        <Table.Th />
+                      </Table.Tr>
+                    </Table.Thead>
+                    <Table.Tbody>{preemRows}</Table.Tbody>
+                  </Table>
+                </Box>
+                {/* Mobile view */}
+                <Box hiddenFrom="sm">
+                  <Stack>{preemCards}</Stack>
+                </Box>
+              </Card>
+            </Grid.Col>
+            <Grid.Col span={{ base: 12, lg: 4 }}>
+              <div
+                style={{
+                  position: 'sticky',
+                  top: '80px',
+                  height: 'calc(100vh - 180px)',
+                }}
+              >
+                <Title order={2} mb="md">
+                  Recent Contributions
+                </Title>
+                <Card
+                  withBorder
+                  padding="lg"
+                  radius="md"
+                  style={{ height: '100%', overflowY: 'auto' }}
+                >
+                  {contributionItems}
+                </Card>
+              </div>
+            </Grid.Col>
+          </Grid>
+        }
+      />
       {selectedPreem && (
         <ContributionModal
           isOpen={!!selectedPreem}
@@ -227,7 +252,7 @@ export const Race: React.FC<Props> = ({ race, children }) => {
           }}
         />
       )}
-    </Stack>
+    </>
   );
 };
 
