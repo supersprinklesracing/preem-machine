@@ -9,20 +9,19 @@ jest.mock('./Event', () => ({
   default: jest.fn(() => <div>Mock Event</div>),
 }));
 
-
 setupMockDb();
 
 describe('EventPage component', () => {
   it('should fetch event data and render the Event component', async () => {
     const searchParams = Promise.resolve({
-      path: 'organizations/org-super-sprinkles/series/series-sprinkles-2025/events/event-giro-sf-2025',
+      path: 'organizations/super-sprinkles/series/sprinkles-2025/events/giro-sf-2025',
     });
     render(await EventPage({ searchParams }));
 
     expect(screen.getByText('Mock Event')).toBeInTheDocument();
 
     const eventCalls = (Event as jest.Mock).mock.calls;
-    expect(eventCalls[0][0].event.id).toBe('event-giro-sf-2025');
+    expect(eventCalls[0][0].event.id).toBe('giro-sf-2025');
   });
 
   it('should throw NotFoundError when the event does not exist', async () => {

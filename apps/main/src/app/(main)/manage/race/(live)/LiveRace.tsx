@@ -37,7 +37,7 @@ export interface LiveRaceProps {
 
 export const LiveRace: React.FC<LiveRaceProps> = ({ race, children }) => {
   const preemRows = children?.map(({ preem }) => (
-    <Table.Tr key={preem.id}>
+    <Table.Tr key={preem.path}>
       <Table.Td>
         <Text fw={500}>{preem.name}</Text>
       </Table.Td>

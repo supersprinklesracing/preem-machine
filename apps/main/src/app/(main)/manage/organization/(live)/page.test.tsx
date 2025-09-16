@@ -9,12 +9,11 @@ jest.mock('./LiveOrganization', () => ({
   default: jest.fn(() => <div>Mock LiveOrganization</div>),
 }));
 
-
 setupMockDb();
 
 describe('LiveOrganizationPage component', () => {
   it('should fetch organization data and render the LiveOrganization component', async () => {
-    const searchParams = { path: 'organizations/org-super-sprinkles' };
+    const searchParams = { path: 'organizations/super-sprinkles' };
     const PageComponent = await LiveOrganizationPage({
       searchParams,
     });
@@ -23,9 +22,7 @@ describe('LiveOrganizationPage component', () => {
     expect(screen.getByText('Mock LiveOrganization')).toBeInTheDocument();
 
     const liveOrganizationCalls = (LiveOrganization as jest.Mock).mock.calls;
-    expect(liveOrganizationCalls[0][0].organization.id).toBe(
-      'org-super-sprinkles',
-    );
+    expect(liveOrganizationCalls[0][0].organization.id).toBe('super-sprinkles');
   });
 
   it('should throw NotFoundError when the organization does not exist', async () => {

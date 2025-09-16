@@ -89,7 +89,7 @@ export default function OrganizationComponent({
           <Stack>
             <Title order={2}>Race Series</Title>
             {serieses.map(({ series }) => (
-              <SeriesCard key={series.id} series={series}>
+              <SeriesCard key={series.path} series={series}>
                 <Button
                   component={Link}
                   href={`/${toUrlPath(series.path)}`}

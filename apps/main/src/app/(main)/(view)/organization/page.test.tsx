@@ -10,20 +10,19 @@ jest.mock('./Organization', () => ({
   default: jest.fn(() => <div>Mock Organization</div>),
 }));
 
-
 setupMockDb();
 
 describe('OrganizationPage component', () => {
   it('should fetch organization data and render the Organization component', async () => {
     const searchParams = Promise.resolve({
-      path: 'organizations/org-super-sprinkles',
+      path: 'organizations/super-sprinkles',
     });
     render(await OrganizationPage({ searchParams }));
 
     expect(screen.getByText('Mock Organization')).toBeInTheDocument();
 
     const orgCalls = (Organization as jest.Mock).mock.calls;
-    expect(orgCalls[0][0].organization.id).toBe('org-super-sprinkles');
+    expect(orgCalls[0][0].organization.id).toBe('super-sprinkles');
   });
 
   it('should throw NotFoundError when the organization does not exist', async () => {

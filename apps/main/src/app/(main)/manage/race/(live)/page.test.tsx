@@ -9,13 +9,12 @@ jest.mock('./LiveRace', () => ({
   default: jest.fn(() => <div>Mock LiveRace</div>),
 }));
 
-
 setupMockDb();
 
 describe('LiveRacePage component', () => {
   it('should fetch race data and render the LiveRace component', async () => {
     const searchParams = Promise.resolve({
-      path: 'organizations/org-super-sprinkles/series/series-sprinkles-2025/events/event-giro-sf-2025/races/race-giro-sf-2025-masters-women',
+      path: 'organizations/super-sprinkles/series/sprinkles-2025/events/giro-sf-2025/races/masters-women',
     });
     const PageComponent = await LiveRacePage({ searchParams });
     render(PageComponent);
@@ -23,7 +22,7 @@ describe('LiveRacePage component', () => {
     expect(screen.getByText('Mock LiveRace')).toBeInTheDocument();
 
     const liveRaceCalls = (LiveRace as jest.Mock).mock.calls;
-    expect(liveRaceCalls[0][0].race.id).toBe('race-giro-sf-2025-masters-women');
+    expect(liveRaceCalls[0][0].race.id).toBe('masters-women');
   });
 
   it('should throw NotFoundError when the race does not exist', async () => {

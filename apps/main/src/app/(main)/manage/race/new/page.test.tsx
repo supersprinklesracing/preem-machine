@@ -17,7 +17,7 @@ describe('NewRacePage', () => {
   it('should render the NewRace component', async () => {
     const PageComponent = await NewRacePage({
       searchParams: Promise.resolve({
-        path: 'organizations/org-super-sprinkles/series/series-sprinkles-2025/events/event-giro-sf-2025/races',
+        path: 'organizations/super-sprinkles/series/sprinkles-2025/events/giro-sf-2025/races',
       }),
     });
     render(PageComponent);

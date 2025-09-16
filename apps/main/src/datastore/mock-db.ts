@@ -38,10 +38,10 @@ export const mockDbData: DatabaseCollections = {
   users: [
     {
       ...createIdAndPath(`users/test-user-1`),
-      name: 'Test User',
-      email: 'test-user@example.com',
+      name: 'Test User 1',
+      email: 'test-user-1@example.com',
       avatarUrl: 'https://placehold.co/100x100.png',
-      organizationRefs: [createDocRef('organizations/org-super-sprinkles')],
+      organizationRefs: [createDocRef('organizations/super-sprinkles')],
       metadata: createMetadata('2024-07-01T10:00:00Z'),
     },
     {
@@ -49,15 +49,15 @@ export const mockDbData: DatabaseCollections = {
       name: 'Test Admin',
       email: 'test-admin@example.com',
       avatarUrl: 'https://placehold.co/100x100.png',
-      organizationRefs: [createDocRef('organizations/org-super-sprinkles')],
+      organizationRefs: [createDocRef('organizations/super-sprinkles')],
       metadata: createMetadata('2024-07-01T10:00:00Z'),
     },
     {
       ...createIdAndPath(`users/${ENV_E2E_TESTING_USER}`),
-      name: 'Test User',
-      email: 'test-user@example.com',
+      name: 'E2E User',
+      email: 'e2e-user@example.com',
       avatarUrl: 'https://placehold.co/100x100.png',
-      organizationRefs: [createDocRef('organizations/org-super-sprinkles')],
+      organizationRefs: [createDocRef('organizations/super-sprinkles')],
       metadata: createMetadata('2024-07-01T10:00:00Z'),
     },
     {
@@ -72,7 +72,7 @@ export const mockDbData: DatabaseCollections = {
       name: 'Bike Race Inc. Admin',
       email: 'contact@bikerace.com',
       avatarUrl: 'https://placehold.co/100x100.png',
-      organizationRefs: [createDocRef('organizations/org-bike-race-inc')],
+      organizationRefs: [createDocRef('organizations/bike-race-inc')],
       metadata: createMetadata('2024-07-01T10:02:00Z'),
     },
     {
@@ -92,7 +92,7 @@ export const mockDbData: DatabaseCollections = {
   ],
   organizations: [
     {
-      ...createIdAndPath('organizations/org-super-sprinkles'),
+      ...createIdAndPath('organizations/super-sprinkles'),
       name: 'Super Sprinkles Racing',
       memberRefs: [
         createDocRef('users/test-user-1'),
@@ -111,7 +111,7 @@ export const mockDbData: DatabaseCollections = {
         series: [
           {
             ...createIdAndPath(
-              'organizations/org-super-sprinkles/series/series-sprinkles-2025',
+              'organizations/super-sprinkles/series/sprinkles-2025',
             ),
             name: 'Sprinkles 2025',
             location: 'Northern California',
@@ -124,7 +124,7 @@ export const mockDbData: DatabaseCollections = {
               events: [
                 {
                   ...createIdAndPath(
-                    'organizations/org-super-sprinkles/series/series-sprinkles-2025/events/event-giro-sf-2025',
+                    'organizations/super-sprinkles/series/sprinkles-2025/events/giro-sf-2025',
                   ),
                   name: 'Il Giro di San Francisco',
                   location: "Levi's Plaza, San Francisco",
@@ -136,7 +136,7 @@ export const mockDbData: DatabaseCollections = {
                     races: [
                       {
                         ...createIdAndPath(
-                          'organizations/org-super-sprinkles/series/series-sprinkles-2025/events/event-giro-sf-2025/races/race-giro-sf-2025-masters-women',
+                          'organizations/super-sprinkles/series/sprinkles-2025/events/giro-sf-2025/races/masters-women',
                         ),
                         name: 'Master Women 40+/50+',
                         category: 'Masters',
@@ -160,7 +160,7 @@ export const mockDbData: DatabaseCollections = {
                           preems: [
                             {
                               ...createIdAndPath(
-                                'organizations/org-super-sprinkles/series/series-sprinkles-2025/events/event-giro-sf-2025/races/race-giro-sf-2025-masters-women/preems/preem-giro-sf-2025-masters-women-first-lap',
+                                'organizations/super-sprinkles/series/sprinkles-2025/events/giro-sf-2025/races/masters-women/preems/first-lap',
                               ),
                               name: 'First Lap Leader',
                               type: 'Pooled',
@@ -171,7 +171,7 @@ export const mockDbData: DatabaseCollections = {
                                 contributions: [
                                   {
                                     ...createIdAndPath(
-                                      'organizations/org-super-sprinkles/series/series-sprinkles-2025/events/event-giro-sf-2025/races/race-giro-sf-2025-masters-women/preems/preem-giro-sf-2025-masters-women-first-lap/contributions/contrib-1',
+                                      'organizations/super-sprinkles/series/sprinkles-2025/events/giro-sf-2025/races/masters-women/preems/first-lap/contributions/contrib-1',
                                     ),
                                     contributor: {
                                       ...createIdAndPath('users/some-user'),
@@ -191,7 +191,7 @@ export const mockDbData: DatabaseCollections = {
                             },
                             {
                               ...createIdAndPath(
-                                'organizations/org-super-sprinkles/series/series-sprinkles-2025/events/event-giro-sf-2025/races/race-giro-sf-2025-masters-women/preems/preem-giro-sf-2025-masters-women-mid-sprint',
+                                'organizations/super-sprinkles/series/sprinkles-2025/events/giro-sf-2025/races/masters-women/preems/mid-sprint',
                               ),
                               name: 'Mid-Race Sprint',
                               type: 'Pooled',
@@ -204,7 +204,7 @@ export const mockDbData: DatabaseCollections = {
                                 contributions: [
                                   {
                                     ...createIdAndPath(
-                                      'organizations/org-super-sprinkles/series/series-sprinkles-2025/events/event-giro-sf-2025/races/race-giro-sf-2025-masters-women/preems/preem-giro-sf-2025-masters-women-mid-sprint/contributions/contrib-2',
+                                      'organizations/super-sprinkles/series/sprinkles-2025/events/giro-sf-2025/races/masters-women/preems/mid-sprint/contributions/contrib-2',
                                     ),
                                     contributor: {
                                       ...createIdAndPath('users/user-alex-doe'),
@@ -220,7 +220,7 @@ export const mockDbData: DatabaseCollections = {
                                   },
                                   {
                                     ...createIdAndPath(
-                                      'organizations/org-super-sprinkles/series/series-sprinkles-2025/events/event-giro-sf-2025/races/race-giro-sf-2025-masters-women/preems/preem-giro-sf-2025-masters-women-mid-sprint/contributions/contrib-3',
+                                      'organizations/super-sprinkles/series/sprinkles-2025/events/giro-sf-2025/races/masters-women/preems/mid-sprint/contributions/contrib-3',
                                     ),
                                     contributor: {
                                       ...createIdAndPath(
@@ -239,7 +239,7 @@ export const mockDbData: DatabaseCollections = {
                                   },
                                   {
                                     ...createIdAndPath(
-                                      'organizations/org-super-sprinkles/series/series-sprinkles-2025/events/event-giro-sf-2025/races/race-giro-sf-2025-masters-women/preems/preem-giro-sf-2025-masters-women-mid-sprint/contributions/contrib-4',
+                                      'organizations/super-sprinkles/series/sprinkles-2025/events/giro-sf-2025/races/masters-women/preems/mid-sprint/contributions/contrib-4',
                                     ),
                                     contributor: {
                                       ...createIdAndPath('users/anonymous'),
@@ -255,7 +255,7 @@ export const mockDbData: DatabaseCollections = {
                                   },
                                   {
                                     ...createIdAndPath(
-                                      'organizations/org-super-sprinkles/series/series-sprinkles-2025/events/event-giro-sf-2025/races/race-giro-sf-2025-masters-women/preems/preem-giro-sf-2025-masters-women-mid-sprint/contributions/contrib-5',
+                                      'organizations/super-sprinkles/series/sprinkles-2025/events/giro-sf-2025/races/masters-women/preems/mid-sprint/contributions/contrib-5',
                                     ),
                                     contributor: {
                                       ...createIdAndPath('users/user-alex-doe'),
@@ -275,7 +275,7 @@ export const mockDbData: DatabaseCollections = {
                             },
                             {
                               ...createIdAndPath(
-                                'organizations/org-super-sprinkles/series/series-sprinkles-2025/events/event-giro-sf-2025/races/race-giro-sf-2025-masters-women/preems/preem-giro-sf-2025-masters-women-final-lap',
+                                'organizations/super-sprinkles/series/sprinkles-2025/events/giro-sf-2025/races/masters-women/preems/final-lap',
                               ),
                               name: 'Sponsored by Bicycle Law!',
                               type: 'One-Shot',
@@ -287,7 +287,7 @@ export const mockDbData: DatabaseCollections = {
                                 contributions: [
                                   {
                                     ...createIdAndPath(
-                                      'organizations/org-super-sprinkles/series/series-sprinkles-2025/events/event-giro-sf-2025/races/race-giro-sf-2025-masters-women/preems/preem-giro-sf-2025-masters-women-final-lap/contributions/contrib-6',
+                                      'organizations/super-sprinkles/series/sprinkles-2025/events/giro-sf-2025/races/masters-women/preems/final-lap/contributions/contrib-6',
                                     ),
                                     contributor: {
                                       ...createIdAndPath(
@@ -311,7 +311,7 @@ export const mockDbData: DatabaseCollections = {
                       },
                       {
                         ...createIdAndPath(
-                          'organizations/org-super-sprinkles/series/series-sprinkles-2025/events/event-giro-sf-2025/races/race-giro-sf-2025-juniors',
+                          'organizations/super-sprinkles/series/sprinkles-2025/events/giro-sf-2025/races/juniors',
                         ),
                         name: 'Junior 17-18 Championship',
                         category: 'Juniors',
@@ -341,7 +341,7 @@ export const mockDbData: DatabaseCollections = {
       },
     },
     {
-      ...createIdAndPath('organizations/org-bike-race-inc'),
+      ...createIdAndPath('organizations/bike-race-inc'),
       name: 'Bike Race Inc.',
       memberRefs: [createDocRef('users/user-bike-race-inc-admin')],
       metadata: createMetadata('2025-02-01T10:00:00Z'),
@@ -349,7 +349,7 @@ export const mockDbData: DatabaseCollections = {
         series: [
           {
             ...createIdAndPath(
-              'organizations/org-bike-race-inc/series/series-chicago-grit',
+              'organizations/bike-race-inc/series/chicago-grit',
             ),
             name: 'Chicago Grit',
             location: 'Chicagoland',
@@ -362,7 +362,7 @@ export const mockDbData: DatabaseCollections = {
               events: [
                 {
                   ...createIdAndPath(
-                    'organizations/org-bike-race-inc/series/series-chicago-grit/events/event-west-dundee',
+                    'organizations/bike-race-inc/series/chicago-grit/events/west-dundee',
                   ),
                   name: 'West Dundee',
                   location: 'West Dundee, IL',
@@ -374,7 +374,7 @@ export const mockDbData: DatabaseCollections = {
                     races: [
                       {
                         ...createIdAndPath(
-                          'organizations/org-bike-race-inc/series/series-chicago-grit/events/event-west-dundee/races/race-west-dundee-pro-men',
+                          'organizations/bike-race-inc/series/chicago-grit/events/west-dundee/races/pro-men',
                         ),
                         name: 'Pro/1/2 Men',
                         category: 'Pro/1/2',
@@ -397,7 +397,7 @@ export const mockDbData: DatabaseCollections = {
                       },
                       {
                         ...createIdAndPath(
-                          'organizations/org-bike-race-inc/series/series-chicago-grit/events/event-west-dundee/races/race-west-dundee-pro-women',
+                          'organizations/bike-race-inc/series/chicago-grit/events/west-dundee/races/pro-women',
                         ),
                         name: 'Pro/1/2/3 Women',
                         category: 'Pro/1/2/3',
@@ -423,7 +423,7 @@ export const mockDbData: DatabaseCollections = {
                 },
                 {
                   ...createIdAndPath(
-                    'organizations/org-bike-race-inc/series/series-chicago-grit/events/event-lake-bluff',
+                    'organizations/bike-race-inc/series/chicago-grit/events/lake-bluff',
                   ),
                   name: 'Lake Bluff',
                   location: 'Lake Bluff, IL',
@@ -435,7 +435,7 @@ export const mockDbData: DatabaseCollections = {
                     races: [
                       {
                         ...createIdAndPath(
-                          'organizations/org-bike-race-inc/series/series-chicago-grit/events/event-lake-bluff/races/race-lake-bluff-pro-men',
+                          'organizations/bike-race-inc/series/chicago-grit/events/lake-bluff/races/pro-men',
                         ),
                         name: 'Pro/1/2 Men',
                         category: 'Pro/1/2',
@@ -458,7 +458,7 @@ export const mockDbData: DatabaseCollections = {
                       },
                       {
                         ...createIdAndPath(
-                          'organizations/org-bike-race-inc/series/series-chicago-grit/events/event-lake-bluff/races/race-lake-bluff-pro-women',
+                          'organizations/bike-race-inc/series/chicago-grit/events/lake-bluff/races/pro-women',
                         ),
                         name: 'Pro/1/2/3 Women',
                         category: 'Pro/1/2/3',
@@ -484,7 +484,7 @@ export const mockDbData: DatabaseCollections = {
                 },
                 {
                   ...createIdAndPath(
-                    'organizations/org-bike-race-inc/series/series-chicago-grit/events/event-fulton-market',
+                    'organizations/bike-race-inc/series/chicago-grit/events/fulton-market',
                   ),
                   name: 'Fulton Market',
                   location: 'Fulton Market, Chicago, IL',
@@ -496,7 +496,7 @@ export const mockDbData: DatabaseCollections = {
                     races: [
                       {
                         ...createIdAndPath(
-                          'organizations/org-bike-race-inc/series/series-chicago-grit/events/event-fulton-market/races/race-fulton-market-pro-men',
+                          'organizations/bike-race-inc/series/chicago-grit/events/fulton-market/races/pro-men',
                         ),
                         name: 'Pro/1/2 Men',
                         category: 'Pro/1/2',
@@ -519,7 +519,7 @@ export const mockDbData: DatabaseCollections = {
                       },
                       {
                         ...createIdAndPath(
-                          'organizations/org-bike-race-inc/series/series-chicago-grit/events/event-fulton-market/races/race-fulton-market-pro-women',
+                          'organizations/bike-race-inc/series/chicago-grit/events/fulton-market/races/pro-women',
                         ),
                         name: 'Pro/1/2/3 Women',
                         category: 'Pro/1/2/3',

@@ -70,7 +70,7 @@ export default function Series({ series, children: eventsWithRaces }: Props) {
           {eventsWithRaces.map(
             ({ event }) =>
               event && (
-                <EventCard key={event.id} event={event}>
+                <EventCard key={event.path} event={event}>
                   <Button
                     component={Link}
                     href={`/${toUrlPath(event.path)}`}

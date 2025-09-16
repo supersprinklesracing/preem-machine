@@ -30,7 +30,10 @@ interface Props {
     | 'raceLicenseId'
     | 'address'
   >;
-  contributions: Pick<Contribution, 'id' | 'date' | 'amount' | 'preemBrief'>[];
+  contributions: Pick<
+    Contribution,
+    'id' | 'path' | 'date' | 'amount' | 'preemBrief'
+  >[];
 }
 
 const User: React.FC<Props> = ({ user, contributions }) => {
@@ -46,7 +49,7 @@ const User: React.FC<Props> = ({ user, contributions }) => {
     // eslint-disable-next-line @typescript-eslint/no-non-null-assertion
     .sort((a, b) => compareDates(a.date!, b.date!))
     .map((c) => (
-      <Table.Tr key={c.id}>
+      <Table.Tr key={c.path}>
         <Table.Td>{formatDateShort(c.date)}</Table.Td>
         <Table.Td>{c.preemBrief?.raceBrief?.name}</Table.Td>
         <Table.Td>{c.preemBrief?.name}</Table.Td>

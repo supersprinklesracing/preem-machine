@@ -9,13 +9,12 @@ jest.mock('./LivePreem', () => ({
   default: jest.fn(() => <div>Mock LivePreem</div>),
 }));
 
-
 setupMockDb();
 
 describe('LivePreemPage component', () => {
   it('should fetch preem data and render the LivePreem component', async () => {
     const searchParams = Promise.resolve({
-      path: 'organizations/org-super-sprinkles/series/series-sprinkles-2025/events/event-giro-sf-2025/races/race-giro-sf-2025-masters-women/preems/preem-giro-sf-2025-masters-women-first-lap',
+      path: 'organizations/super-sprinkles/series/sprinkles-2025/events/giro-sf-2025/races/masters-women/preems/first-lap',
     });
     const PageComponent = await LivePreemPage({ searchParams });
     render(PageComponent);
@@ -23,12 +22,12 @@ describe('LivePreemPage component', () => {
     expect(screen.getByText('Mock LivePreem')).toBeInTheDocument();
 
     const livePreemCalls = (LivePreem as jest.Mock).mock.calls;
-    expect(livePreemCalls[0][0].preem.id).toBe('preem-giro-sf-2025-masters-women-first-lap');
+    expect(livePreemCalls[0][0].preem.id).toBe('first-lap');
   });
 
   it('should throw NotFoundError when the preem does not exist', async () => {
     const searchParams = Promise.resolve({
-      path: 'organizations/org-super-sprinkles/series/series-sprinkles-2025/events/event-giro-sf-2025/races/race-giro-sf-2025-masters-women/preems/does-not-exist',
+      path: 'organizations/super-sprinkles/series/sprinkles-2025/events/giro-sf-2025/races/masters-women/preems/does-not-exist',
     });
     expect(LivePreemPage({ searchParams })).rejects.toThrow(NotFoundError);
   });

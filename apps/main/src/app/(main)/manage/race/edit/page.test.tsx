@@ -17,7 +17,7 @@ setupMockDb();
 describe('EditRacePage component', () => {
   it('should fetch race data and render the EditRace component', async () => {
     const searchParams = Promise.resolve({
-      path: 'organizations/org-super-sprinkles/series/series-sprinkles-2025/events/event-giro-sf-2025/races/race-giro-sf-2025-masters-women',
+      path: 'organizations/super-sprinkles/series/sprinkles-2025/events/giro-sf-2025/races/masters-women',
     });
     const PageComponent = await EditRacePage({ searchParams });
     render(PageComponent);
@@ -25,12 +25,12 @@ describe('EditRacePage component', () => {
     expect(screen.getByText('Mock EditRace')).toBeInTheDocument();
 
     const editRaceCalls = (EditRace as jest.Mock).mock.calls;
-    expect(editRaceCalls[0][0].race.id).toBe('race-giro-sf-2025-masters-women');
+    expect(editRaceCalls[0][0].race.id).toBe('masters-women');
   });
 
   it('should throw NotFoundError when the race does not exist', async () => {
     const searchParams = Promise.resolve({
-      path: 'organizations/org-super-sprinkles/series/series-sprinkles-2025/events/event-giro-sf-2025/races/non-existent-race',
+      path: 'organizations/super-sprinkles/series/sprinkles-2025/events/giro-sf-2025/races/non-existent-race',
     });
     expect(EditRacePage({ searchParams })).rejects.toThrow(NotFoundError);
   });

@@ -116,7 +116,7 @@ export const Race: React.FC<Props> = ({ race, children }) => {
           avatarUrl: 'https://placehold.co/40x40.png',
         };
     return (
-      <Box key={c.id} mb="md">
+      <Box key={c.path} mb="md">
         <Group>
           {contributor.path && <UserAvatarIcon user={contributor} />}
           <div>

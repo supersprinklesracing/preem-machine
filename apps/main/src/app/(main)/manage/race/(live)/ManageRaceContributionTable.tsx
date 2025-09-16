@@ -22,7 +22,7 @@ export default function ManageRaceContributionTable({
   const contributionRows = liveContributions.map((contribution) => {
     const contributor = contribution.contributor;
     return (
-      <Table.Tr key={contribution.id}>
+      <Table.Tr key={contribution.path}>
         <Table.Td>
           <UserAvatar user={contributor} />
         </Table.Td>

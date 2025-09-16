@@ -70,7 +70,7 @@ const Sidebar: React.FC<SidebarProps> = ({ events, onLinkClick }) => {
               const href = `/manage/${toUrlPath(event.path)}`;
               return (
                 <NavLink
-                  key={event.id}
+                  key={event.path}
                   href={href}
                   label={event.name}
                   active={pathname === href}

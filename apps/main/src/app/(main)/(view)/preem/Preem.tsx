@@ -53,7 +53,7 @@ export const Preem: React.FC<Props> = ({ preem, children }) => {
     .sort((a, b) => compareDates(a.date ?? '', b.date ?? ''))
     .map((contribution) => {
       return (
-        <Table.Tr key={contribution.id}>
+        <Table.Tr key={contribution.path}>
           <Table.Td>
             <UserAvatar user={contribution.contributor} />
           </Table.Td>
