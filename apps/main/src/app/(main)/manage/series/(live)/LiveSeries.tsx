@@ -76,7 +76,7 @@ export default function LiveSeries({ series, children }: Props) {
         <Title order={2}>Events Schedule</Title>
         <SimpleGrid cols={{ base: 1, lg: 2 }}>
           {children.map(({ event }) => (
-            <EventCard key={event.id} event={event}>
+            <EventCard key={event.path} event={event}>
               <Button
                 component={Link}
                 href={`/manage/${toUrlPath(event.path)}`}

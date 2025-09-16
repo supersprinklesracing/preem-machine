@@ -178,7 +178,7 @@ const Hub: React.FC<Props> = ({ organizations }) => {
                       <Grid>
                         {pastEvents.map(({ event }) => (
                           <Grid.Col
-                            key={event.id}
+                            key={event.path}
                             span={{ base: 12, md: 6, lg: 4 }}
                           >
                             <EventCard event={event} titleOrder={5}>

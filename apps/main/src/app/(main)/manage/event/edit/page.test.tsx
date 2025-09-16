@@ -17,7 +17,7 @@ describe('EditEventPage component', () => {
   setupMockDb();
   it('should fetch event data and render the EditEvent component', async () => {
     const searchParams = Promise.resolve({
-      path: 'organizations/org-super-sprinkles/series/series-sprinkles-2025/events/event-giro-sf-2025',
+      path: 'organizations/super-sprinkles/series/sprinkles-2025/events/giro-sf-2025',
     });
     const PageComponent = await EditEventPage({ searchParams });
     render(PageComponent);
@@ -25,13 +25,13 @@ describe('EditEventPage component', () => {
     expect(screen.getByText('Mock EditEvent')).toBeInTheDocument();
 
     const editEventCalls = (EditEvent as jest.Mock).mock.calls;
-    expect(editEventCalls[0][0].event.id).toBe('event-giro-sf-2025');
+    expect(editEventCalls[0][0].event.id).toBe('giro-sf-2025');
     expect(editEventCalls[0][0].editEventAction).toBe(editEventAction);
   });
 
   it('should throw NotFoundError when the event does not exist', async () => {
     const searchParams = Promise.resolve({
-      path: 'organizations/org-super-sprinkles/series/series-sprinkles-2025/events/non-existent-event',
+      path: 'organizations/super-sprinkles/series/sprinkles-2025/events/non-existent-event',
     });
     await expect(EditEventPage({ searchParams })).rejects.toThrow(
       NotFoundError,

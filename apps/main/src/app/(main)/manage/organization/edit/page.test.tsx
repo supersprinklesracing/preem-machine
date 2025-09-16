@@ -17,7 +17,7 @@ describe('EditOrganizationPage component', () => {
   setupMockDb();
   it('should fetch organization data and render the EditOrganization component', async () => {
     const searchParams = Promise.resolve({
-      path: 'organizations/org-super-sprinkles',
+      path: 'organizations/super-sprinkles',
     });
     const PageComponent = await EditOrganizationPage({ searchParams });
     render(PageComponent);
@@ -25,9 +25,7 @@ describe('EditOrganizationPage component', () => {
     expect(screen.getByText('Mock EditOrganization')).toBeInTheDocument();
 
     const editOrganizationCalls = (EditOrganization as jest.Mock).mock.calls;
-    expect(editOrganizationCalls[0][0].organization.id).toBe(
-      'org-super-sprinkles',
-    );
+    expect(editOrganizationCalls[0][0].organization.id).toBe('super-sprinkles');
     expect(editOrganizationCalls[0][0].editOrganizationAction).toBe(
       editOrganizationAction,
     );

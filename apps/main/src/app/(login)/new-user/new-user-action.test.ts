@@ -96,9 +96,7 @@ describe('newUserAction', () => {
     };
     mockedCreateUser.mockResolvedValue(mockSnapshot as any);
 
-    await expect(
-      newUserAction({ values: MOCK_USER_VALUES }),
-    ).rejects.toThrow(
+    await expect(newUserAction({ values: MOCK_USER_VALUES })).rejects.toThrow(
       new FormActionError(
         'Failed to save profile: Failed to create user document',
       ),

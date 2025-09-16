@@ -45,7 +45,7 @@ const Admin: React.FC<Props> = ({ users }) => {
   const userList = filteredUsers.map((user) => (
     <Group
       justify="space-between"
-      key={user.id}
+      key={user.path}
       p="sm"
       style={{ borderBottom: '1px solid var(--mantine-color-gray-2)' }}
     >
