@@ -44,13 +44,10 @@ const getCreateMetadata = (userRef: DocumentReference<DocumentData>) => ({
 });
 
 export const createUser = async (
-  path: CollectionPath,
   user: Pick<User, 'name' | 'email' | 'avatarUrl'>,
   authUser: AuthUser,
 ) => {
-  if (!(await isUserAuthorized(authUser, path))) {
-    unauthorized();
-  }
+  const path = `users/${authUser.uid}`;
   const userRef = await getDocRefInternal(UserSchema, `users/${authUser.uid}`);
   const ref = await getDocRefInternal(UserSchema, path);
   const newUser = {

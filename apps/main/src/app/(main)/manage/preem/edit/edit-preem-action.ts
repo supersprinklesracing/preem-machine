@@ -1,6 +1,6 @@
 'use server';
 
-import { verifyAuthUser } from '@/auth/server/auth';
+import { verifyUserContext } from '@/user/server/user';
 import { FormActionError, FormActionResult } from '@/components/forms/forms';
 import { DocPath } from '@/datastore/paths';
 import { updatePreem } from '@/datastore/server/update/update';
@@ -17,7 +17,7 @@ export async function editPreemAction({
   edits,
 }: EditPreemOptions): Promise<FormActionResult> {
   try {
-    const authUser = await verifyAuthUser();
+    const { authUser } = await verifyUserContext();
     const parsedEdits = preemSchema.parse(edits);
     await updatePreem(path, parsedEdits, authUser);
 

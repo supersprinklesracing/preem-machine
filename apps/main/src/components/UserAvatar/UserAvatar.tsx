@@ -1,6 +1,7 @@
 'use client';
 
 import { toUrlPath } from '@/datastore/paths';
+import { usePathname } from 'next/navigation';
 import { User } from '@/datastore/schema';
 import { Avatar, Group, MantineSize, Text } from '@mantine/core';
 import Link from 'next/link';
@@ -57,4 +58,18 @@ export function UserAvatarIcon({ user, size = 'md' }: UserAvatarProps) {
   }
 
   return content;
+}
+
+
+export function LoggedOutAvatarIcon({ size = 'md' }: UserAvatarProps) {
+  const pathname = usePathname();
+  return (
+    <Link
+      href={`/login?redirect=${pathname}`}
+      style={{ textDecoration: 'none', color: 'inherit' }}
+    >
+      <Avatar radius="xl" size={size} />
+    </Link>
+  );
+
 }

@@ -1,9 +1,9 @@
 'use server';
 
-import { verifyAuthUser } from '@/auth/server/auth';
 import { FormActionError, FormActionResult } from '@/components/forms/forms';
-import { createOrganization } from '@/datastore/server/create/create';
 import { DocPath } from '@/datastore/paths';
+import { createOrganization } from '@/datastore/server/create/create';
+import { verifyUserContext } from '@/user/server/user';
 import { revalidatePath } from 'next/cache';
 import { z } from 'zod';
 import { organizationSchema } from '../organization-schema';
@@ -16,7 +16,7 @@ export async function newOrganizationAction({
   values,
 }: NewOrganizationOptions): Promise<FormActionResult<{ path: DocPath }>> {
   try {
-    const user = await verifyAuthUser();
+    const { authUser } = await verifyUserContext();
 
     const validation = organizationSchema.safeParse(values);
 
@@ -27,7 +27,7 @@ export async function newOrganizationAction({
     const newOrgSnapshot = await createOrganization(
       'organizations',
       validation.data,
-      user,
+      authUser,
     );
     const newOrg = newOrgSnapshot.data();
     if (!newOrg) {

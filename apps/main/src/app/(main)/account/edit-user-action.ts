@@ -1,6 +1,6 @@
 'use server';
 
-import { verifyAuthUser } from '@/auth/server/auth';
+import { verifyUserContext } from '@/user/server/user';
 import { FormActionError, FormActionResult } from '@/components/forms/forms';
 import { updateUser } from '@/datastore/server/update/update';
 import { z } from 'zod';
@@ -15,9 +15,9 @@ export async function editUserAction(
   options: EditUserOptions,
 ): Promise<FormActionResult> {
   try {
-    const authUser = await verifyAuthUser();
+    const { authUser } = await verifyUserContext();
     const parsedEdits = userSchema.parse(options.edits);
-    await updateUser(options.path, parsedEdits, authUser);
+    await updateUser(parsedEdits, authUser);
 
     return {};
   } catch (error) {

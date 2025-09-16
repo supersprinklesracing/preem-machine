@@ -1,6 +1,6 @@
 'use server';
 
-import { verifyAuthUser } from '@/auth/server/auth';
+import { verifyUserContext } from '@/user/server/user';
 import { FormActionError, FormActionResult } from '@/components/forms/forms';
 import { createRace } from '@/datastore/server/create/create';
 import { CollectionPath, DocPath } from '@/datastore/paths';
@@ -18,7 +18,7 @@ export async function newRaceAction({
   values,
 }: NewRaceOptions): Promise<FormActionResult<{ path: DocPath }>> {
   try {
-    const authUser = await verifyAuthUser();
+    const { authUser } = await verifyUserContext();
 
     const parsedValues = raceSchema.parse(values);
     const newRaceSnapshot = await createRace(path, parsedValues, authUser);
