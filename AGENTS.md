@@ -1,11 +1,8 @@
 # Project Documentation for Agents
 
+## 1. Overview
+
 This document provides essential information for agents working on this project.
-
-## 1. Key Documentation
-
-- [Engineering Design](docs/eng-design.md)
-- [Product Design](docs/product-design.md)
 
 ## 2. Getting Started
 
