@@ -1,28 +1,24 @@
-import { render, screen } from '@/test-utils';
+import { render, screen, MOCK_USER, MOCK_USER_CONTEXT } from '@/test-utils';
 import React from 'react';
 import { UserAvatar, UserAvatarIcon } from './UserAvatar';
 
 describe('UserAvatar', () => {
-  const mockUser = {
-    id: 'user-1',
-    path: 'users/user-1',
-    name: 'Alice',
-    avatarUrl: 'https://example.com/alice.png',
-  };
-
   it('renders a link with the user avatar and name', () => {
-    render(<UserAvatar user={mockUser} />);
+    render(<UserAvatar user={MOCK_USER} />);
     const link = screen.getByRole('link');
-    expect(link).toHaveAttribute('href', '/user/user-1');
-    expect(screen.getByText('Alice')).toBeInTheDocument();
-    expect(screen.getByAltText('Alice')).toHaveAttribute(
+    expect(link).toHaveAttribute(
+      'href',
+      `/user/${MOCK_USER_CONTEXT.authUser.uid}`,
+    );
+    expect(screen.getByText('Test User')).toBeInTheDocument();
+    expect(screen.getByAltText('Test User')).toHaveAttribute(
       'src',
-      'https://example.com/alice.png',
+      'https://placehold.co/100x100.png',
     );
   });
 
   it('renders without a link if user has no path', () => {
-    const userWithoutPath = { ...mockUser, path: undefined };
+    const userWithoutPath = { ...MOCK_USER, path: undefined };
     render(<UserAvatar user={userWithoutPath} />);
     expect(screen.queryByRole('link')).not.toBeInTheDocument();
   });
@@ -33,31 +29,27 @@ describe('UserAvatar', () => {
   });
 
   it('accepts a size prop', () => {
-    render(<UserAvatar user={mockUser} size="lg" />);
+    render(<UserAvatar user={MOCK_USER} size="lg" />);
     // Note: Testing the size prop's effect might require a more specific test,
     // but for now we'll just check that it doesn't break rendering.
-    expect(screen.getByText('Alice')).toBeInTheDocument();
+    expect(screen.getByText('Test User')).toBeInTheDocument();
   });
 });
 
 describe('UserAvatarIcon', () => {
-  const mockUser = {
-    id: 'user-1',
-    path: 'users/user-1',
-    name: 'Alice',
-    avatarUrl: 'https://example.com/alice.png',
-  };
-
   it('renders a link with the user avatar', () => {
-    render(<UserAvatarIcon user={mockUser} />);
+    render(<UserAvatarIcon user={MOCK_USER} />);
     const link = screen.getByRole('link');
-    expect(link).toHaveAttribute('href', '/user/user-1');
-    expect(screen.getByAltText('Alice')).toBeInTheDocument();
-    expect(screen.queryByText('Alice')).not.toBeInTheDocument();
+    expect(link).toHaveAttribute(
+      'href',
+      `/user/${MOCK_USER_CONTEXT.authUser.uid}`,
+    );
+    expect(screen.getByAltText('Test User')).toBeInTheDocument();
+    expect(screen.queryByText('Test User')).not.toBeInTheDocument();
   });
 
   it('renders without a link if user has no path', () => {
-    const userWithoutPath = { ...mockUser, path: undefined };
+    const userWithoutPath = { ...MOCK_USER, path: undefined };
     render(<UserAvatarIcon user={userWithoutPath} />);
     expect(screen.queryByRole('link')).not.toBeInTheDocument();
   });
@@ -68,7 +60,7 @@ describe('UserAvatarIcon', () => {
   });
 
   it('accepts a size prop', () => {
-    render(<UserAvatarIcon user={mockUser} size="lg" />);
-    expect(screen.getByAltText('Alice')).toBeInTheDocument();
+    render(<UserAvatarIcon user={MOCK_USER} size="lg" />);
+    expect(screen.getByAltText('Test User')).toBeInTheDocument();
   });
 });
