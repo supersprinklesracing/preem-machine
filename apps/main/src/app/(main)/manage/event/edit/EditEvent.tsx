@@ -5,7 +5,7 @@ import EventCard from '@/components/cards/EventCard';
 import { FormActionResult } from '@/components/forms/forms';
 import { getSubCollectionPath, seriesPath } from '@/datastore/paths';
 import { Event } from '@/datastore/schema';
-import { TwoColumnLayout } from '@/components/layout/TwoColumnLayout';
+import { MultiPanelLayout } from '@/components/layout/MultiPanelLayout';
 import {
   Button,
   Card,
@@ -93,7 +93,7 @@ export function EditEvent({
     <Container fluid>
       <Stack>
         <Title order={1}>Edit Event</Title>
-        <TwoColumnLayout
+        <MultiPanelLayout
           leftPanel={
             <Card withBorder>
               <Stack>
@@ -166,8 +166,7 @@ export function EditEvent({
                     onClick={() => handleSubmit(form.values)}
                     loading={isLoading}
                     disabled={
-                      !form.isValid() ||
-                      !isEqual(form.values, debouncedValues)
+                      !form.isValid() || !isEqual(form.values, debouncedValues)
                     }
                   >
                     Save Changes

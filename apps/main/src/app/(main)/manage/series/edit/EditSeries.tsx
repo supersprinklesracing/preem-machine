@@ -4,7 +4,7 @@ import { useActionForm } from '@/components/forms/useActionForm';
 import SeriesCard from '@/components/cards/SeriesCard';
 import { FormActionResult } from '@/components/forms/forms';
 import { Series } from '@/datastore/schema';
-import { TwoColumnLayout } from '@/components/layout/TwoColumnLayout';
+import { MultiPanelLayout } from '@/components/layout/MultiPanelLayout';
 import {
   Button,
   Card,
@@ -99,7 +99,7 @@ export function EditSeries({
           <Title order={1}>Edit Series</Title>
           <Button onClick={open}>Add Event</Button>
         </Group>
-        <TwoColumnLayout
+        <MultiPanelLayout
           leftPanel={
             <Card withBorder>
               <form onSubmit={form.onSubmit(handleSubmit)}>

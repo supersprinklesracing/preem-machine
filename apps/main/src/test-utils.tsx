@@ -13,6 +13,8 @@ import { User } from './datastore/schema';
 
 jest.mock('@/user/server/user');
 
+export const PHONE_WIDTH = 390;
+
 export const MOCK_AUTH_USER: AuthUser = {
   uid: 'test-user-id',
   displayName: 'Test User',

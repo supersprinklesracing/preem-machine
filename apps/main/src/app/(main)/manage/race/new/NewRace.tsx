@@ -5,7 +5,7 @@ import RaceCard from '@/components/cards/RaceCard';
 import { FormActionResult } from '@/components/forms/forms';
 import { toUrlPath } from '@/datastore/paths';
 import { Event, Race } from '@/datastore/schema';
-import { TwoColumnLayout } from '@/components/layout/TwoColumnLayout';
+import { MultiPanelLayout } from '@/components/layout/MultiPanelLayout';
 import {
   Button,
   Card,
@@ -107,7 +107,7 @@ export function NewRace({
     <Container>
       <Stack>
         <Title order={1}>Create Race</Title>
-        <TwoColumnLayout
+        <MultiPanelLayout
           leftPanel={
             <Card withBorder>
               <form onSubmit={form.onSubmit(handleSubmit)}>

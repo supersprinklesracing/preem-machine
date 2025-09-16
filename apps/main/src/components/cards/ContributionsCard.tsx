@@ -1,17 +1,27 @@
 'use client';
 
-import { formatDateRelative } from '@/dates/dates';
+import { UserAvatar } from '@/components/UserAvatar/UserAvatar';
+import ContributionCard from '@/components/cards/ContributionCard';
 import { toUrlPath } from '@/datastore/paths';
 import type { PreemWithContributions } from '@/datastore/query-schema';
-import { Button, Card, Group, Table, Text, Title } from '@mantine/core';
+import { formatDateRelative } from '@/dates/dates';
+import {
+  Box,
+  Button,
+  Card,
+  Group,
+  Stack,
+  Table,
+  Text,
+  Title,
+} from '@mantine/core';
 import Link from 'next/link';
-import { UserAvatar } from '@/components/UserAvatar/UserAvatar';
 
 interface LiveContributionsProps {
   children: PreemWithContributions[];
 }
 
-export default function ManageRaceContributionTable({
+export default function ContributionsCard({
   children,
 }: LiveContributionsProps) {
   const liveContributions =
@@ -54,36 +64,53 @@ export default function ManageRaceContributionTable({
     );
   });
 
+  const contributionCards = liveContributions.map((contribution) => (
+    <ContributionCard key={contribution.path} contribution={contribution} />
+  ));
+
   return (
     <Card withBorder padding="lg" radius="md">
       <Title order={3}>Live Contribution Feed</Title>
-      <Text size="sm" c="dimmed">
-        Real-time contributions as they happen.
-      </Text>
-      <Table mt="md">
-        <Table.Thead>
-          <Table.Tr>
-            <Table.Th>Contributor</Table.Th>
-            <Table.Th>Amount</Table.Th>
-            <Table.Th>Preem</Table.Th>
-            <Table.Th>Message</Table.Th>
-            <Table.Th>Time</Table.Th>
-          </Table.Tr>
-        </Table.Thead>
-        <Table.Tbody>
-          {liveContributions.length === 0 ? (
+
+      {/* Desktop view */}
+      <Box visibleFrom="sm" mt="md">
+        <Table>
+          <Table.Thead>
             <Table.Tr>
-              <Table.Td colSpan={5}>
-                <Text c="dimmed" ta="center" py="xl">
-                  Waiting for contributions...
-                </Text>
-              </Table.Td>
+              <Table.Th>Contributor</Table.Th>
+              <Table.Th>Amount</Table.Th>
+              <Table.Th>Preem</Table.Th>
+              <Table.Th>Message</Table.Th>
+              <Table.Th>Time</Table.Th>
             </Table.Tr>
-          ) : (
-            contributionRows
-          )}
-        </Table.Tbody>
-      </Table>
+          </Table.Thead>
+          <Table.Tbody>
+            {liveContributions.length === 0 ? (
+              <Table.Tr>
+                <Table.Td colSpan={5}>
+                  <Text c="dimmed" ta="center" py="xl">
+                    Waiting for contributions...
+                  </Text>
+                </Table.Td>
+              </Table.Tr>
+            ) : (
+              contributionRows
+            )}
+          </Table.Tbody>
+        </Table>
+      </Box>
+
+      {/* Mobile view */}
+      <Box hiddenFrom="sm" mt="md">
+        {liveContributions.length === 0 ? (
+          <Text c="dimmed" ta="center" py="xl">
+            Waiting for contributions...
+          </Text>
+        ) : (
+          <Stack>{contributionCards}</Stack>
+        )}
+      </Box>
+
       {liveContributions.length >= 100 && (
         <Group justify="center" mt="md">
           <Button variant="outline">View All Contributions</Button>

@@ -5,7 +5,7 @@ import { FormActionResult } from '@/components/forms/forms';
 import { useActionForm } from '@/components/forms/useActionForm';
 import { toUrlPath } from '@/datastore/paths';
 import { Preem } from '@/datastore/schema';
-import { TwoColumnLayout } from '@/components/layout/TwoColumnLayout';
+import { MultiPanelLayout } from '@/components/layout/MultiPanelLayout';
 import {
   Button,
   Card,
@@ -65,7 +65,7 @@ export function EditPreem({
       <Stack>
         <Title order={1}>Edit Preem</Title>
         <Title order={3}>{preem.name}</Title>
-        <TwoColumnLayout
+        <MultiPanelLayout
           leftPanel={
             <Card withBorder>
               <form onSubmit={form.onSubmit(handleSubmit)}>

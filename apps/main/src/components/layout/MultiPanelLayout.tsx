@@ -3,7 +3,7 @@
 import { SimpleGrid, Stack } from '@mantine/core';
 import { ReactNode } from 'react';
 
-export function TwoColumnLayout({
+export function MultiPanelLayout({
   leftPanel,
   rightPanel,
   bottomPanel,
