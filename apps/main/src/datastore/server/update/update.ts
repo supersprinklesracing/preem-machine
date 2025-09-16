@@ -1,6 +1,6 @@
 'use server';
 
-import { AuthContextUser } from '@/auth/user';
+import { AuthUser } from '@/auth/user';
 import { getFirestore } from '@/firebase/server/firebase-admin';
 import {
   DocumentData,
@@ -48,7 +48,7 @@ const getUpdateMetadata = (userRef: DocumentReference<DocumentData>) => ({
 export const updateUser = async (
   path: string,
   user: Pick<User, 'name' | 'affiliation' | 'raceLicenseId' | 'address'>,
-  authUser: AuthContextUser,
+  authUser: AuthUser,
 ) => {
   if (!(await isUserAuthorized(authUser, path))) {
     unauthorized();
@@ -64,7 +64,7 @@ export const updateUser = async (
 export const updateOrganizationStripeConnectAccount = async (
   organizationId: string,
   account: Stripe.Account,
-  authUser: AuthContextUser,
+  authUser: AuthUser,
 ) => {
   const path = `organizations/${organizationId}`;
   if (!(await isUserAuthorized(authUser, path))) {
@@ -99,7 +99,7 @@ export const updateOrganizationStripeConnectAccountForWebhook = async (
 export const updateOrganization = async (
   path: string,
   updates: Pick<Organization, 'name' | 'website' | 'description'>,
-  authUser: AuthContextUser,
+  authUser: AuthUser,
 ) => {
   if (!(await isUserAuthorized(authUser, path))) {
     unauthorized();
@@ -176,7 +176,7 @@ export const updateSeries = async (
     Series,
     'name' | 'website' | 'location' | 'description' | 'startDate' | 'endDate'
   >,
-  authUser: AuthContextUser,
+  authUser: AuthUser,
 ) => {
   if (!(await isUserAuthorized(authUser, path))) {
     unauthorized();
@@ -256,7 +256,7 @@ export const updateEvent = async (
     Event,
     'name' | 'description' | 'website' | 'location' | 'startDate' | 'endDate'
   >,
-  authUser: AuthContextUser,
+  authUser: AuthUser,
 ) => {
   if (!(await isUserAuthorized(authUser, path))) {
     unauthorized();
@@ -337,7 +337,7 @@ export const updateRace = async (
     Race,
     'name' | 'location' | 'description' | 'startDate' | 'endDate'
   >,
-  authUser: AuthContextUser,
+  authUser: AuthUser,
 ) => {
   if (!(await isUserAuthorized(authUser, path))) {
     unauthorized();
@@ -413,7 +413,7 @@ const prepareRaceDescendantUpdates = async (
 export const updatePreem = async (
   path: string,
   updates: Pick<Preem, 'name' | 'description'>,
-  authUser: AuthContextUser,
+  authUser: AuthUser,
 ) => {
   if (!(await isUserAuthorized(authUser, path))) {
     unauthorized();

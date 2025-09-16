@@ -17,7 +17,7 @@ export default async function UserPage({
   if (!resolvedSearchParams.path) {
     const authUser = await getAuthUser();
     redirect(
-      authUser ? `/user?path=users/${authUser.uid}` : '/login?redirect=/user',
+      authUser ? `/user/${authUser.uid}` : '/login?redirect=/user',
     );
   }
 

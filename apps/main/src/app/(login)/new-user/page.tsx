@@ -1,10 +1,10 @@
 'use server';
 
 import { getAuthUser } from '@/auth/server/auth';
-import { getUserById } from '@/datastore/server/query/query';
 import { redirect } from 'next/navigation';
 import { newUserAction } from './new-user-action';
 import NewUser from './NewUser';
+import { getUser } from '@/user/server/user';
 
 export default async function NewUserPage() {
   const authUser = await getAuthUser();
@@ -15,14 +15,12 @@ export default async function NewUserPage() {
     redirect('/login');
   }
 
-  // Check if the user document already exists in Firestore.
-  const currentUser = await getUserById(authUser.uid);
-
-  // If the user document exists, they don't need to complete a new profile.
-  if (currentUser) {
-    redirect('/');
+  // Check if the user document already exists in Firestore, if so redirect them.
+  const exists = await getUser();
+  if (exists) {
+    redirect('/login');
   }
 
-  // If no user document exists, render the profile creation form.
+  // Otherwise, the user needs to register.
   return <NewUser newUserAction={newUserAction} />;
 }
