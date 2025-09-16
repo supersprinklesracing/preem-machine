@@ -1,6 +1,6 @@
 'use server';
 
-import { verifyAuthUser } from '@/auth/server/auth';
+import { verifyUserContext } from '@/user/server/user';
 import { getOrganizationFromPath } from '@/datastore/server/query/query';
 import { processContribution } from '@/stripe-datastore/contributions';
 import { getStripeServer } from './server';
@@ -10,7 +10,7 @@ export async function createPaymentIntent(
   preemPath: string,
   isAnonymous: boolean,
 ): Promise<{ clientSecret: string | null }> {
-  const authUser = await verifyAuthUser();
+  const { authUser } = await verifyUserContext();
 
   const organization = await getOrganizationFromPath(preemPath);
   if (!organization?.stripe?.connectAccountId) {

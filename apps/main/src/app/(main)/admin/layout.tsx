@@ -1,12 +1,12 @@
 'use server';
 
-import { verifyAuthUser } from '@/auth/server/auth';
+import { verifyUserContext } from '@/user/server/user';
 
 export default async function AdminLayout({
   children,
 }: {
   children: React.ReactNode;
 }) {
-  await verifyAuthUser();
+  await verifyUserContext();
   return <>{children}</>;
 }

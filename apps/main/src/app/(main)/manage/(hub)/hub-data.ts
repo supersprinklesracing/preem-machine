@@ -1,15 +1,15 @@
-import { verifyAuthUser } from '@/auth/server/auth';
 import { OrganizationWithSeries } from '@/datastore/query-schema';
 import { OrganizationSchema } from '@/datastore/schema';
 import {
+  getDocSnap,
   getOrganizationWithSeries,
   getUserById,
 } from '@/datastore/server/query/query';
-import { getDocSnap } from '@/datastore/server/query/query';
+import { verifyUserContext } from '@/user/server/user';
 import { cache } from 'react';
 
 export const getHubPageData = cache(async () => {
-  const authUser = await verifyAuthUser();
+  const { authUser } = await verifyUserContext();
 
   const result = {
     organizations: [] as OrganizationWithSeries[],
