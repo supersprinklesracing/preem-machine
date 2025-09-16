@@ -14,10 +14,10 @@ jest.mock('./new-preem-action', () => ({
 describe('NewPreemPage', () => {
   setupMockDb();
 
-  it.skip('should render the NewPreem component', async () => {
+  it('should render the NewPreem component', async () => {
     const PageComponent = await NewPreemPage({
       searchParams: Promise.resolve({
-        path: 'organizations/org-super-sprinkles/series/series-sprinkles-2025/events/event-giro-sf-2025/races/race-1/preems',
+      path: 'organizations/org-super-sprinkles/series/series-sprinkles-2025/events/event-giro-sf-2025/races/race-giro-sf-2025-masters-women/preems',
       }),
     });
     render(PageComponent);

@@ -1,10 +1,11 @@
 'use server';
 
 import { FormActionError } from '@/components/forms/forms';
+import { User } from '@/datastore/schema';
 import * as create from '@/datastore/server/create/create';
-import { MOCK_AUTH_USER } from '@/test-utils';
 import * as user from '@/user/server/user';
 import { revalidatePath } from 'next/cache';
+import { AuthUser } from './auth/user';
 import { newUserAction } from './new-user-action';
 
 jest.mock('@/user/server/user');
@@ -13,7 +14,18 @@ jest.mock('next/cache', () => ({
   revalidatePath: jest.fn(),
 }));
 
-const MOCK_USER_VALUES = {
+const MOCK_AUTH_USER: AuthUser = {
+  uid: 'test-user-1',
+  name: 'Test User',
+  email: 'test-user@example.com',
+  avatarUrl: 'https://placehold.co/100x100.png',
+  termsAccepted: true,
+  affiliation: '',
+  raceLicenseId: '',
+  address: '',
+};
+
+const MOCK_USER_VALUES: User = {
   name: 'Test User',
   email: 'test-user@example.com',
   avatarUrl: 'https://placehold.co/100x100.png',
@@ -53,12 +65,12 @@ describe('newUserAction', () => {
     expect(result).toEqual({ path: 'users/new-user-id' });
   });
 
-  it('should throw an unauthorized error if no authUser is found', async () => {
+  it('should throw a FormActionError if no authUser is found', async () => {
     mockedGetUserContext.mockResolvedValue({ authUser: null, user: null });
 
-    await expect(
-      newUserAction({ values: MOCK_USER_VALUES }),
-    ).rejects.toThrow('Unauthorized');
+    await expect(newUserAction({ values: MOCK_USER_VALUES })).rejects.toThrow(
+      new FormActionError('Failed to save profile: Not authenticated'),
+    );
   });
 
   it('should throw a FormActionError if user creation fails', async () => {
@@ -68,9 +80,7 @@ describe('newUserAction', () => {
     });
     mockedCreateUser.mockRejectedValue(new Error('Firestore error'));
 
-    await expect(
-      newUserAction({ values: MOCK_USER_VALUES }),
-    ).rejects.toThrow(
+    await expect(newUserAction({ values: MOCK_USER_VALUES })).rejects.toThrow(
       new FormActionError('Failed to save profile: Firestore error'),
     );
   });
@@ -89,7 +99,9 @@ describe('newUserAction', () => {
     await expect(
       newUserAction({ values: MOCK_USER_VALUES }),
     ).rejects.toThrow(
-      new FormActionError('Failed to save profile: Failed to create user.'),
+      new FormActionError(
+        'Failed to save profile: Failed to create user document',
+      ),
     );
   });
 
@@ -101,7 +113,7 @@ describe('newUserAction', () => {
     const invalidValues = { ...MOCK_USER_VALUES, avatarUrl: 'not-a-valid-url' }; // Invalid avatarUrl
 
     await expect(newUserAction({ values: invalidValues })).rejects.toThrow(
-      /"message": "Invalid URL"/,
+      /Invalid URL/,
     );
   });
 });
