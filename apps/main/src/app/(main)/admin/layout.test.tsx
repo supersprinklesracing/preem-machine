@@ -1,13 +1,11 @@
-import * as auth from '@/auth/server/auth';
-import { render, screen } from '@/test-utils';
+import { render, screen, setupUserContext } from '@/test-utils';
 import AdminLayout from './layout';
 
-jest.mock('@/auth/server/auth');
-jest.mock('@/auth/client/auth');
-
 describe('AdminLayout', () => {
+  const { mockedVerifyUserContext } = setupUserContext();
+
   it('should redirect unauthenticated users', async () => {
-    (auth.verifyAuthUser as jest.Mock).mockImplementation(() => {
+    mockedVerifyUserContext.mockImplementation(() => {
       throw new Error('unauthorized');
     });
 
@@ -17,7 +15,10 @@ describe('AdminLayout', () => {
   });
 
   it('should render children for authenticated users', async () => {
-    (auth.verifyAuthUser as jest.Mock).mockResolvedValue({ uid: 'test-uid' });
+    mockedVerifyUserContext.mockResolvedValue({
+      authUser: { uid: 'test-uid' },
+      user: { id: 'test-uid' },
+    });
 
     const PageComponent = await AdminLayout({
       children: <div>Test Children</div>,

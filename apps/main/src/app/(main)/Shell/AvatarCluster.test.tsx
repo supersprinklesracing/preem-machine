@@ -23,8 +23,10 @@ describe('AvatarCluster', () => {
     expect(avatarImg).toHaveAttribute('src', 'https://example.com/avatar.png');
   });
 
-  it('should not render an avatar when no user is logged in', () => {
+  it('should render a logged-out avatar that links to the login page', () => {
     render(<AvatarCluster />, { userContext: { authUser: null, user: null } });
-    expect(screen.queryByRole('link')).not.toBeInTheDocument();
+    const loginLink = screen.getByRole('link');
+    expect(loginLink).toBeInTheDocument();
+    expect(loginLink).toHaveAttribute('href', '/login?redirect=/');
   });
 });

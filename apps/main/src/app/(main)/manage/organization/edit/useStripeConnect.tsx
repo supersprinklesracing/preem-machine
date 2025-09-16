@@ -2,11 +2,9 @@
 
 import { Organization } from '@/datastore/schema';
 import { useState } from 'react';
-import {
-  createDashboardLink,
-  createOnboardingLink,
-  createStripeConnectAccount,
-} from './actions';
+import { createOnboardingLink } from '@/stripe-datastore/stripe-actions';
+import { createDashboardLink } from '@/stripe-datastore/stripe-actions';
+import { createStripeConnectAccount } from '@/stripe-datastore/stripe-actions';
 
 interface UseStripeConnectProps {
   organization: Pick<Organization, 'id' | 'stripe'>;

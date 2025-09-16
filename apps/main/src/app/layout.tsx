@@ -1,8 +1,7 @@
 'use server';
 
-import { getAuthUser } from '@/auth/server/auth';
 import { UserProvider } from '@/user/client/UserProvider';
-import { getUser } from '@/user/server/user';
+import { getUserContext } from '@/user/server/user';
 import {
   ColorSchemeScript,
   MantineColorScheme,
@@ -18,9 +17,7 @@ export default async function RootLayout({
 }: {
   children: React.ReactNode;
 }) {
-  const authUser = await getAuthUser();
-  const user = await getUser();
-  const userContext = { authUser, user };
+  const userContext = await getUserContext();
 
   const colorScheme = ((await cookies()).get('mantine-color-scheme')?.value ||
     'dark') as MantineColorScheme;

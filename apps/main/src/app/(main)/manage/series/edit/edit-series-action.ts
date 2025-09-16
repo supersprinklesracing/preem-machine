@@ -1,6 +1,6 @@
 'use server';
 
-import { verifyAuthUser } from '@/auth/server/auth';
+import { verifyUserContext } from '@/user/server/user';
 import { FormActionError, FormActionResult } from '@/components/forms/forms';
 import { DocPath } from '@/datastore/paths';
 import { updateSeries } from '@/datastore/server/update/update';
@@ -17,7 +17,7 @@ export async function editSeriesAction({
   edits,
 }: EditSeriesOptions): Promise<FormActionResult> {
   try {
-    const authUser = await verifyAuthUser();
+    const { authUser } = await verifyUserContext();
     const parsedEdits = seriesSchema.parse(edits);
     await updateSeries(path, parsedEdits, authUser);
 

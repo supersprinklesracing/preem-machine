@@ -1,9 +1,8 @@
-import { render, screen, setupMockDb } from '@/test-utils';
+import { render, screen, setupMockDb, setupUserContext } from '@/test-utils';
 import React from 'react';
 import UserPage from './page';
 import User from './User';
 import { redirect } from 'next/navigation';
-import * as auth from '@/auth/server/auth';
 import { NotFoundError } from '@/datastore/errors';
 
 // Mock dependencies
@@ -16,12 +15,12 @@ jest.mock('next/navigation', () => ({
     throw new Error(`mock redirect(${args.join(',')})`);
   }),
 }));
-jest.mock('@/auth/server/auth');
-jest.mock('@/auth/client/auth');
 
 setupMockDb();
 
 describe('UserPage component', () => {
+  const { mockedGetUserContext } = setupUserContext();
+
   beforeEach(() => {
     (redirect as any as jest.Mock).mockClear();
   });
@@ -43,8 +42,9 @@ describe('UserPage component', () => {
   });
 
   it('should redirect to user page when no id is provided and user is logged in', async () => {
-    (auth.getAuthUser as jest.Mock).mockResolvedValue({
-      uid: 'test-uid',
+    mockedGetUserContext.mockResolvedValue({
+      authUser: { uid: 'test-uid' },
+      user: { id: 'test-uid' },
     });
     const searchParams = Promise.resolve({ path: undefined });
     await expect(UserPage({ searchParams })).rejects.toThrow(
@@ -53,7 +53,10 @@ describe('UserPage component', () => {
   });
 
   it('should redirect to login page when no id is provided and user is not logged in', async () => {
-    (auth.getAuthUser as jest.Mock).mockResolvedValue(null);
+    mockedGetUserContext.mockResolvedValue({
+      authUser: null,
+      user: null,
+    });
     const searchParams = Promise.resolve({ path: undefined });
     await expect(UserPage({ searchParams })).rejects.toThrow(
       'mock redirect(/login?redirect=/user)',

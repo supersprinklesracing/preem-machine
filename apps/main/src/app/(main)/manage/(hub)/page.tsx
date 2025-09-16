@@ -1,6 +1,6 @@
 import { Breadcrumbs } from '@/components/Breadcrumbs/Breadcrumbs';
 import { Stack } from '@mantine/core';
-import { getHubPageData } from './hub_data';
+import { getHubPageData } from './hub-data';
 import Hub from './Hub';
 
 export default async function LiveOrganizationPage() {

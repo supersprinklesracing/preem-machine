@@ -1,6 +1,6 @@
 'use server';
 
-import { verifyAuthUser } from '@/auth/server/auth';
+import { verifyUserContext } from '@/user/server/user';
 import { FormActionError, FormActionResult } from '@/components/forms/forms';
 import { DocPath } from '@/datastore/paths';
 import { updateRace } from '@/datastore/server/update/update';
@@ -17,7 +17,7 @@ export async function editRaceAction({
   edits,
 }: EditRaceOptions): Promise<FormActionResult> {
   try {
-    const authUser = await verifyAuthUser();
+    const { authUser } = await verifyUserContext();
     const parsedEdits = raceSchema.parse(edits);
     await updateRace(path, parsedEdits, authUser);
 

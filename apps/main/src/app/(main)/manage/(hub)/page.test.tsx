@@ -1,5 +1,4 @@
-import * as hub_data from './hub_data';
-
+import * as hub_data from './hub-data';
 import { render, screen } from '@/test-utils';
 import Hub from './Hub';
 import LiveOrganizationPage from './page';
@@ -10,7 +9,7 @@ jest.mock('./Hub', () => ({
   default: jest.fn(() => <div>Mock Hub</div>),
 }));
 
-jest.mock('./hub_data');
+jest.mock('./hub-data');
 
 const mockHubData = {
   organizations: [{ id: 'org-1', name: 'Test Org', serieses: [] }],

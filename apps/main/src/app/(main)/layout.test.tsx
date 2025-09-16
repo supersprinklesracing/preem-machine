@@ -1,7 +1,5 @@
-import * as auth from '@/auth/server/auth';
 import * as firestore from '@/datastore/server/query/query';
-
-import { render, screen } from '@/test-utils';
+import { render, screen, setupUserContext } from '@/test-utils';
 import Layout from './layout';
 import MainAppShell from './Shell/MainAppShell';
 
@@ -12,23 +10,23 @@ jest.mock('./Shell/MainAppShell', () => ({
 }));
 jest.mock('@/datastore/server/query/query');
 
-jest.mock('@/auth/server/auth');
-jest.mock('@/auth/client/auth');
-
 describe('Layout component', () => {
+  const { mockedGetUserContext } = setupUserContext();
+
   beforeEach(() => {
-    (auth.getAuthUser as jest.Mock).mockClear();
     (firestore.getEventsForUser as jest.Mock).mockClear();
   });
 
   it('should fetch data and render the MainAppShell for an authenticated user', async () => {
     // Mock the return values of the data fetching functions
-    (auth.getAuthUser as jest.Mock).mockResolvedValue({ uid: 'test-uid' });
+    mockedGetUserContext.mockResolvedValue({
+      authUser: { uid: 'test-uid' },
+      user: { id: 'test-uid' },
+    });
     (firestore.getEventsForUser as jest.Mock).mockResolvedValue([]);
 
     const PageComponent = await Layout({
       children: <div>Test Children</div>,
-      currentUser: null,
     });
     render(PageComponent);
 
@@ -39,12 +37,14 @@ describe('Layout component', () => {
 
   it('should render the MainAppShell for an unauthenticated user', async () => {
     // Mock the return values of the data fetching functions
-    (auth.getAuthUser as jest.Mock).mockResolvedValue(null);
+    mockedGetUserContext.mockResolvedValue({
+      authUser: null,
+      user: null,
+    });
     (firestore.getEventsForUser as jest.Mock).mockResolvedValue([]);
 
     const PageComponent = await Layout({
       children: <div>Test Children</div>,
-      currentUser: null,
     });
     render(PageComponent);
 

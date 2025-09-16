@@ -4,13 +4,13 @@ import { AppShell, Burger, Group, Title } from '@mantine/core';
 import { useDisclosure, useMediaQuery } from '@mantine/hooks';
 import { Notifications } from '@mantine/notifications';
 import Link from 'next/link';
-import React from 'react';
 import type { ComponentProps } from 'react';
+import React from 'react';
 import Sidebar from './Sidebar';
 
 export default function MainAppShell({
   children,
-  avatarCluster: header,
+  avatarCluster,
   sidebar,
 }: {
   children: React.ReactNode;
@@ -57,7 +57,7 @@ export default function MainAppShell({
               <Title order={3}>Preem Machine</Title>
             </Link>
           </Group>
-          {header}
+          {avatarCluster}
         </Group>
       </AppShell.Header>
       <AppShell.Navbar p="md">{sidebarWithClickHandler}</AppShell.Navbar>

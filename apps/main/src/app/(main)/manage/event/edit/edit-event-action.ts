@@ -1,6 +1,6 @@
 'use server';
 
-import { verifyAuthUser } from '@/auth/server/auth';
+import { verifyUserContext } from '@/user/server/user';
 import { FormActionError, FormActionResult } from '@/components/forms/forms';
 import { DocPath } from '@/datastore/paths';
 import { updateEvent } from '@/datastore/server/update/update';
@@ -17,7 +17,7 @@ export async function editEventAction({
   edits,
 }: EditEventOptions): Promise<FormActionResult> {
   try {
-    const authUser = await verifyAuthUser();
+    const { authUser } = await verifyUserContext();
     const parsedEdits = eventSchema.parse(edits);
     await updateEvent(path, parsedEdits, authUser);
 

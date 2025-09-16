@@ -1,6 +1,6 @@
 'use server';
 
-import { verifyAuthUser } from '@/auth/server/auth';
+import { verifyUserContext } from '@/user/server/user';
 import { FormActionError, FormActionResult } from '@/components/forms/forms';
 import { createPreem } from '@/datastore/server/create/create';
 import { DocPath } from '@/datastore/paths';
@@ -18,7 +18,7 @@ export async function newPreemAction({
   values,
 }: NewPreemOptions): Promise<FormActionResult<{ path: DocPath }>> {
   try {
-    const authUser = await verifyAuthUser();
+    const { authUser } = await verifyUserContext();
 
     const parsedValues = preemSchema.parse(values);
     const newPreemSnapshot = await createPreem(path, parsedValues, authUser);

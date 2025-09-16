@@ -1,6 +1,6 @@
 'use server';
 
-import { verifyAuthUser } from '@/auth/server/auth';
+import { verifyUserContext } from '@/user/server/user';
 import { FormActionError, FormActionResult } from '@/components/forms/forms';
 import { createEvent } from '@/datastore/server/create/create';
 import { CollectionPath, DocPath } from '@/datastore/paths';
@@ -17,7 +17,7 @@ export async function newEventAction({
   values,
 }: NewEventOptions): Promise<FormActionResult<{ path: DocPath }>> {
   try {
-    const authUser = await verifyAuthUser();
+    const { authUser } = await verifyUserContext();
 
     const parsedValues = eventSchema.parse(values);
     const snap = await createEvent(path, parsedValues, authUser);
