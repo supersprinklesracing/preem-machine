@@ -5,7 +5,7 @@ import SeriesCard from '@/components/cards/SeriesCard';
 import { FormActionResult } from '@/components/forms/forms';
 import { toUrlPath } from '@/datastore/paths';
 import { Organization, Series } from '@/datastore/schema';
-import { TwoColumnLayout } from '@/components/layout/TwoColumnLayout';
+import { MultiPanelLayout } from '@/components/layout/MultiPanelLayout';
 import {
   Button,
   Card,
@@ -74,7 +74,7 @@ export function NewSeries({
     <Container>
       <Stack>
         <Title order={1}>Create Series</Title>
-        <TwoColumnLayout
+        <MultiPanelLayout
           leftPanel={
             <Card withBorder>
               <form onSubmit={form.onSubmit(handleSubmit)}>

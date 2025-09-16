@@ -4,7 +4,7 @@ import { useActionForm } from '@/components/forms/useActionForm';
 import OrganizationCard from '@/components/cards/OrganizationCard';
 import { FormActionResult } from '@/components/forms/forms';
 import { Organization } from '@/datastore/schema';
-import { TwoColumnLayout } from '@/components/layout/TwoColumnLayout';
+import { MultiPanelLayout } from '@/components/layout/MultiPanelLayout';
 import {
   Button,
   Card,
@@ -66,7 +66,7 @@ export function EditOrganization({
     <Container>
       <Stack>
         <Title order={1}>Edit Organization</Title>
-        <TwoColumnLayout
+        <MultiPanelLayout
           leftPanel={
             <Stack>
               <Card withBorder>
