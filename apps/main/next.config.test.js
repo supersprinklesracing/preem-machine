@@ -22,109 +22,99 @@ const testCases = [
   ['manage/hub', buildUrl('/manage/hub'), buildUrl('/manage')],
   [
     'manage/series/edit',
-    buildUrl('/manage/org-super-sprinkles/series-sprinkles-2025/edit'),
+    buildUrl('/manage/super-sprinkles/sprinkles-2025/edit'),
     buildUrl(
-      '/manage/series/edit?path=organizations/org-super-sprinkles/series/series-sprinkles-2025',
+      '/manage/series/edit?path=organizations/super-sprinkles/series/sprinkles-2025',
     ),
   ],
   [
     'manage/new-race',
+    buildUrl('/manage/super-sprinkles/sprinkles-2025/giro-sf-2025/race/new'),
     buildUrl(
-      '/manage/org-super-sprinkles/series-sprinkles-2025/event-giro-sf-2025/race/new',
-    ),
-    buildUrl(
-      '/manage/race/new?path=organizations/org-super-sprinkles/series/series-sprinkles-2025/events/event-giro-sf-2025/races',
+      '/manage/race/new?path=organizations/super-sprinkles/series/sprinkles-2025/events/giro-sf-2025/races',
     ),
   ],
   [
     'manage/race/edit',
     buildUrl(
-      '/manage/org-super-sprinkles/series-sprinkles-2025/event-giro-sf-2025/race-giro-sf-2025-masters-women/edit',
+      '/manage/super-sprinkles/sprinkles-2025/giro-sf-2025/masters-women/edit',
     ),
     buildUrl(
-      '/manage/race/edit?path=organizations/org-super-sprinkles/series/series-sprinkles-2025/events/event-giro-sf-2025/races/race-giro-sf-2025-masters-women',
+      '/manage/race/edit?path=organizations/super-sprinkles/series/sprinkles-2025/events/giro-sf-2025/races/masters-women',
     ),
   ],
   [
     'manage/new-preem',
     buildUrl(
-      '/manage/org-super-sprinkles/series-sprinkles-2025/event-giro-sf-2025/race-giro-sf-2025-masters-women/preem/new',
+      '/manage/super-sprinkles/sprinkles-2025/giro-sf-2025/masters-women/preem/new',
     ),
     buildUrl(
-      '/manage/preem/new?path=organizations/org-super-sprinkles/series/series-sprinkles-2025/events/event-giro-sf-2025/races/race-giro-sf-2025-masters-women/preems',
+      '/manage/preem/new?path=organizations/super-sprinkles/series/sprinkles-2025/events/giro-sf-2025/races/masters-women/preems',
     ),
   ],
   [
     'manage/preem/edit',
     buildUrl(
-      '/manage/org-super-sprinkles/series-sprinkles-2025/event-giro-sf-2025/race-giro-sf-2025-masters-women/preem-1/edit',
+      '/manage/super-sprinkles/sprinkles-2025/giro-sf-2025/masters-women/first-lap/edit',
     ),
     buildUrl(
-      '/manage/preem/edit?path=organizations/org-super-sprinkles/series/series-sprinkles-2025/events/event-giro-sf-2025/races/race-giro-sf-2025-masters-women/preems/preem-1',
+      '/manage/preem/edit?path=organizations/super-sprinkles/series/sprinkles-2025/events/giro-sf-2025/races/masters-women/preems/first-lap',
     ),
   ],
   [
     'manage/preem/details',
     buildUrl(
-      '/manage/org-super-sprinkles/series-sprinkles-2025/event-giro-sf-2025/race-giro-sf-2025-masters-women/preem-1',
+      '/manage/super-sprinkles/sprinkles-2025/giro-sf-2025/masters-women/first-lap',
     ),
     buildUrl(
-      '/manage/preem?path=organizations/org-super-sprinkles/series/series-sprinkles-2025/events/event-giro-sf-2025/races/race-giro-sf-2025-masters-women/preems/preem-1',
+      '/manage/preem?path=organizations/super-sprinkles/series/sprinkles-2025/events/giro-sf-2025/races/masters-women/preems/first-lap',
     ),
   ],
   [
     'manage/race/details',
+    buildUrl('/manage/super-sprinkles/sprinkles-2025/giro-sf-2025/masters-women'),
     buildUrl(
-      '/manage/org-super-sprinkles/series-sprinkles-2025/event-giro-sf-2025/race-giro-sf-2025-masters-women',
-    ),
-    buildUrl(
-      '/manage/race?path=organizations/org-super-sprinkles/series/series-sprinkles-2025/events/event-giro-sf-2025/races/race-giro-sf-2025-masters-women',
+      '/manage/race?path=organizations/super-sprinkles/series/sprinkles-2025/events/giro-sf-2025/races/masters-women',
     ),
   ],
   [
     'manage/new-event',
-    buildUrl('/manage/org-super-sprinkles/series-sprinkles-2025/event/new'),
+    buildUrl('/manage/super-sprinkles/sprinkles-2025/event/new'),
     buildUrl(
-      '/manage/event/new?path=organizations/org-super-sprinkles/series/series-sprinkles-2025/events',
+      '/manage/event/new?path=organizations/super-sprinkles/series/sprinkles-2025/events',
     ),
   ],
   [
     'manage/event/edit',
+    buildUrl('/manage/super-sprinkles/sprinkles-2025/giro-sf-2025/edit'),
     buildUrl(
-      '/manage/org-super-sprinkles/series-sprinkles-2025/event-giro-sf-2025/edit',
-    ),
-    buildUrl(
-      '/manage/event/edit?path=organizations/org-super-sprinkles/series/series-sprinkles-2025/events/event-giro-sf-2025',
+      '/manage/event/edit?path=organizations/super-sprinkles/series/sprinkles-2025/events/giro-sf-2025',
     ),
   ],
   [
     'manage/event/details',
+    buildUrl('/manage/super-sprinkles/sprinkles-2025/giro-sf-2025'),
     buildUrl(
-      '/manage/org-super-sprinkles/series-sprinkles-2025/event-giro-sf-2025',
-    ),
-    buildUrl(
-      '/manage/event?path=organizations/org-super-sprinkles/series/series-sprinkles-2025/events/event-giro-sf-2025',
+      '/manage/event?path=organizations/super-sprinkles/series/sprinkles-2025/events/giro-sf-2025',
     ),
   ],
   [
     'manage/new-series',
-    buildUrl('/manage/org-super-sprinkles/series/new'),
-    buildUrl(
-      '/manage/series/new?path=organizations/org-super-sprinkles/series',
-    ),
+    buildUrl('/manage/super-sprinkles/series/new'),
+    buildUrl('/manage/series/new?path=organizations/super-sprinkles/series'),
   ],
   [
     'manage/series/edit',
-    buildUrl('/manage/org-super-sprinkles/series-sprinkles-2025/edit'),
+    buildUrl('/manage/super-sprinkles/sprinkles-2025/edit'),
     buildUrl(
-      '/manage/series/edit?path=organizations/org-super-sprinkles/series/series-sprinkles-2025',
+      '/manage/series/edit?path=organizations/super-sprinkles/series/sprinkles-2025',
     ),
   ],
   [
     'manage/series/details',
-    buildUrl('/manage/org-super-sprinkles/series-sprinkles-2025'),
+    buildUrl('/manage/super-sprinkles/sprinkles-2025'),
     buildUrl(
-      '/manage/series?path=organizations/org-super-sprinkles/series/series-sprinkles-2025',
+      '/manage/series?path=organizations/super-sprinkles/series/sprinkles-2025',
     ),
   ],
   [
@@ -134,54 +124,50 @@ const testCases = [
   ],
   [
     'manage/organization/edit',
-    buildUrl('/manage/org-super-sprinkles/edit'),
-    buildUrl(
-      '/manage/organization/edit?path=organizations/org-super-sprinkles',
-    ),
+    buildUrl('/manage/super-sprinkles/edit'),
+    buildUrl('/manage/organization/edit?path=organizations/super-sprinkles'),
   ],
   [
     'manage/organization/details',
-    buildUrl('/manage/org-super-sprinkles'),
-    buildUrl('/manage/organization?path=organizations/org-super-sprinkles'),
+    buildUrl('/manage/super-sprinkles'),
+    buildUrl('/manage/organization?path=organizations/super-sprinkles'),
   ],
   // VIEWS
   ['view/user', buildUrl('/user'), buildUrl('/user')],
   [
-    'view/race',
+    'view/preem',
     buildUrl(
-      '/org-super-sprinkles/series-sprinkles-2025/event-giro-sf-2025/race-giro-sf-2025-masters-women/p1',
+      '/super-sprinkles/sprinkles-2025/giro-sf-2025/masters-women/first-lap',
     ),
     buildUrl(
-      '/preem?path=organizations/org-super-sprinkles/series/series-sprinkles-2025/events/event-giro-sf-2025/races/race-giro-sf-2025-masters-women/preems/p1',
+      '/preem?path=organizations/super-sprinkles/series/sprinkles-2025/events/giro-sf-2025/races/masters-women/preems/first-lap',
     ),
   ],
   [
     'view/race',
+    buildUrl('/super-sprinkles/sprinkles-2025/giro-sf-2025/masters-women'),
     buildUrl(
-      '/org-super-sprinkles/series-sprinkles-2025/event-giro-sf-2025/race-giro-sf-2025-masters-women',
-    ),
-    buildUrl(
-      '/race?path=organizations/org-super-sprinkles/series/series-sprinkles-2025/events/event-giro-sf-2025/races/race-giro-sf-2025-masters-women',
+      '/race?path=organizations/super-sprinkles/series/sprinkles-2025/events/giro-sf-2025/races/masters-women',
     ),
   ],
   [
     'view/event',
-    buildUrl('/org-super-sprinkles/series-sprinkles-2025/event-giro-sf-2025'),
+    buildUrl('/super-sprinkles/sprinkles-2025/giro-sf-2025'),
     buildUrl(
-      '/event?path=organizations/org-super-sprinkles/series/series-sprinkles-2025/events/event-giro-sf-2025',
+      '/event?path=organizations/super-sprinkles/series/sprinkles-2025/events/giro-sf-2025',
     ),
   ],
   [
     'view/series',
-    buildUrl('/org-super-sprinkles/series-sprinkles-2025'),
+    buildUrl('/super-sprinkles/sprinkles-2025'),
     buildUrl(
-      '/series?path=organizations/org-super-sprinkles/series/series-sprinkles-2025',
+      '/series?path=organizations/super-sprinkles/series/sprinkles-2025',
     ),
   ],
   [
     'view/organization',
-    buildUrl('/org-super-sprinkles'),
-    buildUrl('/organization?path=organizations/org-super-sprinkles'),
+    buildUrl('/super-sprinkles'),
+    buildUrl('/organization?path=organizations/super-sprinkles'),
   ],
 ];
 

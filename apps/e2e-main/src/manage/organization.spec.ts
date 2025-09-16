@@ -9,7 +9,7 @@ test.describe('manage: organization', () => {
   useMockedDateBeforeEach();
 
   test('live', async ({ page }) => {
-    await page.goto('/manage/org-super-sprinkles');
+    await page.goto('/manage/super-sprinkles');
     await expect(
       page.getByRole('heading', { name: 'Super Sprinkles Racing' }),
     ).toBeVisible();
@@ -25,7 +25,7 @@ test.describe('manage: organization', () => {
   });
 
   test('edit', async ({ page }) => {
-    await page.goto('/manage/org-super-sprinkles/edit');
+    await page.goto('/manage/super-sprinkles/edit');
     await expect(
       page.getByRole('heading', { name: 'Edit Organization' }),
     ).toBeVisible();

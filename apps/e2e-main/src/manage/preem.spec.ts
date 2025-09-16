@@ -10,7 +10,7 @@ test.describe('manage: preem', () => {
 
   test('live', async ({ page }) => {
     await page.goto(
-      '/manage/org-super-sprinkles/series-sprinkles-2025/event-giro-sf-2025/race-giro-sf-2025-masters-women/preem-giro-sf-2025-masters-women-first-lap',
+      '/manage/super-sprinkles/sprinkles-2025/giro-sf-2025/masters-women/first-lap',
     );
     await expect(
       page.getByRole('heading', { name: 'First Lap Leader', level: 1 }),
@@ -20,7 +20,7 @@ test.describe('manage: preem', () => {
 
   test('new', async ({ page }) => {
     await page.goto(
-      '/manage/org-super-sprinkles/series-sprinkles-2025/event-giro-sf-2025/race-giro-sf-2025-masters-women/preem/new',
+      '/manage/super-sprinkles/sprinkles-2025/giro-sf-2025/masters-women/preem/new',
     );
     await expect(
       page.getByRole('heading', { name: 'Create Preem' }),
@@ -30,14 +30,14 @@ test.describe('manage: preem', () => {
 
   test('edit', async ({ page }) => {
     await page.goto(
-      '/manage/org-super-sprinkles/series-sprinkles-2025/event-giro-sf-2025/race-giro-sf-2025-masters-women/preem-giro-sf-2025-masters-women-first-lap/edit',
+      '/manage/super-sprinkles/sprinkles-2025/giro-sf-2025/masters-women/first-lap/edit',
     );
     await expect(
       page.getByRole('heading', { name: 'Edit Preem' }),
     ).toBeVisible();
     await expect(
       page
-        .getByTestId('preem-card-preem-giro-sf-2025-masters-women-first-lap')
+        .getByTestId('preem-card-first-lap')
         .getByRole('heading', { name: 'First Lap Leader', level: 3 }),
     ).toBeVisible();
     await expect(page).toHaveScreenshot({ fullPage: true });

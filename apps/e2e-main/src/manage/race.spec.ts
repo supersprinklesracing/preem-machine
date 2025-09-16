@@ -10,7 +10,7 @@ test.describe('manage: race', () => {
 
   test('live', async ({ page }) => {
     await page.goto(
-      '/manage/org-super-sprinkles/series-sprinkles-2025/event-giro-sf-2025/race-giro-sf-2025-masters-women',
+      '/manage/super-sprinkles/sprinkles-2025/giro-sf-2025/masters-women',
     );
     await expect(
       page.getByRole('heading', { name: 'Master Women 40+/50+', level: 1 }),
@@ -20,7 +20,7 @@ test.describe('manage: race', () => {
 
   test('new', async ({ page }) => {
     await page.goto(
-      '/manage/org-super-sprinkles/series-sprinkles-2025/event-giro-sf-2025/race/new',
+      '/manage/super-sprinkles/sprinkles-2025/giro-sf-2025/race/new',
     );
     await expect(
       page.getByRole('heading', { name: 'Create Race' }),
@@ -30,7 +30,7 @@ test.describe('manage: race', () => {
 
   test('edit', async ({ page }) => {
     await page.goto(
-      '/manage/org-super-sprinkles/series-sprinkles-2025/event-giro-sf-2025/race-giro-sf-2025-masters-women/edit',
+      '/manage/super-sprinkles/sprinkles-2025/giro-sf-2025/masters-women/edit',
     );
     await expect(
       page.getByRole('heading', { name: 'Edit Race' }),

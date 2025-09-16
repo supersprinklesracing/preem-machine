@@ -9,9 +9,7 @@ test.describe('manage: event', () => {
   useMockedDateBeforeEach();
 
   test('live', async ({ page }) => {
-    await page.goto(
-      '/manage/org-super-sprinkles/series-sprinkles-2025/event-giro-sf-2025',
-    );
+    await page.goto('/manage/super-sprinkles/sprinkles-2025/giro-sf-2025');
     await expect(
       page.getByRole('heading', { name: 'Il Giro di San Francisco' }),
     ).toBeVisible();
@@ -19,9 +17,7 @@ test.describe('manage: event', () => {
   });
 
   test('new', async ({ page }) => {
-    await page.goto(
-      '/manage/org-super-sprinkles/series-sprinkles-2025/event/new',
-    );
+    await page.goto('/manage/super-sprinkles/sprinkles-2025/event/new');
     await expect(
       page.getByRole('heading', { name: 'Create Event' }),
     ).toBeVisible();
@@ -30,9 +26,7 @@ test.describe('manage: event', () => {
   });
 
   test('edit', async ({ page }) => {
-    await page.goto(
-      '/manage/org-super-sprinkles/series-sprinkles-2025/event-giro-sf-2025/edit',
-    );
+    await page.goto('/manage/super-sprinkles/sprinkles-2025/giro-sf-2025/edit');
     await expect(
       page.getByRole('heading', { name: 'Edit Event' }),
     ).toBeVisible();

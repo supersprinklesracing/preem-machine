@@ -9,7 +9,7 @@ test.describe('manage: series', () => {
   useMockedDateBeforeEach();
 
   test('live', async ({ page }) => {
-    await page.goto('/manage/org-super-sprinkles/series-sprinkles-2025');
+    await page.goto('/manage/super-sprinkles/sprinkles-2025');
     await expect(
       page.getByRole('heading', { name: 'Sprinkles 2025' }),
     ).toBeVisible();
@@ -17,7 +17,7 @@ test.describe('manage: series', () => {
   });
 
   test('new', async ({ page }) => {
-    await page.goto('/manage/org-super-sprinkles/series/new');
+    await page.goto('/manage/super-sprinkles/series/new');
     await expect(
       page.getByRole('heading', { name: 'Create Series' }),
     ).toBeVisible();
@@ -25,7 +25,7 @@ test.describe('manage: series', () => {
   });
 
   test('edit', async ({ page }) => {
-    await page.goto('/manage/org-super-sprinkles/series-sprinkles-2025/edit');
+    await page.goto('/manage/super-sprinkles/sprinkles-2025/edit');
     await expect(
       page.getByRole('heading', { name: 'Edit Series' }),
     ).toBeVisible();

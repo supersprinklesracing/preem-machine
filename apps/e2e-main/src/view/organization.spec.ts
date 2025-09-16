@@ -4,7 +4,7 @@ import { useMockedDateBeforeEach } from '../util/e2e-test-utils';
 test.describe('view: organization', () => {
   useMockedDateBeforeEach();
   test('basic', async ({ page }) => {
-    await page.goto('/org-super-sprinkles');
+    await page.goto('/super-sprinkles');
     await expect(
       page.getByRole('heading', { name: 'Super Sprinkles Racing' }),
     ).toBeVisible();
