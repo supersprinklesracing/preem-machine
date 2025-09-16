@@ -1,9 +1,9 @@
 'use client';
 
 import { UserAvatarIcon } from '@/components/UserAvatar/UserAvatar';
-import { useAuth } from '@/auth/client/AuthContext';
-import { compareDates, formatDateShort } from '@/dates/dates';
 import type { Contribution, User as UserType } from '@/datastore/schema';
+import { compareDates, formatDateShort } from '@/dates/dates';
+import { useUserContext } from '@/user/client/UserContext';
 import {
   Button,
   Card,
@@ -34,7 +34,7 @@ interface Props {
 }
 
 const User: React.FC<Props> = ({ user, contributions }) => {
-  const { authUser } = useAuth();
+  const { authUser } = useUserContext();
   const isOwnProfile = authUser?.uid === user.id;
 
   const totalContributed = contributions.reduce(

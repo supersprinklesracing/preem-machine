@@ -1,9 +1,10 @@
 'use client';
 
-import { useActionForm } from '@/components/forms/useActionForm';
-import { useAuth } from '@/auth/client/AuthContext';
+import { userSchema } from '@/app/(main)/account/user-schema';
 import UserProfileCard from '@/components/cards/UpdateUserProfileCard';
 import { FormActionResult } from '@/components/forms/forms';
+import { useActionForm } from '@/components/forms/useActionForm';
+import { useUserContext } from '@/user/client/UserContext';
 import {
   Box,
   Button,
@@ -20,7 +21,6 @@ import {
 import { useDebouncedValue } from '@mantine/hooks';
 import { redirect, useRouter } from 'next/navigation';
 import { NewUserOptions } from './new-user-action';
-import { userSchema } from '@/app/(main)/account/user-schema';
 
 export default function NewUser({
   newUserAction,
@@ -29,7 +29,7 @@ export default function NewUser({
   newUserAction: ({ values }: NewUserOptions) => Promise<FormActionResult>;
   onSuccess?: () => void;
 }) {
-  const { authUser } = useAuth();
+  const { authUser } = useUserContext();
   const router = useRouter();
 
   if (!authUser) {

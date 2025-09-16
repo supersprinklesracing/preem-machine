@@ -2,7 +2,7 @@
 
 import { toUrlPath } from '@/datastore/paths';
 import { Event } from '@/datastore/schema';
-import { ENV_DEBUG_LINKS, ENV_E2E_TESTING } from '@/env/env';
+import { ENV_DEBUG_LINKS } from '@/env/env';
 import {
   Box,
   Divider,

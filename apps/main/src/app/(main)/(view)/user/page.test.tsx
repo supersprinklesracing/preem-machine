@@ -48,7 +48,7 @@ describe('UserPage component', () => {
     });
     const searchParams = Promise.resolve({ path: undefined });
     await expect(UserPage({ searchParams })).rejects.toThrow(
-      'mock redirect(/user?path=users/test-uid)',
+      'mock redirect(/user/test-uid)',
     );
   });
 

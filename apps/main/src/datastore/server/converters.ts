@@ -43,16 +43,17 @@ export const converter = <T extends z.ZodObject<any, any>>(
 
   fromFirestore(snapshot: QueryDocumentSnapshot): z.infer<T> {
     const data = snapshot.data();
+
+    // Convert all Timestamps to JS Dates before parsing
+    const convertedData = firestoreToZod(data);
+
     const dataWithMetadata = {
-      ...data,
+      ...convertedData,
       id: snapshot.id,
       path: snapshot.ref.path,
     };
 
-    // Convert all Timestamps to JS Dates before parsing
-    const convertedData = firestoreToZod(dataWithMetadata);
-
-    const result = schema.safeParse(convertedData);
+    const result = schema.safeParse(dataWithMetadata);
 
     if (!result.success) {
       console.error('Zod validation failed:', result.error.format());

@@ -1,7 +1,7 @@
 'use server';
 
 import { userSchema } from '@/app/(main)/account/user-schema';
-import { getAuthUser } from '@/auth/server/auth';
+import { verifyAuthUser } from '@/auth/server/auth';
 import { FormActionError, FormActionResult } from '@/components/forms/forms';
 import { createUser } from '@/datastore/server/create/create';
 import { revalidatePath } from 'next/cache';
@@ -15,10 +15,8 @@ export async function newUserAction({
   values,
 }: NewUserOptions): Promise<FormActionResult> {
   try {
-    const authUser = await getAuthUser();
-    if (!authUser) {
-      throw new FormActionError('Not registered.');
-    }
+    // They need to really exist.
+    const authUser = await verifyAuthUser();
 
     const parsedValues = userSchema.parse(values);
     const newUserSnapshot = await createUser(
@@ -28,9 +26,9 @@ export async function newUserAction({
     );
     const newUser = newUserSnapshot.data();
     if (!newUser) {
-      throw new Error('Failed to create series.');
+      throw new Error('Failed to create user.');
     }
-    revalidatePath(`users/${newUserSnapshot.ref.path}`);
+    revalidatePath(`user/${newUserSnapshot.ref.id}`);
     return { path: newUserSnapshot.ref.path };
   } catch (error) {
     console.error('Failed to create user document:', error);

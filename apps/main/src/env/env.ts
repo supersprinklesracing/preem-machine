@@ -33,6 +33,9 @@ export const ENV_DEBUG_CREDENTIALS_DANGER =
 export const ENV_DEBUG_LINKS =
   isTrue(process.env.NEXT_PUBLIC_DEBUG_LINKS) ||
   isTrue(process.env.DEBUG_LINKS);
+export const ENV_DEBUG_DATASTORE = 
+  isTrue(process.env.DEBUG_DATASTORE) ||
+  isTrue(process.env.NEXT_PUBLIC_DEBUG_DATASTORE);
 
 export const ENV_E2E_TESTING =
   isTrue(process.env.E2E_TESTING) ||

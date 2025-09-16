@@ -10,9 +10,10 @@ import { NextResponse } from 'next/server';
 
 const LOGGED_OUT_ONLY = ['/register', '/login', '/reset-password'];
 const PROTECTED_PATHS = [
-  '^/manage(/.*)?$',
   '^/account(/.*)?$',
   '^/admin(/.*)?$',
+  '^/manage(/.*)?$',
+  '^/new-user(/.*)?$',
 ].map((path) => new RegExp(path));
 
 function isProtectedRoute(pathname: string): boolean {

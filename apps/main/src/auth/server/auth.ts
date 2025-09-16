@@ -1,4 +1,4 @@
-import { AuthContextUser } from '../user';
+import { AuthUser } from '../user';
 import { serverConfigFn } from '@/firebase/server/config';
 import { getTokens, Tokens } from 'next-firebase-auth-edge';
 import { filterStandardClaims } from 'next-firebase-auth-edge/lib/auth/claims';
@@ -12,7 +12,7 @@ export const getAuthUser = async () => {
   if (ENV_E2E_TESTING) {
     const e2eAuthUser = (await headers()).get('X-e2e-auth-user');
     if (e2eAuthUser) {
-      const authUser = JSON.parse(e2eAuthUser) as AuthContextUser;
+      const authUser = JSON.parse(e2eAuthUser) as AuthUser;
       if (!authUser.uid) {
         throw new Error(
           `Misconfigured E2E Testing User in header: ${authUser}`,
@@ -33,7 +33,7 @@ export const getAuthUser = async () => {
   return toAuthContextUserFromTokens(tokens);
 };
 
-export const verifyAuthUser = async (): Promise<AuthContextUser> => {
+export const verifyAuthUser = async (): Promise<AuthUser> => {
   const authUser = await getAuthUser();
   if (!authUser) {
     unauthorized();
@@ -45,7 +45,7 @@ export async function getAuthUserFromRequest(request: NextRequest) {
   const serverConfig = await serverConfigFn();
   const tokens = await getTokens(request.cookies, serverConfig);
   if (!tokens) {
-    throw new Error('Unauthenticated');
+    return null;
   }
 
   // TODO: Need to figure this out.
@@ -59,7 +59,7 @@ export async function getAuthUserFromRequest(request: NextRequest) {
 
 export const verifyAuthUserFromRequest = async (
   request: NextRequest,
-): Promise<AuthContextUser> => {
+): Promise<AuthUser> => {
   const authUser = await getAuthUserFromRequest(request);
   if (!authUser) {
     unauthorized();
@@ -70,7 +70,7 @@ export const verifyAuthUserFromRequest = async (
 export async function verifyUserRole(
   request: NextRequest,
   requiredRole: string,
-): Promise<AuthContextUser> {
+): Promise<AuthUser> {
   const user = await getAuthUserFromRequest(request);
   if (!user) {
     unauthorized();
@@ -91,9 +91,9 @@ const toAuthContextUserFromTokens = ({
   token,
   customToken,
   decodedToken,
-}: Tokens): AuthContextUser => {
+}: Tokens): AuthUser | null => {
   if (!decodedToken) {
-    throw unauthorized();
+    return null;
   }
   const customClaims = filterStandardClaims(decodedToken);
 
@@ -118,7 +118,7 @@ const toAuthContextUserFromTokens = ({
 // const userRecord = await getUser(tokens.decodedToken.uid);
 // const fromUserRecord = toAuthContextUserFromUserRecord(userRecord);
 // eslint-disable-next-line @typescript-eslint/no-explicit-any, @typescript-eslint/no-unused-vars
-function toAuthContextUserFromUserRecord(userRecord: any): AuthContextUser {
+function toAuthContextUserFromUserRecord(userRecord: any): AuthUser {
   return {
     uid: userRecord.uid,
     email: userRecord.email,

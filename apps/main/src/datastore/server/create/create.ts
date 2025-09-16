@@ -1,6 +1,6 @@
 'use server';
 
-import { AuthContextUser } from '@/auth/user';
+import { AuthUser } from '@/auth/user';
 import {
   type DocumentData,
   type DocumentReference,
@@ -46,8 +46,11 @@ const getCreateMetadata = (userRef: DocumentReference<DocumentData>) => ({
 export const createUser = async (
   path: CollectionPath,
   user: Pick<User, 'name' | 'email' | 'avatarUrl'>,
-  authUser: AuthContextUser,
+  authUser: AuthUser,
 ) => {
+  if (!(await isUserAuthorized(authUser, path))) {
+    unauthorized();
+  }
   const userRef = await getDocRefInternal(UserSchema, `users/${authUser.uid}`);
   const ref = await getDocRefInternal(UserSchema, path);
   const newUser = {
@@ -63,7 +66,7 @@ export const createUser = async (
 export const createOrganization = async (
   path: CollectionPath,
   organization: Pick<Organization, 'name'>,
-  authUser: AuthContextUser,
+  authUser: AuthUser,
 ) => {
   // TODO: Re-enable this in the future. Not now. We need a claim or something.
   // if (!(await isUserAuthorized(authUser, getParentPath(path)))) {
@@ -88,7 +91,7 @@ export const createSeries = async (
     Series,
     'name' | 'description' | 'website' | 'location' | 'startDate' | 'endDate'
   >,
-  authUser: AuthContextUser,
+  authUser: AuthUser,
 ) => {
   if (!(await isUserAuthorized(authUser, path))) {
     unauthorized();
@@ -117,7 +120,7 @@ export const createEvent = async (
     Event,
     'name' | 'description' | 'website' | 'location' | 'startDate' | 'endDate'
   >,
-  authUser: AuthContextUser,
+  authUser: AuthUser,
 ) => {
   if (!(await isUserAuthorized(authUser, path))) {
     unauthorized();
@@ -147,7 +150,7 @@ export const createRace = async (
     Race,
     'name' | 'description' | 'website' | 'location' | 'startDate' | 'endDate'
   >,
-  authUser: AuthContextUser,
+  authUser: AuthUser,
 ) => {
   if (!(await isUserAuthorized(authUser, path))) {
     unauthorized();
@@ -174,7 +177,7 @@ export const createRace = async (
 export const createPreem = async (
   path: DocPath,
   preem: Pick<Preem, 'name' | 'description'>,
-  authUser: AuthContextUser,
+  authUser: AuthUser,
 ) => {
   if (!(await isUserAuthorized(authUser, path))) {
     unauthorized();
@@ -200,7 +203,7 @@ export const createPreem = async (
 export const createPendingContribution = async (
   path: CollectionPath,
   contribution: Pick<Contribution, 'amount' | 'message' | 'isAnonymous'>,
-  authUser: AuthContextUser,
+  authUser: AuthUser,
 ) => {
   if (!authUser.uid) {
     unauthorized();

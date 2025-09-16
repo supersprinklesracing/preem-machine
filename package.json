@@ -98,6 +98,7 @@
     "postcss-simple-vars": "^7.0.1",
     "prettier": "^3.0.0",
     "react-loading-hook": "^1.1.2",
+    "source-map": "^0.7.6",
     "stylelint": "^16.23.1",
     "stylelint-config-standard": "^39.0.0",
     "ts-jest": "^29.4.0",

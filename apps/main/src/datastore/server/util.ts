@@ -8,12 +8,14 @@ import {
 import { z } from 'zod';
 import { notFound } from '../errors';
 import { converter } from './converters';
+import { ENV_DEBUG_DATASTORE } from '@/env/env';
 
 export const getDocRefInternal = async <T extends z.ZodObject<any, any>>(
   schema: T,
   path: string,
 ): Promise<DocumentReference<z.infer<T>>> => {
   const db = await getFirestore();
+  if (ENV_DEBUG_DATASTORE) console.debug(`getDocRef: ${path}`);
   return db.doc(path).withConverter(converter(schema));
 };
 
@@ -22,6 +24,7 @@ export const getCollectionRefInternal = async <T extends z.ZodObject<any, any>>(
   path: string,
 ): Promise<CollectionReference<z.infer<T>>> => {
   const db = await getFirestore();
+  if (ENV_DEBUG_DATASTORE) console.debug(`getCollectionRef: ${path}`);
   return db.collection(path).withConverter(converter(schema));
 };
 
