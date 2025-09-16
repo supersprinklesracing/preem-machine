@@ -1,8 +1,12 @@
 import { expect, test } from '@playwright/test';
-import { useE2eTestingUserBeforeEach } from '../util/e2e-test-utils';
+import {
+  useE2eTestingUserBeforeEach,
+  useMockedDateBeforeEach,
+} from '../util/e2e-test-utils';
 
 test.describe('manage: race', () => {
   useE2eTestingUserBeforeEach();
+  useMockedDateBeforeEach();
 
   test('live', async ({ page }) => {
     await page.goto(

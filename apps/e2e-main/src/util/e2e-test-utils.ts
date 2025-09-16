@@ -60,3 +60,9 @@ export function useE2eTestingUserBeforeEach() {
     await setE2eTestingUser(page);
   });
 }
+
+export function useMockedDateBeforeEach() {
+  test.beforeEach(async ({ page }) => {
+    await page.clock.setFixedTime(new Date('2025-07-13T00:00:00-07:00'));
+  });
+}
