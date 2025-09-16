@@ -37,11 +37,18 @@ const createMetadata = (dateString: string): Metadata => {
 export const mockDbData: DatabaseCollections = {
   users: [
     {
+      ...createIdAndPath(`users/test-user-1`),
+      name: 'Test User',
+      email: 'test-user@example.com',
+      avatarUrl: 'https://placehold.co/100x100.png',
+      organizationRefs: [createDocRef('organizations/org-super-sprinkles')],
+      metadata: createMetadata('2024-07-01T10:00:00Z'),
+    },
+    {
       ...createIdAndPath('users/user-test-admin'),
       name: 'Test Admin',
       email: 'test-admin@example.com',
       avatarUrl: 'https://placehold.co/100x100.png',
-      role: 'admin',
       organizationRefs: [createDocRef('organizations/org-super-sprinkles')],
       metadata: createMetadata('2024-07-01T10:00:00Z'),
     },
@@ -50,7 +57,6 @@ export const mockDbData: DatabaseCollections = {
       name: 'Test User',
       email: 'test-user@example.com',
       avatarUrl: 'https://placehold.co/100x100.png',
-      role: 'admin',
       organizationRefs: [createDocRef('organizations/org-super-sprinkles')],
       metadata: createMetadata('2024-07-01T10:00:00Z'),
     },
@@ -66,7 +72,6 @@ export const mockDbData: DatabaseCollections = {
       name: 'Bike Race Inc. Admin',
       email: 'contact@bikerace.com',
       avatarUrl: 'https://placehold.co/100x100.png',
-      role: 'organizer',
       organizationRefs: [createDocRef('organizations/org-bike-race-inc')],
       metadata: createMetadata('2024-07-01T10:02:00Z'),
     },
@@ -75,7 +80,6 @@ export const mockDbData: DatabaseCollections = {
       name: 'Jane Smith',
       email: 'jane@example.com',
       avatarUrl: 'https://placehold.co/100x100.png',
-      role: 'contributor',
       metadata: createMetadata('2024-07-01T10:03:00Z'),
     },
     {
@@ -83,7 +87,6 @@ export const mockDbData: DatabaseCollections = {
       name: 'Some User',
       email: 'shop@example.com',
       avatarUrl: 'https://placehold.co/100x100.png',
-      role: 'contributor',
       metadata: createMetadata('2024-07-01T10:04:00Z'),
     },
   ],
@@ -92,6 +95,8 @@ export const mockDbData: DatabaseCollections = {
       ...createIdAndPath('organizations/org-super-sprinkles'),
       name: 'Super Sprinkles Racing',
       memberRefs: [
+        createDocRef('users/test-user-1'),
+
         // test-user@example.com - preem-machine
         createDocRef('users/BFGvWNXZoCWayJa0pNEL4bfhtUC3'),
         // test-user@example.com - preem-machine-ci

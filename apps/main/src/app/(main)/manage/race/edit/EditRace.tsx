@@ -60,7 +60,6 @@ export function EditRace({
   const { form, handleSubmit, isLoading, submissionError } = useActionForm({
     schema: raceSchema,
     validate: (values) => {
-      console.log('validating', values);
       if (values.startDate && values.endDate) {
         if (values.endDate < values.startDate) {
           return {

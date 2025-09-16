@@ -10,12 +10,11 @@ import { UserContextValue } from './user/client/UserContext';
 import { UserProvider } from './user/client/UserProvider';
 import { AuthUser } from './auth/user';
 import { User } from './datastore/schema';
-import { ENV_E2E_TESTING_USER } from './env/env';
 
 jest.mock('@/user/server/user');
 
 export const MOCK_AUTH_USER: AuthUser = {
-  uid: ENV_E2E_TESTING_USER,
+  uid: 'test-user-id',
   displayName: 'Test User',
   email: 'test-user@example.com',
   phoneNumber: null,
@@ -27,8 +26,8 @@ export const MOCK_AUTH_USER: AuthUser = {
 };
 
 export const MOCK_USER: User = {
-  id: ENV_E2E_TESTING_USER,
-  path: `users/${ENV_E2E_TESTING_USER}`,
+  id: 'test-user-id',
+  path: `users/test-user-id`,
   name: 'Test User',
   email: 'test-user@example.com',
   avatarUrl: 'https://placehold.co/100x100.png',
