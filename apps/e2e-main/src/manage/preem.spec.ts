@@ -1,8 +1,12 @@
 import { expect, test } from '@playwright/test';
-import { useE2eTestingUserBeforeEach } from '../util/e2e-test-utils';
+import {
+  useE2eTestingUserBeforeEach,
+  useMockedDateBeforeEach,
+} from '../util/e2e-test-utils';
 
 test.describe('manage: preem', () => {
   useE2eTestingUserBeforeEach();
+  useMockedDateBeforeEach();
 
   test('live', async ({ page }) => {
     await page.goto(
@@ -33,9 +37,7 @@ test.describe('manage: preem', () => {
     ).toBeVisible();
     await expect(
       page
-        .getByTestId(
-          'preem-card-preem-giro-sf-2025-masters-women-first-lap',
-        )
+        .getByTestId('preem-card-preem-giro-sf-2025-masters-women-first-lap')
         .getByRole('heading', { name: 'First Lap Leader', level: 3 }),
     ).toBeVisible();
     await expect(page).toHaveScreenshot({ fullPage: true });
