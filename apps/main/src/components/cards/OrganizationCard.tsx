@@ -1,6 +1,7 @@
 import { Organization } from '@/datastore/schema';
-import { Card, Grid, Group, Stack, Title, TitleOrder } from '@mantine/core';
+import { TitleOrder } from '@mantine/core';
 import React from 'react';
+import { ContentCard } from './ContentCard';
 
 interface OrganizationCardProps {
   organization: Organization;
@@ -18,40 +19,13 @@ const OrganizationCard: React.FC<OrganizationCardProps> = ({
   titleOrder = 3,
 }) => {
   return (
-    <Card
+    <ContentCard
+      title={organization.name}
+      rightColumnBottom={children}
+      style={style}
       withBorder={withBorder}
-      padding="lg"
-      radius="md"
-      style={{
-        display: 'flex',
-        flexDirection: 'column',
-        height: '100%',
-        ...style,
-      }}
-    >
-      <Grid gutter="lg" style={{ flexGrow: 1 }}>
-        <Grid.Col span={{ base: 12, lg: 9 }}>
-          <Stack justify="space-between" style={{ height: '100%' }}>
-            <div>
-              <Group justify="space-between" align="flex-start">
-                <div>
-                  <Title order={titleOrder}>{organization.name}</Title>
-                </div>
-              </Group>
-            </div>
-          </Stack>
-        </Grid.Col>
-        <Grid.Col span={{ base: 12, lg: 3 }}>
-          <Stack
-            align="stretch"
-            justify="space-between"
-            style={{ height: '100%' }}
-          >
-            {children}
-          </Stack>
-        </Grid.Col>
-      </Grid>
-    </Card>
+      titleOrder={titleOrder}
+    />
   );
 };
 

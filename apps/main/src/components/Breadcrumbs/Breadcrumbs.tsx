@@ -47,7 +47,13 @@ export function Breadcrumbs({ brief }: { brief: Brief | undefined }) {
   const items = breadcrumbs
     .filter((b): b is NonNullable<Brief> => b !== null)
     .map((b) => (
-      <Anchor component={Link} href={`/${toUrlPath(b.path)}`} key={b.path}>
+      <Anchor
+        component={Link}
+        href={`/${toUrlPath(b.path)}`}
+        key={b.path}
+        size="sm"
+        c="dimmed"
+      >
         {b.name}
       </Anchor>
     ));

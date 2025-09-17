@@ -1,7 +1,8 @@
 import { Series } from '@/datastore/schema';
-import { Card, Grid, Group, Stack, Title, TitleOrder } from '@mantine/core';
 import React from 'react';
 import { DateLocationDetail } from './DateLocationDetail';
+import { ContentCard } from './ContentCard';
+import { TitleOrder, Group } from '@mantine/core';
 
 interface SeriesCardProps {
   series: Series;
@@ -21,47 +22,19 @@ const SeriesCard: React.FC<SeriesCardProps> = ({
   const dateLocationDetailContent = <DateLocationDetail {...series} />;
 
   return (
-    <Card
+    <ContentCard
       withBorder={withBorder}
-      padding="lg"
-      radius="md"
-      style={{
-        display: 'flex',
-        flexDirection: 'column',
-        height: '100%',
-        ...style,
-      }}
-    >
-      <Grid gutter="lg" style={{ flexGrow: 1 }}>
-        <Grid.Col span={{ base: 12, lg: 9 }}>
-          <Stack justify="space-between" style={{ height: '100%' }}>
-            <div>
-              <Group justify="space-between" align="flex-start">
-                <div>
-                  <Title order={titleOrder}>{series.name}</Title>
-                </div>
-              </Group>
-
-              <Group mt="md" mb="md" hiddenFrom="lg">
-                {dateLocationDetailContent}
-              </Group>
-            </div>
-          </Stack>
-        </Grid.Col>
-        <Grid.Col span={{ base: 12, lg: 3 }}>
-          <Stack
-            align="stretch"
-            justify="space-between"
-            style={{ height: '100%' }}
-          >
-            <Stack visibleFrom="lg" gap="xs">
-              {dateLocationDetailContent}
-            </Stack>
-            {children}
-          </Stack>
-        </Grid.Col>
-      </Grid>
-    </Card>
+      style={style}
+      title={series.name}
+      titleOrder={titleOrder}
+      mainContent={
+        <Group hiddenFrom="lg" mt="md" mb="md">
+          {dateLocationDetailContent}
+        </Group>
+      }
+      rightColumnTop={dateLocationDetailContent}
+      rightColumnBottom={children}
+    />
   );
 };
 
