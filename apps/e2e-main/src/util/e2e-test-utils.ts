@@ -1,10 +1,13 @@
-import { test, Page } from '@playwright/test';
-import { ENV_E2E_TESTING, ENV_E2E_TESTING_USER } from './e2e-env';
+import { Page, test } from '@playwright/test';
+import {
+  ENV_E2E_TESTING,
+  ENV_E2E_TESTING_USER
+} from './e2e-env';
 
-const uid = ENV_E2E_TESTING_USER;
 if (!ENV_E2E_TESTING) {
   throw new Error('E2E_TESTING is not set.');
 }
+const uid = ENV_E2E_TESTING_USER;
 if (!uid) {
   throw new Error(
     'Misconfigured E2E Testing User ' + JSON.stringify(process.env),
@@ -28,16 +31,13 @@ function setTestExtraHttpHeaders() {
   });
 }
 
-async function setE2eTestingUser(page: Page) {
+async function setE2eTestingUser(
+  page: Page,
+  authUser: { [key: string]: unknown },
+) {
   await page.route('**/*', async (route) => {
     const customHeaders = {
-      'X-e2e-auth-user': JSON.stringify({
-        uid: ENV_E2E_TESTING_USER,
-        email: 'test-user@example.com',
-        displayName: 'Test User',
-        emailVerifed: true,
-        customClaims: {},
-      }),
+      'X-e2e-auth-user': JSON.stringify(authUser),
     };
 
     // Get the original headers
@@ -57,7 +57,25 @@ async function setE2eTestingUser(page: Page) {
 
 export function useE2eTestingUserBeforeEach() {
   test.beforeEach(async ({ page }) => {
-    await setE2eTestingUser(page);
+    await setE2eTestingUser(page, {
+      uid: ENV_E2E_TESTING_USER,
+      email: 'test-user@example.com',
+      displayName: 'Test User',
+      emailVerifed: true,
+      customClaims: {},
+    });
+  });
+}
+
+export function useE2eTestingAdminBeforeEach() {
+  test.beforeEach(async ({ page }) => {
+    await setE2eTestingUser(page, {
+      uid: ENV_E2E_TESTING_USER,
+      email: 'test-user@example.com',
+      displayName: 'Test User',
+      emailVerifed: true,
+      customClaims: { roles: ['admin'] },
+    });
   });
 }
 

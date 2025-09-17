@@ -127,6 +127,15 @@ export const getOrganizationWithSeries = async (
   return result;
 };
 
+export const getOrganizations = cache(async (): Promise<Organization[]> => {
+  const db = await getFirestore();
+  const orgsSnap = await db
+    .collection('organizations')
+    .withConverter(converter(OrganizationSchema))
+    .get();
+  return orgsSnap.docs.map((doc) => doc.data());
+});
+
 export const getUsers = cache(async (): Promise<User[]> => {
   const db = await getFirestore();
   const usersSnap = await db
@@ -254,9 +263,8 @@ export const getPreemPageDataWithUsers = cache(async (path: string) => {
   const { preem, children } = await getRenderablePreemDataForPage(path);
 
   const contributorIds =
-    children
-      .map((c) => c.contributor?.id)
-      .filter((id): id is string => !!id) ?? [];
+    children.map((c) => c.contributor?.id).filter((id): id is string => !!id) ??
+    [];
 
   const uniqueUserIds = [...new Set(contributorIds)];
   const users =

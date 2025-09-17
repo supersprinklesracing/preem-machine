@@ -1,17 +1,31 @@
-import { render, screen, setupMockDb } from '@/test-utils';
-import Admin from './Admin';
+import {
+  render,
+  screen,
+  setupMockDb,
+  MOCK_ADMIN_AUTH_USER,
+} from '@/test-utils';
+import { Admin } from './Admin';
 import AdminPage from './page';
+import * as userServer from '@/user/server/user';
 
 // Mock dependencies
+jest.mock('next/navigation', () => ({
+  redirect: jest.fn(),
+}));
 jest.mock('./Admin', () => ({
   __esModule: true,
-  default: jest.fn(() => <div>Mock Admin</div>),
+  Admin: jest.fn(() => <div>Mock Admin</div>),
 }));
+jest.mock('@/user/server/user');
 
 setupMockDb();
 
 describe('AdminPage component', () => {
   it('should fetch admin data and render the Admin component', async () => {
+    (userServer.verifyUserContext as jest.Mock).mockResolvedValue({
+      authUser: MOCK_ADMIN_AUTH_USER,
+    });
+
     const PageComponent = await AdminPage();
     render(PageComponent);
 
