@@ -1,53 +1,34 @@
-import { createToast } from '@/app/(main)/admin/createToast';
+import { render, screen, fireEvent } from '@/test-utils';
+import { Admin } from './Admin';
+import { User, Organization } from '@/datastore/schema';
 
-import { fireEvent, render, screen } from '@/test-utils';
-import Admin from './Admin';
+const mockUsers: User[] = [
+  { id: '1', name: 'Test User 1', email: 'user1@example.com', path: 'users/1' },
+  { id: '2', name: 'Test User 2', email: 'user2@example.com', path: 'users/2' },
+];
 
-// Mock the toast hook
-jest.mock('./createToast');
+const mockOrgs: Organization[] = [
+  { id: '1', name: 'Org 1', path: 'organizations/1' },
+  { id: '2', name: 'Org 2', path: 'organizations/2' },
+];
 
-const mockToast = jest.fn();
-(createToast as jest.Mock).mockReturnValue({ toast: mockToast });
-
-const mockData = {
-  users: [
-    {
-      id: 'user-1',
-      path: 'users/user-1',
-      name: 'Alice',
-      email: 'alice@example.com',
-    },
-    {
-      id: 'user-2',
-      path: 'users/user-2',
-      name: 'Bob',
-      email: 'bob@example.com',
-    },
-  ],
-};
-
-describe('Admin component', () => {
-  beforeEach(() => {
-    mockToast.mockClear();
+describe('Admin', () => {
+  it('renders a table of users', () => {
+    render(<Admin users={mockUsers} organizations={mockOrgs} />);
+    expect(
+      screen.getByRole('cell', { name: 'Test User 1' }),
+    ).toBeInTheDocument();
+    expect(
+      screen.getByRole('cell', { name: 'Test User 2' }),
+    ).toBeInTheDocument();
   });
 
-  it('should filter users based on search and allow impersonation', () => {
-    render(<Admin {...mockData} />);
-
-    // Search for a user
-    const searchInput = screen.getByPlaceholderText(
-      'Search by name or email...',
-    );
-    fireEvent.change(searchInput, { target: { value: 'Alice' } });
-
-    // Click the impersonate button
-    const impersonateButton = screen.getByText('Impersonate');
-    fireEvent.click(impersonateButton);
-
-    // Assert that the toast was called
-    expect(mockToast).toHaveBeenCalledWith({
-      title: 'Impersonation Started',
-      description: 'You are now viewing the app as Alice.',
-    });
+  it('opens the assign organization modal when edit is clicked', () => {
+    render(<Admin users={mockUsers} organizations={mockOrgs} />);
+    const editButtons = screen.getAllByRole('button', { name: 'Assign Org' });
+    fireEvent.click(editButtons[0]);
+    expect(
+      screen.getByText('Assign Organization to Test User 1'),
+    ).toBeInTheDocument();
   });
 });

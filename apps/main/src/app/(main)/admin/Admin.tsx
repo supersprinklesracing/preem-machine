@@ -1,126 +1,103 @@
 'use client';
 
-import { createToast } from './createToast';
-import { User } from '@/datastore/schema';
+import { User, Organization } from '@/datastore/schema';
 import {
-  Box,
+  Table,
   Button,
-  Card,
-  Group,
-  SimpleGrid,
-  Stack,
-  Text,
-  TextInput,
+  Container,
   Title,
+  Anchor,
+  Box,
+  Stack,
 } from '@mantine/core';
-import { IconSearch, IconUserCheck } from '@tabler/icons-react';
-import React, { useState } from 'react';
+import { useState } from 'react';
+import { AssignOrgModal } from './AssignOrgModal';
+import { makeAdmin } from './make-admin-action';
+import Link from 'next/link';
+import { AdminUserCard } from './AdminUserCard';
 
-interface Props {
+interface AdminProps {
   users: User[];
+  organizations: Organization[];
 }
 
-const Admin: React.FC<Props> = ({ users }) => {
-  const [search, setSearch] = useState('');
-  const { toast } = createToast();
+export function Admin({ users, organizations }: AdminProps) {
+  const [selectedUser, setSelectedUser] = useState<User | null>(null);
 
-  const handleImpersonate = (user: User) => {
-    if (!user.name) {
-      return;
-    }
-    toast({
-      title: 'Impersonation Started',
-      description: `You are now viewing the app as ${user.name}.`,
-    });
+  const handleMakeAdmin = async (userId: string) => {
+    await makeAdmin(userId);
   };
 
-  const filteredUsers = search
-    ? users.filter(
-        (u) =>
-          u.name?.toLowerCase().includes(search.toLowerCase()) ||
-          u.email?.toLowerCase().includes(search.toLowerCase()),
-      )
-    : [];
-
-  const userList = filteredUsers.map((user) => (
-    <Group
-      justify="space-between"
-      key={user.path}
-      p="sm"
-      style={{ borderBottom: '1px solid var(--mantine-color-gray-2)' }}
-    >
-      <div>
-        <Text fw={500}>{user.name}</Text>
-        <Text size="sm" c="dimmed">
-          {user.email}
-        </Text>
-      </div>
-      <Button
-        size="xs"
-        variant="outline"
-        onClick={() => handleImpersonate(user)}
-        leftSection={<IconUserCheck size={14} />}
-      >
-        Impersonate
-      </Button>
-    </Group>
-  ));
-
   return (
-    <Stack gap="xl" maw={800} mx="auto">
-      <Title order={1}>Administrator Control Panel</Title>
+    <Container py="xl">
+      <Title order={1} mb="xl">
+        Admin - User Management
+      </Title>
 
-      <Card withBorder radius="md" p="lg" bg="yellow.0">
-        <Title order={3}>User Impersonation</Title>
-        <Text c="dimmed" size="sm">
-          Find a user to view the application as them. This is a powerful tool
-          for debugging and support.
-        </Text>
-        <Group mt="md">
-          <TextInput
-            placeholder="Search by name or email..."
-            leftSection={<IconSearch size={16} />}
-            style={{ flex: 1 }}
-            value={search}
-            onChange={(e) => setSearch(e.currentTarget.value)}
-          />
-          <Button color="red">End Impersonation</Button>
-        </Group>
-        {search && (
-          <Box
-            mt="md"
-            style={{
-              border: '1px solid var(--mantine-color-gray-3)',
-              borderRadius: 'var(--mantine-radius-md)',
-              maxHeight: 300,
-              overflowY: 'auto',
-            }}
-          >
-            {userList.length > 0 ? (
-              userList
-            ) : (
-              <Text p="md" ta="center" c="dimmed">
-                No users found.
-              </Text>
-            )}
-          </Box>
-        )}
-      </Card>
+      {/* Desktop view */}
+      <Box visibleFrom="sm">
+        <Table>
+          <Table.Thead>
+            <Table.Tr>
+              <Table.Th>ID</Table.Th>
+              <Table.Th>Name</Table.Th>
+              <Table.Th>Email</Table.Th>
+              <Table.Th>Actions</Table.Th>
+            </Table.Tr>
+          </Table.Thead>
+          <Table.Tbody>
+            {users.map((user) => (
+              <Table.Tr key={user.id}>
+                <Table.Td>
+                  <Anchor component={Link} href={`/user/${user.id}`}>
+                    {user.id}
+                  </Anchor>
+                </Table.Td>
+                <Table.Td>{user.name}</Table.Td>
+                <Table.Td>{user.email}</Table.Td>
+                <Table.Td>
+                  <Button
+                    variant="outline"
+                    onClick={() => setSelectedUser(user)}
+                    data-testid="assign-org-button"
+                  >
+                    Assign Org
+                  </Button>
+                  <Button
+                    variant="outline"
+                    onClick={() => handleMakeAdmin(user.id)}
+                    ml="sm"
+                  >
+                    Make Admin
+                  </Button>
+                </Table.Td>
+              </Table.Tr>
+            ))}
+          </Table.Tbody>
+        </Table>
+      </Box>
 
-      <Card withBorder radius="md" p="lg">
-        <Title order={3}>Direct Management</Title>
-        <Text c="dimmed" size="sm">
-          Access and manage all data directly.
-        </Text>
-        <SimpleGrid cols={{ base: 2, sm: 4 }} mt="md">
-          <Button variant="light">Manage Users</Button>
-          <Button variant="light">Manage Organizers</Button>
-          <Button variant="light">Manage Races</Button>
-          <Button variant="light">Manage Preems</Button>
-        </SimpleGrid>
-      </Card>
-    </Stack>
+      {/* Mobile view */}
+      <Box hiddenFrom="sm">
+        <Stack>
+          {users.map((user) => (
+            <AdminUserCard
+              key={user.id}
+              user={user}
+              onEdit={() => setSelectedUser(user)}
+              onMakeAdmin={() => handleMakeAdmin(user.id)}
+            />
+          ))}
+        </Stack>
+      </Box>
+
+      {selectedUser && (
+        <AssignOrgModal
+          user={selectedUser}
+          organizations={organizations}
+          onClose={() => setSelectedUser(null)}
+        />
+      )}
+    </Container>
   );
-};
-
-export default Admin;
+}

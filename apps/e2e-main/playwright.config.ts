@@ -56,7 +56,9 @@ export default defineConfig({
     timeout: 300000,
     cwd: workspaceRoot,
     // .env files in shell are not respected in VS Code; we read them, above.
-    // env: {},
+    env: {
+      E2E_TESTING: "true"
+    },
   },
   expect: {
     toHaveScreenshot: { maxDiffPixelRatio: 0.02 },
