@@ -151,7 +151,6 @@ export const RaceSchema = baseDocSchema.extend({
   courseLink: z.string().url().optional(),
   maxRacers: z.number().optional(),
   currentRacers: z.number().optional(),
-  ageCategory: z.string().optional(),
   duration: z.string().optional(),
   laps: z.number().optional(),
   podiums: z.number().optional(),

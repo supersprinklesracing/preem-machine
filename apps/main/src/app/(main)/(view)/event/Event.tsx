@@ -76,7 +76,12 @@ export default function Event({ event, children }: Props) {
           {children?.map(
             ({ race, children }) =>
               race && (
-                <RaceCard key={race.path} race={race} preems={children}>
+                <RaceCard
+                  key={race.path}
+                  race={race}
+                  preems={children}
+                  showEventLink={false}
+                >
                   <Button
                     component={Link}
                     href={`/${toUrlPath(race.path)}`}

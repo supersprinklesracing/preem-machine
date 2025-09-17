@@ -4,7 +4,8 @@ import { formatDateLong, formatTime } from '@/dates/dates';
 import { toUrlPath } from '@/datastore/paths';
 import { EventWithRaces } from '@/datastore/query-schema';
 import { Contribution } from '@/datastore/schema';
-import { Card, Grid, Stack, Text, Title } from '@mantine/core';
+import { Card, Grid, Group, Stack, Text, Title } from '@mantine/core';
+import { IconCalendar, IconMapPin } from '@tabler/icons-react';
 import Link from 'next/link';
 import LiveContributionFeed from '../../../components/LiveContributionFeed/LiveContributionFeed';
 
@@ -34,15 +35,23 @@ export default function Home({ eventsWithRaces, contributions }: Props) {
                     style={{ textDecoration: 'none', color: 'inherit' }}
                   >
                     <Stack gap="sm">
-                      <Text size="lg" fw={500}>
+                      <Text size="xl" fw={500}>
                         {event?.name}
                       </Text>
-                      <Text size="sm" c="dimmed">
-                        {formatDateLong(event?.startDate)}
-                      </Text>
-                      <Text size="sm" c="dimmed">
-                        {event?.location}
-                      </Text>
+                      <Group>
+                        <Group gap="xs">
+                          <IconCalendar size={16} />
+                          <Text size="sm" c="dimmed">
+                            {formatDateLong(event?.startDate)}
+                          </Text>
+                        </Group>
+                        <Group gap="xs">
+                          <IconMapPin size={16} />
+                          <Text size="sm" c="dimmed">
+                            {event?.location}
+                          </Text>
+                        </Group>
+                      </Group>
                     </Stack>
                   </Link>
                   <Stack gap="xs" mt="md">

@@ -15,9 +15,9 @@ export const DateLocationDetail: React.FC<DateLocationDetailProps> = ({
   timezone,
 }) => {
   return (
-    <>
+    <Group>
       {startDate && (
-        <Group gap="xs">
+        <Group gap="xs" wrap="nowrap">
           <IconCalendar size={18} />
           <Text size="sm" fw={500}>
             {timezone
@@ -27,13 +27,13 @@ export const DateLocationDetail: React.FC<DateLocationDetailProps> = ({
         </Group>
       )}
       {location && (
-        <Group gap="xs">
+        <Group gap="xs" wrap="nowrap">
           <IconMapPin size={18} />
           <Text size="sm" fw={500}>
             {location}
           </Text>
         </Group>
       )}
-    </>
+    </Group>
   );
 };

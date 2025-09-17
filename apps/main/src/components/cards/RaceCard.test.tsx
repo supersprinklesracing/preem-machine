@@ -10,7 +10,6 @@ const mockData = {
     website: 'https://example.com',
     category: 'Category A',
     gender: 'Men',
-    ageCategory: 'Masters 35+',
     courseDetails: 'A beautiful course.',
     currentRacers: 10,
     maxRacers: 100,
@@ -53,9 +52,7 @@ describe('RaceCard', () => {
     expect(screen.getByText('Test Race')).toBeInTheDocument();
     expect(screen.getByText('This is a test race.')).toBeInTheDocument();
     expect(screen.getByText('Official Website')).toBeInTheDocument();
-    expect(
-      screen.getByText('Category A - Men - Masters 35+'),
-    ).toBeInTheDocument();
+    expect(screen.getByText('Category A - Men')).toBeInTheDocument();
     expect(screen.getByText('A beautiful course.')).toBeInTheDocument();
     expect(screen.getByText('10 / 100')).toBeInTheDocument();
     expect(screen.getByText('60 minutes')).toBeInTheDocument();

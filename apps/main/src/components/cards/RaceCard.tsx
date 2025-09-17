@@ -1,15 +1,6 @@
 import { PreemWithContributions } from '@/datastore/query-schema';
 import { Race } from '@/datastore/schema';
-import {
-  Card,
-  Grid,
-  Group,
-  Stack,
-  Text,
-  Title,
-  TitleOrder,
-  Anchor,
-} from '@mantine/core';
+import { TitleOrder, Anchor, Text, Group } from '@mantine/core';
 import {
   IconAward,
   IconClock,
@@ -23,6 +14,7 @@ import { DateLocationDetail } from './DateLocationDetail';
 import { MetadataItem, MetadataRow } from './MetadataRow';
 import Link from 'next/link';
 import { toUrlPath } from '@/datastore/paths';
+import { ContentCard } from './ContentCard';
 
 const LARGE_PREEM_THRESHOLD = 100;
 
@@ -33,6 +25,7 @@ interface RaceCardProps {
   style?: React.CSSProperties;
   withBorder?: boolean;
   titleOrder?: TitleOrder;
+  showEventLink?: boolean;
 }
 
 const RaceCard: React.FC<RaceCardProps> = ({
@@ -42,21 +35,33 @@ const RaceCard: React.FC<RaceCardProps> = ({
   style,
   withBorder = true,
   titleOrder = 3,
+  showEventLink = true,
 }) => {
   const totalPrizePool = preems.reduce(
     (sum, { preem }) => sum + (preem.prizePool ?? 0),
     0,
   );
 
-  const dateLocationDetailContent = <DateLocationDetail {...race} />;
+  const subheadings = [];
+  if (showEventLink) {
+    subheadings.push(
+      <React.Fragment key="event-link">
+        Part of{' '}
+        <Anchor component={Link} href={`/${toUrlPath(race.eventBrief.path)}`}>
+          {race.eventBrief.name}
+        </Anchor>
+      </React.Fragment>,
+    );
+  }
+  subheadings.push(`${race.category} - ${race.gender}`);
 
   const metadataItems: MetadataItem[] = [];
   if (totalPrizePool > 0) {
     metadataItems.push({
       key: 'preems',
-      icon: (
+      icon: (props) => (
         <IconSparkles
-          size={18}
+          {...props}
           color={
             totalPrizePool > LARGE_PREEM_THRESHOLD
               ? 'var(--mantine-color-green-6)'
@@ -64,128 +69,71 @@ const RaceCard: React.FC<RaceCardProps> = ({
           }
         />
       ),
-      label: (
-        <Text
-          size="lg"
-          fw={500}
-          c={totalPrizePool > LARGE_PREEM_THRESHOLD ? 'green' : 'inherit'}
-        >
-          Preems ${totalPrizePool.toLocaleString()}
-        </Text>
-      ),
+      label: `Preems $${totalPrizePool.toLocaleString()}`,
     });
   }
   metadataItems.push({
     key: 'racers',
-    icon: <IconUsers size={18} />,
-    label: (
-      <Text size="sm" fw={500}>
-        {race.currentRacers} / {race.maxRacers}
-      </Text>
-    ),
+    icon: (props) => <IconUsers {...props} />,
+    label: `${race.currentRacers} / ${race.maxRacers}`,
   });
   metadataItems.push({
     key: 'duration',
-    icon: <IconClock size={18} />,
-    label: (
-      <Text size="sm" fw={500}>
-        {race.duration}
-      </Text>
-    ),
+    icon: (props) => <IconClock {...props} />,
+    label: race.duration,
   });
   metadataItems.push({
     key: 'laps',
-    icon: <IconAward size={18} />,
-    label: (
-      <Text size="sm" fw={500}>
-        {race.laps} laps
-      </Text>
-    ),
+    icon: (props) => <IconAward {...props} />,
+    label: `${race.laps} laps`,
   });
 
+  const mainContent = (
+    <>
+      <Group mt="md" mb="md" hiddenFrom="lg">
+        <DateLocationDetail {...race} />
+      </Group>
+      <Text size="sm" mt="md" mb="md">
+        {race.description}
+      </Text>
+      <Text size="sm" mt="md" mb="md">
+        {race.courseDetails}
+      </Text>
+      {race.website && (
+        <Group gap="xs">
+          <IconWorldWww size={16} />
+          <Anchor href={race.website} target="_blank" size="sm">
+            Official Website
+          </Anchor>
+        </Group>
+      )}
+    </>
+  );
+
+  const bottomContent = (
+    <>
+      <MetadataRow items={metadataItems} />
+      {race.sponsors && race.sponsors.length > 0 && (
+        <Text size="sm" mt="md">
+          Sponsored by: {race.sponsors.join(', ')}
+        </Text>
+      )}
+    </>
+  );
+
   return (
-    <Card
-      data-testid={`race-card-${race.id}`}
+    <ContentCard
+      title={race.name}
+      statusBadge={<DateStatusBadge {...race} />}
+      subheadings={subheadings}
+      mainContent={mainContent}
+      bottomContent={bottomContent}
+      rightColumnTop={<DateLocationDetail {...race} />}
+      rightColumnBottom={children}
+      style={style}
       withBorder={withBorder}
-      padding="lg"
-      radius="md"
-      style={{
-        display: 'flex',
-        flexDirection: 'column',
-        height: '100%',
-        ...style,
-      }}
-    >
-      <Grid gutter="lg" style={{ flexGrow: 1 }}>
-        <Grid.Col span={{ base: 12, lg: 9 }}>
-          <Stack justify="space-between" style={{ height: '100%' }}>
-            <div>
-              <Group justify="space-between" align="flex-start">
-                <div>
-                  <Group align="center" gap="md">
-                    <Title order={titleOrder}>{race.name}</Title>
-                    <DateStatusBadge {...race} />
-                  </Group>
-                  <Text c="dimmed">
-                    Part of{' '}
-                    <Anchor
-                      component={Link}
-                      href={`/${toUrlPath(race.eventBrief.path)}`}
-                    >
-                      {race.eventBrief.name}
-                    </Anchor>
-                  </Text>
-                  <Text c="dimmed">
-                    {race.category} - {race.gender} - {race.ageCategory}
-                  </Text>
-                </div>
-              </Group>
-
-              <Group mt="md" mb="md" hiddenFrom="lg">
-                {dateLocationDetailContent}
-              </Group>
-
-              <Text size="sm" mt="md" mb="md">
-                {race.description}
-              </Text>
-
-              <Text size="sm" mt="md" mb="md">
-                {race.courseDetails}
-              </Text>
-
-              {race.website && (
-                <Group gap="xs">
-                  <IconWorldWww size={16} />
-                  <Anchor href={race.website} target="_blank" size="sm">
-                    Official Website
-                  </Anchor>
-                </Group>
-              )}
-
-              <MetadataRow items={metadataItems} />
-
-              {race.sponsors && race.sponsors.length > 0 && (
-                <Text size="sm" mt="md">
-                  Sponsored by: {race.sponsors.join(', ')}
-                </Text>
-              )}
-            </div>
-          </Stack>
-        </Grid.Col>
-        <Grid.Col span={{ base: 12, lg: 3 }}>
-          <Stack
-            align="stretch"
-            justify="space-between"
-            style={{ height: '100%' }}
-          >
-            <Stack data-testid="race-details" visibleFrom="lg" gap="xs">
-              {dateLocationDetailContent}
-            </Stack>
-            {children}
-          </Stack>
-        </Grid.Col>
-      </Grid>
-    </Card>
+      titleOrder={titleOrder}
+    />
   );
 };
 

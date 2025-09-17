@@ -75,7 +75,7 @@ const Hub: React.FC<Props> = ({ organizations }) => {
         {organizations.map(({ organization }) => (
           <Grid.Col key={organization.id} span={{ base: 12 }}>
             <Group justify="space-between" mb="md">
-              <Title order={2}>{organization.name}</Title>
+              <Title order={1}>{organization.name}</Title>
               <Button
                 component={Link}
                 href={`/manage/${toUrlPath(organization.path)}/edit`}
@@ -104,7 +104,7 @@ const Hub: React.FC<Props> = ({ organizations }) => {
             return (
               <React.Fragment key={series.id}>
                 <Grid.Col span={{ base: 12, xs: 12, md: 6, lg: 9, xl: 6 }}>
-                  <SeriesCard series={series} titleOrder={3}>
+                  <SeriesCard series={series} titleOrder={2}>
                     <Button
                       component={Link}
                       href={`/manage/${toUrlPath(series.path)}/edit`}
@@ -119,7 +119,7 @@ const Hub: React.FC<Props> = ({ organizations }) => {
                 {upcomingEvents.length > 0 && (
                   <>
                     <Grid.Col span={{ base: 12 }}>
-                      <Title order={3} mb="md">
+                      <Title order={2} mb="md">
                         Upcoming & Live Events
                       </Title>
                     </Grid.Col>
@@ -128,7 +128,7 @@ const Hub: React.FC<Props> = ({ organizations }) => {
                         key={event.id}
                         span={{ base: 12, xs: 12, md: 6, lg: 9, xl: 6 }}
                       >
-                        <EventCard event={event} titleOrder={5}>
+                        <EventCard event={event} titleOrder={2}>
                           <Button
                             component={Link}
                             href={`/manage/${toUrlPath(event.path)}/live`}
@@ -150,7 +150,7 @@ const Hub: React.FC<Props> = ({ organizations }) => {
                 ).length > 0 && (
                   <>
                     <Grid.Col span={{ base: 12 }}>
-                      <Title order={3} mb="md">
+                      <Title order={2} mb="md">
                         Races
                       </Title>
                     </Grid.Col>
@@ -161,9 +161,13 @@ const Hub: React.FC<Props> = ({ organizations }) => {
                       .map(({ race, children }) => (
                         <Grid.Col
                           key={race.id}
-                          span={{ base: 6, xs: 12, lg: 6, xl: 3 }}
+                          span={{ base: 12, md: 6, xl: 3 }}
                         >
-                          <RaceCard race={race} preems={children} />
+                          <RaceCard
+                            race={race}
+                            preems={children}
+                            titleOrder={2}
+                          />
                         </Grid.Col>
                       ))}
                   </>
@@ -179,9 +183,9 @@ const Hub: React.FC<Props> = ({ organizations }) => {
                         {pastEvents.map(({ event }) => (
                           <Grid.Col
                             key={event.path}
-                            span={{ base: 12, md: 6, lg: 4 }}
+                            span={{ base: 12, md: 6, lg: 3 }}
                           >
-                            <EventCard event={event} titleOrder={5}>
+                            <EventCard event={event} titleOrder={2}>
                               <Button
                                 component={Link}
                                 href={`/manage/${toUrlPath(event.path)}`}

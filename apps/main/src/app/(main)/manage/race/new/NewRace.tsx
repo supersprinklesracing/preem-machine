@@ -76,7 +76,6 @@ export function NewRace({
       gender: '',
       courseDetails: '',
       maxRacers: 0,
-      ageCategory: '',
       duration: '',
       laps: 0,
       podiums: 0,
@@ -145,10 +144,6 @@ export function NewRace({
                   <NumberInput
                     label="Max Racers"
                     {...form.getInputProps('maxRacers')}
-                  />
-                  <TextInput
-                    label="Age Category"
-                    {...form.getInputProps('ageCategory')}
                   />
                   <TextInput
                     label="Duration"

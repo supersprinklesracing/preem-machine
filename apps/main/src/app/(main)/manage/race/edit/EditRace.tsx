@@ -42,7 +42,6 @@ export function EditRace({
     | 'gender'
     | 'courseDetails'
     | 'maxRacers'
-    | 'ageCategory'
     | 'duration'
     | 'laps'
     | 'podiums'
@@ -93,7 +92,6 @@ export function EditRace({
       gender: race.gender ?? '',
       courseDetails: race.courseDetails ?? '',
       maxRacers: race.maxRacers ?? 0,
-      ageCategory: race.ageCategory ?? '',
       duration: race.duration ?? '',
       laps: race.laps ?? 0,
       podiums: race.podiums ?? 0,
@@ -158,10 +156,6 @@ export function EditRace({
                   <NumberInput
                     label="Max Racers"
                     {...form.getInputProps('maxRacers')}
-                  />
-                  <TextInput
-                    label="Age Category"
-                    {...form.getInputProps('ageCategory')}
                   />
                   <TextInput
                     label="Duration"

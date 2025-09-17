@@ -5,17 +5,9 @@ import ContributionCard from '@/components/cards/ContributionCard';
 import { toUrlPath } from '@/datastore/paths';
 import type { PreemWithContributions } from '@/datastore/query-schema';
 import { formatDateRelative } from '@/dates/dates';
-import {
-  Box,
-  Button,
-  Card,
-  Group,
-  Stack,
-  Table,
-  Text,
-  Title,
-} from '@mantine/core';
+import { Box, Button, Group, Stack, Table, Text } from '@mantine/core';
 import Link from 'next/link';
+import { ContentCard } from './ContentCard';
 
 interface LiveContributionsProps {
   children: PreemWithContributions[];
@@ -68,10 +60,8 @@ export default function ContributionsCard({
     <ContributionCard key={contribution.path} contribution={contribution} />
   ));
 
-  return (
-    <Card withBorder padding="lg" radius="md">
-      <Title order={3}>Live Contribution Feed</Title>
-
+  const mainContent = (
+    <>
       {/* Desktop view */}
       <Box visibleFrom="sm" mt="md">
         <Table>
@@ -110,12 +100,21 @@ export default function ContributionsCard({
           <Stack>{contributionCards}</Stack>
         )}
       </Box>
+    </>
+  );
 
-      {liveContributions.length >= 100 && (
-        <Group justify="center" mt="md">
-          <Button variant="outline">View All Contributions</Button>
-        </Group>
-      )}
-    </Card>
+  const bottomContent =
+    liveContributions.length >= 100 ? (
+      <Group justify="center" mt="md">
+        <Button variant="outline">View All Contributions</Button>
+      </Group>
+    ) : null;
+
+  return (
+    <ContentCard
+      title="Live Contribution Feed"
+      mainContent={mainContent}
+      bottomContent={bottomContent}
+    />
   );
 }
