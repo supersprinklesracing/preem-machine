@@ -41,6 +41,32 @@ export const MOCK_USER: User = {
   ],
 };
 
+export const MOCK_ADMIN_AUTH_USER: AuthUser = {
+  uid: 'test-admin',
+  displayName: 'Test Admin',
+  email: 'test-admin@example.com',
+  phoneNumber: null,
+  photoURL: 'https://placehold.co/100x100.png',
+  providerId: 'password',
+  emailVerified: false,
+  token: 'mockValue',
+  customClaims: { roles: ['admin'] },
+};
+
+export const MOCK_ADMIN_USER: User = {
+  id: 'test-admin',
+  path: `users/test-admin`,
+  name: 'Test Admin',
+  email: 'test-admin@example.com',
+  avatarUrl: 'https://placehold.co/100x100.png',
+  organizationRefs: [
+    {
+      id: 'org-super-sprinkles',
+      path: 'organizations/org-super-sprinkles',
+    },
+  ],
+};
+
 export const MOCK_USER_CONTEXT = { authUser: MOCK_AUTH_USER, user: MOCK_USER };
 
 export function setupUserContext() {

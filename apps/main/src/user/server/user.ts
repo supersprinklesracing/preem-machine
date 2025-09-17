@@ -65,7 +65,7 @@ export const hasUserRole = async (
   requiredRole: string,
   authUser: AuthUser,
 ): Promise<boolean> => {
-  const roles = authUser.customClaims?.role;
+  const roles = authUser.customClaims?.roles;
   if (Array.isArray(roles) && roles.includes(requiredRole)) {
     return true;
   }
