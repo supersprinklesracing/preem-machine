@@ -9,7 +9,6 @@ on:
 permissions:
   actions: read
   contents: read
-  id-token: 'write'
 
 jobs:
   main:
@@ -20,12 +19,15 @@ jobs:
 
     steps:
       - name: Checkout
-        uses: actions/checkout@v4
+        uses: actions/checkout@v5
         with:
           filter: tree:0
           fetch-depth: 0
 
-      - uses: ./.github/actions/gcp-auth
+      - name: Auth
+      - uses: 'google-github-actions/auth@v3'
+        with:
+          credentials_json: '${{ secrets.CREDENTIALS_GITHUB_ACTIONS_SERVICE_ACCOUNT }}'
 
       - id: 'secrets'
         uses: 'google-github-actions/get-secretmanager-secrets@v3'
@@ -59,7 +61,7 @@ jobs:
 
       # Cache node_modules
       - name: Setup Node
-        uses: actions/setup-node@v4
+        uses: actions/setup-node@v5
         with:
           node-version: 22
           # cache: 'npm'
