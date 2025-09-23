@@ -1,7 +1,6 @@
 'use client';
 
 import { AppShell, Burger, Group, Title } from '@mantine/core';
-import { useDisclosure, useMediaQuery } from '@mantine/hooks';
 import { Notifications } from '@mantine/notifications';
 import Link from 'next/link';
 import type { ComponentProps } from 'react';
@@ -12,24 +11,15 @@ export default function MainAppShell({
   children,
   avatarCluster,
   sidebar,
+  opened,
+  toggle,
 }: {
   children: React.ReactNode;
   avatarCluster?: React.ReactElement;
   sidebar?: React.ReactElement<ComponentProps<typeof Sidebar>>;
+  opened: boolean;
+  toggle: () => void;
 }) {
-  const [opened, { toggle }] = useDisclosure();
-  const isMobile = useMediaQuery('(max-width: 768px)');
-
-  const handleLinkClick = () => {
-    if (isMobile) {
-      toggle();
-    }
-  };
-
-  const sidebarWithClickHandler = sidebar
-    ? React.cloneElement(sidebar, { onLinkClick: handleLinkClick })
-    : null;
-
   return (
     <AppShell
       header={{ height: 60 }}
@@ -60,7 +50,7 @@ export default function MainAppShell({
           {avatarCluster}
         </Group>
       </AppShell.Header>
-      <AppShell.Navbar p="md">{sidebarWithClickHandler}</AppShell.Navbar>
+      <AppShell.Navbar p="md">{sidebar}</AppShell.Navbar>
       <AppShell.Main>{children}</AppShell.Main>
     </AppShell>
   );
