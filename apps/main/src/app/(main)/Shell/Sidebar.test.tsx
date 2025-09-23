@@ -1,7 +1,8 @@
 import { fireEvent, render, screen } from '@/test-utils';
 import { useMediaQuery } from '@mantine/hooks';
-import type { SidebarData } from './Sidebar';
 import Sidebar from './Sidebar';
+import { User } from '@/datastore/schema';
+import { SidebarProps } from './Sidebar';
 
 
 
@@ -11,7 +12,14 @@ jest.mock('@mantine/hooks', () => ({
   useMediaQuery: jest.fn(),
 }));
 
-const mockData: SidebarData = {
+const mockUser: User = {
+  id: 'user-1',
+  path: 'users/user-1',
+  displayName: 'Test User',
+  organizationRefs: [{ id: 'org-1', path: 'organizations/org-1' }],
+};
+
+const mockData: SidebarProps = {
   events: [
     {
       id: 'event-1',
@@ -24,6 +32,7 @@ const mockData: SidebarData = {
       name: 'Test Event 2',
     },
   ],
+  user: mockUser,
 };
 
 describe('Sidebar component', () => {
@@ -60,5 +69,18 @@ describe('Sidebar component', () => {
     fireEvent.click(screen.getByRole('link', { name: 'Test Event 1' }));
 
     expect(onLinkClick).not.toHaveBeenCalled();
+  });
+
+  it('should not render Hub link when user has no organizationRefs', () => {
+    const userWithNoOrgs: User = { ...mockUser, organizationRefs: [] };
+    const data = { ...mockData, user: userWithNoOrgs };
+    render(<Sidebar {...data} />);
+    expect(screen.queryByRole('link', { name: 'Hub' })).not.toBeInTheDocument();
+  });
+
+  it('should not render Hub link when user is null', () => {
+    const data = { ...mockData, user: null };
+    render(<Sidebar {...data} />);
+    expect(screen.queryByRole('link', { name: 'Hub' })).not.toBeInTheDocument();
   });
 });
