@@ -4,6 +4,7 @@ import { appendRedirectParam } from '@/app/(login)/redirect';
 import { useRedirectAfterLogin } from '@/app/(login)/useRedirectAfterLogin';
 import { useRedirectParam } from '@/app/(login)/useRedirectParam';
 import { loginWithCredential } from '@/auth/client/auth';
+import { ENV_URL_PREFIX } from '@/env/env';
 import { getFirebaseAuth } from '@/firebase/client/firebase-client';
 import {
   Anchor,
@@ -34,7 +35,6 @@ import {
   loginWithProvider,
   loginWithProviderUsingRedirect,
 } from './providers';
-import { ENV_URL_PREFIX } from '@/env/env';
 
 export function Login({
   loginAction,
@@ -58,22 +58,32 @@ export function Login({
     [redirectAfterLogin],
   );
 
+  const [loginError, setLoginError] = React.useState<string | null>(null);
   const [handleLoginWithEmailAndPassword, isEmailLoading, emailPasswordError] =
     useLoadingCallback(async (event: React.FormEvent) => {
       event.preventDefault();
       event.stopPropagation();
       setHasLogged(false);
+      setLoginError(null);
 
       const auth = getFirebaseAuth();
 
       if (shouldLoginWithAction) {
         startTransition(() => loginAction(email, password));
       } else {
-        await handleLogin(
-          await signInWithEmailAndPassword(auth, email, password),
-        );
+        try {
+          await handleLogin(
+            await signInWithEmailAndPassword(auth, email, password),
+          );
 
-        setHasLogged(true);
+          setHasLogged(true);
+        } catch (e: any) {
+          if (e.code === 'auth/invalid-credential') {
+            setLoginError(
+              'Invalid credentials. Please check your email and password and try again.',
+            );
+          }
+        }
       }
     });
 
@@ -212,7 +222,9 @@ export function Login({
                 }
                 label="Login with Server Action"
               />
-              {error && <Text c="red">{error.message}</Text>}
+              {(error || loginError) && (
+                <Text c="red">{loginError ?? error?.message}</Text>
+              )}
               <Button
                 loading={isEmailLoading || isLoginActionPending}
                 disabled={isEmailLoading || isLoginActionPending}
