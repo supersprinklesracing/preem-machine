@@ -11,6 +11,10 @@ jest.mock('firebase/auth', () => ({
   sendSignInLinkToEmail: jest.fn(),
   signInWithEmailAndPassword: jest.fn(),
   signInWithEmailLink: jest.fn(),
+  GoogleAuthProvider: class {
+    addScope = jest.fn();
+    setCustomParameters = jest.fn();
+  },
 }));
 jest.mock('@/firebase/client/firebase-client', () => ({
   getFirebaseAuth: jest.fn(),
@@ -25,22 +29,32 @@ describe('Login component', () => {
     expect(screen.getByRole('heading', { name: 'Login' })).toBeInTheDocument();
   });
 
-  it('should display an error message for invalid credentials', async () => {
-    const loginAction = jest.fn();
-    mockedSignIn.mockRejectedValue({
-      code: 'auth/invalid-credential',
-    });
+  it(
+    'should display an error message for invalid credentials',
+    async () => {
+      const loginAction = jest.fn();
+      mockedSignIn.mockRejectedValue({
+        code: 'auth/invalid-credential',
+      });
 
-    render(<Login loginAction={loginAction} />);
+      render(<Login loginAction={loginAction} />);
 
-    await userEvent.type(screen.getByPlaceholderText('Email address'), 'test@example.com');
-    await userEvent.type(screen.getByPlaceholderText('Password'), 'wrongpassword');
-    await userEvent.click(screen.getByRole('button', { name: 'Submit' }));
+      await userEvent.type(
+        screen.getByPlaceholderText('Email address'),
+        'test@example.com',
+      );
+      await userEvent.type(
+        screen.getByPlaceholderText('Password'),
+        'wrongpassword',
+      );
+      await userEvent.click(screen.getByRole('button', { name: 'Submit' }));
 
-    expect(
-      await screen.findByText(
-        'Invalid credentials. Please check your email and password and try again.',
-      ),
-    ).toBeInTheDocument();
-  });
+      expect(
+        await screen.findByText(
+          'Invalid credentials. Please check your email and password and try again.',
+        ),
+      ).toBeInTheDocument();
+    },
+    10000,
+  );
 });

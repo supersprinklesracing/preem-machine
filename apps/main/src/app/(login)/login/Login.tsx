@@ -58,34 +58,40 @@ export function Login({
     [redirectAfterLogin],
   );
 
-  const [loginError, setLoginError] = React.useState<string | null>(null);
-  const [handleLoginWithEmailAndPassword, isEmailLoading, emailPasswordError] =
-    useLoadingCallback(async (event: React.FormEvent) => {
-      event.preventDefault();
-      event.stopPropagation();
-      setHasLogged(false);
-      setLoginError(null);
+  const [loginErrorMessage, setLoginErrorMessage] = React.useState<
+    string | null
+  >(null);
+  const [isEmailLoading, setIsEmailLoading] = React.useState(false);
+  const handleLoginWithEmailAndPassword = async (event: React.FormEvent) => {
+    event.preventDefault();
+    event.stopPropagation();
+    setHasLogged(false);
+    setLoginErrorMessage(null);
+    setIsEmailLoading(true);
 
-      const auth = getFirebaseAuth();
+    const auth = getFirebaseAuth();
 
-      if (shouldLoginWithAction) {
-        startTransition(() => loginAction(email, password));
-      } else {
-        try {
-          await handleLogin(
-            await signInWithEmailAndPassword(auth, email, password),
+    if (shouldLoginWithAction) {
+      startTransition(() => loginAction(email, password));
+    } else {
+      try {
+        await handleLogin(
+          await signInWithEmailAndPassword(auth, email, password),
+        );
+        setHasLogged(true);
+      } catch (e: any) {
+        if (e.code === 'auth/invalid-credential') {
+          setLoginErrorMessage(
+            'Invalid credentials. Please check your email and password and try again.',
           );
-
-          setHasLogged(true);
-        } catch (e: any) {
-          if (e.code === 'auth/invalid-credential') {
-            setLoginError(
-              'Invalid credentials. Please check your email and password and try again.',
-            );
-          }
+        } else {
+          setLoginErrorMessage(e.message);
         }
+      } finally {
+        setIsEmailLoading(false);
       }
-    });
+    }
+  };
 
   const [handleLoginWithGoogle, isGoogleLoading, googleError] =
     useLoadingCallback(async () => {
@@ -172,7 +178,6 @@ export function Login({
   }, [handleLoginWithEmailLinkCallback]);
 
   const error =
-    emailPasswordError ||
     googleError ||
     emailLinkError ||
     googleUsingRedirectError;
@@ -222,9 +227,7 @@ export function Login({
                 }
                 label="Login with Server Action"
               />
-              {(error || loginError) && (
-                <Text c="red">{loginError ?? error?.message}</Text>
-              )}
+              {loginErrorMessage && <Text c="red">{loginErrorMessage}</Text>}
               <Button
                 loading={isEmailLoading || isLoginActionPending}
                 disabled={isEmailLoading || isLoginActionPending}
