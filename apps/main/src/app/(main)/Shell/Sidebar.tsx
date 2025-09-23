@@ -3,14 +3,7 @@
 import { toUrlPath } from '@/datastore/paths';
 import { Event } from '@/datastore/schema';
 import { ENV_DEBUG_LINKS } from '@/env/env';
-import {
-  Box,
-  Divider,
-  NavLink,
-  ScrollArea,
-  Stack,
-  useMantineTheme,
-} from '@mantine/core';
+import { Box, Divider, NavLink, ScrollArea, Stack } from '@mantine/core';
 import {
   IconBike,
   IconBug,
@@ -20,7 +13,6 @@ import {
 } from '@tabler/icons-react';
 import { usePathname } from 'next/navigation';
 import React from 'react';
-import { useMediaQuery } from '@mantine/hooks';
 import Link from 'next/link';
 
 interface SidebarProps {
@@ -30,11 +22,9 @@ interface SidebarProps {
 
 const Sidebar: React.FC<SidebarProps> = ({ events, onLinkClick }) => {
   const pathname = usePathname();
-  const theme = useMantineTheme();
-  const isMobile = useMediaQuery(`(max-width: ${theme.breakpoints.sm})`);
 
   const handleLinkClick = () => {
-    if (isMobile && onLinkClick) {
+    if (onLinkClick) {
       onLinkClick();
     }
   };

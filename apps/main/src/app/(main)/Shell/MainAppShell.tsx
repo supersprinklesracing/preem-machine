@@ -1,6 +1,6 @@
 'use client';
 
-import { AppShell, Burger, Group, Title } from '@mantine/core';
+import { AppShell, Burger, Group, Title, useMantineTheme } from '@mantine/core';
 import { useDisclosure, useMediaQuery } from '@mantine/hooks';
 import { Notifications } from '@mantine/notifications';
 import Link from 'next/link';
@@ -18,7 +18,8 @@ export default function MainAppShell({
   sidebar?: React.ReactElement<ComponentProps<typeof Sidebar>>;
 }) {
   const [opened, { toggle }] = useDisclosure();
-  const isMobile = useMediaQuery('(max-width: 768px)');
+  const theme = useMantineTheme();
+  const isMobile = useMediaQuery(`(max-width: ${theme.breakpoints.sm})`);
 
   const handleLinkClick = () => {
     if (isMobile) {
