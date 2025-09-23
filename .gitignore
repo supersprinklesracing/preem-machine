@@ -65,7 +65,8 @@ e2e-server.log
 .env.*
 !.env.test
 
-.gemini/
+.gemini/*
 !.gemini/settings.json
+!.gemini/config.yaml
 
 gha-creds-*.json
