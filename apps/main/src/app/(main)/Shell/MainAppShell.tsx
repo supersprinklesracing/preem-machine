@@ -11,14 +11,14 @@ export default function MainAppShell({
   children,
   avatarCluster,
   sidebar,
-  opened,
-  toggle,
+  isSidebarOpened,
+  toggleSidebar,
 }: {
   children: React.ReactNode;
   avatarCluster?: React.ReactElement;
   sidebar?: React.ReactElement<ComponentProps<typeof Sidebar>>;
-  opened: boolean;
-  toggle: () => void;
+  isSidebarOpened: boolean;
+  toggleSidebar: () => void;
 }) {
   return (
     <AppShell
@@ -26,7 +26,7 @@ export default function MainAppShell({
       navbar={{
         width: 250,
         breakpoint: 'sm',
-        collapsed: { mobile: !opened, desktop: false },
+        collapsed: { mobile: !isSidebarOpened, desktop: false },
       }}
       padding="md"
     >
@@ -35,13 +35,13 @@ export default function MainAppShell({
         <Group h="100%" px="md" justify="space-between">
           <Group>
             <Burger
-              opened={opened}
-              onClick={toggle}
+              opened={isSidebarOpened}
+              onClick={toggleSidebar}
               hiddenFrom="sm"
               size="sm"
               title="Open navigation"
               data-testid="sidebar-burger"
-              aria-expanded={opened}
+              aria-expanded={isSidebarOpened}
             />
             <Link href="/" style={{ textDecoration: 'none', color: 'inherit' }}>
               <Title order={3}>Preem Machine</Title>

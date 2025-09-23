@@ -1,6 +1,7 @@
 'use client';
 
 import { useDisclosure, useMediaQuery } from '@mantine/hooks';
+import { useMantineTheme } from '@mantine/core';
 import type { ComponentProps } from 'react';
 import React from 'react';
 import MainAppShell from './MainAppShell';
@@ -15,12 +16,13 @@ export default function AppShellProvider({
   avatarCluster?: React.ReactElement;
   sidebar?: React.ReactElement<ComponentProps<typeof Sidebar>>;
 }) {
-  const [opened, { toggle }] = useDisclosure();
-  const isMobile = useMediaQuery('(max-width: 768px)');
+  const [isSidebarOpened, { toggle: toggleSidebar }] = useDisclosure();
+  const theme = useMantineTheme();
+  const isMobile = useMediaQuery(`(max-width: ${theme.breakpoints.sm})`);
 
   const handleLinkClick = () => {
     if (isMobile) {
-      toggle();
+      toggleSidebar();
     }
   };
 
@@ -30,8 +32,8 @@ export default function AppShellProvider({
 
   return (
     <MainAppShell
-      opened={opened}
-      toggle={toggle}
+      isSidebarOpened={isSidebarOpened}
+      toggleSidebar={toggleSidebar}
       avatarCluster={avatarCluster}
       sidebar={sidebarWithClickHandler}
     >
