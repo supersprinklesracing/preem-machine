@@ -28,7 +28,7 @@ export default function AppShellProvider({
 
   const sidebarWithClickHandler = sidebar
     ? React.cloneElement(sidebar, { onLinkClick: handleLinkClick })
-    : null;
+    : undefined;
 
   return (
     <MainAppShell
