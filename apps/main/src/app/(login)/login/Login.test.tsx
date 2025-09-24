@@ -10,7 +10,7 @@ jest.mock('firebase/auth', () => ({
   signInWithEmailAndPassword: jest.fn(),
   signInWithEmailLink: jest.fn(),
 }));
-jest.mock('@/firebase/client', () => ({
+jest.mock('@/firebase/client/firebase-client', () => ({
   getFirebaseAuth: jest.fn(),
 }));
 
