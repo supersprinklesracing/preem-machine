@@ -1,6 +1,6 @@
 import 'server-only';
 
-import { getFirestore } from '@/firebase/server';
+import { getFirestore } from '@/firebase/server/firebase-admin';
 import { type DocumentSnapshot } from 'firebase-admin/firestore';
 import { cache } from 'react';
 import { notFound } from '../../errors';

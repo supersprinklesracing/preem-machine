@@ -4,7 +4,7 @@ import { appendRedirectParam } from '@/app/(login)/redirect';
 import { useRedirectAfterLogin } from '@/app/(login)/useRedirectAfterLogin';
 import { useRedirectParam } from '@/app/(login)/useRedirectParam';
 import { loginWithCredential } from '@/auth/client/auth';
-import { getFirebaseAuth } from '@/firebase/client';
+import { getFirebaseAuth } from '@/firebase/client/firebase-client';
 import {
   Button,
   Container,
