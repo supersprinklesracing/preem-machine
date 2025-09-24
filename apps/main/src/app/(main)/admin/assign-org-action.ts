@@ -1,7 +1,7 @@
 'use server';
 
 import { revalidatePath } from 'next/cache';
-import { getFirestore } from '@/firebase/server';
+import { getFirestore } from '@/firebase/server/firebase-admin';
 import { OrganizationSchema, UserSchema } from '@/datastore/schema';
 import { converter } from '@/datastore/server/converters';
 
