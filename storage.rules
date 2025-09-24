@@ -1,0 +1,17 @@
+rules_version = '2';
+
+service firebase.storage {
+  match /b/{bucket}/o {
+    match /users/photos/{userId}/{photoId} {
+      // Publicly readable
+      allow get;
+
+      // Allow write and delete only by the authenticated user
+      // MAX_IMAGE_SIZE_BYTES should be replaced with an environment variable during the build process
+      allow write: if request.auth != null && request.auth.uid == userId &&
+        request.resource.size < 2 * 1024 * 1024 &&
+        request.resource.contentType.matches('image/.*');
+      allow delete: if request.auth != null && request.auth.uid == userId;
+    }
+  }
+}

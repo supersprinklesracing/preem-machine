@@ -1,19 +1,11 @@
 {
-  "autoAccept": true,
-  "contextFileName": [
-    "AGENTS.md"
-  ],
-  "preferredEditor": "vscode",
-  "mcpServers": {
-    "nx-mcp": {
-      "command": "npx",
-      "args": [
-        "nx-mcp@latest"
-      ]
-    }
-  },
   "tools": {
     "allowed": [
+      "run_shell_command(./tools/nx/nx)",
+      "run_shell_command(./tools/nx/nx e2e e2e-main)",
+      "run_shell_command(./tools/nx/nx test main)",
+      "run_shell_command(./tools/nx/nx build main)",
+      "run_shell_command(./tools/test.sh)",
       "run_shell_command(./tools/get-latest-ci.sh)",
       "run_shell_command(./tools/read-artifacts.sh)",
       "run_shell_command(HUSKY=0 npm ci)",
@@ -45,5 +37,21 @@
       "run_shell_command(npx playwright show-report \"${REPORT_DATA_PATH}\")",
       "run_shell_command(npx stylelint --fix)"
     ]
+  },
+  "context": {
+    "fileName": [
+      "AGENTS.md"
+    ]
+  },
+  "mcpServers": {
+    "nx-mcp": {
+      "command": "npx",
+      "args": [
+        "nx-mcp@latest"
+      ]
+    }
+  },
+  "general": {
+    "preferredEditor": "vscode"
   }
 }

@@ -15,6 +15,9 @@ const isSet = (value: string | undefined): boolean => {
   return typeof value === 'string' && value.trim().length > 0;
 };
 
+export const ENV_MAX_IMAGE_SIZE_BYTES =
+  Number(process.env.NEXT_PUBLIC_MAX_IMAGE_SIZE_BYTES) || 2 * 1024 * 1024;
+
 export const ENV_STRIPE_ENABLED = isTrue(
   process.env.NEXT_PUBLIC_STRIPE_ENABLED,
 );
@@ -33,7 +36,7 @@ export const ENV_DEBUG_CREDENTIALS_DANGER =
 export const ENV_DEBUG_LINKS =
   isTrue(process.env.NEXT_PUBLIC_DEBUG_LINKS) ||
   isTrue(process.env.DEBUG_LINKS);
-export const ENV_DEBUG_DATASTORE = 
+export const ENV_DEBUG_DATASTORE =
   isTrue(process.env.DEBUG_DATASTORE) ||
   isTrue(process.env.NEXT_PUBLIC_DEBUG_DATASTORE);
 

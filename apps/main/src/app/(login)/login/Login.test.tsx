@@ -14,7 +14,6 @@ jest.mock('@/firebase/client/firebase-client', () => ({
   getFirebaseAuth: jest.fn(),
 }));
 
-
 describe('Login component', () => {
   it('should render without crashing', () => {
     const loginAction = jest.fn();

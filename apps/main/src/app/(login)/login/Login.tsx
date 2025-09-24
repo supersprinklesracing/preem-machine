@@ -36,8 +36,6 @@ import {
 } from './providers';
 import { ENV_URL_PREFIX } from '@/env/env';
 
-const auth = getFirebaseAuth();
-
 export function Login({
   loginAction,
 }: {
@@ -103,6 +101,7 @@ export function Login({
   });
 
   const handleLoginWithRedirect = React.useCallback(async () => {
+    const auth = getFirebaseAuth();
     const credential = await getRedirectResult(auth);
 
     if (credential?.user) {
