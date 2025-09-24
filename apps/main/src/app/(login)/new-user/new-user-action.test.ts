@@ -1,5 +1,6 @@
 'use server';
 
+import { DocumentSnapshot } from 'firebase-admin/firestore';
 import { FormActionError } from '@/components/forms/forms';
 import { User } from '@/datastore/schema';
 import * as create from '@/datastore/server/create/create';
@@ -52,8 +53,8 @@ describe('newUserAction', () => {
     const mockSnapshot = {
       ref: { id: 'new-user-id', path: 'users/new-user-id' },
       data: () => ({ ...MOCK_USER_VALUES, id: 'new-user-id' }),
-    };
-    mockedCreateUser.mockResolvedValue(mockSnapshot as any);
+    } as unknown as DocumentSnapshot;
+    mockedCreateUser.mockResolvedValue(mockSnapshot);
 
     const result = await newUserAction({ values: MOCK_USER_VALUES });
 
@@ -93,8 +94,8 @@ describe('newUserAction', () => {
     const mockSnapshot = {
       ref: { id: 'new-user-id', path: 'users/new-user-id' },
       data: () => null,
-    };
-    mockedCreateUser.mockResolvedValue(mockSnapshot as any);
+    } as unknown as DocumentSnapshot;
+    mockedCreateUser.mockResolvedValue(mockSnapshot);
 
     await expect(newUserAction({ values: MOCK_USER_VALUES })).rejects.toThrow(
       new FormActionError(

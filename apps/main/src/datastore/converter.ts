@@ -1,11 +1,13 @@
 import {
   DocumentData,
+  Firestore,
   FirestoreDataConverter,
   QueryDocumentSnapshot,
 } from 'firebase-admin/firestore';
 import { z } from 'zod';
 import { asDocPath } from './paths';
 
+// eslint-disable-next-line @typescript-eslint/no-explicit-any
 function serialize(data: any): any {
   if (data === null || data === undefined) {
     return data;
@@ -20,6 +22,7 @@ function serialize(data: any): any {
     return data.map(serialize);
   }
   if (typeof data === 'object') {
+    // eslint-disable-next-line @typescript-eslint/no-explicit-any
     const newData: { [key: string]: any } = {};
     for (const key in data) {
       newData[key] = serialize(data[key]);
@@ -29,14 +32,18 @@ function serialize(data: any): any {
   return data;
 }
 
-function deserialize(data: any, firestore: any): any {
+// eslint-disable-next-line @typescript-eslint/no-explicit-any
+function deserialize(data: any, firestore: Firestore): any {
   if (data === null || data === undefined) {
     return data;
   }
   if (typeof data === 'object' && 'id' in data && 'path' in data) {
     return firestore.doc(data.path);
   }
-  if (typeof data === 'string' && /\d{4}-\d{2}-\d{2}T\d{2}:\d{2}:\d{2}.\d{3}Z/.test(data)) {
+  if (
+    typeof data === 'string' &&
+    /\d{4}-\d{2}-\d{2}T\d{2}:\d{2}:\d{2}.\d{3}Z/.test(data)
+  ) {
     const { Timestamp } = require('firebase-admin/firestore');
     return Timestamp.fromDate(new Date(data));
   }
@@ -44,6 +51,7 @@ function deserialize(data: any, firestore: any): any {
     return data.map((item) => deserialize(item, firestore));
   }
   if (typeof data === 'object') {
+    // eslint-disable-next-line @typescript-eslint/no-explicit-any
     const newData: { [key: string]: any } = {};
     for (const key in data) {
       newData[key] = deserialize(data[key], firestore);
@@ -55,7 +63,7 @@ function deserialize(data: any, firestore: any): any {
 
 export const converter = <T extends z.ZodTypeAny>(
   schema: T,
-  firestore: any,
+  firestore: Firestore,
 ): FirestoreDataConverter<z.infer<T>> => ({
   toFirestore: (data: z.infer<T>): DocumentData => {
     const parsedData = schema.parse(data);

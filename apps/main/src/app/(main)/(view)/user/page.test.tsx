@@ -11,7 +11,7 @@ jest.mock('./User', () => ({
   default: jest.fn(() => <div>Mock User</div>),
 }));
 jest.mock('next/navigation', () => ({
-  redirect: jest.fn((...args) => {
+  redirect: jest.fn((...args: string[]) => {
     throw new Error(`mock redirect(${args.join(',')})`);
   }),
 }));
@@ -22,7 +22,7 @@ describe('UserPage component', () => {
   const { mockedGetUserContext } = setupUserContext();
 
   beforeEach(() => {
-    (redirect as any as jest.Mock).mockClear();
+    (redirect as unknown as jest.Mock).mockClear();
   });
 
   it('should fetch user data and render the User component', async () => {

@@ -62,8 +62,8 @@ export const ContentCard: React.FC<ContentCardProps> = ({
                     <Title order={titleOrder}>{title}</Title>
                     {statusBadge}
                   </Group>
-                  {subheadings?.map((sub, index) => (
-                    <Text key={index} c="dimmed" component="div">
+                  {subheadings?.map((sub) => (
+                    <Text key={sub?.toString()} c="dimmed" component="div">
                       {sub}
                     </Text>
                   ))}
