@@ -1,9 +1,10 @@
 'use client';
 
-import { useActionForm } from '@/components/forms/useActionForm';
 import { logout } from '@/auth/client/auth';
-import { FormActionResult } from '@/components/forms/forms';
 import UpdateUserProfileCard from '@/components/cards/UpdateUserProfileCard';
+import { FormActionResult } from '@/components/forms/forms';
+import { useActionForm } from '@/components/forms/useActionForm';
+import { useAvatarUpload } from '@/components/forms/useAvatarUpload';
 import { toUrlPath } from '@/datastore/paths';
 import { User } from '@/datastore/schema';
 import {
@@ -21,7 +22,6 @@ import {
 import { useDebouncedValue } from '@mantine/hooks';
 import { useRouter } from 'next/navigation';
 import { EditUserOptions } from './edit-user-action';
-import { useAvatarUpload } from '@/components/forms/useAvatarUpload';
 import { userSchema } from './user-schema';
 
 export interface AccountProps {

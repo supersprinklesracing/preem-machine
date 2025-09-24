@@ -4,6 +4,7 @@ import { userSchema } from '@/app/(main)/account/user-schema';
 import UserProfileCard from '@/components/cards/UpdateUserProfileCard';
 import { FormActionResult } from '@/components/forms/forms';
 import { useActionForm } from '@/components/forms/useActionForm';
+import { useAvatarUpload } from '@/components/forms/useAvatarUpload';
 import { useUserContext } from '@/user/client/UserContext';
 import {
   Box,
@@ -20,7 +21,6 @@ import {
 } from '@mantine/core';
 import { useDebouncedValue } from '@mantine/hooks';
 import { redirect, useRouter } from 'next/navigation';
-import { useAvatarUpload } from '@/components/forms/useAvatarUpload';
 import { NewUserOptions } from './new-user-action';
 
 export default function NewUser({
