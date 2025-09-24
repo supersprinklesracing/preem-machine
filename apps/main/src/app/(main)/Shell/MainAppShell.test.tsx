@@ -7,7 +7,7 @@ describe('MainAppShell', () => {
   it('renders children correctly', () => {
     render(
       <MantineProvider theme={theme}>
-        <MainAppShell isSidebarOpened={false} toggleSidebar={() => {}}>
+        <MainAppShell isSidebarOpened={false} toggleSidebar={() => { /* do nothing */ }}>
           <div>Page content</div>
         </MainAppShell>
       </MantineProvider>,
