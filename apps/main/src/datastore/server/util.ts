@@ -1,5 +1,5 @@
 /* eslint-disable @typescript-eslint/no-explicit-any */
-import { getFirestore } from '@/firebase/server';
+import { getFirestore } from '@/firebase/server/firebase-admin';
 import {
   CollectionReference,
   DocumentReference,
