@@ -130,7 +130,6 @@ export default function NewUser({
                 <TextInput
                   label="Avatar URL"
                   placeholder="URL to your avatar image"
-                  readOnly
                   {...form.getInputProps('avatarUrl')}
                 />
 
