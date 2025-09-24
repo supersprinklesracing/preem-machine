@@ -1,7 +1,7 @@
 'use client';
 
 import { toUrlPath } from '@/datastore/paths';
-import { Event, User } from '@/datastore/schema';
+import { Event } from '@/datastore/schema';
 import { ENV_DEBUG_LINKS } from '@/env/env';
 import {
   Box,
@@ -26,10 +26,9 @@ import Link from 'next/link';
 interface SidebarProps {
   events: Event[];
   onLinkClick?: () => void;
-  user: User | null;
 }
 
-const Sidebar: React.FC<SidebarProps> = ({ events, onLinkClick, user }) => {
+const Sidebar: React.FC<SidebarProps> = ({ events, onLinkClick }) => {
   const pathname = usePathname();
   const theme = useMantineTheme();
   const isMobile = useMediaQuery(`(max-width: ${theme.breakpoints.sm})`);
@@ -52,37 +51,35 @@ const Sidebar: React.FC<SidebarProps> = ({ events, onLinkClick, user }) => {
             component={Link}
             onClick={handleLinkClick}
           />
-          {user && user.organizationRefs && user.organizationRefs.length > 0 && (
+          <NavLink
+            label="Hub"
+            leftSection={<IconBike size={18} />}
+            active={pathname.startsWith('/manage')}
+            defaultOpened
+          >
             <NavLink
-              label="Hub"
-              leftSection={<IconBike size={18} />}
+              href="/manage"
+              label="Overview"
+              leftSection={<IconCrown size={18} />}
               active={pathname.startsWith('/manage')}
-              defaultOpened
-            >
-              <NavLink
-                href="/manage"
-                label="Overview"
-                leftSection={<IconCrown size={18} />}
-                active={pathname.startsWith('/manage')}
-                component={Link}
-                opened={true}
-                onClick={handleLinkClick}
-              />
-              {events.map((event) => {
-                const href = `/manage/${toUrlPath(event.path)}`;
-                return (
-                  <NavLink
-                    key={event.path}
-                    href={href}
-                    label={event.name}
-                    active={pathname === href}
-                    component={Link}
-                    onClick={handleLinkClick}
-                  />
-                );
-              })}
-            </NavLink>
-          )}
+              component={Link}
+              opened={true}
+              onClick={handleLinkClick}
+            />
+            {events.map((event) => {
+              const href = `/manage/${toUrlPath(event.path)}`;
+              return (
+                <NavLink
+                  key={event.path}
+                  href={href}
+                  label={event.name}
+                  active={pathname === href}
+                  component={Link}
+                  onClick={handleLinkClick}
+                />
+              );
+            })}
+          </NavLink>
         </div>
         <div>
           {ENV_DEBUG_LINKS && (

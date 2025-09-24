@@ -19,6 +19,21 @@ jest.mock('firebase/auth', () => ({
 jest.mock('@/firebase/client/firebase-client', () => ({
   getFirebaseAuth: jest.fn(),
 }));
+jest.mock('@/auth/client/auth', () => ({
+  loginWithCredential: jest.fn(),
+}));
+
+jest.mock('next/navigation', () => ({
+  usePathname: jest.fn().mockReturnValue('/'),
+  useRouter: () => ({
+    push: jest.fn(),
+    replace: jest.fn(),
+    refresh: jest.fn(),
+  }),
+  useSearchParams: () => ({
+    get: jest.fn(),
+  }),
+}));
 
 const mockedSignIn = signInWithEmailAndPassword as jest.Mock;
 
@@ -48,6 +63,8 @@ describe('Login component', () => {
         'wrongpassword',
       );
       await userEvent.click(screen.getByRole('button', { name: 'Submit' }));
+
+      jest.runAllTimers();
 
       expect(
         await screen.findByText(
