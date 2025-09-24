@@ -1,9 +1,11 @@
 'use client';
 
+import { generateSignedUploadUrl } from '@/app/(main)/account/upload-action';
 import { userSchema } from '@/app/(main)/account/user-schema';
 import UserProfileCard from '@/components/cards/UpdateUserProfileCard';
 import { FormActionResult } from '@/components/forms/forms';
 import { useActionForm } from '@/components/forms/useActionForm';
+import { ENV_MAX_IMAGE_SIZE_BYTES } from '@/env/env';
 import { useUserContext } from '@/user/client/UserContext';
 import {
   Box,
@@ -19,7 +21,9 @@ import {
   Title,
 } from '@mantine/core';
 import { useDebouncedValue } from '@mantine/hooks';
+import imageCompression from 'browser-image-compression';
 import { redirect, useRouter } from 'next/navigation';
+import { useState } from 'react';
 import { NewUserOptions } from './new-user-action';
 
 export default function NewUser({
@@ -31,6 +35,8 @@ export default function NewUser({
 }) {
   const { authUser } = useUserContext();
   const router = useRouter();
+  const [uploading, setUploading] = useState(false);
+  const [error, setError] = useState<string | null>(null);
 
   if (!authUser) {
     redirect('/login');
@@ -61,6 +67,57 @@ export default function NewUser({
 
   const [debouncedName] = useDebouncedValue(form.values.name, 100);
 
+  const handleFileChange = async (file: File | null) => {
+    if (!file) return;
+
+    if (file.size > ENV_MAX_IMAGE_SIZE_BYTES) {
+      setError(
+        `File is too large. Maximum size is ${ENV_MAX_IMAGE_SIZE_BYTES / 1024 / 1024}MB.`,
+      );
+      return;
+    }
+
+    setUploading(true);
+    setError(null);
+
+    try {
+      // TODO: Replace with server-side resizing via Firebase Extension. See issue #173.
+      const compressedFile = await imageCompression(file, {
+        maxSizeMB: ENV_MAX_IMAGE_SIZE_BYTES / 1024 / 1024,
+        maxWidthOrHeight: 256,
+        useWebWorker: true,
+      });
+
+      const { signedUrl, publicUrl } = await generateSignedUploadUrl({
+        contentType: compressedFile.type,
+      });
+
+      const response = await fetch(signedUrl, {
+        method: 'PUT',
+        body: compressedFile,
+        headers: {
+          'Content-Type': compressedFile.type,
+        },
+      });
+
+      if (!response.ok) {
+        throw new Error('Failed to upload file.');
+      }
+
+      form.setFieldValue('avatarUrl', publicUrl);
+    } catch (err) {
+      setError(
+        err instanceof Error ? err.message : 'An unknown error occurred',
+      );
+    } finally {
+      setUploading(false);
+    }
+  };
+
+  const handleRemovePhoto = () => {
+    form.setFieldValue('avatarUrl', '');
+  };
+
   return (
     <Container size="md" pt="xl">
       <Title order={1}>Complete Your Profile</Title>
@@ -74,7 +131,11 @@ export default function NewUser({
               <UserProfileCard
                 name={debouncedName || authUser.displayName || 'Your full name'}
                 email={authUser.email ?? undefined}
-                avatarUrl={authUser.photoURL ?? undefined}
+                avatarUrl={form.values.avatarUrl ?? undefined}
+                uploading={uploading}
+                error={error}
+                onFileChange={handleFileChange}
+                onRemovePhoto={handleRemovePhoto}
               />
               <Checkbox
                 mt="md"

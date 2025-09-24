@@ -46,6 +46,10 @@ export const getFirestore = async () => {
   return (await getFirebaseAdminApp()).firestore();
 };
 
+export const getFirebaseStorage = async () => {
+  return (await getFirebaseAdminApp()).storage();
+};
+
 export const getFirebaseAuth = async (): Promise<Auth> => {
   const serverConfig = await serverConfigFn();
   if (!isServiceAccount(serverConfig.serviceAccount)) {
