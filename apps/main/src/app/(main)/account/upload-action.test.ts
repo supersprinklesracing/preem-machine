@@ -6,8 +6,11 @@ import {
 import { verifyUserContext } from '@/user/server/user';
 import { randomUUID } from 'crypto';
 import { generateSignedUploadUrl } from './upload-action';
+<<<<<<< HEAD
 import { App } from 'firebase-admin/app';
 import { Storage } from '@google-cloud/storage';
+=======
+>>>>>>> 424dc2c (feat(profile): Add client-side avatar resizing and abuse protection)
 
 jest.mock('@/user/server/user');
 jest.mock('@/firebase/server/firebase-admin');
@@ -34,10 +37,17 @@ describe('generateSignedUploadUrl', () => {
       authUser: MOCK_AUTH_USER,
       user: null,
     });
+<<<<<<< HEAD
     mockedGetFirebaseAdminApp.mockResolvedValue({} as App);
     mockedGetFirebaseStorage.mockResolvedValue({
       bucket: () => mockBucket,
     } as unknown as Storage);
+=======
+    mockedGetFirebaseAdminApp.mockResolvedValue({} as any);
+    mockedGetFirebaseStorage.mockResolvedValue({
+      bucket: () => mockBucket,
+    } as any);
+>>>>>>> 424dc2c (feat(profile): Add client-side avatar resizing and abuse protection)
     mockedRandomUUID.mockReturnValue('test-photo-id');
     mockGetSignedUrl.mockResolvedValue(['https://fake-signed-url.com']);
   });
