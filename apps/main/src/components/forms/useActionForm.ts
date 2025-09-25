@@ -5,15 +5,21 @@ import { zod4Resolver } from 'mantine-form-zod-resolver';
 import { useState } from 'react';
 import { z } from 'zod';
 
+// eslint-disable-next-line @typescript-eslint/no-explicit-any
 interface UseActionFormProps<T extends z.ZodType<any, any, any>, TResult> {
   schema: T;
   initialValues: z.infer<T>;
   action: (values: z.infer<T>) => Promise<TResult>;
   onSuccess?: (result: TResult) => void;
+  // eslint-disable-next-line @typescript-eslint/no-explicit-any
   validate?: (values: z.infer<T>) => Record<string, any>;
 }
 
-export function useActionForm<T extends z.ZodType<any, any, any>, TResult>({
+export function useActionForm<
+  // eslint-disable-next-line @typescript-eslint/no-explicit-any
+  T extends z.ZodType<any, any, any>,
+  TResult,
+>({
   schema,
   initialValues,
   action,

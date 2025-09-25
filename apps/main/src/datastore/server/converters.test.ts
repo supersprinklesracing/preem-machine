@@ -1,6 +1,6 @@
 import { z } from 'zod';
 import { converter as firebaseConverter } from './converters';
-import { Timestamp } from 'firebase-admin/firestore';
+import { Timestamp, QueryDocumentSnapshot } from 'firebase-admin/firestore';
 
 // Mock Zod schema for testing
 const testSchema = z.object({
@@ -17,7 +17,7 @@ const testSchema = z.object({
 type TestType = z.infer<typeof testSchema>;
 
 // Mock Firestore snapshot
-const mockSnapshot = (data: any) => ({
+const mockSnapshot = (data: Record<string, unknown>) => ({
   id: 'test-id',
   ref: { path: 'test/test-id' },
   data: () => data,
@@ -36,7 +36,9 @@ describe('converter', () => {
       },
     };
 
-    const result = converter.fromFirestore(mockSnapshot(firestoreData) as any);
+    const result = converter.fromFirestore(
+      mockSnapshot(firestoreData) as QueryDocumentSnapshot,
+    );
 
     expect(result).toEqual({
       id: 'test-id',
@@ -87,20 +89,23 @@ describe('converter', () => {
     };
 
     // Create a mock snapshot with a circular reference
-    const circularSnapshot: any = {
+    const circularSnapshot: Partial<QueryDocumentSnapshot> = {
       id: 'circular-id',
       data: () => firestoreData,
     };
     circularSnapshot.ref = {
       path: 'test/circular-id',
-      parent: circularSnapshot, // Circular reference
+      // eslint-disable-next-line @typescript-eslint/no-explicit-any
+      parent: circularSnapshot as any, // Circular reference
     };
 
     let result;
-    let error: any;
+    let error: unknown;
 
     try {
-      result = converter.fromFirestore(circularSnapshot);
+      result = converter.fromFirestore(
+        circularSnapshot as QueryDocumentSnapshot,
+      );
     } catch (e) {
       error = e;
     }

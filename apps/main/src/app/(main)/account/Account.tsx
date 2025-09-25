@@ -1,7 +1,5 @@
 'use client';
 
-import imageCompression from 'browser-image-compression';
-import { ENV_MAX_IMAGE_SIZE_BYTES } from '@/env/env';
 import { useActionForm } from '@/components/forms/useActionForm';
 import { logout } from '@/auth/client/auth';
 import { FormActionResult } from '@/components/forms/forms';
@@ -22,9 +20,8 @@ import {
 } from '@mantine/core';
 import { useDebouncedValue } from '@mantine/hooks';
 import { useRouter } from 'next/navigation';
-import { useState } from 'react';
-import { generateSignedUploadUrl } from '@/app/(main)/account/upload-action';
 import { EditUserOptions } from './edit-user-action';
+import { useAvatarUpload } from '@/components/forms/useAvatarUpload';
 import { userSchema } from './user-schema';
 
 export interface AccountProps {
@@ -34,8 +31,6 @@ export interface AccountProps {
 
 export default function Account({ user, editUserAction }: AccountProps) {
   const router = useRouter();
-  const [uploading, setUploading] = useState(false);
-  const [error, setError] = useState<string | null>(null);
 
   const { form, handleSubmit, isLoading, submissionError } = useActionForm({
     schema: userSchema,
@@ -54,58 +49,10 @@ export default function Account({ user, editUserAction }: AccountProps) {
     },
   });
 
+  const { uploading, error, handleFileChange, handleRemovePhoto } =
+    useAvatarUpload(form, 'avatarUrl');
+
   const [debouncedValues] = useDebouncedValue(form.values, 100);
-
-  const handleFileChange = async (file: File | null) => {
-    if (!file) return;
-
-    if (file.size > ENV_MAX_IMAGE_SIZE_BYTES) {
-      setError(
-        `File is too large. Maximum size is ${ENV_MAX_IMAGE_SIZE_BYTES / 1024 / 1024}MB.`,
-      );
-      return;
-    }
-
-    setUploading(true);
-    setError(null);
-
-    try {
-      // TODO: Replace with server-side resizing via Firebase Extension. See issue #173.
-      const compressedFile = await imageCompression(file, {
-        maxSizeMB: ENV_MAX_IMAGE_SIZE_BYTES / 1024 / 1024,
-        maxWidthOrHeight: 256,
-        useWebWorker: true,
-      });
-
-      const { signedUrl, publicUrl } = await generateSignedUploadUrl({
-        contentType: compressedFile.type,
-      });
-
-      const response = await fetch(signedUrl, {
-        method: 'PUT',
-        body: compressedFile,
-        headers: {
-          'Content-Type': compressedFile.type,
-        },
-      });
-
-      if (!response.ok) {
-        throw new Error('Failed to upload file.');
-      }
-
-      form.setFieldValue('avatarUrl', publicUrl);
-    } catch (err) {
-      setError(
-        err instanceof Error ? err.message : 'An unknown error occurred',
-      );
-    } finally {
-      setUploading(false);
-    }
-  };
-
-  const handleRemovePhoto = () => {
-    form.setFieldValue('avatarUrl', '');
-  };
 
   return (
     <Container>
