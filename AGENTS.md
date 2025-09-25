@@ -32,6 +32,10 @@ To set up your local environment, use `HUSKY=0 npm ci` to install the project de
 - **Tests:** All CI checks must pass. Add tests for new features and bug fixes.
 - **Local Verification:** Before pushing your changes, you **MUST** ensure that your changes work by running the local verification checks for linting, building, and testing. The commands for these checks are listed in the "Commands" section of this document.
 
+### Critical: The Definition of "Done"
+
+> **WARNING:** A task is **NOT** "done" or "complete" until you have successfully run **ALL** local verification steps (lint, build, and tests) without any errors. Claiming a task is complete before all checks have passed is a critical failure of your operational protocol. Do not state that you are finished, complete, or verified until you have the output to prove it. This is a non-negotiable directive.
+
 ### Critical: Merging Pull Requests
 
 **UNDER NO CIRCUMSTANCES** are you to merge a pull request without the user's direct and explicit consent. This is a strict and non-negotiable rule. Even if all checks pass and the user seems to imply approval, you **MUST** ask for confirmation before merging. For example, ask: "All checks have passed. Should I merge the pull request?" This rule applies in all modes, including any "yolo" or autonomous mode.
