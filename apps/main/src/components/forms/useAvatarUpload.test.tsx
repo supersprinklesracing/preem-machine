@@ -9,7 +9,7 @@ jest.mock('@/app/(main)/account/upload-action');
 jest.mock('browser-image-compression');
 
 const mockGenerateSignedUploadUrl = generateSignedUploadUrl as jest.Mock;
-const mockImageCompression = imageCompression as jest.Mock;
+const mockImageCompression = imageCompression as unknown as jest.Mock;
 
 global.fetch = jest.fn();
 
