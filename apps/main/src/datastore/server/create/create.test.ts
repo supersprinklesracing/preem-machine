@@ -1,5 +1,6 @@
+import { AuthUser } from '@/auth/user';
 import { getFirestore } from '@/firebase/server/firebase-admin';
-import { setupMockDb } from '@/test-utils';
+import { MOCK_AUTH_USER, setupMockDb } from '@/test-utils';
 import type { Firestore } from 'firebase-admin/firestore';
 import {
   createEvent,
@@ -18,13 +19,7 @@ jest.mock('../access', () => ({
 
 describe('create mutations', () => {
   let firestore: Firestore;
-  const authUser = {
-    uid: 'test-user',
-    name: 'Test User',
-    picture: 'test-url',
-    displayName: 'Test User',
-    photoURL: 'test-url',
-  };
+  const authUser = MOCK_AUTH_USER;
 
   setupMockDb();
 
@@ -160,7 +155,7 @@ describe('create mutations', () => {
         isAnonymous: false,
       };
       await expect(
-        createPendingContribution('preem-path', contribution, {} as any),
+        createPendingContribution('preem-path', contribution, {} as AuthUser),
       ).rejects.toThrow('Unauthorized');
     });
   });

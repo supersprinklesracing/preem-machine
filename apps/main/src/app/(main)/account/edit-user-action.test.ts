@@ -1,3 +1,4 @@
+import { User } from '@/datastore/schema';
 import { getDoc } from '@/datastore/server/query/query';
 import { updateUser } from '@/datastore/server/update/update';
 import { getFirebaseStorage } from '@/firebase/server/firebase-admin';
@@ -43,7 +44,7 @@ describe('editUserAction', () => {
     mockedGetDoc.mockResolvedValue({
       name: 'Old Name',
       avatarUrl: 'https://old.com/avatar.png',
-    } as any);
+    } as User);
   });
 
   it('should update user and delete old avatar on success', async () => {
@@ -59,7 +60,7 @@ describe('editUserAction', () => {
     mockedGetDoc.mockResolvedValue({
       name: 'Old Name',
       avatarUrl: edits.avatarUrl,
-    } as any);
+    } as User);
 
     await editUserAction({ path: 'users/test-user-id', edits });
 
@@ -71,7 +72,7 @@ describe('editUserAction', () => {
     mockedGetDoc.mockResolvedValue({
       name: 'Old Name',
       avatarUrl: undefined,
-    } as any);
+    } as User);
 
     await editUserAction({ path: 'users/test-user-id', edits });
 

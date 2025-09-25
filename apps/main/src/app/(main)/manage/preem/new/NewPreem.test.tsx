@@ -5,6 +5,7 @@ import { NewPreem } from './NewPreem';
 
 // Mock dependencies
 jest.mock('next/navigation', () => ({
+  // eslint-disable-next-line @eslint-react/hooks-extra/no-unnecessary-use-prefix
   useRouter: () => ({
     push: jest.fn(),
   }),
@@ -111,8 +112,6 @@ describe('NewPreem component', () => {
     const createButton = screen.getByRole('button', { name: /create preem/i });
     fireEvent.click(createButton);
 
-    expect(
-      await screen.findByText('Failed to create'),
-    ).toBeInTheDocument();
+    expect(await screen.findByText('Failed to create')).toBeInTheDocument();
   });
 });

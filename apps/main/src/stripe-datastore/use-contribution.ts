@@ -30,6 +30,7 @@ export const useContribution = () => {
 
   const handleContribute = async ({
     amount,
+    // eslint-disable-next-line unused-imports/no-unused-vars
     message,
     isAnonymous,
     preem,

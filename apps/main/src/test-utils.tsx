@@ -116,13 +116,17 @@ const customRender = (
   });
 };
 
+interface MockFirestore extends Firestore {
+  database: ReturnType<typeof createMockDb>;
+}
+
 export const setupMockDb = () => {
   // 'use server';
 
-  let firestore: Firestore;
+  let firestore: MockFirestore;
   beforeAll(async () => {
-    firestore = await getFirestore();
-    (firestore as any).database = createMockDb(firestore);
+    firestore = (await getFirestore()) as MockFirestore;
+    firestore.database = createMockDb(firestore);
   });
 };
 
