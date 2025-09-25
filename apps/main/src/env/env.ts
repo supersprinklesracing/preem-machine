@@ -11,10 +11,6 @@ const isTrue = (value: string | undefined): boolean => {
   return value?.toLowerCase() === 'true';
 };
 
-const isSet = (value: string | undefined): boolean => {
-  return typeof value === 'string' && value.trim().length > 0;
-};
-
 export const ENV_MAX_IMAGE_SIZE_BYTES =
   Number(process.env.NEXT_PUBLIC_MAX_IMAGE_SIZE_BYTES) || 2 * 1024 * 1024;
 
