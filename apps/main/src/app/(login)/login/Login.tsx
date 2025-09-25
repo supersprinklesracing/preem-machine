@@ -80,12 +80,12 @@ export function Login({
         );
         setHasLogged(true);
       } catch (e: any) {
-        if (e.code === 'auth/invalid-credential') {
+        if (e && e.code === 'auth/invalid-credential') {
           setLoginErrorMessage(
             'Invalid credentials. Please check your email and password and try again.',
           );
         } else {
-          setLoginErrorMessage(e.message);
+          setLoginErrorMessage(e?.message || 'An unexpected error occurred');
         }
       } finally {
         setIsEmailLoading(false);
