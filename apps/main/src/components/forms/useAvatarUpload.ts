@@ -52,6 +52,7 @@ export function useAvatarUpload<T>(
         throw new Error('Failed to upload file.');
       }
 
+    // eslint-disable-next-line @typescript-eslint/no-explicit-any
       form.setFieldValue(fieldName as any, publicUrl as any);
     } catch (err) {
       setError(
@@ -63,6 +64,7 @@ export function useAvatarUpload<T>(
   };
 
   const handleRemovePhoto = () => {
+    // eslint-disable-next-line @typescript-eslint/no-explicit-any
     form.setFieldValue(fieldName as any, '' as any);
   };
 
