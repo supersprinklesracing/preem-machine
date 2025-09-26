@@ -53,7 +53,7 @@ describe('StripeConnectCard component', () => {
     const mockOrganization: Organization = {
       id: 'org-1',
       path: 'organizations/org-1',
-      stripe: { account: { details_submitted: false } as any },
+      stripe: { account: { details_submitted: false } },
     };
     render(<StripeConnectCard organization={mockOrganization} />);
 
@@ -67,7 +67,7 @@ describe('StripeConnectCard component', () => {
     const mockOrganization: Organization = {
       id: 'org-1',
       path: 'organizations/org-1',
-      stripe: { account: { details_submitted: true } as any },
+      stripe: { account: { details_submitted: true } },
     };
     render(<StripeConnectCard organization={mockOrganization} />);
 

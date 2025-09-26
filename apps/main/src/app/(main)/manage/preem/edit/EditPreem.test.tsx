@@ -6,6 +6,7 @@ const mockRouterPush = jest.fn();
 
 // Mock next/navigation
 jest.mock('next/navigation', () => ({
+  // eslint-disable-next-line @eslint-react/hooks-extra/no-unnecessary-use-prefix
   useRouter: () => ({
     push: mockRouterPush,
   }),

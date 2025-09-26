@@ -1,7 +1,6 @@
 'use client';
 
-import { AppShell, Burger, Group, Title, useMantineTheme } from '@mantine/core';
-import { useDisclosure, useMediaQuery } from '@mantine/hooks';
+import { AppShell, Burger, Group, Title } from '@mantine/core';
 import { Notifications } from '@mantine/notifications';
 import Link from 'next/link';
 import type { ComponentProps } from 'react';
@@ -12,32 +11,22 @@ export default function MainAppShell({
   children,
   avatarCluster,
   sidebar,
+  isSidebarOpened,
+  toggleSidebar,
 }: {
   children: React.ReactNode;
   avatarCluster?: React.ReactElement;
   sidebar?: React.ReactElement<ComponentProps<typeof Sidebar>>;
+  isSidebarOpened: boolean;
+  toggleSidebar: () => void;
 }) {
-  const [opened, { toggle }] = useDisclosure();
-  const theme = useMantineTheme();
-  const isMobile = useMediaQuery(`(max-width: ${theme.breakpoints.sm})`);
-
-  const handleLinkClick = () => {
-    if (isMobile) {
-      toggle();
-    }
-  };
-
-  const sidebarWithClickHandler = sidebar
-    ? React.cloneElement(sidebar, { onLinkClick: handleLinkClick })
-    : null;
-
   return (
     <AppShell
       header={{ height: 60 }}
       navbar={{
         width: 250,
         breakpoint: 'sm',
-        collapsed: { mobile: !opened, desktop: false },
+        collapsed: { mobile: !isSidebarOpened, desktop: !isSidebarOpened },
       }}
       padding="md"
     >
@@ -46,13 +35,12 @@ export default function MainAppShell({
         <Group h="100%" px="md" justify="space-between">
           <Group>
             <Burger
-              opened={opened}
-              onClick={toggle}
-              hiddenFrom="sm"
+              opened={isSidebarOpened}
+              onClick={toggleSidebar}
               size="sm"
               title="Open navigation"
               data-testid="sidebar-burger"
-              aria-expanded={opened}
+              aria-expanded={isSidebarOpened}
             />
             <Link href="/" style={{ textDecoration: 'none', color: 'inherit' }}>
               <Title order={3}>Preem Machine</Title>
@@ -61,7 +49,7 @@ export default function MainAppShell({
           {avatarCluster}
         </Group>
       </AppShell.Header>
-      <AppShell.Navbar p="md">{sidebarWithClickHandler}</AppShell.Navbar>
+      <AppShell.Navbar p="md">{sidebar}</AppShell.Navbar>
       <AppShell.Main>{children}</AppShell.Main>
     </AppShell>
   );

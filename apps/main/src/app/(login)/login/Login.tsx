@@ -4,7 +4,7 @@ import { appendRedirectParam } from '@/app/(login)/redirect';
 import { useRedirectAfterLogin } from '@/app/(login)/useRedirectAfterLogin';
 import { useRedirectParam } from '@/app/(login)/useRedirectParam';
 import { loginWithCredential } from '@/auth/client/auth';
-import { getFirebaseAuth } from '@/firebase/client';
+import { getFirebaseAuth } from '@/firebase/client/firebase-client';
 import {
   Anchor,
   Button,
@@ -35,8 +35,6 @@ import {
   loginWithProviderUsingRedirect,
 } from './providers';
 import { ENV_URL_PREFIX } from '@/env/env';
-
-const auth = getFirebaseAuth();
 
 export function Login({
   loginAction,
@@ -103,6 +101,7 @@ export function Login({
   });
 
   const handleLoginWithRedirect = React.useCallback(async () => {
+    const auth = getFirebaseAuth();
     const credential = await getRedirectResult(auth);
 
     if (credential?.user) {

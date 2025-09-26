@@ -20,6 +20,7 @@ import {
 } from '@mantine/core';
 import { useDebouncedValue } from '@mantine/hooks';
 import { redirect, useRouter } from 'next/navigation';
+import { useAvatarUpload } from '@/components/forms/useAvatarUpload';
 import { NewUserOptions } from './new-user-action';
 
 export default function NewUser({
@@ -59,6 +60,9 @@ export default function NewUser({
     },
   });
 
+  const { uploading, error, handleFileChange, handleRemovePhoto } =
+    useAvatarUpload(form, 'avatarUrl');
+
   const [debouncedName] = useDebouncedValue(form.values.name, 100);
 
   return (
@@ -74,7 +78,11 @@ export default function NewUser({
               <UserProfileCard
                 name={debouncedName || authUser.displayName || 'Your full name'}
                 email={authUser.email ?? undefined}
-                avatarUrl={authUser.photoURL ?? undefined}
+                avatarUrl={form.values.avatarUrl ?? undefined}
+                uploading={uploading}
+                error={error}
+                onFileChange={handleFileChange}
+                onRemovePhoto={handleRemovePhoto}
               />
               <Checkbox
                 mt="md"
@@ -130,7 +138,6 @@ export default function NewUser({
                 <TextInput
                   label="Avatar URL"
                   placeholder="URL to your avatar image"
-                  readOnly
                   {...form.getInputProps('avatarUrl')}
                 />
 

@@ -41,7 +41,7 @@ export const verifyUserContext = async () => {
   if (!user) {
     redirect('/new-user');
   }
-  return { authUser, user };
+  return { uid: authUser.uid, authUser, user };
 };
 
 export const validUserContext = async () => {

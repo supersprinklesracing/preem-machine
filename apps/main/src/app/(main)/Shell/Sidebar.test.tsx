@@ -1,34 +1,47 @@
 import { fireEvent, render, screen } from '@/test-utils';
+import { useMediaQuery } from '@mantine/hooks';
 import Sidebar from './Sidebar';
-import { Event } from '@/datastore/schema';
+import { User } from '@/datastore/schema';
+import { SidebarProps } from './Sidebar';
 
-const mockData: { events: Event[] } = {
+
+
+// Mock @mantine/hooks
+jest.mock('@mantine/hooks', () => ({
+  ...jest.requireActual('@mantine/hooks'),
+  useMediaQuery: jest.fn(),
+}));
+
+const mockUser: User = {
+  id: 'user-1',
+  path: 'users/user-1',
+  displayName: 'Test User',
+  organizationRefs: [{ id: 'org-1', path: 'organizations/org-1' }],
+};
+
+const mockData: SidebarProps = {
   events: [
     {
       id: 'event-1',
       path: 'organizations/org-1/series/series-1/events/event-1',
       name: 'Test Event 1',
-      start_date: new Date(),
-      end_date: new Date(),
-      description: '',
-      image_url: '',
-      instagram_url: '',
     },
     {
       id: 'event-2',
       path: 'organizations/org-1/series/series-1/events/event-2',
       name: 'Test Event 2',
-      start_date: new Date(),
-      end_date: new Date(),
-      description: '',
-      image_url: '',
-      instagram_url: '',
     },
   ],
+  user: mockUser,
 };
 
 describe('Sidebar component', () => {
+  beforeEach(() => {
+    (useMediaQuery as jest.Mock).mockClear();
+  });
+
   it('should render event links', () => {
+    (useMediaQuery as jest.Mock).mockReturnValue(false); // Default to not mobile
     render(<Sidebar {...mockData} />);
     expect(
       screen.getByRole('link', { name: 'Test Event 1' }),
@@ -38,12 +51,36 @@ describe('Sidebar component', () => {
     ).toBeInTheDocument();
   });
 
-  it('should call onLinkClick when a link is clicked', () => {
+  it('should call onLinkClick when a link is clicked on mobile', () => {
+    (useMediaQuery as jest.Mock).mockReturnValue(true); // Simulate mobile
     const onLinkClick = jest.fn();
     render(<Sidebar {...mockData} onLinkClick={onLinkClick} />);
 
     fireEvent.click(screen.getByRole('link', { name: 'Test Event 1' }));
 
     expect(onLinkClick).toHaveBeenCalledTimes(1);
+  });
+
+  it('should not call onLinkClick when a link is clicked on desktop', () => {
+    (useMediaQuery as jest.Mock).mockReturnValue(false); // Simulate desktop
+    const onLinkClick = jest.fn();
+    render(<Sidebar {...mockData} onLinkClick={onLinkClick} />);
+
+    fireEvent.click(screen.getByRole('link', { name: 'Test Event 1' }));
+
+    expect(onLinkClick).not.toHaveBeenCalled();
+  });
+
+  it('should not render Hub link when user has no organizationRefs', () => {
+    const userWithNoOrgs: User = { ...mockUser, organizationRefs: [] };
+    const data = { ...mockData, user: userWithNoOrgs };
+    render(<Sidebar {...data} />);
+    expect(screen.queryByRole('link', { name: 'Hub' })).not.toBeInTheDocument();
+  });
+
+  it('should not render Hub link when user is null', () => {
+    const data = { ...mockData, user: null };
+    render(<Sidebar {...data} />);
+    expect(screen.queryByRole('link', { name: 'Hub' })).not.toBeInTheDocument();
   });
 });

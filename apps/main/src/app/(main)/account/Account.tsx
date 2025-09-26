@@ -21,6 +21,7 @@ import {
 import { useDebouncedValue } from '@mantine/hooks';
 import { useRouter } from 'next/navigation';
 import { EditUserOptions } from './edit-user-action';
+import { useAvatarUpload } from '@/components/forms/useAvatarUpload';
 import { userSchema } from './user-schema';
 
 export interface AccountProps {
@@ -48,6 +49,9 @@ export default function Account({ user, editUserAction }: AccountProps) {
     },
   });
 
+  const { uploading, error, handleFileChange, handleRemovePhoto } =
+    useAvatarUpload(form, 'avatarUrl');
+
   const [debouncedValues] = useDebouncedValue(form.values, 100);
 
   return (
@@ -60,6 +64,10 @@ export default function Account({ user, editUserAction }: AccountProps) {
                 name={debouncedValues.name}
                 email={debouncedValues.email}
                 avatarUrl={debouncedValues.avatarUrl}
+                uploading={uploading}
+                error={error}
+                onFileChange={handleFileChange}
+                onRemovePhoto={handleRemovePhoto}
               />
               <Button type="submit" loading={isLoading}>
                 Save Changes
@@ -104,12 +112,6 @@ export default function Account({ user, editUserAction }: AccountProps) {
                   placeholder="Your email address"
                   readOnly
                   {...form.getInputProps('email')}
-                />
-                <TextInput
-                  id="avatarUrl"
-                  label="Avatar URL"
-                  placeholder="URL to your avatar image"
-                  {...form.getInputProps('avatarUrl')}
                 />
                 <TextInput
                   id="affiliation"

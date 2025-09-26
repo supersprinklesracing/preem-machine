@@ -1,7 +1,7 @@
 'use server';
 
 import { serverConfigFn } from '@/firebase/server/config';
-import { getFirebaseAuth } from '@/firebase/client';
+import { getFirebaseAuth } from '@/firebase/client/firebase-client';
 import { signInWithEmailAndPassword } from 'firebase/auth';
 import { refreshCookiesWithIdToken } from 'next-firebase-auth-edge/lib/next/cookies';
 import { cookies, headers } from 'next/headers';

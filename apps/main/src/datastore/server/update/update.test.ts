@@ -1,4 +1,4 @@
-import { getFirestore } from '@/firebase/server';
+import { getFirestore } from '@/firebase/server/firebase-admin';
 import { setupMockDb } from '@/test-utils';
 import type { Firestore } from 'firebase-admin/firestore';
 import {
@@ -10,10 +10,14 @@ import {
 } from './update';
 
 import {
+  Contribution,
   ContributionSchema,
   OrganizationSchema,
+  Preem,
   PreemSchema,
+  Race,
   RaceSchema,
+  Series,
   SeriesSchema,
 } from '../../schema';
 import { isUserAuthorized } from '../access';
@@ -79,13 +83,15 @@ describe('update mutations', () => {
       });
 
       const event = updates.find((u) => u.ref.path.includes('events'));
-      expect(
-        (event?.updates as any).seriesBrief.organizationBrief.name,
-      ).toEqual('New Org Name');
+      const eventUpdates = event?.updates as Partial<Series>;
+      expect(eventUpdates?.seriesBrief.organizationBrief.name).toEqual(
+        'New Org Name',
+      );
 
       const race = updates.find((u) => u.ref.path.includes('races'));
+      const raceUpdates = race?.updates as Partial<Race>;
       expect(
-        (race?.updates as any).eventBrief.seriesBrief.organizationBrief.name,
+        raceUpdates?.eventBrief.seriesBrief.organizationBrief.name,
       ).toEqual('New Org Name');
     });
 
@@ -125,12 +131,12 @@ describe('update mutations', () => {
       expect(series?.updates).toEqual({ name: 'New Series Name' });
 
       const event = updates.find((u) => u.ref.path.includes('events'));
-      expect((event?.updates as any).seriesBrief.name).toEqual(
-        'New Series Name',
-      );
+      const eventUpdates = event?.updates as Partial<Series>;
+      expect(eventUpdates?.seriesBrief.name).toEqual('New Series Name');
 
       const race = updates.find((u) => u.ref.path.includes('races'));
-      expect((race?.updates as any).eventBrief.seriesBrief.name).toEqual(
+      const raceUpdates = race?.updates as Partial<Race>;
+      expect(raceUpdates?.eventBrief.seriesBrief.name).toEqual(
         'New Series Name',
       );
     });
@@ -153,7 +159,8 @@ describe('update mutations', () => {
 
       const eventData = eventDoc.data();
       expect(eventData?.path).toEqual(eventDoc.ref.path);
-      expect((eventData as any)?.seriesBrief?.name).toEqual('New Series Name');
+      const orgData = eventData as z.infer<typeof OrganizationSchema>;
+      expect(orgData.seriesBrief?.name).toEqual('New Series Name');
     });
   });
 
@@ -173,7 +180,8 @@ describe('update mutations', () => {
       expect(event?.updates).toEqual({ name: 'New Event Name' });
 
       const race = updates.find((u) => u.ref.path.includes('races'));
-      expect((race?.updates as any).eventBrief.name).toEqual('New Event Name');
+      const raceUpdates = race?.updates as Partial<Race>;
+      expect(raceUpdates?.eventBrief.name).toEqual('New Event Name');
     });
 
     it('should update the event brief in a race doc', async () => {
@@ -214,7 +222,8 @@ describe('update mutations', () => {
       expect(race?.updates).toEqual({ name: 'New Race Name' });
 
       const preem = updates.find((u) => u.ref.path.includes('preems'));
-      expect((preem?.updates as any).raceBrief.name).toEqual('New Race Name');
+      const preemUpdates = preem?.updates as Partial<Preem>;
+      expect(preemUpdates?.raceBrief.name).toEqual('New Race Name');
     });
 
     it('should update the race brief in a preem doc', async () => {
@@ -249,7 +258,7 @@ describe('update mutations', () => {
         .withConverter(converter(ContributionSchema))
         .set({
           path: 'organizations/super-sprinkles/series/sprinkles-2025/events/giro-sf-2025/races/masters-women/preems/first-lap/contributions/contribution-1',
-        } as any);
+        } as Partial<Contribution>);
     });
 
     it('should update a preem and all its descendants and return them', async () => {
@@ -269,9 +278,9 @@ describe('update mutations', () => {
       const contribution = updates.find((u) =>
         u.ref.path.includes('contributions'),
       );
-      expect((contribution?.updates as any).preemBrief.name).toEqual(
-        'New Preem Name',
-      );
+      const contributionUpdates =
+        contribution?.updates as Partial<Contribution>;
+      expect(contributionUpdates?.preemBrief.name).toEqual('New Preem Name');
     });
 
     it('should update the preem brief in a contribution doc', async () => {
