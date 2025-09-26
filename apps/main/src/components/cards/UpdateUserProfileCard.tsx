@@ -17,7 +17,6 @@ import { useState } from 'react';
 
 interface UserProfileCardProps {
   name?: string;
-  email?: string;
   avatarUrl?: string;
   uploading: boolean;
   error: string | null;
@@ -27,7 +26,6 @@ interface UserProfileCardProps {
 
 const UserProfileCard: React.FC<UserProfileCardProps> = ({
   name,
-  email,
   avatarUrl,
   uploading,
   error,
@@ -83,10 +81,6 @@ const UserProfileCard: React.FC<UserProfileCardProps> = ({
         </FileButton>
 
         <Title order={2}>{name}</Title>
-        <Group gap="xs">
-          <IconMail size={16} />
-          <Text c="dimmed">{email}</Text>
-        </Group>
         <Stack>
           <Button
             variant="outline"

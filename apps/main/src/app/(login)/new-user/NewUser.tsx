@@ -130,18 +130,6 @@ export default function NewUser({
                   </Box>
                 </Stack>
                 <TextInput
-                  label="Email"
-                  placeholder="Your email address"
-                  readOnly
-                  {...form.getInputProps('email')}
-                />
-                <TextInput
-                  label="Avatar URL"
-                  placeholder="URL to your avatar image"
-                  {...form.getInputProps('avatarUrl')}
-                />
-
-                <TextInput
                   label="Affiliation"
                   placeholder="Your club or team"
                   {...form.getInputProps('affiliation')}
