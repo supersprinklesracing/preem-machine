@@ -39,7 +39,7 @@ const getPreemWithContributions = async (
 ): Promise<PreemWithContributions> => {
   const preem = preemDoc.data();
   if (!preem) {
-    notFound('Preem not found');
+    notFound(`Preem not found: ${preemDoc.ref.path}`);
   }
   const contributionsSnap = await preemDoc.ref
     .collection('contributions')
@@ -224,7 +224,7 @@ export const getRenderablePreemDataForPage = cache(async (path: DocPath) => {
   const preemDocSnap = await getDocRefInternal(PreemSchema, path);
   const doc = await preemDocSnap.get();
   if (!doc.exists) {
-    notFound('Preem not found');
+    notFound(`Preem not found: ${path}`);
   }
 
   return await getPreemWithContributions(doc);
@@ -234,7 +234,7 @@ export const getRenderableRaceDataForPage = cache(async (path: DocPath) => {
   const raceSnap = await getDocRefInternal(RaceSchema, path);
   const doc = await raceSnap.get();
   if (!doc.exists) {
-    notFound('Race not found');
+    notFound(`Race not found: ${path}`);
   }
 
   return await getRaceWithPreems(doc);
@@ -294,12 +294,12 @@ export const getRenderableOrganizationDataForPage = cache(
     const orgDoc = await getDocRefInternal(OrganizationSchema, path);
     const doc = await orgDoc.get();
     if (!doc.exists) {
-      notFound('Org not found');
+      notFound(`Org not found: ${path}`);
     }
 
     const organization = doc.data();
     if (!organization) {
-      notFound('Org not found');
+      notFound(`Org not found: ${path}`);
     }
 
     const seriesSnap = await doc.ref
@@ -322,7 +322,7 @@ export const getRenderableSeriesDataForPage = cache(async (path: DocPath) => {
   const seriesSnap = await getDocRefInternal(SeriesSchema, path);
   const doc = await seriesSnap.get();
   if (!doc.exists) {
-    notFound('Series not found');
+    notFound(`Series not found: ${path}`);
   }
 
   return await getEventsForSeries(doc);
@@ -332,7 +332,7 @@ export const getRenderableEventDataForPage = cache(async (path: DocPath) => {
   const eventSnap = await getDocRefInternal(EventSchema, path);
   const doc = await eventSnap.get();
   if (!doc.exists) {
-    notFound('Event not found');
+    notFound(`Event not found: ${path}`);
   }
   return await getRacesForEvent(doc);
 });

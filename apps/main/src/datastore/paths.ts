@@ -62,7 +62,7 @@ const COLLECTION_IDS = [
 
 export const isDocPath = (path: string): path is DocPath => {
   if (!path) {
-    console.debug('isDocPath: path is empty');
+    console.debug(`isDocPath: path is empty`);
     return false;
   }
   const segments = path.split('/');
@@ -79,20 +79,18 @@ export const isDocPath = (path: string): path is DocPath => {
       );
     }
     return isValid;
-  }
-
-  if (segments[0] !== 'organizations') {
+  } else if (segments[0] === 'organizations') {
+    if (segments.length % 2 !== 0) {
+      console.debug(
+        'isDocPath: invalid segment length for organization-prefixed path',
+        segments.length,
+      );
+      return false;
+    }
+  } else {
     console.debug(
       'isDocPath: path must start with "organizations" or "users"',
       segments[0],
-    );
-    return false;
-  }
-
-  if (segments.length % 2 !== 0) {
-    console.debug(
-      'isDocPath: invalid segment length for organizations path',
-      segments.length,
     );
     return false;
   }
@@ -240,7 +238,9 @@ export const getParentPath = (path: string): string => {
   return segments.slice(0, -1).join('/');
 };
 
-export const getParentPathAsCollectionPath = (path: DocPath): CollectionPath => {
+export const getParentPathAsCollectionPath = (
+  path: DocPath,
+): CollectionPath => {
   return path.split('/').slice(0, -1).join('/');
 };
 
