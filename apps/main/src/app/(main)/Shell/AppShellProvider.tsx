@@ -3,9 +3,10 @@
 import { useDisclosure, useMediaQuery } from '@mantine/hooks';
 import { useMantineTheme } from '@mantine/core';
 import type { ComponentProps } from 'react';
-import React from 'react';
+import React, { useCallback } from 'react';
 import MainAppShell from './MainAppShell';
 import Sidebar from './Sidebar';
+import { AppShellContext } from './AppShellContext';
 
 export default function AppShellProvider({
   children,
@@ -20,24 +21,22 @@ export default function AppShellProvider({
   const theme = useMantineTheme();
   const isMobile = useMediaQuery(`(max-width: ${theme.breakpoints.sm})`);
 
-  const handleLinkClick = () => {
+  const handleLinkClick = useCallback(() => {
     if (isMobile) {
       toggleSidebar();
     }
-  };
-
-  const sidebarWithClickHandler = sidebar
-    ? React.cloneElement(sidebar, { onLinkClick: handleLinkClick })
-    : undefined;
+  }, [isMobile, toggleSidebar]);
 
   return (
-    <MainAppShell
-      isSidebarOpened={isSidebarOpened}
-      toggleSidebar={toggleSidebar}
-      avatarCluster={avatarCluster}
-      sidebar={sidebarWithClickHandler}
-    >
-      {children}
-    </MainAppShell>
+    <AppShellContext.Provider value={{ onLinkClick: handleLinkClick }}>
+      <MainAppShell
+        isSidebarOpened={isSidebarOpened}
+        toggleSidebar={toggleSidebar}
+        avatarCluster={avatarCluster}
+        sidebar={sidebar}
+      >
+        {children}
+      </MainAppShell>
+    </AppShellContext.Provider>
   );
 }
