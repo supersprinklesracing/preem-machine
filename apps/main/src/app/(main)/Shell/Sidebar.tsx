@@ -22,17 +22,18 @@ import { usePathname } from 'next/navigation';
 import React from 'react';
 import { useMediaQuery } from '@mantine/hooks';
 import Link from 'next/link';
+import { useAppShell } from './AppShellContext';
 
-interface SidebarProps {
+export interface SidebarProps {
   events: Event[];
-  onLinkClick?: () => void;
   user: User | null;
 }
 
-const Sidebar: React.FC<SidebarProps> = ({ events, onLinkClick, user }) => {
+const Sidebar: React.FC<SidebarProps> = ({ events, user }) => {
   const pathname = usePathname();
   const theme = useMantineTheme();
   const isMobile = useMediaQuery(`(max-width: ${theme.breakpoints.sm})`);
+  const { onLinkClick } = useAppShell();
 
   const handleLinkClick = () => {
     if (isMobile && onLinkClick) {
