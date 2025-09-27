@@ -11,7 +11,6 @@ import {
   Box,
   Button,
   Card,
-  Container,
   Grid,
   Group,
   SimpleGrid,
@@ -74,10 +73,9 @@ export const Preem: React.FC<Props> = ({ preem, children }) => {
     });
 
   return (
-    <Container fluid>
-      <Stack gap="lg">
-        <Box>
-          <Button
+    <Stack gap="lg">
+      <Box>
+        <Button
           component={Link}
           href={`/${toUrlPath(racePath(preem.path))}`}
           variant="subtle"
@@ -177,8 +175,7 @@ export const Preem: React.FC<Props> = ({ preem, children }) => {
           name: preem.name ?? '',
         }}
       />
-      </Stack>
-    </Container>
+    </Stack>
   );
 };
 

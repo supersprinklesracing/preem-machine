@@ -14,7 +14,6 @@ import {
   Box,
   Button,
   Card,
-  Container,
   Grid,
   Group,
   Stack,
@@ -175,7 +174,7 @@ export const Race: React.FC<Props> = ({ race, children }) => {
   });
 
   return (
-    <Container fluid>
+    <>
       <MultiPanelLayout
         leftPanel={
           <RaceCard data-testid="race-details" race={race} preems={children} />
@@ -253,7 +252,7 @@ export const Race: React.FC<Props> = ({ race, children }) => {
           }}
         />
       )}
-    </Container>
+    </>
   );
 };
 
