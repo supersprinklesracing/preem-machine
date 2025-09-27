@@ -46,4 +46,37 @@ describe('AppShellProvider', () => {
     fireEvent.click(burgerButton);
     expect(burgerButton).toHaveAttribute('aria-expanded', 'false');
   });
+
+  it('reliably toggles the sidebar on multiple clicks', () => {
+    const { useMediaQuery } = require('@mantine/hooks');
+    const { usePathname } = require('next/navigation');
+    useMediaQuery.mockReturnValue(true); // Mock mobile view
+    usePathname.mockReturnValue('/');
+
+    render(
+      <MantineProvider theme={theme}>
+        <AppShellProvider sidebar={<Sidebar {...{ events: [], user: null }} />}>
+          <div>Page content</div>
+        </AppShellProvider>
+      </MantineProvider>,
+    );
+
+    const burgerButton = screen.getByTestId('sidebar-burger');
+
+    // Check initial state
+    expect(burgerButton).toHaveAttribute('aria-expanded', 'false');
+
+    // Perform a series of clicks and check the state after each one
+    fireEvent.click(burgerButton);
+    expect(burgerButton).toHaveAttribute('aria-expanded', 'true');
+
+    fireEvent.click(burgerButton);
+    expect(burgerButton).toHaveAttribute('aria-expanded', 'false');
+
+    fireEvent.click(burgerButton);
+    expect(burgerButton).toHaveAttribute('aria-expanded', 'true');
+
+    fireEvent.click(burgerButton);
+    expect(burgerButton).toHaveAttribute('aria-expanded', 'false');
+  });
 });
