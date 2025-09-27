@@ -2,6 +2,7 @@
 
 import { AppShell, Burger, Group, Title } from '@mantine/core';
 import { Notifications } from '@mantine/notifications';
+import Image from 'next/image';
 import Link from 'next/link';
 import type { ComponentProps } from 'react';
 import React from 'react';
@@ -44,7 +45,10 @@ export default function MainAppShell({
               aria-expanded={isSidebarOpened}
             />
             <Link href="/" style={{ textDecoration: 'none', color: 'inherit' }}>
-              <Title order={3}>Preem Machine</Title>
+              <Group>
+                <Image src="/logo.png" alt="App Logo" width={48} height={48} priority />
+                <Title order={3}>Preem Machine</Title>
+              </Group>
             </Link>
           </Group>
           {avatarCluster}
