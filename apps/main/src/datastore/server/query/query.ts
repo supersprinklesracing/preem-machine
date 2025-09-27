@@ -366,7 +366,7 @@ export const getRenderableHomeDataForPage = cache(async () => {
     ),
   ];
 
-  const preems =
+  const preemDocs =
     preemIds.length > 0
       ? (
           await db
@@ -374,19 +374,21 @@ export const getRenderableHomeDataForPage = cache(async () => {
             .where('id', 'in', preemIds)
             .withConverter(converter(PreemSchema))
             .get()
-        ).docs.map((d) => d.data())
+        ).docs
       : [];
 
-  const preemsMap = preems.reduce(
-    (acc, preem) => {
-      acc[preem.id] = preem;
+  const preemsMap = preemDocs.reduce(
+    (acc, preemDoc) => {
+      acc[preemDoc.ref.path] = preemDoc.data();
       return acc;
     },
     {} as Record<string, Preem>,
   );
 
   const contributions = recentContributionsRaw.map((c) => {
-    const fullPreem = c.preemBrief?.id ? preemsMap[c.preemBrief.id] : undefined;
+    const fullPreem = c.preemBrief?.path
+      ? preemsMap[c.preemBrief.path]
+      : undefined;
     return {
       ...c,
       preemBrief: fullPreem,
