@@ -1,6 +1,7 @@
 'use client';
 
-import { AppShell, Burger, Group, Title } from '@mantine/core';
+import { AppShell, Burger, Group, Title, useMantineTheme } from '@mantine/core';
+import { useMediaQuery } from '@mantine/hooks';
 import { Notifications } from '@mantine/notifications';
 import Image from 'next/image';
 import Link from 'next/link';
@@ -21,6 +22,8 @@ export default function MainAppShell({
   isSidebarOpened: boolean;
   toggleSidebar: () => void;
 }) {
+  const theme = useMantineTheme();
+  const isMobile = useMediaQuery(`(max-width: ${theme.breakpoints.sm})`);
   return (
     <AppShell
       header={{ height: 60 }}
@@ -28,6 +31,7 @@ export default function MainAppShell({
         width: 250,
         breakpoint: 'sm',
         collapsed: { mobile: !isSidebarOpened, desktop: false },
+        hidden: isMobile ? !isSidebarOpened : undefined,
       }}
       padding="md"
     >
