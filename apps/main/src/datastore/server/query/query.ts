@@ -382,7 +382,7 @@ export const getRenderableHomeDataForPage = cache(async () => {
       acc[preem.path] = preem;
       return acc;
     },
-    {} as Record<string, Preem>,
+    {} as Record<DocPath, Preem>,
   );
 
   const contributions = recentContributionsRaw.map((c) => {
