@@ -34,7 +34,15 @@ To set up your local environment, use `HUSKY=0 npm ci` to install the project de
 
 ### Critical: The Definition of "Done"
 
-> **WARNING:** A task is **NOT** "done" or "complete" until you have successfully run **ALL** local verification steps (lint, build, and tests) without any errors. Claiming a task is complete before all checks have passed is a critical failure of your operational protocol. Do not state that you are finished, complete, or verified until you have the output to prove it. This is a non-negotiable directive.
+> **WARNING:** A task is **NOT** "done" or "complete" until you have successfully run **ALL** local verification steps without any errors. Claiming a task is complete before all checks have passed is a critical failure of your operational protocol. Do not state that you are finished, complete, or verified until you have the output to prove it. This is a non-negotiable directive.
+>
+> You **MUST** run the following commands and ensure they pass before claiming a task is complete:
+>
+> 1.  **Lint:** `npx nx affected:lint --fix`
+> 2.  **Build:** `npx nx run @preem-machine/main:build`
+> 3.  **Test:** `npx nx run @preem-machine/main:test`
+>
+> You **MUST** also run `npx lint-staged` before committing to catch any linting issues early.
 
 ### Critical: Merging Pull Requests
 
@@ -67,8 +75,8 @@ This project uses `husky` and `lint-staged` to enforce code quality standards on
 #### Testing
 
 - **Tests using Jest**
-  - **Run All Unit Tests:** `./tools/nx/nx run @preem-machine/main:test`
-  - **Run Single Unit Test:** `./tools/nx/nx run @preem-machine/main:test --testFile='"${TEST_FILE}"'`
+  - **Run All Unit Tests:** `tools/test.sh`
+  - **Run Single Unit Test:** `tools/test.sh --testFile='"${TEST_FILE}"'`
 
 - **E2E Tests using Playwright**
   - **Run E2E Tests:** `./tools/nx/nx e2e e2e-main`
