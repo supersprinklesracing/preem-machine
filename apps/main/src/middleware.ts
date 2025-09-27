@@ -88,7 +88,7 @@ export const config = {
   runtime: 'nodejs',
   matcher: [
     '/',
-    '/((?!_next|favicon.ico|__/auth|__/firebase|api|.*\\.).*)',
+    '/((?!_next|.well-known|favicon.ico|__/auth|__/firebase|api|.*\\.).*)',
     '/api/login',
     '/api/logout',
     '/api/refresh-token',
