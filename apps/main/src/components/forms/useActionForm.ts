@@ -6,13 +6,17 @@ import { useState } from 'react';
 import { z } from 'zod';
 
 // eslint-disable-next-line @typescript-eslint/no-explicit-any
+type AnyObject = { [key: string]: any };
+
+// eslint-disable-next-line @typescript-eslint/no-explicit-any
 interface UseActionFormProps<T extends z.ZodType<any, any, any>, TResult> {
   schema: T;
   initialValues: z.infer<T>;
-  action: (values: z.infer<T>) => Promise<TResult>;
+  action: (values: Partial<z.infer<T>>) => Promise<TResult>;
   onSuccess?: (result: TResult) => void;
   // eslint-disable-next-line @typescript-eslint/no-explicit-any
   validate?: (values: z.infer<T>) => Record<string, any>;
+  submitDirtyOnly?: boolean;
 }
 
 export function useActionForm<
@@ -25,6 +29,7 @@ export function useActionForm<
   action,
   onSuccess,
   validate,
+  submitDirtyOnly = false,
 }: UseActionFormProps<T, TResult>) {
   const [isLoading, setIsLoading] = useState(false);
   const [submissionError, setSubmissionError] = useState<string | null>(null);
@@ -38,14 +43,46 @@ export function useActionForm<
     },
   });
 
+  const getDirtyValues = (
+    values: AnyObject,
+    path: string[] = [],
+  ): Partial<z.infer<T>> => {
+    const dirtyValues: Partial<z.infer<T>> = {};
+    for (const key in values) {
+      const currentPath = [...path, key];
+      const fieldIsDirty = form.isDirty(currentPath.join('.'));
+
+      if (
+        typeof values[key] === 'object' &&
+        values[key] !== null &&
+        !Array.isArray(values[key])
+      ) {
+        const nestedDirtyValues = getDirtyValues(values[key], currentPath);
+        if (Object.keys(nestedDirtyValues).length > 0) {
+          dirtyValues[key] = nestedDirtyValues;
+        }
+      } else if (fieldIsDirty) {
+        dirtyValues[key] = values[key];
+      }
+    }
+    return dirtyValues;
+  };
+
   const handleSubmit = async (values: z.infer<T>) => {
     setIsLoading(true);
     setSubmissionError(null);
 
     try {
-      const result = await action(values);
-      if (onSuccess) {
-        onSuccess(result);
+      const parsedValues = schema.parse(values);
+      const valuesToSubmit = submitDirtyOnly
+        ? getDirtyValues(parsedValues)
+        : parsedValues;
+
+      if (Object.keys(valuesToSubmit).length > 0) {
+        const result = await action(valuesToSubmit);
+        if (onSuccess) {
+          onSuccess(result);
+        }
       }
     } catch (error) {
       setSubmissionError(
@@ -61,5 +98,6 @@ export function useActionForm<
     handleSubmit,
     isLoading,
     submissionError,
+    isDirty: form.isDirty(),
   };
 }

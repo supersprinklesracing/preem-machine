@@ -51,25 +51,13 @@ describe('EditOrganization component', () => {
 
     // Wait for the action to be called
     await waitFor(() => {
-      expect(updateOrganizationAction).toHaveBeenCalledWith(
-        expect.objectContaining({
-          path: 'organizations/org-1',
-          edits: expect.objectContaining({
-            name: 'New Org Name',
-          }),
-        }),
-      );
-    });
-
-    // Assert that the action was called with the correct data
-    expect(updateOrganizationAction).toHaveBeenCalledWith(
-      expect.objectContaining({
+      expect(updateOrganizationAction).toHaveBeenCalledWith({
         path: 'organizations/org-1',
-        edits: expect.objectContaining({
+        edits: {
           name: 'New Org Name',
-        }),
-      }),
-    );
+        },
+      });
+    });
   });
 
   it('should display an error message if the action fails', async () => {

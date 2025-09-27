@@ -56,15 +56,12 @@ describe('EditSeries component', () => {
 
     // Wait for the action to be called
     await waitFor(() => {
-      expect(editSeriesAction).toHaveBeenCalledWith(
-        expect.objectContaining({
-          path: 'organizations/org-1/series/series-1',
-          edits: expect.objectContaining({
-            name: 'New Series Name',
-            timezone: 'America/New_York',
-          }),
-        }),
-      );
+      expect(editSeriesAction).toHaveBeenCalledWith({
+        path: 'organizations/org-1/series/series-1',
+        edits: {
+          name: 'New Series Name',
+        },
+      });
     });
   });
 

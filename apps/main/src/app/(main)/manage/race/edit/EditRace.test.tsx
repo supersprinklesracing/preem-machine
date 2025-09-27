@@ -68,16 +68,13 @@ describe('EditRace component', () => {
 
     // Wait for the action to be called
     await waitFor(() => {
-      expect(editRaceAction).toHaveBeenCalledWith(
-        expect.objectContaining({
-          path: 'organizations/org-1/series/series-1/events/event-1/races/race-1',
-          edits: expect.objectContaining({
-            name: 'New Race Name',
-            courseLink: 'https://strava.com/routes/456',
-            timezone: 'America/New_York',
-          }),
-        }),
-      );
+      expect(editRaceAction).toHaveBeenCalledWith({
+        path: 'organizations/org-1/series/series-1/events/event-1/races/race-1',
+        edits: {
+          name: 'New Race Name',
+          courseLink: 'https://strava.com/routes/456',
+        },
+      });
     });
   });
 

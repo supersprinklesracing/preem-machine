@@ -51,6 +51,7 @@ export function EditPreem({
     onSuccess: () => {
       router.push(`/manage/${toUrlPath(preem.path)}`);
     },
+    submitDirtyOnly: true,
   });
 
   const [debouncedValues] = useDebouncedValue(form.values, 100);

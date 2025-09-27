@@ -73,15 +73,13 @@ describe('EditPreem component', () => {
     fireEvent.click(saveButton);
 
     await waitFor(() => {
-      expect(editPreemAction).toHaveBeenCalledWith(
-        expect.objectContaining({
-          path: 'organizations/org-super-sprinkles/series/series-sprinkles-2025/events/event-giro-sf-2025/races/race-giro-sf-2025-masters-women/preems/preem-giro-sf-2025-masters-women-first-lap',
-          edits: expect.objectContaining({
-            name: 'New Preem Name',
-            description: 'New Description',
-          }),
-        }),
-      );
+      expect(editPreemAction).toHaveBeenCalledWith({
+        path: 'organizations/org-super-sprinkles/series/series-sprinkles-2025/events/event-giro-sf-2025/races/race-giro-sf-2025-masters-women/preems/preem-giro-sf-2025-masters-women-first-lap',
+        edits: {
+          name: 'New Preem Name',
+          description: 'New Description',
+        },
+      });
     });
 
     await waitFor(() => {

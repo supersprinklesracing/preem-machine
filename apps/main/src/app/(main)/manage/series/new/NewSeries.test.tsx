@@ -66,16 +66,15 @@ describe('NewSeries component', () => {
     await waitFor(() => {
       expect(newSeriesAction).toHaveBeenCalledWith({
         path: 'organizations/org-1',
-        values: expect.objectContaining({
+        values: {
           name: 'New Test Series',
           description: 'This is a test series description.',
           website: 'https://new-example.com',
           location: 'Outer space',
-          timezone: Intl.DateTimeFormat().resolvedOptions().timeZone,
-          // TODO: Fix this.
-          // startDate: new Date('2025-08-03T00:00:00.000Z'),
-          // endDate: new Date('2025-08-15T00:00:00.000Z'),
-        }),
+          startDate: undefined,
+          endDate: undefined,
+          timezone: 'UTC',
+        },
       });
     });
   });

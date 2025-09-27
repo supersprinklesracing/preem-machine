@@ -54,15 +54,12 @@ describe('EditEvent component', () => {
 
     // Wait for the action to be called
     await waitFor(() => {
-      expect(editEventAction).toHaveBeenCalledWith(
-        expect.objectContaining({
-          path: 'organizations/org-1/series/series-1/events/event-1',
-          edits: expect.objectContaining({
-            name: 'New Event Name',
-            timezone: 'America/New_York',
-          }),
-        }),
-      );
+      expect(editEventAction).toHaveBeenCalledWith({
+        path: 'organizations/org-1/series/series-1/events/event-1',
+        edits: {
+          name: 'New Event Name',
+        },
+      });
     });
   });
 

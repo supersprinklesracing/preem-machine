@@ -80,10 +80,15 @@ describe('NewPreem component', () => {
     await waitFor(() => {
       expect(newPreemAction).toHaveBeenCalledWith({
         path: 'organizations/org-1/series/series-1/events/event-1/races/race-1/preems',
-        values: expect.objectContaining({
+        values: {
           name: 'New Test Preem',
           description: 'Test Description',
-        }),
+          minimumThreshold: 0,
+          prizePool: 0,
+          status: 'Open',
+          timeLimit: undefined,
+          type: 'Pooled',
+        },
       });
     });
   });

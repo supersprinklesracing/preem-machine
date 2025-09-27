@@ -72,6 +72,7 @@ export function EditEvent({
     onSuccess: () => {
       router.refresh();
     },
+    submitDirtyOnly: true,
   });
 
   const [debouncedValues] = useDebouncedValue(form.values, 100);
