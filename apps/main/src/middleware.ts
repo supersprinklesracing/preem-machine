@@ -88,7 +88,8 @@ export const config = {
   runtime: 'nodejs',
   matcher: [
     '/',
-    '/((?!_next|.well-known|favicon.ico|__/auth|__/firebase|api|.*\\.).*)',
+    // See also: ../next.config.js
+    '/((?!_next|\\.well-known|favicon\\.ico|__/auth|__/firebase|api).*)',
     '/api/login',
     '/api/logout',
     '/api/refresh-token',

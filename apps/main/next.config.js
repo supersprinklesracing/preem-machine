@@ -22,6 +22,11 @@ const nextConfig = {
     return config;
   },
   async rewrites() {
+    // This regex ensures that the greedy rewrite rules below do not match
+    // reserved Next.js paths or API routes.
+    // See Also: src/middleware.ts
+    const nonReservedPathsRegex = '((?!_next|\\.well-known|favicon\\.ico|__/auth|__/firebase|api).*)';
+
     return {
       // afterFiles avoids rewriting _next and .well-known.
       afterFiles: [
@@ -126,22 +131,22 @@ const nextConfig = {
           destination: '/user?path=users/:userId',
         },
         {
-          source: '/:orgId/:seriesId/:eventId/:raceId/:preemId',
+          source: `/:orgId${nonReservedPathsRegex}/:seriesId/:eventId/:raceId/:preemId`,
           destination:
             '/preem?path=organizations/:orgId/series/:seriesId/events/:eventId/races/:raceId/preems/:preemId',
         },
         {
-          source: '/:orgId/:seriesId/:eventId/:raceId',
+          source: `/:orgId${nonReservedPathsRegex}/:seriesId/:eventId/:raceId`,
           destination:
             '/race?path=organizations/:orgId/series/:seriesId/events/:eventId/races/:raceId',
         },
         {
-          source: '/:orgId/:seriesId/:eventId',
+          source: `/:orgId${nonReservedPathsRegex}/:seriesId/:eventId`,
           destination:
             '/event?path=organizations/:orgId/series/:seriesId/events/:eventId',
         },
         {
-          source: '/:orgId/:seriesId',
+          source: `/:orgId${nonReservedPathsRegex}/:seriesId`,
           destination: '/series?path=organizations/:orgId/series/:seriesId',
         },
         {
@@ -149,10 +154,11 @@ const nextConfig = {
           destination: '/account',
         },
         {
-          source: '/:orgId',
+          source: `/:orgId${nonReservedPathsRegex}`,
           destination: '/organization?path=organizations/:orgId',
         },
       ],
+      fallback: [],
     };
   },
 };
