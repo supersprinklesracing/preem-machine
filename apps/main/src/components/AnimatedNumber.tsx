@@ -3,8 +3,8 @@
 import { useEffect, useRef, useState } from 'react';
 
 const AnimatedNumber = ({ value }: { value: number }) => {
-  const [currentValue, setCurrentValue] = useState(0);
-  const prevValueRef = useRef(0);
+  const [currentValue, setCurrentValue] = useState(value);
+  const prevValueRef = useRef(value);
 
   useEffect(() => {
     const startValue = prevValueRef.current;
