@@ -524,7 +524,7 @@ export const getContributionsForPreemId = cache(
 
 export const getOrganizationFromPath = cache(async (path: string) => {
   const pathParts = path.split('/');
-  if (pathParts.length !== 2 || pathParts[0] !== 'organizations') {
+  if (pathParts.length < 2 || pathParts[0] !== 'organizations') {
     notFound(`Invalid path for getting organization: ${path}`);
   }
   return getDocInternal(OrganizationSchema, `organizations/${pathParts[1]}`);
