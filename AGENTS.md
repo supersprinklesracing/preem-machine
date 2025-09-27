@@ -67,8 +67,8 @@ This project uses `husky` and `lint-staged` to enforce code quality standards on
 #### Testing
 
 - **Tests using Jest**
-  - **Run All Unit Tests:** `./tools/nx/nx run @preem-machine/main:test`
-  - **Run Single Unit Test:** `./tools/nx/nx run @preem-machine/main:test --testFile='"${TEST_FILE}"'`
+  - **Run All Unit Tests:** `tools/test.sh`
+  - **Run Single Unit Test:** `tools/test.sh --testFile='"${TEST_FILE}"'`
 
 - **E2E Tests using Playwright**
   - **Run E2E Tests:** `./tools/nx/nx e2e e2e-main`
