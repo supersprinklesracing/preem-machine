@@ -52,6 +52,7 @@ const Sidebar: React.FC<SidebarProps> = ({ events, user }) => {
             active={pathname === '/'}
             component={Link}
             onClick={handleLinkClick}
+            data-testid="sidebar-home-link"
           />
           {user && user.organizationRefs && user.organizationRefs.length > 0 && (
             <NavLink
