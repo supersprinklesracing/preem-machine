@@ -34,7 +34,15 @@ To set up your local environment, use `HUSKY=0 npm ci` to install the project de
 
 ### Critical: The Definition of "Done"
 
-> **WARNING:** A task is **NOT** "done" or "complete" until you have successfully run **ALL** local verification steps (lint, build, and tests) without any errors. Claiming a task is complete before all checks have passed is a critical failure of your operational protocol. Do not state that you are finished, complete, or verified until you have the output to prove it. This is a non-negotiable directive.
+> **WARNING:** A task is **NOT** "done" or "complete" until you have successfully run **ALL** local verification steps without any errors. Claiming a task is complete before all checks have passed is a critical failure of your operational protocol. Do not state that you are finished, complete, or verified until you have the output to prove it. This is a non-negotiable directive.
+>
+> You must run the following commands and ensure they pass before claiming a task is complete:
+>
+> 1.  **Lint:** `npx nx affected:lint --fix`
+> 2.  **Build:** `npx nx run @preem-machine/main:build`
+> 3.  **Test:** `npx nx run @preem-machine/main:test`
+>
+> Before committing, you **MUST** run `npx lint-staged` to catch any linting issues early.
 
 ### Critical: Merging Pull Requests
 
