@@ -25,6 +25,7 @@ export default async function RootLayout({
   return (
     <html lang="en" {...mantineHtmlProps}>
       <head>
+        <meta name="viewport" content="width=device-width, initial-scale=1" />
         <ColorSchemeScript defaultColorScheme={colorScheme} />
       </head>
       <body>
