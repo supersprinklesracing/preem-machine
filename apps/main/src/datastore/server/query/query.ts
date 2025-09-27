@@ -379,14 +379,16 @@ export const getRenderableHomeDataForPage = cache(async () => {
 
   const preemsMap = preems.reduce(
     (acc, preem) => {
-      acc[preem.id] = preem;
+      acc[preem.path] = preem;
       return acc;
     },
     {} as Record<string, Preem>,
   );
 
   const contributions = recentContributionsRaw.map((c) => {
-    const fullPreem = c.preemBrief?.id ? preemsMap[c.preemBrief.id] : undefined;
+    const fullPreem = c.preemBrief?.path
+      ? preemsMap[c.preemBrief.path]
+      : undefined;
     return {
       ...c,
       preemBrief: fullPreem,
