@@ -16,6 +16,7 @@ import {
   Anchor,
   Button,
   Card,
+  Container,
   Grid,
   Group,
   Stack,
@@ -73,9 +74,10 @@ export default function OrganizationComponent({
   ));
 
   return (
-    <Stack>
-      <Title>{organization.name}</Title>
-      {organization.description && <Text>{organization.description}</Text>}
+    <Container fluid>
+      <Stack>
+        <Title>{organization.name}</Title>
+        {organization.description && <Text>{organization.description}</Text>}
       {organization.website && (
         <Group gap="xs">
           <IconWorldWww size={16} />
@@ -129,5 +131,6 @@ export default function OrganizationComponent({
         </Grid.Col>
       </Grid>
     </Stack>
+    </Container>
   );
 }
