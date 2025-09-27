@@ -3,7 +3,7 @@
 import { useDisclosure, useMediaQuery } from '@mantine/hooks';
 import { useMantineTheme } from '@mantine/core';
 import type { ComponentProps } from 'react';
-import React, { useCallback } from 'react';
+import React, { useCallback, useMemo } from 'react';
 import MainAppShell from './MainAppShell';
 import Sidebar from './Sidebar';
 import { AppShellContext } from './AppShellContext';
@@ -27,8 +27,13 @@ export default function AppShellProvider({
     }
   }, [isMobile, toggleSidebar]);
 
+  const contextValue = useMemo(
+    () => ({ onLinkClick: handleLinkClick }),
+    [handleLinkClick],
+  );
+
   return (
-    <AppShellContext.Provider value={{ onLinkClick: handleLinkClick }}>
+    <AppShellContext value={contextValue}>
       <MainAppShell
         isSidebarOpened={isSidebarOpened}
         toggleSidebar={toggleSidebar}
@@ -37,6 +42,6 @@ export default function AppShellProvider({
       >
         {children}
       </MainAppShell>
-    </AppShellContext.Provider>
+    </AppShellContext>
   );
 }

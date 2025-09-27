@@ -1,6 +1,7 @@
 'use client';
 
-import { AppShell, Burger, Group, Title } from '@mantine/core';
+import { AppShell, Burger, Group, Title, useMantineTheme } from '@mantine/core';
+import { useMediaQuery } from '@mantine/hooks';
 import { Notifications } from '@mantine/notifications';
 import Image from 'next/image';
 import Link from 'next/link';
@@ -21,6 +22,8 @@ export default function MainAppShell({
   isSidebarOpened: boolean;
   toggleSidebar: () => void;
 }) {
+  const theme = useMantineTheme();
+  const isMobile = useMediaQuery(`(max-width: ${theme.breakpoints.sm})`);
   return (
     <AppShell
       header={{ height: 60 }}
@@ -54,7 +57,9 @@ export default function MainAppShell({
           {avatarCluster}
         </Group>
       </AppShell.Header>
-      <AppShell.Navbar p="md">{sidebar}</AppShell.Navbar>
+      <AppShell.Navbar p="md" hidden={isMobile ? !isSidebarOpened : false}>
+        {sidebar}
+      </AppShell.Navbar>
       <AppShell.Main>{children}</AppShell.Main>
     </AppShell>
   );

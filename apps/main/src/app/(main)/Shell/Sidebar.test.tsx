@@ -41,9 +41,9 @@ describe('Sidebar component', () => {
   it('should render event links', () => {
     (useMediaQuery as jest.Mock).mockReturnValue(false); // Default to not mobile
     render(
-      <AppShellContext.Provider value={{ onLinkClick: jest.fn() }}>
+      <AppShellContext value={{ onLinkClick: jest.fn() }}>
         <Sidebar {...mockData} />
-      </AppShellContext.Provider>,
+      </AppShellContext>,
     );
     expect(
       screen.getByRole('link', { name: 'Test Event 1' }),
@@ -57,9 +57,9 @@ describe('Sidebar component', () => {
     (useMediaQuery as jest.Mock).mockReturnValue(true); // Simulate mobile
     const onLinkClick = jest.fn();
     render(
-      <AppShellContext.Provider value={{ onLinkClick }}>
+      <AppShellContext value={{ onLinkClick }}>
         <Sidebar {...mockData} />
-      </AppShellContext.Provider>,
+      </AppShellContext>,
     );
 
     fireEvent.click(screen.getByRole('link', { name: 'Test Event 1' }));
@@ -71,9 +71,9 @@ describe('Sidebar component', () => {
     (useMediaQuery as jest.Mock).mockReturnValue(false); // Simulate desktop
     const onLinkClick = jest.fn();
     render(
-      <AppShellContext.Provider value={{ onLinkClick }}>
+      <AppShellContext value={{ onLinkClick }}>
         <Sidebar {...mockData} />
-      </AppShellContext.Provider>,
+      </AppShellContext>,
     );
 
     fireEvent.click(screen.getByRole('link', { name: 'Test Event 1' }));
@@ -85,9 +85,9 @@ describe('Sidebar component', () => {
     const userWithNoOrgs: User = { ...mockUser, organizationRefs: [] };
     const data = { ...mockData, user: userWithNoOrgs };
     render(
-      <AppShellContext.Provider value={{ onLinkClick: jest.fn() }}>
+      <AppShellContext value={{ onLinkClick: jest.fn() }}>
         <Sidebar {...data} />
-      </AppShellContext.Provider>,
+      </AppShellContext>,
     );
     expect(screen.queryByRole('link', { name: 'Hub' })).not.toBeInTheDocument();
   });
@@ -95,9 +95,9 @@ describe('Sidebar component', () => {
   it('should not render Hub link when user is null', () => {
     const data = { ...mockData, user: null };
     render(
-      <AppShellContext.Provider value={{ onLinkClick: jest.fn() }}>
+      <AppShellContext value={{ onLinkClick: jest.fn() }}>
         <Sidebar {...data} />
-      </AppShellContext.Provider>,
+      </AppShellContext>,
     );
     expect(screen.queryByRole('link', { name: 'Hub' })).not.toBeInTheDocument();
   });
