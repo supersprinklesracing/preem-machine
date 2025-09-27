@@ -1,21 +1,29 @@
 'use client';
 
 import { ENV_MAX_IMAGE_SIZE_BYTES } from '@/env/env';
+import { getFirebaseStorage } from '@/firebase/client/firebase-client';
+import { useUserContext } from '@/user/client/UserContext';
 import { UseFormReturnType } from '@mantine/form';
 import imageCompression from 'browser-image-compression';
+import { getDownloadURL, ref, uploadBytes } from 'firebase/storage';
 import { useState } from 'react';
-import { generateSignedUploadUrl } from '@/app/(main)/account/upload-action';
+import { v4 as uuidv4 } from 'uuid';
 
 export function useAvatarUpload<T>(
   form: UseFormReturnType<T>,
   fieldName: keyof T,
 ) {
+  const { authUser } = useUserContext();
   const [uploading, setUploading] = useState(false);
   const [error, setError] = useState<string | null>(null);
 
   const handleFileChange = async (file: File | null) => {
     if (!file) return;
 
+    if (!authUser) {
+      setError('You must be logged in to upload files.');
+      return;
+    }
     if (file.size > ENV_MAX_IMAGE_SIZE_BYTES) {
       setError(
         `File is too large. Maximum size is ${
@@ -36,24 +44,16 @@ export function useAvatarUpload<T>(
         useWebWorker: true,
       });
 
-      const { signedUrl, publicUrl } = await generateSignedUploadUrl({
-        contentType: compressedFile.type,
-      });
+      const storage = getFirebaseStorage();
+      const photoId = uuidv4();
+      const filePath = `users/photos/${authUser.uid}/${photoId}`;
+      const storageRef = ref(storage, filePath);
 
-      const response = await fetch(signedUrl, {
-        method: 'PUT',
-        body: compressedFile,
-        headers: {
-          'Content-Type': compressedFile.type,
-        },
-      });
+      const snapshot = await uploadBytes(storageRef, compressedFile);
+      const downloadURL = await getDownloadURL(snapshot.ref);
 
-      if (!response.ok) {
-        throw new Error('Failed to upload file.');
-      }
-
-    // eslint-disable-next-line @typescript-eslint/no-explicit-any
-      form.setFieldValue(fieldName as any, publicUrl as any);
+      // eslint-disable-next-line @typescript-eslint/no-explicit-any
+      form.setFieldValue(fieldName as any, downloadURL as any);
     } catch (err) {
       setError(
         err instanceof Error ? err.message : 'An unknown error occurred',

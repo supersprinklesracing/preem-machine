@@ -1,9 +1,10 @@
 'use client';
 
-import { useActionForm } from '@/components/forms/useActionForm';
 import { logout } from '@/auth/client/auth';
-import { FormActionResult } from '@/components/forms/forms';
 import UpdateUserProfileCard from '@/components/cards/UpdateUserProfileCard';
+import { FormActionResult } from '@/components/forms/forms';
+import { useActionForm } from '@/components/forms/useActionForm';
+import { useAvatarUpload } from '@/components/forms/useAvatarUpload';
 import { toUrlPath } from '@/datastore/paths';
 import { User } from '@/datastore/schema';
 import {
@@ -19,24 +20,24 @@ import {
   Title,
 } from '@mantine/core';
 import { useDebouncedValue } from '@mantine/hooks';
+import isEqual from 'fast-deep-equal';
 import { useRouter } from 'next/navigation';
 import { EditUserOptions } from './edit-user-action';
-import { useAvatarUpload } from '@/components/forms/useAvatarUpload';
 import { userSchema } from './user-schema';
 
-export interface AccountProps {
+export default function Account({
+  user,
+  editUserAction,
+}: {
   user: User;
   editUserAction: (options: EditUserOptions) => Promise<FormActionResult>;
-}
-
-export default function Account({ user, editUserAction }: AccountProps) {
+}) {
   const router = useRouter();
 
   const { form, handleSubmit, isLoading, submissionError } = useActionForm({
     schema: userSchema,
     initialValues: {
       name: user?.name ?? '',
-      email: user?.email ?? '',
       avatarUrl: user?.avatarUrl ?? '',
       affiliation: user?.affiliation ?? '',
       raceLicenseId: user?.raceLicenseId ?? '',
@@ -62,14 +63,21 @@ export default function Account({ user, editUserAction }: AccountProps) {
             <Stack>
               <UpdateUserProfileCard
                 name={debouncedValues.name}
-                email={debouncedValues.email}
                 avatarUrl={debouncedValues.avatarUrl}
                 uploading={uploading}
                 error={error}
                 onFileChange={handleFileChange}
                 onRemovePhoto={handleRemovePhoto}
               />
-              <Button type="submit" loading={isLoading}>
+              <Button
+                type="submit"
+                loading={isLoading}
+                disabled={
+                  !form.isValid() ||
+                  !isEqual(form.values, debouncedValues) ||
+                  uploading
+                }
+              >
                 Save Changes
               </Button>
               {submissionError && <Text c="red">{submissionError}</Text>}
@@ -106,13 +114,7 @@ export default function Account({ user, editUserAction }: AccountProps) {
                     )}
                   </Box>
                 </Stack>
-                <TextInput
-                  id="email"
-                  label="Email"
-                  placeholder="Your email address"
-                  readOnly
-                  {...form.getInputProps('email')}
-                />
+
                 <TextInput
                   id="affiliation"
                   label="Affiliation"

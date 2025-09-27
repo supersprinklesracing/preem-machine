@@ -1,21 +1,31 @@
-import { renderHook, act } from '@testing-library/react';
+import { act, renderHook } from '@testing-library/react';
 import { useForm } from '@mantine/form';
 import imageCompression from 'browser-image-compression';
+import { getDownloadURL, uploadBytes } from 'firebase/storage';
 import { useAvatarUpload } from './useAvatarUpload';
-import { generateSignedUploadUrl } from '@/app/(main)/account/upload-action';
 import { ENV_MAX_IMAGE_SIZE_BYTES } from '@/env/env';
+import { useUserContext } from '@/user/client/UserContext';
 
-jest.mock('@/app/(main)/account/upload-action');
+jest.mock('firebase/storage', () => ({
+  getStorage: jest.fn(),
+  ref: jest.fn(),
+  uploadBytes: jest.fn(),
+  getDownloadURL: jest.fn(),
+}));
+jest.mock('@/user/client/UserContext');
 jest.mock('browser-image-compression');
 
-const mockGenerateSignedUploadUrl = generateSignedUploadUrl as jest.Mock;
+const mockUploadBytes = uploadBytes as jest.Mock;
+const mockGetDownloadURL = getDownloadURL as jest.Mock;
 const mockImageCompression = imageCompression as unknown as jest.Mock;
-
-global.fetch = jest.fn();
+const mockUseUserContext = useUserContext as jest.Mock;
 
 describe('useAvatarUpload', () => {
   beforeEach(() => {
     jest.clearAllMocks();
+    mockUseUserContext.mockReturnValue({
+      authUser: { uid: 'test-uid' },
+    });
   });
 
   it('should handle photo removal', () => {
@@ -54,10 +64,10 @@ describe('useAvatarUpload', () => {
   });
 
   it('should handle successful file upload', async () => {
-    const { result: formResult, rerender: rerenderForm } = renderHook(() =>
+    const { result: formResult } = renderHook(() =>
       useForm({ initialValues: { avatarUrl: '' } }),
     );
-    const { result, rerender } = renderHook(() =>
+    const { result } = renderHook(() =>
       useAvatarUpload(formResult.current, 'avatarUrl'),
     );
     const file = new File([''], 'test.png', { type: 'image/png' });
@@ -67,27 +77,16 @@ describe('useAvatarUpload', () => {
     const publicUrl = 'http://example.com/avatar.png';
 
     mockImageCompression.mockResolvedValue(compressedFile);
-    mockGenerateSignedUploadUrl.mockResolvedValue({
-      signedUrl: 'http://example.com/signed-url',
-      publicUrl,
-    });
-    (global.fetch as jest.Mock).mockResolvedValue({ ok: true });
+    mockUploadBytes.mockResolvedValue({ ref: 'test-ref' });
+    mockGetDownloadURL.mockResolvedValue(publicUrl);
 
     await act(async () => {
       await result.current.handleFileChange(file);
     });
 
-    rerender();
-    rerenderForm();
-
     expect(mockImageCompression).toHaveBeenCalledWith(file, expect.any(Object));
-    expect(mockGenerateSignedUploadUrl).toHaveBeenCalledWith({
-      contentType: compressedFile.type,
-    });
-    expect(global.fetch).toHaveBeenCalledWith(
-      'http://example.com/signed-url',
-      expect.any(Object),
-    );
+    expect(uploadBytes).toHaveBeenCalled();
+    expect(getDownloadURL).toHaveBeenCalledWith('test-ref');
     expect(formResult.current.values.avatarUrl).toBe(publicUrl);
     expect(result.current.uploading).toBe(false);
     expect(result.current.error).toBeNull();
@@ -104,20 +103,35 @@ describe('useAvatarUpload', () => {
     const compressedFile = new File([''], 'compressed.png', {
       type: 'image/png',
     });
+    const uploadError = new Error('Upload failed');
 
     mockImageCompression.mockResolvedValue(compressedFile);
-    mockGenerateSignedUploadUrl.mockResolvedValue({
-      signedUrl: 'http://example.com/signed-url',
-      publicUrl: 'http://example.com/avatar.png',
-    });
-    (global.fetch as jest.Mock).mockResolvedValue({ ok: false });
+    mockUploadBytes.mockRejectedValue(uploadError);
 
     await act(async () => {
       await result.current.handleFileChange(file);
     });
 
-    expect(result.current.error).toBe('Failed to upload file.');
+    expect(result.current.error).toBe(uploadError.message);
     expect(formResult.current.values.avatarUrl).toBe('');
     expect(result.current.uploading).toBe(false);
+  });
+
+  it('should set an error if user is not authenticated', async () => {
+    mockUseUserContext.mockReturnValue({ authUser: null });
+    const { result: formResult } = renderHook(() =>
+      useForm({ initialValues: { avatarUrl: '' } }),
+    );
+    const { result } = renderHook(() =>
+      useAvatarUpload(formResult.current, 'avatarUrl'),
+    );
+    const file = new File([''], 'test.png', { type: 'image/png' });
+
+    await act(async () => {
+      await result.current.handleFileChange(file);
+    });
+
+    expect(result.current.error).toBe('You must be logged in to upload files.');
+    expect(mockUploadBytes).not.toHaveBeenCalled();
   });
 });

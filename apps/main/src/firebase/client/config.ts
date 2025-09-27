@@ -7,6 +7,10 @@ export const clientConfig = {
   messagingSenderId: orThrow(
     process.env.NEXT_PUBLIC_FIREBASE_MESSAGING_SENDER_ID,
   ),
+  storageBucket: orThrow(process.env.NEXT_PUBLIC_FIREBASE_STORAGE_BUCKET),
+  // Optional
+  // databaseURL: process.env.NEXT_PUBLIC_FIREBASE_DATABASE_URL,
+  // measurementId: process.env.NEXT_PUBLIC_FIREBASE_MEASUREMENT_ID,
   // Optional – required if your app uses AppCheck – https://firebase.google.com/docs/app-check
-  appId: process.env.NEXT_PUBLIC_FIREBASE_APP_ID,
+  // appId: process.env.NEXT_PUBLIC_FIREBASE_APP_ID,
 };

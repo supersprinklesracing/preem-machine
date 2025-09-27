@@ -87,3 +87,24 @@ export const ENV_FIRESTORE_EMULATOR_HOST = (() => {
     return process.env.NEXT_PUBLIC_FIRESTORE_EMULATOR_HOST;
   }
 })();
+
+
+export const ENV_FIREBASE_STORAGE_EMULATOR_HOST = (() => {
+  if (ENV_IS_NEXT_RUNTIME_NODEJS) {
+    if (
+      (!!process.env.NEXT_PUBLIC_FIREBASE_STORAGE_EMULATOR_HOST ||
+        !!process.env.FIREBASE_STORAGE_EMULATOR_HOST) &&
+      process.env.NEXT_PUBLIC_FIREBASE_STORAGE_EMULATOR_HOST !=
+        process.env.FIREBASE_STORAGE_EMULATOR_HOST
+    ) {
+      throw new Error(
+        `Initialized with inconsistent emulator values: ` +
+          `NEXT_PUBLIC_FIREBASE_STORAGE_EMULATOR_HOST=${process.env.NEXT_PUBLIC_FIREBASE_STORAGE_EMULATOR_HOST}` +
+          `FIREBASE_STORAGE_EMULATOR_HOST=${process.env.FIREBASE_STORAGE_EMULATOR_HOST}`,
+      );
+    }
+    return process.env.FIREBASE_STORAGE_EMULATOR_HOST;
+  } else {
+    return process.env.NEXT_PUBLIC_FIREBASE_STORAGE_EMULATOR_HOST;
+  }
+})();

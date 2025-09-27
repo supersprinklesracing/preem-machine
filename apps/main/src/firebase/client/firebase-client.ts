@@ -12,8 +12,10 @@ import {
 import { clientConfig } from './config';
 import {
   ENV_FIREBASE_AUTH_EMULATOR_HOST,
+  ENV_FIREBASE_STORAGE_EMULATOR_HOST,
   ENV_FIRESTORE_EMULATOR_HOST,
 } from '@/env/env';
+import { connectStorageEmulator, getStorage } from 'firebase/storage';
 
 export const getFirebaseApp = () => {
   if (getApps().length) {
@@ -44,14 +46,25 @@ export function getFirebaseAuth() {
   return auth;
 }
 
-let emulatorConnected = false;
+let firestoreEmulatorConnected = false;
 export function getFirestore() {
   // Use together with Firestore Emulator https://cloud.google.com/firestore/docs/emulator#android_apple_platforms_and_web_sdks
   const db = getFirestoreClient(getFirebaseApp());
-  if (!emulatorConnected && ENV_FIRESTORE_EMULATOR_HOST) {
-    emulatorConnected = true;
+  if (!firestoreEmulatorConnected && ENV_FIRESTORE_EMULATOR_HOST) {
+    firestoreEmulatorConnected = true;
     const [host, port] = ENV_FIRESTORE_EMULATOR_HOST.split(':');
     connectFirestoreEmulator(db, host, Number(port));
   }
   return db;
+}
+
+let storageEmulatorConnected = false;
+export function getFirebaseStorage() {
+  const storage = getStorage(getFirebaseApp());
+  if (!storageEmulatorConnected && ENV_FIREBASE_STORAGE_EMULATOR_HOST) {
+    storageEmulatorConnected = true;
+    const [host, port] = ENV_FIREBASE_STORAGE_EMULATOR_HOST.split(':');
+    connectStorageEmulator(storage, host, Number(port));
+  }
+  return storage;
 }
