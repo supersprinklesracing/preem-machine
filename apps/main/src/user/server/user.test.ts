@@ -1,23 +1,23 @@
 'use server';
 
-import { getAuthUser } from '@/auth/server/auth';
 import { NotFoundError } from '@/datastore/errors';
 import { User } from '@/datastore/schema';
-import { getUserById } from '@/datastore/server/query/query';
-import { redirect } from 'next/navigation';
 import { getUserContext, verifyUserContext } from './user';
+
+import { getAuthUser } from '@/auth/server/auth';
+import { getUserById } from '@/datastore/server/query/query';
 
 jest.mock('@/auth/server/auth');
 jest.mock('@/datastore/server/query/query');
-jest.mock('next/navigation', () => ({
-  redirect: jest.fn(() => {
-    throw new Error('NEXT_REDIRECT');
-  }),
-}));
+import { notFound } from 'next/navigation';
 
+jest.mock('next/navigation', () => ({
+  ...jest.requireActual('next/navigation'),
+  notFound: jest.fn(),
+}));
 const mockGetAuthUser = getAuthUser as jest.Mock;
+const mockNotFound = notFound as jest.Mock;
 const mockGetUserById = getUserById as jest.Mock;
-const mockRedirect = redirect as unknown as jest.Mock;
 
 const MOCK_USER: User = {
   id: 'test-user-id',
@@ -33,7 +33,7 @@ const MOCK_AUTH_USER = {
 
 describe('user', () => {
   afterEach(() => {
-    jest.clearAllMocks();
+    jest.resetAllMocks();
   });
 
   describe('getUserContext', () => {
@@ -70,19 +70,20 @@ describe('user', () => {
   });
 
   describe('verifyUserContext', () => {
-    it('should redirect to /login if no auth user is found', async () => {
+    it('should throw an AuthError if no auth user is found', async () => {
       mockGetAuthUser.mockResolvedValue(null);
-      // We expect a redirect, which is an exception, so we catch it.
-      await expect(verifyUserContext()).rejects.toThrow('NEXT_REDIRECT');
-      expect(mockRedirect).toHaveBeenCalledWith('/login');
+      await expect(verifyUserContext()).rejects.toThrow(
+        'You must be logged in to perform this action'
+      );
       expect(mockGetUserById).not.toHaveBeenCalled();
+      expect(mockNotFound).not.toHaveBeenCalled();
     });
 
-    it('should redirect to /new-user if user is not found in datastore', async () => {
+    it('should call notFound if user is not in datastore', async () => {
       mockGetAuthUser.mockResolvedValue(MOCK_AUTH_USER);
       mockGetUserById.mockRejectedValue(new NotFoundError('User not found'));
-      await expect(verifyUserContext()).rejects.toThrow('NEXT_REDIRECT');
-      expect(mockRedirect).toHaveBeenCalledWith('/new-user');
+      await verifyUserContext();
+      expect(mockNotFound).toHaveBeenCalledTimes(1);
     });
 
     it('should return the user if found', async () => {
@@ -91,7 +92,7 @@ describe('user', () => {
       const { authUser, user } = await verifyUserContext();
       expect(user).toEqual(MOCK_USER);
       expect(authUser).toEqual(MOCK_AUTH_USER);
-      expect(mockRedirect).not.toHaveBeenCalled();
+      expect(mockNotFound).not.toHaveBeenCalled();
     });
 
     it('should re-throw errors other than NotFoundError', async () => {
@@ -99,7 +100,7 @@ describe('user', () => {
       mockGetAuthUser.mockResolvedValue(MOCK_AUTH_USER);
       mockGetUserById.mockRejectedValue(someError);
       await expect(verifyUserContext()).rejects.toThrow('Something went wrong');
-      expect(mockRedirect).not.toHaveBeenCalled();
+      expect(mockNotFound).not.toHaveBeenCalled();
     });
   });
 });
