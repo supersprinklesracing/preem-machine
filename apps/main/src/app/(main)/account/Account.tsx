@@ -62,7 +62,6 @@ export default function Account({ user, editUserAction }: AccountProps) {
             <Stack>
               <UpdateUserProfileCard
                 name={debouncedValues.name}
-                email={debouncedValues.email}
                 avatarUrl={debouncedValues.avatarUrl}
                 uploading={uploading}
                 error={error}

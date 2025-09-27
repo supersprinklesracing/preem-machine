@@ -5,14 +5,13 @@ import {
   Button,
   Card,
   FileButton,
-  Group,
   Overlay,
   Stack,
   Text,
   Title,
   Box,
 } from '@mantine/core';
-import { IconMail, IconUpload } from '@tabler/icons-react';
+import { IconUpload } from '@tabler/icons-react';
 import { useState } from 'react';
 
 interface UserProfileCardProps {

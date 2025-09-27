@@ -77,7 +77,6 @@ export default function NewUser({
             <Stack>
               <UserProfileCard
                 name={debouncedName || authUser.displayName || 'Your full name'}
-                email={authUser.email ?? undefined}
                 avatarUrl={form.values.avatarUrl ?? undefined}
                 uploading={uploading}
                 error={error}
