@@ -62,7 +62,7 @@ const COLLECTION_IDS = [
 
 export const isDocPath = (path: string): path is DocPath => {
   if (!path) {
-    console.debug(`isDocPath: path is empty`);
+    console.debug('isDocPath: path is empty');
     return false;
   }
   const segments = path.split('/');
@@ -74,23 +74,21 @@ export const isDocPath = (path: string): path is DocPath => {
     const isValid = segments.length === 2;
     if (!isValid) {
       console.debug(
-        'isDocPath: invalid users path segment length',
-        segments.length,
+        `isDocPath: (${path}): invalid users path segment length: ${segments.length}`
       );
     }
     return isValid;
-  } else if (segments[0] === 'organizations') {
-    if (segments.length % 2 !== 0) {
-      console.debug(
-        'isDocPath: invalid segment length for organization-prefixed path',
-        segments.length,
-      );
-      return false;
-    }
-  } else {
+  }
+
+  if (segments[0] !== 'organizations') {
     console.debug(
-      'isDocPath: path must start with "organizations" or "users"',
-      segments[0],
+      `isDocPath: (${path}): must start with "organizations" or "users": ${segments[0]}`,
+    );
+    return false;
+  }
+  if (segments.length % 2 !== 0) {
+    console.debug(
+      `isDocPath: (${path}): invalid segment length for organization-prefixed: ${segments.length}`
     );
     return false;
   }
@@ -100,7 +98,7 @@ export const isDocPath = (path: string): path is DocPath => {
     const expectedCollectionId = COLLECTION_IDS[i / 2];
     if (collectionSegment !== expectedCollectionId) {
       console.debug(
-        'isDocPath: collection segment mismatch',
+        `isDocPath: (${path}): collection segment mismatch`,
         `found: ${collectionSegment}`,
         `expected: ${expectedCollectionId}`,
       );
