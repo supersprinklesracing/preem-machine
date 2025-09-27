@@ -41,7 +41,7 @@ describe('Sidebar component', () => {
   it('should render event links', () => {
     (useMediaQuery as jest.Mock).mockReturnValue(false); // Default to not mobile
     render(
-      <AppShellContext.Provider value={{}}>
+      <AppShellContext.Provider value={{ onLinkClick: jest.fn() }}>
         <Sidebar {...mockData} />
       </AppShellContext.Provider>,
     );
@@ -85,7 +85,7 @@ describe('Sidebar component', () => {
     const userWithNoOrgs: User = { ...mockUser, organizationRefs: [] };
     const data = { ...mockData, user: userWithNoOrgs };
     render(
-      <AppShellContext.Provider value={{}}>
+      <AppShellContext.Provider value={{ onLinkClick: jest.fn() }}>
         <Sidebar {...data} />
       </AppShellContext.Provider>,
     );
@@ -95,7 +95,7 @@ describe('Sidebar component', () => {
   it('should not render Hub link when user is null', () => {
     const data = { ...mockData, user: null };
     render(
-      <AppShellContext.Provider value={{}}>
+      <AppShellContext.Provider value={{ onLinkClick: jest.fn() }}>
         <Sidebar {...data} />
       </AppShellContext.Provider>,
     );
