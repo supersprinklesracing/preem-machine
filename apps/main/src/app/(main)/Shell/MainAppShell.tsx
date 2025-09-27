@@ -31,7 +31,6 @@ export default function MainAppShell({
         width: 250,
         breakpoint: 'sm',
         collapsed: { mobile: !isSidebarOpened, desktop: false },
-        hidden: isMobile ? !isSidebarOpened : undefined,
       }}
       padding="md"
     >
@@ -58,7 +57,9 @@ export default function MainAppShell({
           {avatarCluster}
         </Group>
       </AppShell.Header>
-      <AppShell.Navbar p="md">{sidebar}</AppShell.Navbar>
+      <AppShell.Navbar p="md" hidden={isMobile ? !isSidebarOpened : false}>
+        {sidebar}
+      </AppShell.Navbar>
       <AppShell.Main>{children}</AppShell.Main>
     </AppShell>
   );
