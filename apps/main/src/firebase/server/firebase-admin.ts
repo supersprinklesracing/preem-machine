@@ -1,14 +1,13 @@
 'use server-only';
 
+import { ENV_FIREBASE_AUTH_EMULATOR_HOST } from '@/env/env';
 import { isServiceAccount } from '@/secrets/service-account-secret';
 import admin from 'firebase-admin';
+import type { Storage } from 'firebase-admin/storage';
 import { getFirebaseAuth as getFirebaseAuthNext } from 'next-firebase-auth-edge';
-// import { getFirestore as getFirestoreBase } from 'firebase-admin/firestore';
-// import { getApp as getAppBase } from 'firebase-admin/app';
-
 import type { Auth } from 'next-firebase-auth-edge/auth';
+import { clientConfig } from '../client/config';
 import { serverConfigFn } from './config';
-import { ENV_FIREBASE_AUTH_EMULATOR_HOST } from '@/env/env';
 
 const initializeApp = async () => {
   const serverConfig = await serverConfigFn();
@@ -22,6 +21,7 @@ const initializeApp = async () => {
     }
     return admin.initializeApp({
       projectId: serverConfig.serviceAccount.projectId,
+      storageBucket: clientConfig.storageBucket,
     });
   }
 
@@ -30,6 +30,7 @@ const initializeApp = async () => {
   }
 
   return admin.initializeApp({
+    storageBucket: clientConfig.storageBucket,
     credential: admin.credential.cert(serverConfig.serviceAccount),
   });
 };
@@ -46,7 +47,7 @@ export const getFirestore = async () => {
   return (await getFirebaseAdminApp()).firestore();
 };
 
-export const getFirebaseStorage = async () => {
+export const getFirebaseStorage = async (): Promise<Storage> => {
   return (await getFirebaseAdminApp()).storage();
 };
 
