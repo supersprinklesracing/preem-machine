@@ -4,6 +4,12 @@ import { getDoc } from '@/datastore/server/query/query';
 import { Organization, OrganizationSchema } from '@/datastore/schema';
 import { getStripeServer } from '@/stripe/server';
 import { cache } from 'react';
+import Stripe from 'stripe';
+import { updateOrganizationStripeAccount } from '../datastore/server/update/update';
+
+export const processAccountUpdate = async (account: Stripe.Account) => {
+  await updateOrganizationStripeAccount(account);
+};
 
 export const getOrganizationAndRefreshStripeAccount = cache(
   async (

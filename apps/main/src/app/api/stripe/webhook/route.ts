@@ -1,8 +1,7 @@
 import { ENV_STRIPE_ENABLED } from '@/env/env';
-import { getOrganizationByStripeConnectAccountId } from '@/datastore/server/query/query';
-import { updateOrganizationStripeConnectAccountForWebhook } from '@/datastore/server/update/update';
 import { getSecrets } from '@/secrets';
 import { processContribution } from '@/stripe-datastore/contributions';
+import { processAccountUpdate } from '@/stripe-datastore/organizations';
 import { getStripeServer } from '@/stripe/server';
 import { headers } from 'next/headers';
 import { NextResponse } from 'next/server';
@@ -45,35 +44,14 @@ export async function POST(req: Request) {
 
   switch (event.type) {
     case 'account.updated':
-      await handleAccountUpdated(event.data.object as Stripe.Account);
+      await processAccountUpdate(event.data.object as Stripe.Account);
       break;
     case 'payment_intent.succeeded':
-      await handlePaymentIntentSucceeded(
-        event.data.object as Stripe.PaymentIntent,
-      );
+      await processContribution(event.data.object as Stripe.PaymentIntent);
       break;
     default:
       console.log(`Unhandled event type ${event.type}`);
   }
 
   return NextResponse.json({ received: true });
-}
-
-async function handlePaymentIntentSucceeded(
-  paymentIntent: Stripe.PaymentIntent,
-) {
-  await processContribution(paymentIntent);
-}
-
-async function handleAccountUpdated(account: Stripe.Account) {
-  const orgDoc = await getOrganizationByStripeConnectAccountId(account.id);
-
-  if (!orgDoc) {
-    console.error(`No organization found for Stripe account ${account.id}`);
-    return;
-  }
-
-  await updateOrganizationStripeConnectAccountForWebhook(orgDoc.id, account);
-
-  console.log(`Updated organization ${orgDoc.id} with Stripe account data.`);
 }

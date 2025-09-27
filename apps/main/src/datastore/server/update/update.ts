@@ -78,16 +78,29 @@ export const updateOrganizationStripeConnectAccount = async (
   });
 };
 
-export const updateOrganizationStripeConnectAccountForWebhook = async (
-  organizationId: string,
-  account: Stripe.Account,
-) => {
-  const orgRef = await getDocRefInternal(
+
+export const updateOrganizationStripeAccount = async (account: Stripe.Account) => {
+  const orgsRef = await getCollectionRefInternal(
     OrganizationSchema,
-    `organizations/${organizationId}`,
+    'organizations',
   );
-  await orgRef.update({
-    'stripe.connectAccountId': account.id,
+  const querySnap = await orgsRef
+    .where('stripe.connectAccountId', '==', account.id)
+    .limit(1)
+    .get();
+
+  if (querySnap.empty) {
+    // It's possible that we get a webhook for an account that hasn't been fully
+    // associated with an organization yet. So, we'll just log a warning.
+    console.warn(
+      `[stripe-webhook] Received account.updated event for an account not yet in the database: ${account.id}`,
+    );
+    return;
+  }
+
+  const orgDocRef = querySnap.docs[0].ref;
+
+  await orgDocRef.update({
     'stripe.account': account,
     'metadata.lastModified': FieldValue.serverTimestamp(),
   });
