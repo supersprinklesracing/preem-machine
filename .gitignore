@@ -70,3 +70,5 @@ e2e-server.log
 !.gemini/config.yaml
 
 gha-creds-*.json
+
+jules-scratch
