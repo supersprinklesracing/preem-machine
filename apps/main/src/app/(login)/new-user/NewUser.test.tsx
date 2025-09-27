@@ -56,14 +56,4 @@ describe('NewUser component', () => {
       });
     });
   });
-
-  it('should allow editing the avatar URL', () => {
-    const mockNewUserAction = jest.fn(() => Promise.resolve({}));
-    render(<NewUser newUserAction={mockNewUserAction} />, {
-      userContext: { authUser: MOCK_AUTH_USER, user: null },
-    });
-
-    const avatarUrlInput = screen.getByLabelText('Avatar URL');
-    expect(avatarUrlInput).not.toHaveAttribute('readOnly');
-  });
 });

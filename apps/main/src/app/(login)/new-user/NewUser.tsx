@@ -1,9 +1,10 @@
 'use client';
 
 import { userSchema } from '@/app/(main)/account/user-schema';
-import UserProfileCard from '@/components/cards/UpdateUserProfileCard';
+import UpdateUserProfileCard from '@/components/cards/UpdateUserProfileCard';
 import { FormActionResult } from '@/components/forms/forms';
 import { useActionForm } from '@/components/forms/useActionForm';
+import { useAvatarUpload } from '@/components/forms/useAvatarUpload';
 import { useUserContext } from '@/user/client/UserContext';
 import {
   Box,
@@ -19,8 +20,8 @@ import {
   Title,
 } from '@mantine/core';
 import { useDebouncedValue } from '@mantine/hooks';
+import isEqual from 'fast-deep-equal';
 import { redirect, useRouter } from 'next/navigation';
-import { useAvatarUpload } from '@/components/forms/useAvatarUpload';
 import { NewUserOptions } from './new-user-action';
 
 export default function NewUser({
@@ -48,9 +49,7 @@ export default function NewUser({
       raceLicenseId: '',
       address: '',
     },
-    action: (values) => {
-      return newUserAction({ values });
-    },
+    action: (values) => newUserAction({ values }),
     onSuccess: () => {
       if (onSuccess) {
         onSuccess();
@@ -63,7 +62,7 @@ export default function NewUser({
   const { uploading, error, handleFileChange, handleRemovePhoto } =
     useAvatarUpload(form, 'avatarUrl');
 
-  const [debouncedName] = useDebouncedValue(form.values.name, 100);
+  const [debouncedValues] = useDebouncedValue(form.values, 100);
 
   return (
     <Container size="md" pt="xl">
@@ -75,10 +74,10 @@ export default function NewUser({
         <Grid>
           <Grid.Col span={{ base: 12, lg: 4 }}>
             <Stack>
-              <UserProfileCard
-                name={debouncedName || authUser.displayName || 'Your full name'}
-                email={authUser.email ?? undefined}
-                avatarUrl={form.values.avatarUrl ?? undefined}
+              <UpdateUserProfileCard
+                name={debouncedValues.name ?? 'Your full name'}
+                email={debouncedValues.email ?? undefined}
+                avatarUrl={debouncedValues.avatarUrl ?? undefined}
                 uploading={uploading}
                 error={error}
                 onFileChange={handleFileChange}
@@ -93,7 +92,9 @@ export default function NewUser({
                 type="submit"
                 mt="sm"
                 loading={isLoading}
-                disabled={!form.isValid() || form.values.name !== debouncedName}
+                disabled={
+                  !form.isValid() || !isEqual(form.values, debouncedValues)
+                }
               >
                 Save and Continue
               </Button>
@@ -129,17 +130,6 @@ export default function NewUser({
                     )}
                   </Box>
                 </Stack>
-                <TextInput
-                  label="Email"
-                  placeholder="Your email address"
-                  readOnly
-                  {...form.getInputProps('email')}
-                />
-                <TextInput
-                  label="Avatar URL"
-                  placeholder="URL to your avatar image"
-                  {...form.getInputProps('avatarUrl')}
-                />
 
                 <TextInput
                   label="Affiliation"

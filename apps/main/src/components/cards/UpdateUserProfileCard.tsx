@@ -25,7 +25,7 @@ interface UserProfileCardProps {
   onRemovePhoto: () => void;
 }
 
-const UserProfileCard: React.FC<UserProfileCardProps> = ({
+const UpdateUserProfileCard: React.FC<UserProfileCardProps> = ({
   name,
   email,
   avatarUrl,
@@ -102,4 +102,4 @@ const UserProfileCard: React.FC<UserProfileCardProps> = ({
   );
 };
 
-export default UserProfileCard;
+export default UpdateUserProfileCard;
