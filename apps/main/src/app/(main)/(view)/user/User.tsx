@@ -7,6 +7,7 @@ import { useUserContext } from '@/user/client/UserContext';
 import {
   Button,
   Card,
+  Container,
   Grid,
   Group,
   Stack,
@@ -62,9 +63,10 @@ const User: React.FC<Props> = ({ user, contributions }) => {
     ));
 
   return (
-    <Grid gutter="xl">
-      <Grid.Col span={{ base: 12, lg: 4 }}>
-        <Card withBorder padding="lg" radius="md">
+    <Container fluid>
+      <Grid gutter="xl">
+        <Grid.Col span={{ base: 12, lg: 4 }}>
+          <Card withBorder padding="lg" radius="md">
           <Stack align="center" ta="center">
             <UserAvatarIcon user={user} size="xl" />
             <Title order={2}>{user.name}</Title>
@@ -130,6 +132,7 @@ const User: React.FC<Props> = ({ user, contributions }) => {
         </Card>
       </Grid.Col>
     </Grid>
+  </Container>
   );
 };
 

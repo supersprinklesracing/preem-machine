@@ -8,6 +8,7 @@ import { Event as EventType } from '@/datastore/schema';
 import {
   Anchor,
   Button,
+  Container,
   Group,
   SimpleGrid,
   Stack,
@@ -37,66 +38,68 @@ export default function Event({ event, children }: Props) {
   const organization = series.organizationBrief;
 
   return (
-    <Stack>
-      <Title>{event.name}</Title>
-      <Text>
-        Part of{' '}
-        <Anchor component={Link} href={`/${toUrlPath(seriesPath(event.path))}`}>
-          {series.name}
-        </Anchor>{' '}
-        hosted by{' '}
-        <Anchor
-          component={Link}
-          href={`/${toUrlPath(organizationPath(event.path))}`}
-        >
-          {organization.name}
-        </Anchor>
-      </Text>
-      <Group data-testid="event-details">
-        <Group>
-          <DateLocationDetail {...event} />
-        </Group>
-        {event.description && <Text>{event.description}</Text>}
-        {event.website && (
-          <Group gap="xs">
-            <IconWorldWww size={16} />
-            <Anchor href={event.website} target="_blank" size="sm">
-              Official Website
-            </Anchor>
-          </Group>
-        )}
-      </Group>
+    <Container fluid>
       <Stack>
-        <Group justify="space-between">
-          <Stack gap={0}>
-            <Title order={2}>Race Schedule</Title>
-          </Stack>
-        </Group>
-        <SimpleGrid cols={{ base: 1, lg: 2 }}>
-          {children?.map(
-            ({ race, children }) =>
-              race && (
-                <RaceCard
-                  key={race.path}
-                  race={race}
-                  preems={children}
-                  showEventLink={false}
-                >
-                  <Button
-                    component={Link}
-                    href={`/${toUrlPath(race.path)}`}
-                    variant="light"
-                    size="sm"
-                    mt="md"
-                    rightSection={<IconChevronRight size={14} />}
-                  >
-                    View
-                  </Button>
-                </RaceCard>
-              ),
+        <Title>{event.name}</Title>
+        <Text>
+          Part of{' '}
+          <Anchor component={Link} href={`/${toUrlPath(seriesPath(event.path))}`}>
+            {series.name}
+          </Anchor>{' '}
+          hosted by{' '}
+          <Anchor
+            component={Link}
+            href={`/${toUrlPath(organizationPath(event.path))}`}
+          >
+            {organization.name}
+          </Anchor>
+        </Text>
+        <Group data-testid="event-details">
+          <Group>
+            <DateLocationDetail {...event} />
+          </Group>
+          {event.description && <Text>{event.description}</Text>}
+          {event.website && (
+            <Group gap="xs">
+              <IconWorldWww size={16} />
+              <Anchor href={event.website} target="_blank" size="sm">
+                Official Website
+              </Anchor>
+            </Group>
           )}
-        </SimpleGrid>
+        </Group>
+        <Stack>
+          <Group justify="space-between">
+            <Stack gap={0}>
+              <Title order={2}>Race Schedule</Title>
+            </Stack>
+          </Group>
+          <SimpleGrid cols={{ base: 1, lg: 2 }}>
+            {children?.map(
+              ({ race, children }) =>
+                race && (
+                  <RaceCard
+                    key={race.path}
+                    race={race}
+                    preems={children}
+                    showEventLink={false}
+                  >
+                    <Button
+                      component={Link}
+                      href={`/${toUrlPath(race.path)}`}
+                      variant="light"
+                      size="sm"
+                      mt="md"
+                      rightSection={<IconChevronRight size={14} />}
+                    >
+                      View
+                    </Button>
+                  </RaceCard>
+                ),
+            )}
+          </SimpleGrid>
+        </Stack>
       </Stack>
-    </Stack>
+    </Container>
   );
 }

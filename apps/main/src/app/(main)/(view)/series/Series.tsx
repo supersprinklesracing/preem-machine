@@ -8,6 +8,7 @@ import { Series as SeriesType } from '@/datastore/schema';
 import {
   Anchor,
   Button,
+  Container,
   Group,
   SimpleGrid,
   Stack,
@@ -36,9 +37,10 @@ interface Props {
 export default function Series({ series, children: eventsWithRaces }: Props) {
   const organization = series.organizationBrief;
   return (
-    <Stack>
-      <Title>{series.name}</Title>
-      <Text>
+    <Container fluid>
+      <Stack>
+        <Title>{series.name}</Title>
+        <Text>
         Hosted by{' '}
         <Anchor
           component={Link}
@@ -87,5 +89,6 @@ export default function Series({ series, children: eventsWithRaces }: Props) {
         </SimpleGrid>
       </Stack>
     </Stack>
+  </Container>
   );
 }
