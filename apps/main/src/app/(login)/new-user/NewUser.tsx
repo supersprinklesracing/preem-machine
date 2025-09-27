@@ -77,7 +77,6 @@ export default function NewUser({
             <Stack>
               <UserProfileCard
                 name={debouncedName || authUser.displayName || 'Your full name'}
-                email={authUser.email ?? undefined}
                 avatarUrl={form.values.avatarUrl ?? undefined}
                 uploading={uploading}
                 error={error}
@@ -129,18 +128,6 @@ export default function NewUser({
                     )}
                   </Box>
                 </Stack>
-                <TextInput
-                  label="Email"
-                  placeholder="Your email address"
-                  readOnly
-                  {...form.getInputProps('email')}
-                />
-                <TextInput
-                  label="Avatar URL"
-                  placeholder="URL to your avatar image"
-                  {...form.getInputProps('avatarUrl')}
-                />
-
                 <TextInput
                   label="Affiliation"
                   placeholder="Your club or team"

@@ -19,7 +19,8 @@ const TestComponent = () => {
   });
   return (
     <UpdateUserProfileCard
-      {...form.values}
+      name={form.values.name}
+      avatarUrl={form.values.avatarUrl}
       uploading={false}
       error={null}
       onFileChange={jest.fn()}
@@ -33,7 +34,6 @@ describe('UpdateUserProfileCard', () => {
     render(<TestComponent />);
 
     expect(screen.getByText('Test User')).toBeInTheDocument();
-    expect(screen.getByText('test@example.com')).toBeInTheDocument();
     expect(screen.getByRole('img', { name: 'Test User' })).toHaveAttribute(
       'src',
       'https://example.com/avatar.png',
