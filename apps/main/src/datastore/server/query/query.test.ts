@@ -9,7 +9,8 @@ import {
   Preem,
   Contribution,
 } from '@/datastore/schema';
-import { getRenderableHomeDataForPage } from './query';
+import { getRenderableHomeDataForPage, getOrganizationFromPath } from './query';
+import { notFound } from '@/datastore/errors';
 
 describe('query', () => {
   let db: Firestore;
@@ -151,6 +152,15 @@ describe('query', () => {
       expect(c2).toBeDefined();
       expect(c1?.preemBrief?.name).toBe('Preem Alpha');
       expect(c2?.preemBrief?.name).toBe('Preem Beta');
+    });
+  });
+
+  describe('getOrganizationFromPath', () => {
+    it('should throw a notFound error for a deeply nested path', async () => {
+      const invalidPath = 'organizations/org-id/series/series-id';
+      await expect(getOrganizationFromPath(invalidPath)).rejects.toThrow(
+        `Invalid path for getting organization: ${invalidPath}`,
+      );
     });
   });
 });
