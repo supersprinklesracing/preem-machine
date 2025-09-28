@@ -5,7 +5,7 @@ import { Notifications } from '@mantine/notifications';
 import Image from 'next/image';
 import Link from 'next/link';
 import React from 'react';
-import { useAppShell } from './AppShellContext';
+import { useMainAppShell } from './MainAppShellContext';
 
 export default function MainAppShell({
   children,
@@ -16,7 +16,7 @@ export default function MainAppShell({
   avatarCluster?: React.ReactElement;
   sidebar?: React.ReactElement;
 }) {
-  const { isSidebarOpened, toggleSidebar } = useAppShell();
+  const { isSidebarOpened, toggleSidebar } = useMainAppShell();
 
   return (
     <AppShell

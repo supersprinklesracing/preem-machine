@@ -2,7 +2,7 @@
 
 import { getEventsForUser } from '@/datastore/server/query/query';
 import { validUserContext } from '@/user/server/user';
-import AppShellProvider from './Shell/AppShellProvider';
+import MainAppShellProvider from './Shell/MainAppShellProvider';
 import AvatarCluster from './Shell/AvatarCluster';
 import MainAppShell from './Shell/MainAppShell';
 import Sidebar from './Shell/Sidebar';
@@ -16,13 +16,13 @@ export default async function Layout({ children }: MainProps) {
   const events = user ? await getEventsForUser(user.id) : [];
 
   return (
-    <AppShellProvider>
+    <MainAppShellProvider>
       <MainAppShell
         avatarCluster={<AvatarCluster />}
         sidebar={<Sidebar {...{ events, user }} />}
       >
         {children}
       </MainAppShell>
-    </AppShellProvider>
+    </MainAppShellProvider>
   );
 }

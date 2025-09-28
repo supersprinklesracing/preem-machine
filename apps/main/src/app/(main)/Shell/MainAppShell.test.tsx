@@ -1,11 +1,11 @@
 import { render, screen } from '@/test-utils';
 import MainAppShell from './MainAppShell';
-import { AppShellContext } from './AppShellContext';
+import { MainAppShellContext } from './MainAppShellContext';
 
 describe('MainAppShell', () => {
   it('renders the children', () => {
     render(
-      <AppShellContext.Provider
+      <MainAppShellContext
         value={{
           isSidebarOpened: false,
           toggleSidebar: jest.fn(),
@@ -16,14 +16,14 @@ describe('MainAppShell', () => {
         <MainAppShell>
           <div>Page content</div>
         </MainAppShell>
-      </AppShellContext.Provider>,
+      </MainAppShellContext>,
     );
     expect(screen.getByText('Page content')).toBeInTheDocument();
   });
 
   it('renders the sidebar and avatar cluster', () => {
     render(
-      <AppShellContext.Provider
+      <MainAppShellContext
         value={{
           isSidebarOpened: false,
           toggleSidebar: jest.fn(),
@@ -37,7 +37,7 @@ describe('MainAppShell', () => {
         >
           <div>Page content</div>
         </MainAppShell>
-      </AppShellContext.Provider>,
+      </MainAppShellContext>,
     );
     expect(screen.getByText('Sidebar content')).toBeInTheDocument();
     expect(screen.getByText('Avatar cluster')).toBeInTheDocument();
@@ -45,7 +45,7 @@ describe('MainAppShell', () => {
 
   it('the burger button is not expanded by default', () => {
     render(
-      <AppShellContext.Provider
+      <MainAppShellContext
         value={{
           isSidebarOpened: false,
           toggleSidebar: jest.fn(),
@@ -56,7 +56,7 @@ describe('MainAppShell', () => {
         <MainAppShell>
           <div>Page content</div>
         </MainAppShell>
-      </AppShellContext.Provider>,
+      </MainAppShellContext>,
     );
     const burgerButton = screen.getByTestId('sidebar-burger');
     expect(burgerButton).toHaveAttribute('aria-expanded', 'false');
@@ -64,7 +64,7 @@ describe('MainAppShell', () => {
 
   it('the burger button is expanded when isSidebarOpened is true', () => {
     render(
-      <AppShellContext.Provider
+      <MainAppShellContext
         value={{
           isSidebarOpened: true,
           toggleSidebar: jest.fn(),
@@ -75,7 +75,7 @@ describe('MainAppShell', () => {
         <MainAppShell>
           <div>Page content</div>
         </MainAppShell>
-      </AppShellContext.Provider>,
+      </MainAppShellContext>,
     );
     const burgerButton = screen.getByTestId('sidebar-burger');
     expect(burgerButton).toHaveAttribute('aria-expanded', 'true');

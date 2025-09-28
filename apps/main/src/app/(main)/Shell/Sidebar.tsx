@@ -20,7 +20,7 @@ import {
 import Link from 'next/link';
 import { usePathname } from 'next/navigation';
 import React from 'react';
-import { useAppShell } from './AppShellContext';
+import { useMainAppShell } from './MainAppShellContext';
 
 export interface SidebarProps {
   events: Event[];
@@ -29,7 +29,7 @@ export interface SidebarProps {
 
 const Sidebar: React.FC<SidebarProps> = ({ events, user }) => {
   const pathname = usePathname();
-  const { onLinkClick, isMobile } = useAppShell();
+  const { onLinkClick, isMobile } = useMainAppShell();
 
   const handleLinkClick = () => {
     if (isMobile && onLinkClick) {

@@ -2,14 +2,14 @@
 
 import { createContext, use } from 'react';
 
-interface AppShellContextValue {
+interface MainAppShellContextValue {
   onLinkClick?: () => void;
   isMobile: boolean;
   isSidebarOpened: boolean;
   toggleSidebar: () => void;
 }
 
-export const AppShellContext = createContext<AppShellContextValue>({
+export const MainAppShellContext = createContext<MainAppShellContextValue>({
   isMobile: false,
   // eslint-disable-next-line @typescript-eslint/no-empty-function
   onLinkClick: () => {},
@@ -18,6 +18,6 @@ export const AppShellContext = createContext<AppShellContextValue>({
   toggleSidebar: () => {},
 });
 
-export const useAppShell = () => {
-  return use(AppShellContext);
+export const useMainAppShell = () => {
+  return use(MainAppShellContext);
 };

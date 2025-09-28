@@ -3,9 +3,9 @@
 import { useDisclosure, useMediaQuery } from '@mantine/hooks';
 import { useMantineTheme } from '@mantine/core';
 import React, { useCallback, useMemo } from 'react';
-import { AppShellContext } from './AppShellContext';
+import { MainAppShellContext } from './MainAppShellContext';
 
-export default function AppShellProvider({
+export default function MainAppShellProvider({
   children,
 }: {
   children: React.ReactNode;
@@ -33,8 +33,8 @@ export default function AppShellProvider({
   );
 
   return (
-    <AppShellContext value={contextValue}>
+    <MainAppShellContext value={contextValue}>
       {children}
-    </AppShellContext>
+    </MainAppShellContext>
   );
 }

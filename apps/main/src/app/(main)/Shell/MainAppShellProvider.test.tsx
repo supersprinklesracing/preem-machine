@@ -2,21 +2,20 @@
 
 import { render, screen, fireEvent } from '@/test-utils';
 import React from 'react';
-import AppShellProvider from './AppShellProvider';
-import { useAppShell } from './AppShellContext';
-import MainAppShell from './MainAppShell';
+import MainAppShellProvider from './MainAppShellProvider';
+import { useMainAppShell } from './MainAppShellContext';
 
 // A consumer component to test the context values
 const TestConsumer = () => {
-  const { isMobile, isSidebarOpened, toggleSidebar, onLinkClick } = useAppShell();
+  const { isMobile, isSidebarOpened, toggleSidebar, onLinkClick } = useMainAppShell();
   return (
     <div>
       <div data-testid="isMobile">{isMobile.toString()}</div>
       <div data-testid="isSidebarOpened">{isSidebarOpened.toString()}</div>
-      <button onClick={toggleSidebar} data-testid="toggleSidebar">
+      <button type="button" onClick={toggleSidebar} data-testid="toggleSidebar">
         Toggle Sidebar
       </button>
-      <button onClick={onLinkClick} data-testid="onLinkClick">
+      <button type="button" onClick={onLinkClick} data-testid="onLinkClick">
         Link Click
       </button>
     </div>
@@ -28,12 +27,12 @@ jest.mock('./MainAppShell', () => {
   return jest.fn(({ children }) => <div data-testid="main-app-shell">{children}</div>);
 });
 
-describe('AppShellProvider', () => {
+describe('MainAppShellProvider', () => {
   it('provides the correct initial context values', () => {
     render(
-      <AppShellProvider>
+      <MainAppShellProvider>
         <TestConsumer />
-      </AppShellProvider>,
+      </MainAppShellProvider>,
     );
 
     expect(screen.getByTestId('isMobile')).toHaveTextContent('false');
@@ -42,9 +41,9 @@ describe('AppShellProvider', () => {
 
   it('toggles the sidebar state when toggleSidebar is called', () => {
     render(
-      <AppShellProvider>
+      <MainAppShellProvider>
         <TestConsumer />
-      </AppShellProvider>,
+      </MainAppShellProvider>,
     );
 
     const toggleButton = screen.getByTestId('toggleSidebar');
