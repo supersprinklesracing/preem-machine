@@ -9,7 +9,6 @@ import {
   NavLink,
   ScrollArea,
   Stack,
-  useMantineTheme,
 } from '@mantine/core';
 import {
   IconBike,
@@ -18,11 +17,10 @@ import {
   IconDeviceTv,
   IconHome,
 } from '@tabler/icons-react';
+import Link from 'next/link';
 import { usePathname } from 'next/navigation';
 import React from 'react';
-import { useMediaQuery } from '@mantine/hooks';
-import Link from 'next/link';
-import { useAppShell } from './AppShellContext';
+import { useMainAppShell } from './MainAppShellContext';
 
 export interface SidebarProps {
   events: Event[];
@@ -31,9 +29,7 @@ export interface SidebarProps {
 
 const Sidebar: React.FC<SidebarProps> = ({ events, user }) => {
   const pathname = usePathname();
-  const theme = useMantineTheme();
-  const isMobile = useMediaQuery(`(max-width: ${theme.breakpoints.sm})`);
-  const { onLinkClick } = useAppShell();
+  const { onLinkClick, isMobile } = useMainAppShell();
 
   const handleLinkClick = () => {
     if (isMobile && onLinkClick) {
