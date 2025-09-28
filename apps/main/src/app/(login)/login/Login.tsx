@@ -68,6 +68,7 @@ export function Login({
 
       if (shouldLoginWithAction) {
         startTransition(() => loginAction(email, password));
+        setHasLogged(true);
       } else {
         await handleLogin(
           await signInWithEmailAndPassword(auth, email, password),
