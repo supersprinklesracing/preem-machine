@@ -17,17 +17,6 @@ jest.mock('@/firebase/client/firebase-client', () => ({
 }));
 
 describe('Login component', () => {
-  beforeEach(() => {
-    // Mock useTransition to avoid issues in test environment
-    const mockStartTransition = jest.fn((callback) => callback());
-    jest
-      .spyOn(React, 'useTransition')
-      .mockImplementation(() => [false, mockStartTransition]);
-  });
-
-  afterEach(() => {
-    jest.restoreAllMocks();
-  });
 
   it('should render without crashing', () => {
     const loginAction = jest.fn();
@@ -55,7 +44,9 @@ describe('Login component', () => {
     await user.click(submitButton);
 
     // Check for redirect message and that the action was called
-    expect(await screen.findByText('Redirecting to')).toBeInTheDocument();
+    expect(
+      await screen.findByTestId('redirect-message'),
+    ).toBeInTheDocument();
     expect(loginAction).toHaveBeenCalledWith('test@example.com', 'password123');
     expect(submitButton).toBeDisabled();
   });

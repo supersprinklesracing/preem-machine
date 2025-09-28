@@ -173,7 +173,7 @@ export function Login({
       <Container size="xs" pt="xl">
         <Stack>
           <Title order={1}>Login</Title>
-          <Group>
+          <Group data-testid="redirect-message">
             <Text>
               Redirecting to <strong>{redirect || '/'}</strong>
             </Text>

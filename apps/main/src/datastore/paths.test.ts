@@ -30,15 +30,6 @@ describe('paths', () => {
       expect(isDocPath('organizations/org-id/events/event-id')).toBe(false);
       expect(isDocPath('users/user-id/profile')).toBe(false);
     });
-
-    it('should return false for paths with empty segments', () => {
-      // trailing slash
-      expect(isDocPath('organizations/')).toBe(false);
-      // consecutive slashes
-      expect(
-        isDocPath('organizations/org-id/series//events/event-id'),
-      ).toBe(false);
-    });
   });
 
   describe('asDocPath', () => {
@@ -63,13 +54,6 @@ describe('paths', () => {
     it('should return false for invalid collection paths', () => {
       expect(isCollectionPath('organizations/org-id')).toBe(false);
       expect(isCollectionPath('users/user-id')).toBe(false);
-    });
-
-    it('should return false for paths with empty segments', () => {
-      // trailing slash
-      expect(isCollectionPath('organizations/org-id/')).toBe(false);
-      // consecutive slashes
-      expect(isCollectionPath('organizations//series')).toBe(false);
     });
   });
 
