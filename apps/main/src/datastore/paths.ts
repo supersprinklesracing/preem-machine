@@ -66,7 +66,7 @@ export const isDocPath = (path: string): path is DocPath => {
     return false;
   }
   const segments = path.split('/');
-  if (segments.length === 0 || segments.some((s) => !s)) {
+  if (segments.length === 0) {
     return false;
   }
 
@@ -135,7 +135,7 @@ export const isCollectionPath = (path: string): path is CollectionPath => {
     return false;
   }
   const segments = path.split('/');
-  if (segments.length === 0 || segments.some((s) => !s)) {
+  if (segments.length === 0) {
     return false;
   }
 
