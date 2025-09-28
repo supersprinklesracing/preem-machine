@@ -68,7 +68,6 @@ export function Login({
 
       if (shouldLoginWithAction) {
         startTransition(() => loginAction(email, password));
-        setHasLogged(true);
       } else {
         await handleLogin(
           await signInWithEmailAndPassword(auth, email, password),
@@ -168,7 +167,7 @@ export function Login({
     emailLinkError ||
     googleUsingRedirectError;
 
-  if (hasLogged) {
+  if (hasLogged || isLoginActionPending) {
     return (
       <Container size="xs" pt="xl">
         <Stack>
