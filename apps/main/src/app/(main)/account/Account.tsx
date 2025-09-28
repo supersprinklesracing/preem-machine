@@ -21,6 +21,7 @@ import {
 import { useDebouncedValue } from '@mantine/hooks';
 import { useRouter } from 'next/navigation';
 import { EditUserOptions } from './edit-user-action';
+import isEqual from 'fast-deep-equal';
 import { useAvatarUpload } from '@/components/forms/useAvatarUpload';
 import { userSchema } from './user-schema';
 
@@ -69,7 +70,13 @@ export default function Account({ user, editUserAction }: AccountProps) {
                 onFileChange={handleFileChange}
                 onRemovePhoto={handleRemovePhoto}
               />
-              <Button type="submit" loading={isLoading}>
+              <Button
+                type="submit"
+                loading={isLoading}
+                disabled={
+                  !form.isDirty() || !isEqual(form.values, debouncedValues)
+                }
+              >
                 Save Changes
               </Button>
               {submissionError && <Text c="red">{submissionError}</Text>}
