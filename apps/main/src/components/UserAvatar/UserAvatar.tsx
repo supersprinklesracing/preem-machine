@@ -90,7 +90,7 @@ export function LoggedOutAvatarIcon({
       href={`/login?redirect=${pathname}`}
       style={{ textDecoration: 'none', color: 'inherit' }}
     >
-      <Avatar radius="50%" size={size} />
+      <BaseUserAvatar size={size} />
     </Link>
   );
 }
