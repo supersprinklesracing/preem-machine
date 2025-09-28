@@ -2,24 +2,19 @@
 
 import { useDisclosure, useMediaQuery } from '@mantine/hooks';
 import { useMantineTheme } from '@mantine/core';
-import type { ComponentProps } from 'react';
 import React, { useCallback, useMemo } from 'react';
-import MainAppShell from './MainAppShell';
-import Sidebar from './Sidebar';
 import { AppShellContext } from './AppShellContext';
 
 export default function AppShellProvider({
   children,
-  avatarCluster,
-  sidebar,
 }: {
   children: React.ReactNode;
-  avatarCluster?: React.ReactElement;
-  sidebar?: React.ReactElement<ComponentProps<typeof Sidebar>>;
 }) {
   const [isSidebarOpened, { toggle: toggleSidebar }] = useDisclosure();
   const theme = useMantineTheme();
-  const isMobile = useMediaQuery(`(max-width: ${theme.breakpoints.sm})`);
+  const isMobile = useMediaQuery(`(max-width: ${theme.breakpoints.sm})`, false, {
+    getInitialValueInEffect: false,
+  });
 
   const handleLinkClick = useCallback(() => {
     if (isMobile) {
@@ -28,20 +23,18 @@ export default function AppShellProvider({
   }, [isMobile, toggleSidebar]);
 
   const contextValue = useMemo(
-    () => ({ onLinkClick: handleLinkClick }),
-    [handleLinkClick],
+    () => ({
+      onLinkClick: handleLinkClick,
+      isMobile,
+      isSidebarOpened,
+      toggleSidebar,
+    }),
+    [handleLinkClick, isMobile, isSidebarOpened, toggleSidebar],
   );
 
   return (
     <AppShellContext value={contextValue}>
-      <MainAppShell
-        isSidebarOpened={isSidebarOpened}
-        toggleSidebar={toggleSidebar}
-        avatarCluster={avatarCluster}
-        sidebar={sidebar}
-      >
-        {children}
-      </MainAppShell>
+      {children}
     </AppShellContext>
   );
 }

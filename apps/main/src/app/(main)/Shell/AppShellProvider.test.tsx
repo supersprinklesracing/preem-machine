@@ -1,82 +1,63 @@
-import { MantineProvider } from '@mantine/core';
-import { fireEvent, render, screen } from '@testing-library/react';
-import { theme } from '../../theme';
+'use client';
+
+import { render, screen, fireEvent } from '@/test-utils';
+import React from 'react';
 import AppShellProvider from './AppShellProvider';
-import Sidebar from './Sidebar';
+import { useAppShell } from './AppShellContext';
+import MainAppShell from './MainAppShell';
 
-// Mock the useMediaQuery hook
-jest.mock('@mantine/hooks', () => ({
-  ...jest.requireActual('@mantine/hooks'),
-  useMediaQuery: jest.fn(),
-}));
+// A consumer component to test the context values
+const TestConsumer = () => {
+  const { isMobile, isSidebarOpened, toggleSidebar, onLinkClick } = useAppShell();
+  return (
+    <div>
+      <div data-testid="isMobile">{isMobile.toString()}</div>
+      <div data-testid="isSidebarOpened">{isSidebarOpened.toString()}</div>
+      <button onClick={toggleSidebar} data-testid="toggleSidebar">
+        Toggle Sidebar
+      </button>
+      <button onClick={onLinkClick} data-testid="onLinkClick">
+        Link Click
+      </button>
+    </div>
+  );
+};
 
-// Mock the next/navigation module
-jest.mock('next/navigation', () => ({
-  usePathname: jest.fn(),
-}));
+// Mock MainAppShell to isolate the provider's functionality
+jest.mock('./MainAppShell', () => {
+  return jest.fn(({ children }) => <div data-testid="main-app-shell">{children}</div>);
+});
 
 describe('AppShellProvider', () => {
-  it('opens and closes the sidebar when the burger is clicked', () => {
-    const { useMediaQuery } = require('@mantine/hooks');
-    const { usePathname } = require('next/navigation');
-    // Set the media query to match mobile view
-    useMediaQuery.mockReturnValue(true);
-    // Set the pathname to a default value
-    usePathname.mockReturnValue('/');
-
+  it('provides the correct initial context values', () => {
     render(
-      <MantineProvider theme={theme}>
-        <AppShellProvider sidebar={<Sidebar {...{ events: [], user: null }} />}>
-          <div>Page content</div>
-        </AppShellProvider>
-      </MantineProvider>,
+      <AppShellProvider>
+        <TestConsumer />
+      </AppShellProvider>,
     );
 
-    // Find the burger button
-    const burgerButton = screen.getByTestId('sidebar-burger');
-
-    // Initially, the sidebar should be closed
-    expect(burgerButton).toHaveAttribute('aria-expanded', 'false');
-
-    // Click the burger button to open the sidebar
-    fireEvent.click(burgerButton);
-    expect(burgerButton).toHaveAttribute('aria-expanded', 'true');
-
-    // Click the burger button again to close the sidebar
-    fireEvent.click(burgerButton);
-    expect(burgerButton).toHaveAttribute('aria-expanded', 'false');
+    expect(screen.getByTestId('isMobile')).toHaveTextContent('false');
+    expect(screen.getByTestId('isSidebarOpened')).toHaveTextContent('false');
   });
 
-  it('reliably toggles the sidebar on multiple clicks', () => {
-    const { useMediaQuery } = require('@mantine/hooks');
-    const { usePathname } = require('next/navigation');
-    useMediaQuery.mockReturnValue(true); // Mock mobile view
-    usePathname.mockReturnValue('/');
-
+  it('toggles the sidebar state when toggleSidebar is called', () => {
     render(
-      <MantineProvider theme={theme}>
-        <AppShellProvider sidebar={<Sidebar {...{ events: [], user: null }} />}>
-          <div>Page content</div>
-        </AppShellProvider>
-      </MantineProvider>,
+      <AppShellProvider>
+        <TestConsumer />
+      </AppShellProvider>,
     );
 
-    const burgerButton = screen.getByTestId('sidebar-burger');
+    const toggleButton = screen.getByTestId('toggleSidebar');
 
-    // Check initial state
-    expect(burgerButton).toHaveAttribute('aria-expanded', 'false');
+    // Sidebar is initially closed
+    expect(screen.getByTestId('isSidebarOpened')).toHaveTextContent('false');
 
-    // Perform a series of clicks and check the state after each one
-    fireEvent.click(burgerButton);
-    expect(burgerButton).toHaveAttribute('aria-expanded', 'true');
+    // Click to open
+    fireEvent.click(toggleButton);
+    expect(screen.getByTestId('isSidebarOpened')).toHaveTextContent('true');
 
-    fireEvent.click(burgerButton);
-    expect(burgerButton).toHaveAttribute('aria-expanded', 'false');
-
-    fireEvent.click(burgerButton);
-    expect(burgerButton).toHaveAttribute('aria-expanded', 'true');
-
-    fireEvent.click(burgerButton);
-    expect(burgerButton).toHaveAttribute('aria-expanded', 'false');
+    // Click to close
+    fireEvent.click(toggleButton);
+    expect(screen.getByTestId('isSidebarOpened')).toHaveTextContent('false');
   });
 });

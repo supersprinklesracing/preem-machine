@@ -4,23 +4,20 @@ import { AppShell, Burger, Group, Title } from '@mantine/core';
 import { Notifications } from '@mantine/notifications';
 import Image from 'next/image';
 import Link from 'next/link';
-import type { ComponentProps } from 'react';
 import React from 'react';
-import Sidebar from './Sidebar';
+import { useAppShell } from './AppShellContext';
 
 export default function MainAppShell({
   children,
   avatarCluster,
   sidebar,
-  isSidebarOpened,
-  toggleSidebar,
 }: {
   children: React.ReactNode;
   avatarCluster?: React.ReactElement;
-  sidebar?: React.ReactElement<ComponentProps<typeof Sidebar>>;
-  isSidebarOpened: boolean;
-  toggleSidebar: () => void;
+  sidebar?: React.ReactElement;
 }) {
+  const { isSidebarOpened, toggleSidebar } = useAppShell();
+
   return (
     <AppShell
       header={{ height: 60 }}
