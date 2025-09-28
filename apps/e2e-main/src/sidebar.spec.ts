@@ -1,13 +1,13 @@
 import { test, expect } from '@playwright/test';
 
 test.describe('Sidebar Toggle', () => {
-  // This test is only relevant for mobile viewports.
-  // eslint-disable-next-line playwright/no-skipped-test
-  test.skip(() => test.info().project.name !== 'chrome-pixel-5', 'Only run on mobile');
-
   test('should open the sidebar on mobile when the burger menu is clicked', async ({
     page,
+    isMobile,
   }) => {
+    // This test is only relevant for mobile viewports.
+    test.skip(!isMobile, 'Only run on mobile');
+
     // 1. Arrange: Navigate to the home page.
     await page.goto('/');
 
