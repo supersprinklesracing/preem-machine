@@ -46,8 +46,8 @@ export function useActionForm<
   const getDirtyValues = (
     values: AnyObject,
     path: string[] = [],
-  ): Partial<z.infer<T>> => {
-    const dirtyValues: Partial<z.infer<T>> = {};
+  ): AnyObject => {
+    const dirtyValues: AnyObject = {};
     for (const key in values) {
       const currentPath = [...path, key];
       const fieldIsDirty = form.isDirty(currentPath.join('.'));
@@ -79,7 +79,7 @@ export function useActionForm<
         : parsedValues;
 
       if (Object.keys(valuesToSubmit).length > 0) {
-        const result = await action(valuesToSubmit);
+        const result = await action(valuesToSubmit as Partial<z.infer<T>>);
         if (onSuccess) {
           onSuccess(result);
         }
