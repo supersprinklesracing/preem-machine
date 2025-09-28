@@ -15,6 +15,7 @@ import {
 } from '@mantine/core';
 import { IconCalendar, IconMapPin } from '@tabler/icons-react';
 import Link from 'next/link';
+import ClientOnly from '../../../components/ClientOnly/ClientOnly';
 import LiveContributionFeed from '../../../components/LiveContributionFeed/LiveContributionFeed';
 
 interface Props {
@@ -50,9 +51,11 @@ export default function Home({ eventsWithRaces, contributions }: Props) {
                         <Group>
                           <Group gap="xs">
                             <IconCalendar size={16} />
-                            <Text size="sm" c="dimmed">
-                              {formatDateLong(event?.startDate)}
-                            </Text>
+                            <ClientOnly>
+                              <Text size="sm" c="dimmed">
+                                {formatDateLong(event?.startDate)}
+                              </Text>
+                            </ClientOnly>
                           </Group>
                           <Group gap="xs">
                             <IconMapPin size={16} />
@@ -71,8 +74,10 @@ export default function Home({ eventsWithRaces, contributions }: Props) {
                           style={{ textDecoration: 'none', color: 'inherit' }}
                         >
                           <Text size="sm">
-                            {formatTime(race.startDate)} - {race.name} (
-                            {race.category})
+                            <ClientOnly>
+                              {formatTime(race.startDate)} - {race.name} (
+                              {race.category})
+                            </ClientOnly>
                           </Text>
                         </Link>
                       ))}
