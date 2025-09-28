@@ -33,8 +33,8 @@ export default function MainAppShellProvider({
   );
 
   return (
-    <MainAppShellContext.Provider value={contextValue}>
+    <MainAppShellContext value={contextValue}>
       {children}
-    </MainAppShellContext.Provider>
+    </MainAppShellContext>
   );
 }
