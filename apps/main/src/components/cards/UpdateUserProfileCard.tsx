@@ -1,7 +1,6 @@
 'use client';
 
 import {
-  Avatar,
   Button,
   Card,
   FileButton,
@@ -14,6 +13,7 @@ import {
 } from '@mantine/core';
 import { IconMail, IconUpload } from '@tabler/icons-react';
 import { useState } from 'react';
+import { BaseUserAvatar } from '../UserAvatar/UserAvatar';
 
 interface UserProfileCardProps {
   name?: string;
@@ -52,12 +52,7 @@ const UserProfileCard: React.FC<UserProfileCardProps> = ({
                 borderRadius: '50%',
               }}
             >
-              <Avatar
-                src={avatarUrl}
-                alt={name ?? ''}
-                size={120}
-                radius="50%"
-              />
+              <BaseUserAvatar name={name} avatarUrl={avatarUrl} size={120} />
               {(hovered || uploading) && (
                 <Overlay
                   color="#000"
