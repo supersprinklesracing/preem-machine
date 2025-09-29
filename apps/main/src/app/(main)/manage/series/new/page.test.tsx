@@ -1,4 +1,5 @@
 import { render, screen, setupMockDb } from '@/test-utils';
+
 import NewSeriesPage from './page';
 
 jest.mock('./NewSeries', () => ({

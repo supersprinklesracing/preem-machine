@@ -1,5 +1,6 @@
 import { render, screen } from '@/test-utils';
-import MainAppShell from './MainAppShell';
+
+import { MainAppShell } from './MainAppShell';
 import { MainAppShellContext } from './MainAppShellContext';
 
 describe('MainAppShell', () => {

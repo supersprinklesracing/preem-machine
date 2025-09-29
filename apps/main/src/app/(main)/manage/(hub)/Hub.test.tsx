@@ -1,26 +1,28 @@
 import { fireEvent, render, screen } from '@/test-utils';
-import type { HubPageData } from './Hub';
-import Hub from './Hub';
+
+import { Hub } from './Hub';
 
 // Mock child components
 jest.mock('@/components/cards/SeriesCard', () => ({
   __esModule: true,
-  default: jest.fn(() => <div>Mock SeriesCard</div>),
+  SeriesCard: jest.fn(() => <div>Mock SeriesCard</div>),
 }));
 jest.mock('@/components/cards/EventCard', () => ({
   __esModule: true,
-  default: jest.fn(() => <div>Mock EventCard</div>),
+  EventCard: jest.fn(() => <div>Mock EventCard</div>),
 }));
 jest.mock('@/components/cards/RaceCard', () => ({
   __esModule: true,
-  default: jest.fn(() => <div>Mock RaceCard</div>),
+  RaceCard: jest.fn(() => <div>Mock RaceCard</div>),
 }));
-jest.mock('@/components/ai/threshold-assistant-modal', () => ({
+jest.mock('@/components/ai/ThresholdAssistantModal', () => ({
   __esModule: true,
-  default: jest.fn(() => <div>Mock ThresholdAssistantModal</div>),
+  ThresholdAssistantModal: jest.fn(() => (
+    <div>Mock ThresholdAssistantModal</div>
+  )),
 }));
 
-const mockData: HubPageData = {
+const mockData = {
   organizations: [
     {
       organization: {

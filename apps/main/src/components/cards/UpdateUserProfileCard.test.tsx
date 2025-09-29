@@ -1,9 +1,11 @@
 'use client';
 
-import { render, screen } from '@/test-utils';
 import { useForm } from '@mantine/form';
+
+import { render, screen } from '@/test-utils';
+
 import { userSchema } from '../../app/(main)/account/user-schema';
-import UpdateUserProfileCard from './UpdateUserProfileCard';
+import { UpdateUserProfileCard } from './UpdateUserProfileCard';
 
 const TestComponent = () => {
   const form = useForm<typeof userSchema._output>({

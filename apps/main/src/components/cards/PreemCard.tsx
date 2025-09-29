@@ -1,12 +1,14 @@
-import { toUrlPath } from '@/datastore/paths';
-import { Contribution, Preem } from '@/datastore/schema';
-import { getSponsorName } from '@/datastore/sponsors';
 import { Anchor, Text, TitleOrder } from '@mantine/core';
 import { IconSparkles, IconTag, IconUser } from '@tabler/icons-react';
 import Link from 'next/link';
 import React from 'react';
-import { MetadataItem, MetadataRow } from './MetadataRow';
+
+import { toUrlPath } from '@/datastore/paths';
+import { Contribution, Preem } from '@/datastore/schema';
+import { getSponsorName } from '@/datastore/sponsors';
+
 import { ContentCard } from './ContentCard';
+import { MetadataItem, MetadataRow } from './MetadataRow';
 
 interface PreemCardProps {
   preem: Preem;
@@ -19,7 +21,7 @@ interface PreemCardProps {
   hideBrief?: boolean;
 }
 
-const PreemCard: React.FC<PreemCardProps> = ({
+export function PreemCard({
   preem,
   contributions,
 
@@ -28,7 +30,7 @@ const PreemCard: React.FC<PreemCardProps> = ({
   withBorder = true,
   titleOrder = 3,
   hideBrief,
-}) => {
+}: PreemCardProps) {
   const metadataItems: MetadataItem[] = [];
   if (preem.prizePool && preem.prizePool > 0) {
     metadataItems.push({
@@ -93,6 +95,4 @@ const PreemCard: React.FC<PreemCardProps> = ({
       titleOrder={titleOrder}
     />
   );
-};
-
-export default PreemCard;
+}

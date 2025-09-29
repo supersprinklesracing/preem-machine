@@ -1,10 +1,5 @@
 'use client';
 
-import { appendRedirectParam } from '@/app/(login)/redirect';
-import { useRedirectAfterLogin } from '@/app/(login)/useRedirectAfterLogin';
-import { useRedirectParam } from '@/app/(login)/useRedirectParam';
-import { loginWithCredential } from '@/auth/client/auth';
-import { getFirebaseAuth } from '@/firebase/client/firebase-client';
 import {
   Button,
   Container,
@@ -23,6 +18,13 @@ import {
 import Link from 'next/link';
 import * as React from 'react';
 import { useLoadingCallback } from 'react-loading-hook';
+
+import { appendRedirectParam } from '@/app/(login)/redirect';
+import { useRedirectAfterLogin } from '@/app/(login)/useRedirectAfterLogin';
+import { useRedirectParam } from '@/app/(login)/useRedirectParam';
+import { loginWithCredential } from '@/auth/client/auth';
+import { MultiPanelLayout } from '@/components/layout/MultiPanelLayout';
+import { getFirebaseAuth } from '@/firebase/client/firebase-client';
 
 export function Register() {
   const [hasLogged, setHasLogged] = React.useState(false);
@@ -52,7 +54,7 @@ export function Register() {
 
   if (hasLogged) {
     return (
-      <>
+      <MultiPanelLayout>
         <Title order={1}>Register</Title>
         <Group>
           <Text>
@@ -60,51 +62,53 @@ export function Register() {
           </Text>
           <Loader />
         </Group>
-      </>
+      </MultiPanelLayout>
     );
   }
 
   return (
-    <Container size="md" pt="xl">
-      <Stack>
-        <Title order={1}>Register</Title>
-        <form onSubmit={registerWithEmailAndPassword}>
-          <Stack>
-            <TextInput
-              required
-              value={email}
-              onChange={(e) => setEmail(e.target.value)}
-              name="email"
-              type="email"
-              placeholder="Email address"
-            />
-            <PasswordInput
-              required
-              name="password"
-              value={password}
-              onChange={(e) => setPassword(e.target.value)}
-              placeholder="Password"
-              minLength={8}
-            />
-            {error && <Text c="red">{error.message}</Text>}
-            <Button
-              loading={isRegisterLoading}
-              disabled={isRegisterLoading}
-              type="submit"
-            >
-              Register
-            </Button>
-            <Button
-              component={Link}
-              href={appendRedirectParam('/login', redirect)}
-              disabled={isRegisterLoading}
-              variant="outline"
-            >
-              Back to login
-            </Button>
-          </Stack>
-        </form>
-      </Stack>
-    </Container>
+    <MultiPanelLayout>
+      <Container size="md" pt="xl">
+        <Stack>
+          <Title order={1}>Register</Title>
+          <form onSubmit={registerWithEmailAndPassword}>
+            <Stack>
+              <TextInput
+                required
+                value={email}
+                onChange={(e) => setEmail(e.target.value)}
+                name="email"
+                type="email"
+                placeholder="Email address"
+              />
+              <PasswordInput
+                required
+                name="password"
+                value={password}
+                onChange={(e) => setPassword(e.target.value)}
+                placeholder="Password"
+                minLength={8}
+              />
+              {error && <Text c="red">{error.message}</Text>}
+              <Button
+                loading={isRegisterLoading}
+                disabled={isRegisterLoading}
+                type="submit"
+              >
+                Register
+              </Button>
+              <Button
+                component={Link}
+                href={appendRedirectParam('/login', redirect)}
+                disabled={isRegisterLoading}
+                variant="outline"
+              >
+                Back to login
+              </Button>
+            </Stack>
+          </form>
+        </Stack>
+      </Container>
+    </MultiPanelLayout>
   );
 }

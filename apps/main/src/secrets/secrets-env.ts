@@ -1,7 +1,7 @@
 'use server';
 
-import type { ServiceAccountSecret } from './service-account-secret';
 import { ENV_STRIPE_ENABLED } from '../env/env';
+import type { ServiceAccountSecret } from './service-account-secret';
 
 export async function getServiceAccountSecret(): Promise<ServiceAccountSecret> {
   return {

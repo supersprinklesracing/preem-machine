@@ -1,5 +1,6 @@
 import { MOCK_USER_CONTEXT, render, screen } from '@/test-utils';
-import AvatarCluster from './AvatarCluster';
+
+import { AvatarCluster } from './AvatarCluster';
 
 describe('AvatarCluster', () => {
   it('should render the user avatar when a user is logged in', () => {

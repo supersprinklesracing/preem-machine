@@ -1,11 +1,13 @@
 'use server';
 
 import { DocumentSnapshot } from 'firebase-admin/firestore';
+import { revalidatePath } from 'next/cache';
+
 import { FormActionError } from '@/components/forms/forms';
 import { User } from '@/datastore/schema';
 import * as create from '@/datastore/server/create/create';
 import * as user from '@/user/server/user';
-import { revalidatePath } from 'next/cache';
+
 import { AuthUser } from './auth/user';
 import { newUserAction } from './new-user-action';
 

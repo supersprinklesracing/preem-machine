@@ -1,8 +1,7 @@
 import { Organization } from '@/datastore/schema';
-
 import { act, fireEvent, render, screen, waitFor } from '@/test-utils';
-import { EditOrganization } from './EditOrganization';
 
+import { EditOrganization } from './EditOrganization';
 
 jest.mock('./StripeConnectCard', () => ({
   __esModule: true,

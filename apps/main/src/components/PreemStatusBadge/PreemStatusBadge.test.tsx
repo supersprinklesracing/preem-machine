@@ -1,6 +1,8 @@
-import { render, screen } from '@/test-utils';
 import React from 'react';
-import PreemStatusBadge from './PreemStatusBadge';
+
+import { render, screen } from '@/test-utils';
+
+import { PreemStatusBadge } from './PreemStatusBadge';
 
 describe('PreemStatusBadge', () => {
   it('should render "Open" status', () => {

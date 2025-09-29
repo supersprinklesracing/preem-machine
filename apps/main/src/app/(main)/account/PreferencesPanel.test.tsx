@@ -1,5 +1,7 @@
-import { fireEvent, render, screen } from '@/test-utils';
 import { useMantineColorScheme } from '@mantine/core';
+
+import { fireEvent, render, screen } from '@/test-utils';
+
 import { PreferencesPanel } from './PreferencesPanel';
 
 // Mock @mantine/core

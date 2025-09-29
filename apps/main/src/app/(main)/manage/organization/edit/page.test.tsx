@@ -1,8 +1,9 @@
-import { render, screen, setupMockDb } from '@/test-utils';
-import { EditOrganization } from './EditOrganization';
 import { NotFoundError } from '@/datastore/errors';
-import EditOrganizationPage from './page';
+import { render, screen, setupMockDb } from '@/test-utils';
+
 import { editOrganizationAction } from './edit-organization-action';
+import { EditOrganization } from './EditOrganization';
+import EditOrganizationPage from './page';
 
 // Mock dependencies
 jest.mock('./EditOrganization', () => ({

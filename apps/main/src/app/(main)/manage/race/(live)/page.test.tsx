@@ -1,12 +1,13 @@
-import { render, screen, setupMockDb } from '@/test-utils';
 import { NotFoundError } from '@/datastore/errors';
-import LiveRace from './LiveRace';
+import { render, screen, setupMockDb } from '@/test-utils';
+
+import { LiveRace } from './LiveRace';
 import LiveRacePage from './page';
 
 // Mock dependencies
 jest.mock('./LiveRace', () => ({
   __esModule: true,
-  default: jest.fn(() => <div>Mock LiveRace</div>),
+  LiveRace: jest.fn(() => <div>Mock LiveRace</div>),
 }));
 
 setupMockDb();

@@ -1,9 +1,10 @@
 import { expect, test } from '@playwright/test';
+
+import { ENV_E2E_TESTING_USER } from '../util/e2e-env';
 import {
   useE2eTestingUserBeforeEach,
   useMockedDateBeforeEach,
 } from '../util/e2e-test-utils';
-import { ENV_E2E_TESTING_USER } from '../util/e2e-env';
 
 test.describe('view', () => {
   test.describe('user', () => {

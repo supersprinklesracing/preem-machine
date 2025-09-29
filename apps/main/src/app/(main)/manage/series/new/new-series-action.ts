@@ -1,11 +1,13 @@
 'use server';
 
-import { verifyUserContext } from '@/user/server/user';
-import { FormActionError, FormActionResult } from '@/components/forms/forms';
-import { createSeries } from '@/datastore/server/create/create';
-import { CollectionPath, DocPath } from '@/datastore/paths';
 import { revalidatePath } from 'next/cache';
 import { z } from 'zod';
+
+import { FormActionError, FormActionResult } from '@/components/forms/forms';
+import { CollectionPath, DocPath } from '@/datastore/paths';
+import { createSeries } from '@/datastore/server/create/create';
+import { verifyUserContext } from '@/user/server/user';
+
 import { seriesSchema } from '../series-schema';
 
 export interface NewSeriesOptions {

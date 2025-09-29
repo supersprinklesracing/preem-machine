@@ -1,10 +1,26 @@
 'use server';
 
+import { Metadata } from 'next';
+
+import { CommonLayout } from '@/components/layout/CommonLayout';
+import { getDocPathFromSearchParams } from '@/datastore/paths';
 import { PreemSchema } from '@/datastore/schema';
 import { getDoc } from '@/datastore/server/query/query';
-import { EditPreem } from './EditPreem';
+
 import { editPreemAction } from './edit-preem-action';
-import { getDocPathFromSearchParams } from '@/datastore/paths';
+import { EditPreem } from './EditPreem';
+
+export async function generateMetadata({
+  searchParams,
+}: {
+  searchParams: Promise<{ path: string }>;
+}): Promise<Metadata> {
+  const path = getDocPathFromSearchParams(await searchParams);
+  const { name } = await getDoc(PreemSchema, path);
+  return {
+    title: name,
+  };
+}
 
 export default async function EditPreemPage({
   searchParams,
@@ -13,5 +29,9 @@ export default async function EditPreemPage({
 }) {
   const path = getDocPathFromSearchParams(await searchParams);
   const doc = await getDoc(PreemSchema, path);
-  return <EditPreem preem={doc} editPreemAction={editPreemAction} />;
+  return (
+    <CommonLayout>
+      <EditPreem preem={doc} editPreemAction={editPreemAction} />
+    </CommonLayout>
+  );
 }

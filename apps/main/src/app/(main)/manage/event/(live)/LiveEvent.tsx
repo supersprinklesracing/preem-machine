@@ -1,9 +1,5 @@
 'use client';
 
-import RaceCard from '@/components/cards/RaceCard';
-import { toUrlPath } from '@/datastore/paths';
-import { RaceWithPreems } from '@/datastore/query-schema';
-import { Event } from '@/datastore/schema';
 import {
   Anchor,
   Button,
@@ -18,6 +14,12 @@ import { format } from 'date-fns';
 import { formatInTimeZone } from 'date-fns-tz';
 import Link from 'next/link';
 
+import { RaceCard } from '@/components/cards/RaceCard';
+import { MultiPanelLayout } from '@/components/layout/MultiPanelLayout';
+import { toUrlPath } from '@/datastore/paths';
+import { RaceWithPreems } from '@/datastore/query-schema';
+import { Event } from '@/datastore/schema';
+
 interface Props {
   event: Pick<
     Event,
@@ -26,86 +28,88 @@ interface Props {
   children: RaceWithPreems[];
 }
 
-export default function LiveEvent({ event, children }: Props) {
+export function LiveEvent({ event, children }: Props) {
   const series = event.seriesBrief;
   const organization = series.organizationBrief;
 
   return (
-    <Stack>
-      <Group justify="space-between">
-        <Title>{event.name}</Title>
-        <Group>
-          <Button
-            variant="outline"
-            leftSection={<IconPencil size={14} />}
-            size="xs"
-            component={Link}
-            href={`/manage/${toUrlPath(event.path)}/edit`}
-          >
-            Edit Event
-          </Button>
-          <Button
-            leftSection={<IconPlus size={14} />}
-            size="xs"
-            component={Link}
-            href={`/manage/race/new?path=${event.path}`}
-          >
-            Create New Race
-          </Button>
+    <MultiPanelLayout>
+      <Stack>
+        <Group justify="space-between">
+          <Title>{event.name}</Title>
+          <Group>
+            <Button
+              variant="outline"
+              leftSection={<IconPencil size={14} />}
+              size="xs"
+              component={Link}
+              href={`/manage/${toUrlPath(event.path)}/edit`}
+            >
+              Edit Event
+            </Button>
+            <Button
+              leftSection={<IconPlus size={14} />}
+              size="xs"
+              component={Link}
+              href={`/manage/race/new?path=${event.path}`}
+            >
+              Create New Race
+            </Button>
+          </Group>
         </Group>
-      </Group>
-      <Text>
-        Part of{' '}
-        <Anchor
-          component={Link}
-          href={`/manage/${toUrlPath(series.path)}/edit`}
-        >
-          {series.name}
-        </Anchor>{' '}
-        hosted by{' '}
-        {organization && (
+        <Text>
+          Part of{' '}
           <Anchor
             component={Link}
-            href={`/manage/${toUrlPath(organization.path)}/edit`}
+            href={`/manage/${toUrlPath(series.path)}/edit`}
           >
-            {organization.name}
-          </Anchor>
-        )}
-      </Text>
-      <Text c="dimmed">
-        {event.location} |{' '}
-        {event.startDate
-          ? event.timezone
-            ? formatInTimeZone(
-                new Date(event.startDate),
-                event.timezone,
-                'PP p zzz',
-              )
-            : format(new Date(event.startDate), 'PP p')
-          : ''}
-      </Text>
-      <Stack>
-        <Title order={2}>Race Schedule</Title>
-        <SimpleGrid cols={{ base: 1, lg: 2 }}>
-          {children?.map(
-            ({ race, children }) =>
-              race && (
-                <RaceCard key={race.path} race={race} preems={children}>
-                  <Button
-                    component={Link}
-                    href={`/manage/${toUrlPath(race.path)}`}
-                    variant="light"
-                    size="sm"
-                    mt="md"
-                    rightSection={<IconChevronRight size={14} />}
-                  >
-                    Manage
-                  </Button>
-                </RaceCard>
-              ),
+            {series.name}
+          </Anchor>{' '}
+          hosted by{' '}
+          {organization && (
+            <Anchor
+              component={Link}
+              href={`/manage/${toUrlPath(organization.path)}/edit`}
+            >
+              {organization.name}
+            </Anchor>
           )}
-        </SimpleGrid>
+        </Text>
+        <Text c="dimmed">
+          {event.location} |{' '}
+          {event.startDate
+            ? event.timezone
+              ? formatInTimeZone(
+                  new Date(event.startDate),
+                  event.timezone,
+                  'PP p zzz',
+                )
+              : format(new Date(event.startDate), 'PP p')
+            : ''}
+        </Text>
+        <Stack>
+          <Title order={2}>Race Schedule</Title>
+          <SimpleGrid cols={{ base: 1, lg: 2 }}>
+            {children?.map(
+              ({ race, children }) =>
+                race && (
+                  <RaceCard key={race.path} race={race} preems={children}>
+                    <Button
+                      component={Link}
+                      href={`/manage/${toUrlPath(race.path)}`}
+                      variant="light"
+                      size="sm"
+                      mt="md"
+                      rightSection={<IconChevronRight size={14} />}
+                    >
+                      Manage
+                    </Button>
+                  </RaceCard>
+                ),
+            )}
+          </SimpleGrid>
+        </Stack>
       </Stack>
-    </Stack>
+    </MultiPanelLayout>
   );
 }

@@ -1,8 +1,23 @@
-import { getRenderableSeriesDataForPage } from '@/datastore/server/query/query';
-import LiveSeries from './LiveSeries';
+import { Metadata } from 'next';
+
 import { Breadcrumbs } from '@/components/Breadcrumbs/Breadcrumbs';
-import { Stack } from '@mantine/core';
+import { CommonLayout } from '@/components/layout/CommonLayout';
 import { getDocPathFromSearchParams } from '@/datastore/paths';
+import { getRenderableSeriesDataForPage } from '@/datastore/server/query/query';
+
+import { LiveSeries } from './LiveSeries';
+
+export async function generateMetadata({
+  searchParams,
+}: {
+  searchParams: Promise<{ path: string }>;
+}): Promise<Metadata> {
+  const path = getDocPathFromSearchParams(await searchParams);
+  const { series } = await getRenderableSeriesDataForPage(path);
+  return {
+    title: series.name,
+  };
+}
 
 export default async function LiveSeriesPage({
   searchParams,
@@ -12,9 +27,8 @@ export default async function LiveSeriesPage({
   const path = getDocPathFromSearchParams(await searchParams);
   const data = await getRenderableSeriesDataForPage(path);
   return (
-    <Stack>
-      <Breadcrumbs brief={data.series} />
+    <CommonLayout breadcrumb={<Breadcrumbs brief={data.series} />}>
       <LiveSeries {...data} />
-    </Stack>
+    </CommonLayout>
   );
 }

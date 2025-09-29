@@ -1,10 +1,10 @@
 import {
-  Preem,
   Contribution,
-  Race,
   Event,
-  Series,
   Organization,
+  Preem,
+  Race,
+  Series,
   User,
 } from './schema';
 

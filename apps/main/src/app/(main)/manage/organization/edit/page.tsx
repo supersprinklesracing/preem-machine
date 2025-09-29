@@ -1,9 +1,27 @@
 'use server';
 
+import { Metadata } from 'next';
+
+import { CommonLayout } from '@/components/layout/CommonLayout';
 import { docId, getDocPathFromSearchParams } from '@/datastore/paths';
 import { getOrganizationAndRefreshStripeAccount } from '@/stripe-datastore/organizations';
-import { EditOrganization } from './EditOrganization';
+
 import { editOrganizationAction } from './edit-organization-action';
+import { EditOrganization } from './EditOrganization';
+
+export async function generateMetadata({
+  searchParams,
+}: {
+  searchParams: Promise<{ path: string }>;
+}): Promise<Metadata> {
+  const path = getDocPathFromSearchParams(await searchParams);
+  const { organization } = await getOrganizationAndRefreshStripeAccount(
+    docId(path),
+  );
+  return {
+    title: organization.name,
+  };
+}
 
 export default async function EditOrganizationPage({
   searchParams,
@@ -16,10 +34,12 @@ export default async function EditOrganizationPage({
   );
 
   return (
-    <EditOrganization
-      organization={organization}
-      stripeError={error}
-      editOrganizationAction={editOrganizationAction}
-    />
+    <CommonLayout>
+      <EditOrganization
+        organization={organization}
+        stripeError={error}
+        editOrganizationAction={editOrganizationAction}
+      />
+    </CommonLayout>
   );
 }

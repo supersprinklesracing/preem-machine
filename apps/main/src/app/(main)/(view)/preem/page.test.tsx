@@ -1,13 +1,14 @@
-import { render, screen, setupMockDb } from '@/test-utils';
-import PreemPage from './page';
 import { NotFoundError } from '@/datastore/errors';
+import { render, screen, setupMockDb } from '@/test-utils';
+
+import PreemPage from './page';
 
 // Mock the concrete component to isolate the page component
 jest.mock(
   './Preem',
   () => ({
     __esModule: true,
-    default: jest.fn(({ preem, children }) => (
+    Preem: jest.fn(({ preem, children }) => (
       <div data-testid="mock-preem">
         <h1>{preem.name}</h1>
         <div data-testid="preem-id">{preem.id}</div>

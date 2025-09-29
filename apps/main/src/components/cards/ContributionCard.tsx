@@ -1,19 +1,18 @@
 'use client';
 
+import { Card, Group, Stack, Text } from '@mantine/core';
+import Link from 'next/link';
+
 import { UserAvatar } from '@/components/UserAvatar/UserAvatar';
 import { toUrlPath } from '@/datastore/paths';
 import { Contribution } from '@/datastore/schema';
 import { formatDateRelative } from '@/dates/dates';
-import { Card, Group, Stack, Text } from '@mantine/core';
-import Link from 'next/link';
 
 interface ContributionCardProps {
   contribution: Contribution;
 }
 
-export default function ContributionCard({
-  contribution,
-}: ContributionCardProps) {
+export function ContributionCard({ contribution }: ContributionCardProps) {
   const contributor = contribution.contributor;
   if (!contributor) {
     return null;

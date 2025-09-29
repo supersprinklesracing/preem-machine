@@ -1,6 +1,8 @@
-import { render, screen } from '@/test-utils';
 import React from 'react';
-import DateStatusBadge from './DateStatusBadge';
+
+import { render, screen } from '@/test-utils';
+
+import { DateStatusBadge } from './DateStatusBadge';
 
 describe('DateStatusBadge', () => {
   it('should render "Upcoming" for a future event', () => {

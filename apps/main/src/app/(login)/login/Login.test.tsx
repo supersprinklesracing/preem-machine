@@ -1,4 +1,5 @@
 import { render, screen } from '@/test-utils';
+
 import { Login } from './Login';
 
 // Mock firebase/auth and firebase-client to prevent initialization errors

@@ -57,7 +57,7 @@ export default defineConfig({
     cwd: workspaceRoot,
     // .env files in shell are not respected in VS Code; we read them, above.
     env: {
-      E2E_TESTING: "true"
+      E2E_TESTING: 'true',
     },
   },
   expect: {

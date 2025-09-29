@@ -1,7 +1,8 @@
 'use server';
 
-import { getFirebaseAdminApp } from '@/firebase/server/firebase-admin';
 import { revalidatePath } from 'next/cache';
+
+import { getFirebaseAdminApp } from '@/firebase/server/firebase-admin';
 
 export async function makeAdmin(userId: string) {
   const app = await getFirebaseAdminApp();
