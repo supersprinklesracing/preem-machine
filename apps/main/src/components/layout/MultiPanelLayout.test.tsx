@@ -1,12 +1,13 @@
 import { render, screen } from '@/test-utils';
+
 import { MultiPanelLayout } from './MultiPanelLayout';
 
 describe('MultiPanelLayout', () => {
   it('renders the left and right panels', () => {
     render(
       <MultiPanelLayout
-        leftPanel={<div>Left Panel</div>}
-        rightPanel={<div>Right Panel</div>}
+        topLeft={<div>Left Panel</div>}
+        topRight={<div>Right Panel</div>}
       />,
     );
 
@@ -17,9 +18,9 @@ describe('MultiPanelLayout', () => {
   it('renders the bottom panel if it is provided', () => {
     render(
       <MultiPanelLayout
-        leftPanel={<div>Left Panel</div>}
-        rightPanel={<div>Right Panel</div>}
-        bottomPanel={<div>Bottom Panel</div>}
+        topLeft={<div>Left Panel</div>}
+        topRight={<div>Right Panel</div>}
+        children={<div>Bottom Panel</div>}
       />,
     );
 
@@ -29,8 +30,8 @@ describe('MultiPanelLayout', () => {
   it('does not render the bottom panel if it is not provided', () => {
     render(
       <MultiPanelLayout
-        leftPanel={<div>Left Panel</div>}
-        rightPanel={<div>Right Panel</div>}
+        topLeft={<div>Left Panel</div>}
+        topRight={<div>Right Panel</div>}
       />,
     );
 

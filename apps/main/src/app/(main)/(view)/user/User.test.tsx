@@ -1,5 +1,6 @@
-import { render, screen, MOCK_USER, MOCK_AUTH_USER } from '@/test-utils';
-import User from './User';
+import { MOCK_AUTH_USER, MOCK_USER, render, screen } from '@/test-utils';
+
+import { User } from './User';
 
 const mockUserData = {
   user: MOCK_USER,

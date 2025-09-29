@@ -5,6 +5,7 @@ import {
   QueryDocumentSnapshot,
 } from 'firebase-admin/firestore';
 import { z } from 'zod';
+
 import { asDocPath } from './paths';
 
 // eslint-disable-next-line @typescript-eslint/no-explicit-any

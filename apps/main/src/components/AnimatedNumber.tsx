@@ -2,7 +2,7 @@
 
 import { useEffect, useRef, useState } from 'react';
 
-const AnimatedNumber = ({ value }: { value: number }) => {
+export function AnimatedNumber({ value }: { value: number }) {
   const [currentValue, setCurrentValue] = useState(0);
   const prevValueRef = useRef(0);
 
@@ -35,6 +35,4 @@ const AnimatedNumber = ({ value }: { value: number }) => {
   }, [value]);
 
   return <span>{currentValue.toLocaleString()}</span>;
-};
-
-export default AnimatedNumber;
+}

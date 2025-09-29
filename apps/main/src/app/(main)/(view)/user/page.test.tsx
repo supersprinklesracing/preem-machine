@@ -1,14 +1,16 @@
-import { render, screen, setupMockDb, setupUserContext } from '@/test-utils';
-import React from 'react';
-import UserPage from './page';
-import User from './User';
 import { redirect } from 'next/navigation';
+import React from 'react';
+
 import { NotFoundError } from '@/datastore/errors';
+import { render, screen, setupMockDb, setupUserContext } from '@/test-utils';
+
+import UserPage from './page';
+import { User } from './User';
 
 // Mock dependencies
 jest.mock('./User', () => ({
   __esModule: true,
-  default: jest.fn(() => <div>Mock User</div>),
+  User: jest.fn(() => <div>Mock User</div>),
 }));
 jest.mock('next/navigation', () => ({
   redirect: jest.fn((...args: string[]) => {

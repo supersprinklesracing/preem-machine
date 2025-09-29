@@ -1,8 +1,5 @@
 'use client';
 
-import { UserAvatarIcon } from '@/components/UserAvatar/UserAvatar';
-import { toUrlPath } from '@/datastore/paths';
-import { Contribution } from '@/datastore/schema';
 import {
   Card,
   Group,
@@ -15,6 +12,10 @@ import { useMediaQuery } from '@mantine/hooks';
 import Link from 'next/link';
 import { CSSProperties } from 'react';
 
+import { UserAvatarIcon } from '@/components/UserAvatar/UserAvatar';
+import { toUrlPath } from '@/datastore/paths';
+import { Contribution } from '@/datastore/schema';
+
 interface LiveContributionFeedProps {
   contributions: Pick<
     Contribution,
@@ -22,7 +23,7 @@ interface LiveContributionFeedProps {
   >[];
 }
 
-export default function LiveContributionFeed({
+export function LiveContributionFeed({
   contributions,
 }: LiveContributionFeedProps) {
   const theme = useMantineTheme();

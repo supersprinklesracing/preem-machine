@@ -1,13 +1,16 @@
 'use client';
 
-import { render, screen, fireEvent } from '@/test-utils';
 import React from 'react';
-import MainAppShellProvider from './MainAppShellProvider';
+
+import { fireEvent, render, screen } from '@/test-utils';
+
 import { useMainAppShell } from './MainAppShellContext';
+import { MainAppShellProvider } from './MainAppShellProvider';
 
 // A consumer component to test the context values
 const TestConsumer = () => {
-  const { isMobile, isSidebarOpened, toggleSidebar, onLinkClick } = useMainAppShell();
+  const { isMobile, isSidebarOpened, toggleSidebar, onLinkClick } =
+    useMainAppShell();
   return (
     <div>
       <div data-testid="isMobile">{isMobile.toString()}</div>
@@ -24,7 +27,9 @@ const TestConsumer = () => {
 
 // Mock MainAppShell to isolate the provider's functionality
 jest.mock('./MainAppShell', () => {
-  return jest.fn(({ children }) => <div data-testid="main-app-shell">{children}</div>);
+  return jest.fn(({ children }) => (
+    <div data-testid="main-app-shell">{children}</div>
+  ));
 });
 
 describe('MainAppShellProvider', () => {

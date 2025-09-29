@@ -2,9 +2,10 @@
 /* eslint-disable unused-imports/no-unused-imports */
 /* eslint-disable @typescript-eslint/no-unused-vars */
 import {
-  unstable_getResponseFromNextConfig,
   getRewrittenUrl,
+  unstable_getResponseFromNextConfig,
 } from 'next/experimental/testing/server';
+
 import nextConfig from './next.config.js';
 
 const buildUrl = (path) => {
@@ -72,7 +73,9 @@ const testCases = [
   ],
   [
     'manage/race/details',
-    buildUrl('/manage/super-sprinkles/sprinkles-2025/giro-sf-2025/masters-women'),
+    buildUrl(
+      '/manage/super-sprinkles/sprinkles-2025/giro-sf-2025/masters-women',
+    ),
     buildUrl(
       '/manage/race?path=organizations/super-sprinkles/series/sprinkles-2025/events/giro-sf-2025/races/masters-women',
     ),

@@ -1,11 +1,13 @@
 'use server';
 
+import { z } from 'zod';
+
 import { FormActionError, FormActionResult } from '@/components/forms/forms';
 import { getDoc } from '@/datastore/server/query/query';
 import { updateUser } from '@/datastore/server/update/update';
 import { getFirebaseStorage } from '@/firebase/server/firebase-admin';
 import { verifyUserContext } from '@/user/server/user';
-import { z } from 'zod';
+
 import { userSchema } from './user-schema';
 
 export interface EditUserOptions {

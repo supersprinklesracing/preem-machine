@@ -1,8 +1,9 @@
 'use server';
 
 import { getFirestore } from '@/firebase/server/firebase-admin';
+
 import { DocPath } from '../paths';
-import { Event, Race, SeriesSchema, EventSchema } from '../schema';
+import { Event, EventSchema, Race, SeriesSchema } from '../schema';
 import { converter } from './converters';
 import { DateRangeError } from './errors';
 

@@ -1,6 +1,8 @@
 import { Button, Modal, Select, Stack } from '@mantine/core';
-import { User, Organization } from '@/datastore/schema';
 import { useState } from 'react';
+
+import { Organization, User } from '@/datastore/schema';
+
 import { assignOrg } from './assign-org-action';
 
 interface AssignOrgModalProps {

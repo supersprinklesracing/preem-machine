@@ -1,13 +1,14 @@
 'use client';
 
-import { AppShell, Burger, Group, Title } from '@mantine/core';
+import { AppShell, Burger, Group, Title, useMantineTheme } from '@mantine/core';
 import { Notifications } from '@mantine/notifications';
 import Image from 'next/image';
 import Link from 'next/link';
 import React from 'react';
+
 import { useMainAppShell } from './MainAppShellContext';
 
-export default function MainAppShell({
+export function MainAppShell({
   children,
   avatarCluster,
   sidebar,
@@ -17,12 +18,13 @@ export default function MainAppShell({
   sidebar?: React.ReactElement;
 }) {
   const { isSidebarOpened, toggleSidebar } = useMainAppShell();
+  const theme = useMantineTheme();
 
   return (
     <AppShell
-      header={{ height: 60 }}
+      header={{ height: theme.other.appShell.headerHeight }}
       navbar={{
-        width: 250,
+        width: theme.other.appShell.navbarWidth,
         breakpoint: 'sm',
         collapsed: { mobile: !isSidebarOpened, desktop: false },
       }}
@@ -30,7 +32,7 @@ export default function MainAppShell({
     >
       <Notifications />
       <AppShell.Header>
-        <Group h="100%" px="md" justify="space-between">
+        <Group px={{ base: 'xs', sm: 'md' }} justify="space-between" h="100%">
           <Group>
             <Burger
               opened={isSidebarOpened}
@@ -50,7 +52,9 @@ export default function MainAppShell({
                   height={48}
                   priority
                 />
-                <Title order={3}>Preem Machine</Title>
+                <Title order={3} visibleFrom="sm">
+                  Preem Machine
+                </Title>
               </Group>
             </Link>
           </Group>

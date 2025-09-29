@@ -1,14 +1,14 @@
 'use client';
 
 import {
+  Box,
   Card,
   Grid,
   Group,
   Stack,
+  Text,
   Title,
   TitleOrder,
-  Text,
-  Box,
 } from '@mantine/core';
 import React from 'react';
 
@@ -26,7 +26,7 @@ interface ContentCardProps {
   'data-testid'?: string;
 }
 
-export const ContentCard: React.FC<ContentCardProps> = ({
+export function ContentCard({
   title,
   statusBadge,
   subheadings,
@@ -38,7 +38,7 @@ export const ContentCard: React.FC<ContentCardProps> = ({
   withBorder = true,
   titleOrder = 3,
   'data-testid': dataTestId,
-}) => {
+}: ContentCardProps) {
   return (
     <Card
       data-testid={dataTestId}
@@ -89,4 +89,4 @@ export const ContentCard: React.FC<ContentCardProps> = ({
       </Grid>
     </Card>
   );
-};
+}

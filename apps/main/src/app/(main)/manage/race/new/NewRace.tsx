@@ -1,17 +1,11 @@
 'use client';
 
-import { useActionForm } from '@/components/forms/useActionForm';
-import RaceCard from '@/components/cards/RaceCard';
-import { FormActionResult } from '@/components/forms/forms';
-import { toUrlPath } from '@/datastore/paths';
-import { Event, Race } from '@/datastore/schema';
-import { MultiPanelLayout } from '@/components/layout/MultiPanelLayout';
 import {
   Button,
   Card,
-  Container,
   Group,
   NumberInput,
+  Select,
   Stack,
   TagsInput,
   Text,
@@ -23,7 +17,15 @@ import { DateTimePicker } from '@mantine/dates';
 import { useDebouncedValue } from '@mantine/hooks';
 import isEqual from 'fast-deep-equal';
 import { useRouter } from 'next/navigation';
-import TimezoneSelect from 'react-timezone-select';
+import { useTimezoneSelect } from 'react-timezone-select';
+
+import { RaceCard } from '@/components/cards/RaceCard';
+import { FormActionResult } from '@/components/forms/forms';
+import { useActionForm } from '@/components/forms/useActionForm';
+import { MultiPanelLayout } from '@/components/layout/MultiPanelLayout';
+import { toUrlPath } from '@/datastore/paths';
+import { Event, Race } from '@/datastore/schema';
+
 import { raceSchema } from '../race-schema';
 import { NewRaceOptions } from './new-race-action';
 
@@ -39,6 +41,7 @@ export function NewRace({
   path: string;
 }) {
   const router = useRouter();
+  const { options } = useTimezoneSelect({});
 
   const { form, handleSubmit, isLoading, submissionError } = useActionForm({
     schema: raceSchema,
@@ -103,117 +106,110 @@ export function NewRace({
   };
 
   return (
-    <Container>
-      <Stack>
-        <Title order={1}>Create Race</Title>
-        <MultiPanelLayout
-          leftPanel={
-            <Card withBorder>
-              <form onSubmit={form.onSubmit(handleSubmit)}>
-                <Stack>
-                  <TextInput
-                    label="Race Name"
-                    required
-                    {...form.getInputProps('name')}
-                    data-testid="name-input"
+    <Stack>
+      <Title order={1}>Create Race</Title>
+      <MultiPanelLayout
+        topLeft={
+          <Card withBorder>
+            <form onSubmit={form.onSubmit(handleSubmit)}>
+              <Stack>
+                <TextInput
+                  label="Race Name"
+                  required
+                  {...form.getInputProps('name')}
+                  data-testid="name-input"
+                />
+                <TextInput
+                  label="Location"
+                  {...form.getInputProps('location')}
+                  data-testid="location-input"
+                />
+                <TextInput
+                  label="Website"
+                  {...form.getInputProps('website')}
+                  data-testid="website-input"
+                />
+                <Textarea
+                  label="Description"
+                  {...form.getInputProps('description')}
+                  data-testid="description-input"
+                />
+                <TextInput
+                  label="Category"
+                  {...form.getInputProps('category')}
+                />
+                <TextInput label="Gender" {...form.getInputProps('gender')} />
+                <Textarea
+                  label="Course Details"
+                  {...form.getInputProps('courseDetails')}
+                />
+                <NumberInput
+                  label="Max Racers"
+                  {...form.getInputProps('maxRacers')}
+                />
+                <TextInput
+                  label="Duration"
+                  {...form.getInputProps('duration')}
+                />
+                <NumberInput label="Laps" {...form.getInputProps('laps')} />
+                <NumberInput
+                  label="Podiums"
+                  {...form.getInputProps('podiums')}
+                />
+                <TagsInput
+                  label="Sponsors"
+                  {...form.getInputProps('sponsors')}
+                />
+                <div data-testid="start-date-wrapper">
+                  <DateTimePicker
+                    label="Start Date"
+                    value={form.values.startDate}
+                    onChange={(value) =>
+                      form.setFieldValue(
+                        'startDate',
+                        value ? new Date(value) : undefined,
+                      )
+                    }
+                    data-testid="start-date-picker"
                   />
-                  <TextInput
-                    label="Location"
-                    {...form.getInputProps('location')}
-                    data-testid="location-input"
+                </div>
+                <div data-testid="end-date-wrapper">
+                  <DateTimePicker
+                    label="End Date"
+                    value={form.values.endDate}
+                    onChange={(value) =>
+                      form.setFieldValue(
+                        'endDate',
+                        value ? new Date(value) : undefined,
+                      )
+                    }
+                    data-testid="end-date-picker"
                   />
-                  <TextInput
-                    label="Website"
-                    {...form.getInputProps('website')}
-                    data-testid="website-input"
-                  />
-                  <Textarea
-                    label="Description"
-                    {...form.getInputProps('description')}
-                    data-testid="description-input"
-                  />
-                  <TextInput
-                    label="Category"
-                    {...form.getInputProps('category')}
-                  />
-                  <TextInput label="Gender" {...form.getInputProps('gender')} />
-                  <Textarea
-                    label="Course Details"
-                    {...form.getInputProps('courseDetails')}
-                  />
-                  <NumberInput
-                    label="Max Racers"
-                    {...form.getInputProps('maxRacers')}
-                  />
-                  <TextInput
-                    label="Duration"
-                    {...form.getInputProps('duration')}
-                  />
-                  <NumberInput label="Laps" {...form.getInputProps('laps')} />
-                  <NumberInput
-                    label="Podiums"
-                    {...form.getInputProps('podiums')}
-                  />
-                  <TagsInput
-                    label="Sponsors"
-                    {...form.getInputProps('sponsors')}
-                  />
-                  <div data-testid="start-date-wrapper">
-                    <DateTimePicker
-                      label="Start Date"
-                      value={form.values.startDate}
-                      onChange={(value) =>
-                        form.setFieldValue(
-                          'startDate',
-                          value ? new Date(value) : undefined,
-                        )
-                      }
-                      data-testid="start-date-picker"
-                    />
-                  </div>
-                  <div data-testid="end-date-wrapper">
-                    <DateTimePicker
-                      label="End Date"
-                      value={form.values.endDate}
-                      onChange={(value) =>
-                        form.setFieldValue(
-                          'endDate',
-                          value ? new Date(value) : undefined,
-                        )
-                      }
-                      data-testid="end-date-picker"
-                    />
-                  </div>
-                  <TimezoneSelect
-                    value={form.values.timezone || ''}
-                    onChange={(tz) => {
-                      if (typeof tz === 'string') {
-                        form.setFieldValue('timezone', tz);
-                      } else {
-                        form.setFieldValue('timezone', tz.value);
-                      }
-                    }}
-                  />
-                  <Group justify="right">
-                    <Button
-                      type="submit"
-                      loading={isLoading}
-                      disabled={
-                        !form.isValid() ||
-                        !isEqual(form.values, debouncedValues)
-                      }
-                    >
-                      Create Race
-                    </Button>
-                  </Group>
-                  {submissionError && <Text c="red">{submissionError}</Text>}
-                </Stack>
-              </form>
-            </Card>
-          }
-          rightPanel={<RaceCard race={racePreview} preems={[]} />}
-        />
-      </Stack>
-    </Container>
+                </div>
+                <Select
+                  searchable
+                  label="Timezone"
+                  {...form.getInputProps('timezone')}
+                  data={options}
+                />
+                <Group justify="right">
+                  <Button
+                    type="submit"
+                    loading={isLoading}
+                    disabled={
+                      !form.isValid() || !isEqual(form.values, debouncedValues)
+                    }
+                  >
+                    Create Race
+                  </Button>
+                </Group>
+                {submissionError && <Text c="red">{submissionError}</Text>}
+              </Stack>
+            </form>
+          </Card>
+        }
+        topRight={<RaceCard race={racePreview} preems={[]} />}
+      />
+    </Stack>
   );
 }

@@ -1,6 +1,7 @@
 'use server-only';
 
 import { type DocumentData, Firestore } from 'firebase-admin/firestore';
+
 import type {
   EventBrief,
   OrganizationBrief,

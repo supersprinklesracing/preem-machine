@@ -1,7 +1,8 @@
 'use client';
 
-import { Organization } from '@/datastore/schema';
 import { useState } from 'react';
+
+import { Organization } from '@/datastore/schema';
 import { createOnboardingLink } from '@/stripe-datastore/stripe-actions';
 import { createDashboardLink } from '@/stripe-datastore/stripe-actions';
 import { createStripeConnectAccount } from '@/stripe-datastore/stripe-actions';

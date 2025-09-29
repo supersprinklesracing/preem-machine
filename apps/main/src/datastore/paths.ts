@@ -74,7 +74,7 @@ export const isDocPath = (path: string): path is DocPath => {
     const isValid = segments.length === 2;
     if (!isValid) {
       console.debug(
-        `isDocPath: (${path}): invalid users path segment length: ${segments.length}`
+        `isDocPath: (${path}): invalid users path segment length: ${segments.length}`,
       );
     }
     return isValid;
@@ -88,7 +88,7 @@ export const isDocPath = (path: string): path is DocPath => {
   }
   if (segments.length % 2 !== 0) {
     console.debug(
-      `isDocPath: (${path}): invalid segment length for organization-prefixed: ${segments.length}`
+      `isDocPath: (${path}): invalid segment length for organization-prefixed: ${segments.length}`,
     );
     return false;
   }

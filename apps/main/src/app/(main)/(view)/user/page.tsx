@@ -1,12 +1,27 @@
 'use server';
 
+import { Metadata } from 'next';
+import { redirect } from 'next/navigation';
+
 import { Breadcrumbs } from '@/components/Breadcrumbs/Breadcrumbs';
+import { CommonLayout } from '@/components/layout/CommonLayout';
 import { getDocPathFromSearchParams } from '@/datastore/paths';
 import { getRenderableUserDataForPage } from '@/datastore/server/query/query';
 import { getUserContext } from '@/user/server/user';
-import { Stack } from '@mantine/core';
-import { redirect } from 'next/navigation';
-import User from './User';
+
+import { User } from './User';
+
+export async function generateMetadata({
+  searchParams,
+}: {
+  searchParams: Promise<{ path: string }>;
+}): Promise<Metadata> {
+  const path = getDocPathFromSearchParams(await searchParams);
+  const { user } = await getRenderableUserDataForPage(path);
+  return {
+    title: user.name,
+  };
+}
 
 export default async function UserPage({
   searchParams,
@@ -22,9 +37,8 @@ export default async function UserPage({
   const path = getDocPathFromSearchParams(resolvedSearchParams);
   const data = await getRenderableUserDataForPage(path);
   return (
-    <Stack>
-      <Breadcrumbs brief={null} />
+    <CommonLayout breadcrumb={<Breadcrumbs brief={null} />}>
       <User {...data} />
-    </Stack>
+    </CommonLayout>
   );
 }

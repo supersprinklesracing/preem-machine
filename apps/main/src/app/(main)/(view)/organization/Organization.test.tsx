@@ -1,5 +1,6 @@
 import { render, screen } from '@/test-utils';
-import Organization from './Organization';
+
+import { Organization } from './Organization';
 
 const mockOrganizationData = {
   organization: {

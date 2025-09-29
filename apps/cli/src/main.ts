@@ -7,8 +7,9 @@
 import admin from 'firebase-admin';
 import yargs from 'yargs';
 import { hideBin } from 'yargs/helpers';
-import { secretsCommand } from './secrets';
+
 import { claimsCommand } from './claims';
+import { secretsCommand } from './secrets';
 
 async function main() {
   await yargs(hideBin(process.argv))

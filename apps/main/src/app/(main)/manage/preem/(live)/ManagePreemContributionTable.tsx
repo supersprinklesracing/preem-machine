@@ -1,17 +1,18 @@
 'use client';
 
+import { Button, Card, Group, Table, Text, Title } from '@mantine/core';
+import Link from 'next/link';
+
 import { UserAvatar } from '@/components/UserAvatar/UserAvatar';
 import { toUrlPath } from '@/datastore/paths';
 import type { ContributionWithUser } from '@/datastore/query-schema';
 import { formatDateRelative } from '@/dates/dates';
-import { Button, Card, Group, Table, Text, Title } from '@mantine/core';
-import Link from 'next/link';
 
 interface LiveContributionsProps {
   children: ContributionWithUser[];
 }
 
-export default function ManagePreemContributionTable({
+export function ManagePreemContributionTable({
   children,
 }: LiveContributionsProps) {
   const liveContributions = children.filter((c) => !!c?.contributor) ?? [];

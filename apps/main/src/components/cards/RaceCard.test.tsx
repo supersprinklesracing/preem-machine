@@ -1,5 +1,6 @@
 import { render, screen } from '@/test-utils';
-import RaceCard from './RaceCard';
+
+import { RaceCard } from './RaceCard';
 
 const mockData = {
   race: {

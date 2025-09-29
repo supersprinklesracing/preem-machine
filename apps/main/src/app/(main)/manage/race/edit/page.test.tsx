@@ -1,5 +1,6 @@
-import { render, screen, setupMockDb } from '@/test-utils';
 import { NotFoundError } from '@/datastore/errors';
+import { render, screen, setupMockDb } from '@/test-utils';
+
 import { EditRace } from './EditRace';
 import EditRacePage from './page';
 

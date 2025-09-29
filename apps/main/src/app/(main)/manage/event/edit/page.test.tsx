@@ -1,8 +1,9 @@
-import { render, screen, setupMockDb } from '@/test-utils';
-import { EditEvent } from './EditEvent';
 import { NotFoundError } from '@/datastore/errors';
-import EditEventPage from './page';
+import { render, screen, setupMockDb } from '@/test-utils';
+
 import { editEventAction } from './edit-event-action';
+import { EditEvent } from './EditEvent';
+import EditEventPage from './page';
 
 // Mock dependencies
 jest.mock('./EditEvent', () => ({

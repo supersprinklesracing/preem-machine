@@ -1,7 +1,5 @@
-'use server';
+import './global.css';
 
-import { UserProvider } from '@/user/client/UserProvider';
-import { getUserContext } from '@/user/server/user';
 import {
   ColorSchemeScript,
   MantineColorScheme,
@@ -9,8 +7,18 @@ import {
   MantineProvider,
 } from '@mantine/core';
 import { cookies } from 'next/headers';
-import './global.css';
+
+import { UserProvider } from '@/user/client/UserProvider';
+import { getUserContext } from '@/user/server/user';
+
 import { theme } from './theme';
+
+export const metadata = {
+  title: {
+    template: '%s | Preem Machine',
+    default: 'Preem Machine',
+  },
+};
 
 export default async function RootLayout({
   children,

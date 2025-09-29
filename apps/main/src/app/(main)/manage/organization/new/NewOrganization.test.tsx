@@ -1,7 +1,6 @@
 import { act, fireEvent, render, screen, waitFor } from '@/test-utils';
+
 import { NewOrganization } from './NewOrganization';
-
-
 
 describe('NewOrganization component', () => {
   beforeEach(() => {

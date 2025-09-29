@@ -1,6 +1,7 @@
-import { render, screen } from '@/test-utils';
-import LiveEvent from './LiveEvent';
 import { Event } from '@/datastore/schema';
+import { render, screen } from '@/test-utils';
+
+import { LiveEvent } from './LiveEvent';
 
 describe('LiveEvent', () => {
   const mockEvent: Pick<

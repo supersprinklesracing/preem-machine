@@ -1,11 +1,13 @@
 'use server';
 
-import { verifyUserContext } from '@/user/server/user';
-import { FormActionError, FormActionResult } from '@/components/forms/forms';
-import { createEvent } from '@/datastore/server/create/create';
-import { CollectionPath, DocPath } from '@/datastore/paths';
-import { eventSchema } from '../event-schema';
 import { z } from 'zod';
+
+import { FormActionError, FormActionResult } from '@/components/forms/forms';
+import { CollectionPath, DocPath } from '@/datastore/paths';
+import { createEvent } from '@/datastore/server/create/create';
+import { verifyUserContext } from '@/user/server/user';
+
+import { eventSchema } from '../event-schema';
 
 export interface NewEventOptions {
   path: CollectionPath;
