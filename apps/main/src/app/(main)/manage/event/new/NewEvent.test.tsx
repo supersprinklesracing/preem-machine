@@ -7,9 +7,8 @@ import {
   waitFor,
   within,
 } from '@/test-utils';
+
 import { NewEvent } from './NewEvent';
-
-
 
 describe('NewEvent component', () => {
   setupMockDb();

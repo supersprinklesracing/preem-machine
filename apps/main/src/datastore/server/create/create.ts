@@ -1,13 +1,16 @@
 'use server';
 
-import { AuthUser } from '@/auth/user';
 import {
   type DocumentData,
   type DocumentReference,
 } from 'firebase-admin/firestore';
+
+import { AuthUser } from '@/auth/user';
+
 import { unauthorized } from '../../errors';
 import { asDocPath, CollectionPath, docId, DocPath } from '../../paths';
 import {
+  type Contribution,
   ContributionSchema,
   Event,
   EventBriefSchema,
@@ -19,6 +22,7 @@ import {
   PreemBriefSchema,
   PreemSchema,
   Race,
+  type RaceBrief,
   RaceBriefSchema,
   RaceSchema,
   Series,
@@ -26,8 +30,6 @@ import {
   SeriesSchema,
   User,
   UserSchema,
-  type Contribution,
-  type RaceBrief,
 } from '../../schema';
 import { isUserAuthorized } from '../access';
 import { getDoc } from '../query/query';

@@ -1,15 +1,24 @@
 'use server';
 
+import { Metadata } from 'next';
+
 import { Breadcrumbs } from '@/components/Breadcrumbs/Breadcrumbs';
+import { CommonLayout } from '@/components/layout/CommonLayout';
 import {
   getCollectionPathFromSearchParams,
   getParentPath,
 } from '@/datastore/paths';
 import { SeriesSchema } from '@/datastore/schema';
 import { getDoc } from '@/datastore/server/query/query';
-import { Stack } from '@mantine/core';
-import { NewEvent } from './NewEvent';
+
 import { newEventAction } from './new-event-action';
+import { NewEvent } from './NewEvent';
+
+export async function generateMetadata(): Promise<Metadata> {
+  return {
+    title: 'New Event',
+  };
+}
 
 export default async function NewEventPage({
   searchParams,
@@ -19,9 +28,8 @@ export default async function NewEventPage({
   const path = getCollectionPathFromSearchParams(await searchParams);
   const series = await getDoc(SeriesSchema, getParentPath(path));
   return (
-    <Stack>
-      <Breadcrumbs brief={series} />
+    <CommonLayout breadcrumb={<Breadcrumbs brief={series} />}>
       <NewEvent series={series} newEventAction={newEventAction} path={path} />
-    </Stack>
+    </CommonLayout>
   );
 }

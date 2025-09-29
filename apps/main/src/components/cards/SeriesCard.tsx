@@ -1,8 +1,10 @@
-import { Series } from '@/datastore/schema';
+import { Group, TitleOrder } from '@mantine/core';
 import React from 'react';
-import { DateLocationDetail } from './DateLocationDetail';
+
+import { Series } from '@/datastore/schema';
+
 import { ContentCard } from './ContentCard';
-import { TitleOrder, Group } from '@mantine/core';
+import { DateLocationDetail } from './DateLocationDetail';
 
 interface SeriesCardProps {
   series: Series;
@@ -12,13 +14,13 @@ interface SeriesCardProps {
   titleOrder?: TitleOrder;
 }
 
-const SeriesCard: React.FC<SeriesCardProps> = ({
+export function SeriesCard({
   series,
   children,
   style,
   withBorder = true,
   titleOrder = 3,
-}) => {
+}: SeriesCardProps) {
   const dateLocationDetailContent = <DateLocationDetail {...series} />;
 
   return (
@@ -36,6 +38,4 @@ const SeriesCard: React.FC<SeriesCardProps> = ({
       rightColumnBottom={children}
     />
   );
-};
-
-export default SeriesCard;
+}

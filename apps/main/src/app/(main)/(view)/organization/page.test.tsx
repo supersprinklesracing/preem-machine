@@ -1,13 +1,13 @@
 import { NotFoundError } from '@/datastore/errors';
-
 import { render, screen, setupMockDb } from '@/test-utils';
-import Organization from './Organization';
+
+import { Organization } from './Organization';
 import OrganizationPage from './page';
 
 // Mock dependencies
 jest.mock('./Organization', () => ({
   __esModule: true,
-  default: jest.fn(() => <div>Mock Organization</div>),
+  Organization: jest.fn(() => <div>Mock Organization</div>),
 }));
 
 setupMockDb();

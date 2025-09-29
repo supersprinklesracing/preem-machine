@@ -1,8 +1,9 @@
 'use server';
 
-import { verifyUserContext } from '@/user/server/user';
 import { getOrganizationFromPath } from '@/datastore/server/query/query';
 import { processContribution } from '@/stripe-datastore/contributions';
+import { verifyUserContext } from '@/user/server/user';
+
 import { getStripeServer } from './server';
 
 export async function createPaymentIntent(

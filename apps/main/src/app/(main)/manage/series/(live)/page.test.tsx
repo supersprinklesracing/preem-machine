@@ -1,21 +1,22 @@
-import { render, screen, setupMockDb } from '@/test-utils';
-import LiveSeries from './LiveSeries';
 import { NotFoundError } from '@/datastore/errors';
+import { render, screen, setupMockDb } from '@/test-utils';
+
+import { LiveSeries } from './LiveSeries';
 import LiveSeriesPage from './page';
 
 // Mock dependencies
 jest.mock('./LiveSeries', () => ({
   __esModule: true,
-  default: jest.fn(() => <div>Mock LiveSeries</div>),
+  LiveSeries: jest.fn(() => <div>Mock LiveSeries</div>),
 }));
 
 setupMockDb();
 
 describe('LiveSeriesPage component', () => {
   it('should fetch series data and render the LiveSeries component', async () => {
-    const searchParams = {
+    const searchParams = Promise.resolve({
       path: 'organizations/super-sprinkles/series/sprinkles-2025',
-    };
+    });
     const PageComponent = await LiveSeriesPage({ searchParams });
     render(PageComponent);
 
@@ -26,9 +27,9 @@ describe('LiveSeriesPage component', () => {
   });
 
   it('should throw NotFoundError when the series does not exist', async () => {
-    const searchParams = {
+    const searchParams = Promise.resolve({
       path: 'organizations/org-1/series/non-existent-series',
-    };
+    });
     expect(LiveSeriesPage({ searchParams })).rejects.toThrow(NotFoundError);
   });
 });

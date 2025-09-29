@@ -1,10 +1,12 @@
 'use server';
 
-import { verifyUserContext } from '@/user/server/user';
+import { z } from 'zod';
+
 import { FormActionError, FormActionResult } from '@/components/forms/forms';
 import { DocPath } from '@/datastore/paths';
 import { updateRace } from '@/datastore/server/update/update';
-import { z } from 'zod';
+import { verifyUserContext } from '@/user/server/user';
+
 import { raceSchema } from '../race-schema';
 
 export interface EditRaceOptions {

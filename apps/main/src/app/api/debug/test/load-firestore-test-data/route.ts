@@ -1,6 +1,7 @@
+import { NextResponse } from 'next/server';
+
 import { seedFirestore } from '@/datastore/server/mock-db/seed-firestore';
 import { ENV_E2E_TESTING } from '@/env/env';
-import { NextResponse } from 'next/server';
 
 export async function POST(_request: Request) {
   if (!ENV_E2E_TESTING) {

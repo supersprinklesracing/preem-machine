@@ -9,11 +9,13 @@ import {
   connectFirestoreEmulator,
   getFirestore as getFirestoreClient,
 } from 'firebase/firestore';
-import { clientConfig } from './config';
+
 import {
   ENV_FIREBASE_AUTH_EMULATOR_HOST,
   ENV_FIRESTORE_EMULATOR_HOST,
 } from '@/env/env';
+
+import { clientConfig } from './config';
 
 export const getFirebaseApp = () => {
   if (getApps().length) {

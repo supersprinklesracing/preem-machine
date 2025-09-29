@@ -1,11 +1,13 @@
-import { render, screen } from '@/test-utils';
 import React from 'react';
-import Series from './Series';
+
+import { render, screen } from '@/test-utils';
+
+import { Series } from './Series';
 
 // Mock the EventCard component
 jest.mock('@/components/cards/EventCard', () => ({
   __esModule: true,
-  default: jest.fn(({ event, children }) => (
+  EventCard: jest.fn(({ event, children }) => (
     <div>
       <div>Mock EventCard: {event.name}</div>
       {children}

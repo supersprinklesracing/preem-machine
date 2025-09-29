@@ -1,12 +1,13 @@
-import { ENV_STRIPE_ENABLED } from '@/env/env';
-import { getOrganizationByStripeConnectAccountId } from '@/datastore/server/query/query';
-import { updateOrganizationStripeConnectAccountForWebhook } from '@/datastore/server/update/update';
-import { getSecrets } from '@/secrets';
-import { processContribution } from '@/stripe-datastore/contributions';
-import { getStripeServer } from '@/stripe/server';
 import { headers } from 'next/headers';
 import { NextResponse } from 'next/server';
 import type Stripe from 'stripe';
+
+import { getOrganizationByStripeConnectAccountId } from '@/datastore/server/query/query';
+import { updateOrganizationStripeConnectAccountForWebhook } from '@/datastore/server/update/update';
+import { ENV_STRIPE_ENABLED } from '@/env/env';
+import { getSecrets } from '@/secrets';
+import { getStripeServer } from '@/stripe/server';
+import { processContribution } from '@/stripe-datastore/contributions';
 
 export async function POST(req: Request) {
   if (!ENV_STRIPE_ENABLED) {

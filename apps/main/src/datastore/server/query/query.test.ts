@@ -1,14 +1,16 @@
-import { setupMockDb } from '@/test-utils';
-import { getFirestore } from '@/firebase/server/firebase-admin';
-import { Timestamp, type Firestore } from 'firebase-admin/firestore';
+import { type Firestore, Timestamp } from 'firebase-admin/firestore';
+
 import {
-  Organization,
-  Series,
-  Event,
-  Race,
-  Preem,
   Contribution,
+  Event,
+  Organization,
+  Preem,
+  Race,
+  Series,
 } from '@/datastore/schema';
+import { getFirestore } from '@/firebase/server/firebase-admin';
+import { setupMockDb } from '@/test-utils';
+
 import { getRenderableHomeDataForPage } from './query';
 
 describe('query', () => {

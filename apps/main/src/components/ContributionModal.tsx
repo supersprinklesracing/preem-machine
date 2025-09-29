@@ -1,7 +1,5 @@
 'use client';
 
-import { useContribution } from '@/stripe-datastore/use-contribution';
-import { getStripeClient } from '@/stripe/client';
 import {
   Button,
   Checkbox,
@@ -15,6 +13,9 @@ import {
 import { Elements, PaymentElement } from '@stripe/react-stripe-js';
 import { IconCurrencyDollar } from '@tabler/icons-react';
 import React, { useState } from 'react';
+
+import { getStripeClient } from '@/stripe/client';
+import { useContribution } from '@/stripe-datastore/use-contribution';
 
 interface ContributionModalProps {
   isOpen: boolean;
@@ -96,11 +97,11 @@ const ContributionForm = ({
   );
 };
 
-const ContributionModal: React.FC<ContributionModalProps> = ({
+export function ContributionModal({
   isOpen,
   onClose,
   preem,
-}) => {
+}: ContributionModalProps) {
   const [amount, setAmount] = useState<number | ''>(5);
   const [isAnonymous, setIsAnonymous] = useState(false);
   const [message, setMessage] = useState('');
@@ -136,6 +137,4 @@ const ContributionModal: React.FC<ContributionModalProps> = ({
       </Elements>
     </Modal>
   );
-};
-
-export default ContributionModal;
+}

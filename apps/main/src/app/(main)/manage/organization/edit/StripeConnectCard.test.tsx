@@ -1,6 +1,6 @@
 import { Organization } from '@/datastore/schema';
-
 import { fireEvent, render, screen } from '@/test-utils';
+
 import { StripeConnectCard } from './StripeConnectCard';
 import { useStripeConnect } from './useStripeConnect';
 

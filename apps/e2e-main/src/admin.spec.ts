@@ -1,5 +1,9 @@
 import { expect, test } from '@playwright/test';
-import { useE2eTestingAdminBeforeEach, useMockedDateBeforeEach } from './util/e2e-test-utils';
+
+import {
+  useE2eTestingAdminBeforeEach,
+  useMockedDateBeforeEach,
+} from './util/e2e-test-utils';
 
 test.describe('admin', () => {
   useMockedDateBeforeEach();

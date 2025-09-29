@@ -2,9 +2,9 @@ import type { Auth, AuthError, AuthProvider, User } from 'firebase/auth';
 import {
   browserPopupRedirectResolver,
   GoogleAuthProvider,
-  useDeviceLanguage as setDeviceLanguage,
   signInWithPopup,
   signOut,
+  useDeviceLanguage as setDeviceLanguage,
 } from 'firebase/auth';
 
 const CREDENTIAL_ALREADY_IN_USE_ERROR = 'auth/credential-already-in-use';

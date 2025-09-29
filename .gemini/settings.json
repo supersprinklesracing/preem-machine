@@ -39,16 +39,12 @@
     ]
   },
   "context": {
-    "fileName": [
-      "AGENTS.md"
-    ]
+    "fileName": ["AGENTS.md"]
   },
   "mcpServers": {
     "nx-mcp": {
       "command": "npx",
-      "args": [
-        "nx-mcp@latest"
-      ]
+      "args": ["nx-mcp@latest"]
     }
   },
   "general": {

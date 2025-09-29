@@ -2,6 +2,7 @@
 
 import {
   Avatar,
+  Box,
   Button,
   Card,
   FileButton,
@@ -10,7 +11,6 @@ import {
   Stack,
   Text,
   Title,
-  Box,
 } from '@mantine/core';
 import { IconMail, IconUpload } from '@tabler/icons-react';
 import { useState } from 'react';
@@ -25,7 +25,7 @@ interface UserProfileCardProps {
   onRemovePhoto: () => void;
 }
 
-const UserProfileCard: React.FC<UserProfileCardProps> = ({
+export function UpdateUserProfileCard({
   name,
   email,
   avatarUrl,
@@ -33,7 +33,7 @@ const UserProfileCard: React.FC<UserProfileCardProps> = ({
   error,
   onFileChange,
   onRemovePhoto,
-}) => {
+}: UserProfileCardProps) {
   const [hovered, setHovered] = useState(false);
 
   return (
@@ -100,6 +100,4 @@ const UserProfileCard: React.FC<UserProfileCardProps> = ({
       </Stack>
     </Card>
   );
-};
-
-export default UserProfileCard;
+}

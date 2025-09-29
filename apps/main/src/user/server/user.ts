@@ -1,9 +1,11 @@
 'use server';
 
+import { redirect } from 'next/navigation';
+
 import { AuthUser } from '@/auth/user';
 import { User } from '@/datastore/schema';
 import { getUserById } from '@/datastore/server/query/query';
-import { redirect } from 'next/navigation';
+
 import { getAuthUser } from '../../auth/server/auth';
 import { NotFoundError } from '../../datastore/errors';
 import { UserContextValue } from '../client/UserContext';

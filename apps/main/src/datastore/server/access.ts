@@ -1,8 +1,10 @@
 'use server';
 
+import type { DocumentReference } from 'firebase-admin/firestore';
+
 import { AuthUser } from '@/auth/user';
 import { getFirestore } from '@/firebase/server/firebase-admin';
-import type { DocumentReference } from 'firebase-admin/firestore';
+
 import { asDocPath } from '../paths';
 import type { Organization, User } from '../schema';
 

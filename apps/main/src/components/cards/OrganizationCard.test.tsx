@@ -1,7 +1,7 @@
-import { render, screen } from '@/test-utils';
-import OrganizationCard from './OrganizationCard';
-
 import { Organization } from '@/datastore/schema';
+import { render, screen } from '@/test-utils';
+
+import { OrganizationCard } from './OrganizationCard';
 
 const mockOrganization: Organization = {
   id: 'org-1',

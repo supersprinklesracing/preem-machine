@@ -1,15 +1,23 @@
+import { Metadata } from 'next';
+
 import { Breadcrumbs } from '@/components/Breadcrumbs/Breadcrumbs';
-import { Stack } from '@mantine/core';
+import { CommonLayout } from '@/components/layout/CommonLayout';
+
+import { Hub } from './Hub';
 import { getHubPageData } from './hub-data';
-import Hub from './Hub';
+
+export async function generateMetadata(): Promise<Metadata> {
+  return {
+    title: 'Manage',
+  };
+}
 
 export default async function LiveOrganizationPage() {
   const data = await getHubPageData();
 
   return (
-    <Stack>
-      <Breadcrumbs brief={null} />
+    <CommonLayout breadcrumb={<Breadcrumbs brief={null} />}>
       <Hub {...data} />
-    </Stack>
+    </CommonLayout>
   );
 }

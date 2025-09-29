@@ -1,4 +1,5 @@
 import { useRouter } from 'next/navigation';
+
 import { useRedirectParam } from './useRedirectParam';
 
 export function useRedirectAfterLogin() {

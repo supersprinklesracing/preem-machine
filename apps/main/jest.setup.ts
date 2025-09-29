@@ -1,14 +1,12 @@
 import '@testing-library/jest-dom';
-
 import './src/matchMedia.mock';
 
 import fetchMock from 'jest-fetch-mock';
 fetchMock.enableMocks();
 
+import { mockGoogleCloudFirestore } from 'firestore-jest-mock';
 import { Headers, Request, Response } from 'node-fetch';
 import { TextDecoder, TextEncoder } from 'util';
-
-import { mockGoogleCloudFirestore } from 'firestore-jest-mock';
 mockGoogleCloudFirestore(
   {},
   { includeIdsInData: true, mutable: true, simulateQueryFilters: true },
@@ -62,5 +60,16 @@ class ResizeObserver {
 }
 
 window.ResizeObserver = ResizeObserver;
+
+jest.mock('react-timezone-select', () => ({
+  useTimezoneSelect: () => ({
+    options: [
+      { value: 'America/New_York', label: 'Eastern' },
+      { value: 'America/Chicago', label: 'Central' },
+      { value: 'America/Denver', label: 'Mountain' },
+      { value: 'America/Los_Angeles', label: 'Pacific' },
+    ],
+  }),
+}));
 
 jest.useFakeTimers().setSystemTime(new Date('2025-07-13T00:00:00-07:00'));

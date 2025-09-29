@@ -1,14 +1,15 @@
 'use server-only';
 
-import { isServiceAccount } from '@/secrets/service-account-secret';
 import admin from 'firebase-admin';
 import { getFirebaseAuth as getFirebaseAuthNext } from 'next-firebase-auth-edge';
 // import { getFirestore as getFirestoreBase } from 'firebase-admin/firestore';
 // import { getApp as getAppBase } from 'firebase-admin/app';
-
 import type { Auth } from 'next-firebase-auth-edge/auth';
-import { serverConfigFn } from './config';
+
 import { ENV_FIREBASE_AUTH_EMULATOR_HOST } from '@/env/env';
+import { isServiceAccount } from '@/secrets/service-account-secret';
+
+import { serverConfigFn } from './config';
 
 const initializeApp = async () => {
   const serverConfig = await serverConfigFn();

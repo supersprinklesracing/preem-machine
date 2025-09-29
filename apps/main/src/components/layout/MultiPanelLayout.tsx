@@ -1,25 +1,23 @@
-'use client';
-
 import { Container, SimpleGrid, Stack } from '@mantine/core';
 import { ReactNode } from 'react';
 
 export function MultiPanelLayout({
-  leftPanel,
-  rightPanel,
-  bottomPanel,
+  children,
+  topLeft,
+  topRight,
 }: {
-  leftPanel: ReactNode;
-  rightPanel: ReactNode;
-  bottomPanel?: ReactNode;
+  children?: ReactNode;
+  topLeft?: ReactNode;
+  topRight?: ReactNode;
 }) {
   return (
     <Container fluid>
       <Stack>
         <SimpleGrid cols={{ base: 1, md: 2 }}>
-          {leftPanel}
-          {rightPanel}
+          {topLeft}
+          {topRight}
         </SimpleGrid>
-        {bottomPanel && <SimpleGrid cols={1}>{bottomPanel}</SimpleGrid>}
+        {children && <SimpleGrid cols={1}>{children}</SimpleGrid>}
       </Stack>
     </Container>
   );

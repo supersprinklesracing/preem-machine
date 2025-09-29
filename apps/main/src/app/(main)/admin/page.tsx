@@ -1,7 +1,17 @@
-import { getOrganizations, getUsers } from '@/datastore/server/query/query';
-import { Admin } from './Admin';
-import { verifyUserContext, hasUserRole } from '@/user/server/user';
+import { Metadata } from 'next';
 import { redirect } from 'next/navigation';
+
+import { CommonLayout } from '@/components/layout/CommonLayout';
+import { getOrganizations, getUsers } from '@/datastore/server/query/query';
+import { hasUserRole, verifyUserContext } from '@/user/server/user';
+
+import { Admin } from './Admin';
+
+export async function generateMetadata(): Promise<Metadata> {
+  return {
+    title: 'Admin',
+  };
+}
 
 async function AdminPage() {
   const { authUser } = await verifyUserContext();
@@ -13,7 +23,11 @@ async function AdminPage() {
 
   const users = await getUsers();
   const organizations = await getOrganizations();
-  return <Admin users={users} organizations={organizations} />;
+  return (
+    <CommonLayout>
+      <Admin users={users} organizations={organizations} />
+    </CommonLayout>
+  );
 }
 
 export default AdminPage;

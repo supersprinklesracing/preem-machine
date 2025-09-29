@@ -1,9 +1,7 @@
 import { Event } from '@/datastore/schema';
-
 import { act, fireEvent, render, screen, waitFor } from '@/test-utils';
+
 import { EditEvent } from './EditEvent';
-
-
 
 const mockEvent: Event = {
   id: 'event-1',

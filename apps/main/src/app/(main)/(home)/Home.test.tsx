@@ -1,5 +1,6 @@
 import { render, screen, within } from '@/test-utils';
-import Home from './Home';
+
+import { Home } from './Home';
 
 const mockData = {
   eventsWithRaces: [

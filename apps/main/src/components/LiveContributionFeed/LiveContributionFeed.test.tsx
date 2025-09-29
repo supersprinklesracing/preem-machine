@@ -1,6 +1,8 @@
-import { render, screen } from '@/test-utils';
 import React from 'react';
-import LiveContributionFeed from './LiveContributionFeed';
+
+import { render, screen } from '@/test-utils';
+
+import { LiveContributionFeed } from './LiveContributionFeed';
 
 const mockData = {
   contributions: [

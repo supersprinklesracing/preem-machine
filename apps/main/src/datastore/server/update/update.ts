@@ -1,35 +1,37 @@
 'use server';
 
-import { AuthUser } from '@/auth/user';
-import { getFirestore } from '@/firebase/server/firebase-admin';
 import {
   DocumentData,
-  FieldValue,
   type DocumentReference,
+  FieldValue,
   type Transaction,
 } from 'firebase-admin/firestore';
 import Stripe from 'stripe';
+
+import { AuthUser } from '@/auth/user';
+import { getFirestore } from '@/firebase/server/firebase-admin';
+
 import { NotFoundError, unauthorized } from '../../errors';
 import { asDocPath, getSubCollectionPath } from '../../paths';
 import {
   ContributionSchema,
-  EventSchema,
-  OrganizationSchema,
-  PreemSchema,
-  RaceSchema,
-  SeriesSchema,
-  UserSchema,
   type Event,
   type EventBrief,
+  EventSchema,
   type Organization,
   type OrganizationBrief,
+  OrganizationSchema,
   type Preem,
   type PreemBrief,
+  PreemSchema,
   type Race,
   type RaceBrief,
+  RaceSchema,
   type Series,
   type SeriesBrief,
+  SeriesSchema,
   type User,
+  UserSchema,
 } from '../../schema';
 import { isUserAuthorized } from '../access';
 import { getCollectionRefInternal, getDocRefInternal } from '../util';

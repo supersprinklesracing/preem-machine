@@ -1,12 +1,14 @@
+import { type Firestore, Timestamp } from 'firebase-admin/firestore';
+
+import { Event, Race, Series } from '@/datastore/schema';
+import { getFirestore } from '@/firebase/server/firebase-admin';
 import { setupMockDb } from '@/test-utils';
+
 import {
+  DateRangeError,
   validateEventDateRange,
   validateRaceDateRange,
-  DateRangeError,
 } from './validation';
-import { getFirestore } from '@/firebase/server/firebase-admin';
-import { Timestamp, type Firestore } from 'firebase-admin/firestore';
-import { Series, Event, Race } from '@/datastore/schema';
 
 describe('validation', () => {
   let db: Firestore;

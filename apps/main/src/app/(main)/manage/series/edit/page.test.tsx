@@ -1,7 +1,8 @@
+import { NotFoundError } from '@/datastore/errors';
 import { render, screen, setupMockDb } from '@/test-utils';
+
 import { EditSeries } from './EditSeries';
 import EditSeriesPage from './page';
-import { NotFoundError } from '@/datastore/errors';
 
 // Mock dependencies
 jest.mock('./EditSeries', () => ({

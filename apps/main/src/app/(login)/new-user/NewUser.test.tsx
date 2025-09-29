@@ -1,12 +1,13 @@
 import {
   act,
   fireEvent,
+  MOCK_AUTH_USER,
   render,
   screen,
   waitFor,
-  MOCK_AUTH_USER,
 } from '@/test-utils';
-import NewUser from './NewUser';
+
+import { NewUser } from './NewUser';
 
 describe('NewUser component', () => {
   beforeEach(() => {

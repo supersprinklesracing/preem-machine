@@ -3,13 +3,6 @@
 import { toUrlPath } from '@/datastore/paths';
 export const dynamic = 'force-dynamic';
 
-import AnimatedNumber from '@/components/AnimatedNumber';
-import ContributionsCard from '@/components/cards/ContributionsCard';
-import PreemCard from '@/components/cards/PreemCard';
-import PreemStatusBadge from '@/components/PreemStatusBadge/PreemStatusBadge';
-import type { PreemWithContributions } from '@/datastore/query-schema';
-import { Race } from '@/datastore/schema';
-import { formatDateRelative } from '@/dates/dates';
 import {
   Box,
   Button,
@@ -29,14 +22,22 @@ import {
   IconUsers,
 } from '@tabler/icons-react';
 import Link from 'next/link';
-import React from 'react';
+
+import { AnimatedNumber } from '@/components/AnimatedNumber';
+import { ContributionsCard } from '@/components/cards/ContributionsCard';
+import { PreemCard } from '@/components/cards/PreemCard';
+import { MultiPanelLayout } from '@/components/layout/MultiPanelLayout';
+import { PreemStatusBadge } from '@/components/PreemStatusBadge/PreemStatusBadge';
+import type { PreemWithContributions } from '@/datastore/query-schema';
+import { Race } from '@/datastore/schema';
+import { formatDateRelative } from '@/dates/dates';
 
 export interface LiveRaceProps {
   race: Pick<Race, 'name' | 'path' | 'startDate' | 'currentRacers'>;
   children: PreemWithContributions[];
 }
 
-export const LiveRace: React.FC<LiveRaceProps> = ({ race, children }) => {
+export function LiveRace({ race, children }: LiveRaceProps) {
   const preemRows = children?.map(({ preem }) => (
     <Table.Tr key={preem.path}>
       <Table.Td>
@@ -89,79 +90,79 @@ export const LiveRace: React.FC<LiveRaceProps> = ({ race, children }) => {
   });
 
   return (
-    <Stack gap="lg">
-      <Group justify="space-between">
-        <Title>{race.name}</Title>
-        <Button
-          variant="outline"
-          leftSection={<IconPencil size={14} />}
-          size="xs"
-          component={Link}
-          href={`/manage/${toUrlPath(race.path)}/edit`}
-        >
-          Edit Race
-        </Button>
-      </Group>
-      <Grid gutter="lg">
-        <Grid.Col span={{ base: 12, md: 4 }}>
-          <Card withBorder padding="lg" radius="md">
-            <Title order={3}>Race Control</Title>
-            <Title order={2} mt="sm">
-              {race.name}
-            </Title>
-            <Group gap="xs" mt="sm">
-              <IconClock size={16} />
-              <Text size="sm" c="dimmed">
-                {/* eslint-disable-next-line @typescript-eslint/no-non-null-assertion */}
-                Live for {formatDateRelative(race.startDate!)}
-              </Text>
-            </Group>
-            <Group gap="xs" mt="xs">
-              <IconUsers size={16} />
-              <Text size="sm" c="dimmed">
-                {race.currentRacers} racers competing
-              </Text>
-            </Group>
-            <Button
-              component={Link}
-              href={`/big-screen/${toUrlPath(race.path)}`}
-              variant="outline"
-              leftSection={<IconDeviceTv size={16} />}
-              mt="md"
-              fullWidth
-            >
-              Open Big Screen
-            </Button>
-          </Card>
-        </Grid.Col>
-        <Grid.Col span={{ base: 12, md: 8 }}>
-          <Card withBorder padding="lg" radius="md">
-            <Title order={3}>Preem Management</Title>
-            {/* Desktop view */}
-            <Box visibleFrom="sm">
-              <Table mt="md" highlightOnHover>
-                <Table.Thead>
-                  <Table.Tr>
-                    <Table.Th>Preem</Table.Th>
-                    <Table.Th>Prize Pool</Table.Th>
-                    <Table.Th>Status</Table.Th>
-                    <Table.Th />
-                  </Table.Tr>
-                </Table.Thead>
-                <Table.Tbody>{preemRows}</Table.Tbody>
-              </Table>
-            </Box>
-            {/* Mobile view */}
-            <Box hiddenFrom="sm" mt="md">
-              <Stack>{preemCards}</Stack>
-            </Box>
-          </Card>
-        </Grid.Col>
-      </Grid>
+    <MultiPanelLayout>
+      <Stack gap="lg">
+        <Group justify="space-between">
+          <Title>{race.name}</Title>
+          <Button
+            variant="outline"
+            leftSection={<IconPencil size={14} />}
+            size="xs"
+            component={Link}
+            href={`/manage/${toUrlPath(race.path)}/edit`}
+          >
+            Edit Race
+          </Button>
+        </Group>
+        <Grid gutter="lg">
+          <Grid.Col span={{ base: 12, md: 4 }}>
+            <Card withBorder padding="lg" radius="md">
+              <Title order={3}>Race Control</Title>
+              <Title order={2} mt="sm">
+                {race.name}
+              </Title>
+              <Group gap="xs" mt="sm">
+                <IconClock size={16} />
+                <Text size="sm" c="dimmed">
+                  {/* eslint-disable-next-line @typescript-eslint/no-non-null-assertion */}
+                  Live for {formatDateRelative(race.startDate!)}
+                </Text>
+              </Group>
+              <Group gap="xs" mt="xs">
+                <IconUsers size={16} />
+                <Text size="sm" c="dimmed">
+                  {race.currentRacers} racers competing
+                </Text>
+              </Group>
+              <Button
+                component={Link}
+                href={`/big-screen/${toUrlPath(race.path)}`}
+                variant="outline"
+                leftSection={<IconDeviceTv size={16} />}
+                mt="md"
+                fullWidth
+              >
+                Open Big Screen
+              </Button>
+            </Card>
+          </Grid.Col>
+          <Grid.Col span={{ base: 12, md: 8 }}>
+            <Card withBorder padding="lg" radius="md">
+              <Title order={3}>Preem Management</Title>
+              {/* Desktop view */}
+              <Box visibleFrom="sm">
+                <Table mt="md" highlightOnHover>
+                  <Table.Thead>
+                    <Table.Tr>
+                      <Table.Th>Preem</Table.Th>
+                      <Table.Th>Prize Pool</Table.Th>
+                      <Table.Th>Status</Table.Th>
+                      <Table.Th />
+                    </Table.Tr>
+                  </Table.Thead>
+                  <Table.Tbody>{preemRows}</Table.Tbody>
+                </Table>
+              </Box>
+              {/* Mobile view */}
+              <Box hiddenFrom="sm" mt="md">
+                <Stack>{preemCards}</Stack>
+              </Box>
+            </Card>
+          </Grid.Col>
+        </Grid>
 
-      <ContributionsCard children={children} />
-    </Stack>
+        <ContributionsCard children={children} />
+      </Stack>
+    </MultiPanelLayout>
   );
-};
-
-export default LiveRace;
+}
