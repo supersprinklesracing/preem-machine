@@ -11,7 +11,7 @@ const statusColors: Record<string, string> = {
   Awarded: 'violet',
 };
 
-const PreemStatusBadge: React.FC<PreemStatusBadgeProps> = ({ status }) => {
+export function PreemStatusBadge({ status }: PreemStatusBadgeProps) {
   if (!status) {
     return null;
   }
@@ -21,6 +21,4 @@ const PreemStatusBadge: React.FC<PreemStatusBadgeProps> = ({ status }) => {
       {status}
     </Badge>
   );
-};
-
-export default PreemStatusBadge;
+}

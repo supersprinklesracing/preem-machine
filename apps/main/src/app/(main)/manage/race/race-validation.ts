@@ -1,5 +1,7 @@
-import { Event } from '@/datastore/schema';
 import { z } from 'zod';
+
+import { Event } from '@/datastore/schema';
+
 import { raceSchema } from './race-schema';
 
 export const validateRaceForm = (

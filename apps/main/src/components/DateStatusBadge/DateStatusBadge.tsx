@@ -14,10 +14,7 @@ const statusColors: Record<DateStatus, string> = {
   Finished: 'gray',
 };
 
-const DateStatusBadge: React.FC<DateStatusBadgeProps> = ({
-  startDate,
-  endDate,
-}) => {
+export function DateStatusBadge({ startDate, endDate }: DateStatusBadgeProps) {
   let status: DateStatus | undefined = undefined;
   let variant: BadgeVariant = 'light';
 
@@ -42,6 +39,4 @@ const DateStatusBadge: React.FC<DateStatusBadgeProps> = ({
       {status}
     </Badge>
   );
-};
-
-export default DateStatusBadge;
+}

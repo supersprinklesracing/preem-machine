@@ -1,5 +1,6 @@
 import { render, screen } from '@/test-utils';
-import Event from './Event';
+
+import { Event } from './Event';
 
 const mockData = {
   event: {

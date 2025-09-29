@@ -1,9 +1,12 @@
 import '@/matchMedia.mock';
-import { render, screen, waitFor } from '@/test-utils';
+
 import userEvent from '@testing-library/user-event';
-import { User } from '@/datastore/schema';
-import Account from './Account';
 import { act } from 'react';
+
+import { User } from '@/datastore/schema';
+import { render, screen, waitFor } from '@/test-utils';
+
+import { Account } from './Account';
 
 const mockUser: User = {
   path: 'users/test-user',

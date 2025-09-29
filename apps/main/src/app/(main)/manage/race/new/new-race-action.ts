@@ -1,11 +1,13 @@
 'use server';
 
-import { verifyUserContext } from '@/user/server/user';
-import { FormActionError, FormActionResult } from '@/components/forms/forms';
-import { createRace } from '@/datastore/server/create/create';
-import { CollectionPath, DocPath } from '@/datastore/paths';
 import { revalidatePath } from 'next/cache';
 import { z } from 'zod';
+
+import { FormActionError, FormActionResult } from '@/components/forms/forms';
+import { CollectionPath, DocPath } from '@/datastore/paths';
+import { createRace } from '@/datastore/server/create/create';
+import { verifyUserContext } from '@/user/server/user';
+
 import { raceSchema } from '../race-schema';
 
 export interface NewRaceOptions {

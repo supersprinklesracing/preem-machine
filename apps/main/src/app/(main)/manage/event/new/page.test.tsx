@@ -1,4 +1,5 @@
 import { render, screen, setupMockDb } from '@/test-utils';
+
 import NewEventPage from './page';
 
 jest.mock('./NewEvent', () => ({

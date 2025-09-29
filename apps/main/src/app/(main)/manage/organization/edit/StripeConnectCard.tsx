@@ -1,7 +1,5 @@
 'use client';
 
-import { ENV_STRIPE_ENABLED } from '@/env/env';
-import { Organization } from '@/datastore/schema';
 import {
   Badge,
   Button,
@@ -18,6 +16,10 @@ import {
   IconX,
 } from '@tabler/icons-react';
 import Stripe from 'stripe';
+
+import { Organization } from '@/datastore/schema';
+import { ENV_STRIPE_ENABLED } from '@/env/env';
+
 import { useStripeConnect } from './useStripeConnect';
 
 interface Props {

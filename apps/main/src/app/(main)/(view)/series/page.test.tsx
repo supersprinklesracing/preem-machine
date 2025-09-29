@@ -1,13 +1,15 @@
-import { render, screen, setupMockDb } from '@/test-utils';
 import React from 'react';
-import SeriesPage from './page';
-import Series from './Series';
+
 import { NotFoundError } from '@/datastore/errors';
+import { render, screen, setupMockDb } from '@/test-utils';
+
+import SeriesPage from './page';
+import { Series } from './Series';
 
 // Mock dependencies
 jest.mock('./Series', () => ({
   __esModule: true,
-  default: jest.fn(() => <div>Mock Series</div>),
+  Series: jest.fn(() => <div>Mock Series</div>),
 }));
 
 setupMockDb();

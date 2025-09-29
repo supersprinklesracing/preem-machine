@@ -1,14 +1,16 @@
 /* eslint-disable @typescript-eslint/no-explicit-any */
-import { getFirestore } from '@/firebase/server/firebase-admin';
 import {
   CollectionReference,
   DocumentReference,
   type DocumentSnapshot,
 } from 'firebase-admin/firestore';
 import { z } from 'zod';
+
+import { ENV_DEBUG_DATASTORE } from '@/env/env';
+import { getFirestore } from '@/firebase/server/firebase-admin';
+
 import { notFound } from '../errors';
 import { converter } from './converters';
-import { ENV_DEBUG_DATASTORE } from '@/env/env';
 
 export const getDocRefInternal = async <T extends z.ZodObject<any, any>>(
   schema: T,

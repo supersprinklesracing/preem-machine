@@ -1,15 +1,6 @@
 'use client';
 
-import { toUrlPath } from '@/datastore/paths';
-import { Event, User } from '@/datastore/schema';
-import { ENV_DEBUG_LINKS } from '@/env/env';
-import {
-  Box,
-  Divider,
-  NavLink,
-  ScrollArea,
-  Stack,
-} from '@mantine/core';
+import { Box, Divider, NavLink, ScrollArea, Stack } from '@mantine/core';
 import {
   IconBike,
   IconBug,
@@ -20,6 +11,11 @@ import {
 import Link from 'next/link';
 import { usePathname } from 'next/navigation';
 import React from 'react';
+
+import { toUrlPath } from '@/datastore/paths';
+import { Event, User } from '@/datastore/schema';
+import { ENV_DEBUG_LINKS } from '@/env/env';
+
 import { useMainAppShell } from './MainAppShellContext';
 
 export interface SidebarProps {
@@ -27,7 +23,7 @@ export interface SidebarProps {
   user: User | null;
 }
 
-const Sidebar: React.FC<SidebarProps> = ({ events, user }) => {
+export function Sidebar({ events, user }: SidebarProps) {
   const pathname = usePathname();
   const { onLinkClick, isMobile } = useMainAppShell();
 
@@ -50,37 +46,39 @@ const Sidebar: React.FC<SidebarProps> = ({ events, user }) => {
             onClick={handleLinkClick}
             data-testid="sidebar-home-link"
           />
-          {user && user.organizationRefs && user.organizationRefs.length > 0 && (
-            <NavLink
-              label="Hub"
-              leftSection={<IconBike size={18} />}
-              active={pathname.startsWith('/manage')}
-              defaultOpened
-            >
+          {user &&
+            user.organizationRefs &&
+            user.organizationRefs.length > 0 && (
               <NavLink
-                href="/manage"
-                label="Overview"
-                leftSection={<IconCrown size={18} />}
+                label="Hub"
+                leftSection={<IconBike size={18} />}
                 active={pathname.startsWith('/manage')}
-                component={Link}
-                opened={true}
-                onClick={handleLinkClick}
-              />
-              {events.map((event) => {
-                const href = `/manage/${toUrlPath(event.path)}`;
-                return (
-                  <NavLink
-                    key={event.path}
-                    href={href}
-                    label={event.name}
-                    active={pathname === href}
-                    component={Link}
-                    onClick={handleLinkClick}
-                  />
-                );
-              })}
-            </NavLink>
-          )}
+                defaultOpened
+              >
+                <NavLink
+                  href="/manage"
+                  label="Overview"
+                  leftSection={<IconCrown size={18} />}
+                  active={pathname.startsWith('/manage')}
+                  component={Link}
+                  opened={true}
+                  onClick={handleLinkClick}
+                />
+                {events.map((event) => {
+                  const href = `/manage/${toUrlPath(event.path)}`;
+                  return (
+                    <NavLink
+                      key={event.path}
+                      href={href}
+                      label={event.name}
+                      active={pathname === href}
+                      component={Link}
+                      onClick={handleLinkClick}
+                    />
+                  );
+                })}
+              </NavLink>
+            )}
         </div>
         <div>
           {ENV_DEBUG_LINKS && (
@@ -200,6 +198,4 @@ const Sidebar: React.FC<SidebarProps> = ({ events, user }) => {
       </Stack>
     </ScrollArea>
   );
-};
-
-export default Sidebar;
+}

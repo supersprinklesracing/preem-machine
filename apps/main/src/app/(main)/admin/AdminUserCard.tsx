@@ -1,8 +1,9 @@
 'use client';
 
-import { User } from '@/datastore/schema';
-import { Card, Text, Button, Group, Anchor } from '@mantine/core';
+import { Anchor, Button, Card, Group, Text } from '@mantine/core';
 import Link from 'next/link';
+
+import { User } from '@/datastore/schema';
 
 interface AdminUserCardProps {
   user: User;

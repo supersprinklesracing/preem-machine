@@ -1,16 +1,24 @@
 'use server';
 
+import { Metadata } from 'next';
+
 import { Breadcrumbs } from '@/components/Breadcrumbs/Breadcrumbs';
+import { CommonLayout } from '@/components/layout/CommonLayout';
 import { getRenderableHomeDataForPage } from '@/datastore/server/query/query';
-import { Stack } from '@mantine/core';
-import Home from './Home';
+
+import { Home } from './Home';
+
+export async function generateMetadata(): Promise<Metadata> {
+  return {
+    title: 'Home',
+  };
+}
 
 export default async function Page() {
   const data = await getRenderableHomeDataForPage();
   return (
-    <Stack>
-      <Breadcrumbs brief={null} />
+    <CommonLayout breadcrumb={<Breadcrumbs brief={null} />}>
       <Home {...data} />
-    </Stack>
+    </CommonLayout>
   );
 }

@@ -1,6 +1,7 @@
-import { render, screen } from '@/test-utils';
-import LiveSeries from './LiveSeries';
 import { Series } from '@/datastore/schema';
+import { render, screen } from '@/test-utils';
+
+import { LiveSeries } from './LiveSeries';
 
 describe('LiveSeries', () => {
   const mockSeries: Pick<

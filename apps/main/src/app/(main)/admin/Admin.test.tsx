@@ -1,6 +1,7 @@
-import { render, screen, fireEvent } from '@/test-utils';
+import { Organization, User } from '@/datastore/schema';
+import { fireEvent, render, screen } from '@/test-utils';
+
 import { Admin } from './Admin';
-import { User, Organization } from '@/datastore/schema';
 
 const mockUsers: User[] = [
   { id: '1', name: 'Test User 1', email: 'user1@example.com', path: 'users/1' },

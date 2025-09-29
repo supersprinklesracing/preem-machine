@@ -23,7 +23,7 @@ function getStravaRouteId(url: string): string | undefined {
   return match ? match[1] : undefined;
 }
 
-export default function CourseLink({ courseLink }: { courseLink?: string }) {
+export function CourseLink({ courseLink }: { courseLink?: string }) {
   useEffect(() => {
     if (isStravaRoute(courseLink)) {
       const script = document.createElement('script');

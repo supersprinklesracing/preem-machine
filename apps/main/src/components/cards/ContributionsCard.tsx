@@ -1,21 +1,21 @@
 'use client';
 
+import { Box, Button, Group, Stack, Table, Text } from '@mantine/core';
+import Link from 'next/link';
+
+import { ContributionCard } from '@/components/cards/ContributionCard';
 import { UserAvatar } from '@/components/UserAvatar/UserAvatar';
-import ContributionCard from '@/components/cards/ContributionCard';
 import { toUrlPath } from '@/datastore/paths';
 import type { PreemWithContributions } from '@/datastore/query-schema';
 import { formatDateRelative } from '@/dates/dates';
-import { Box, Button, Group, Stack, Table, Text } from '@mantine/core';
-import Link from 'next/link';
+
 import { ContentCard } from './ContentCard';
 
 interface LiveContributionsProps {
   children: PreemWithContributions[];
 }
 
-export default function ContributionsCard({
-  children,
-}: LiveContributionsProps) {
+export function ContributionsCard({ children }: LiveContributionsProps) {
   const liveContributions =
     children
       ?.flatMap((p: PreemWithContributions) => p.children || [])

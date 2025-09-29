@@ -1,6 +1,8 @@
-import { Organization } from '@/datastore/schema';
 import { TitleOrder } from '@mantine/core';
 import React from 'react';
+
+import { Organization } from '@/datastore/schema';
+
 import { ContentCard } from './ContentCard';
 
 interface OrganizationCardProps {
@@ -11,13 +13,13 @@ interface OrganizationCardProps {
   titleOrder?: TitleOrder;
 }
 
-const OrganizationCard: React.FC<OrganizationCardProps> = ({
+export function OrganizationCard({
   organization,
   children,
   style,
   withBorder = true,
   titleOrder = 3,
-}) => {
+}: OrganizationCardProps) {
   return (
     <ContentCard
       title={organization.name}
@@ -27,6 +29,4 @@ const OrganizationCard: React.FC<OrganizationCardProps> = ({
       titleOrder={titleOrder}
     />
   );
-};
-
-export default OrganizationCard;
+}

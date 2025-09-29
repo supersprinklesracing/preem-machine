@@ -1,6 +1,7 @@
-import { render, screen } from '@/test-utils';
-import ManagePreemContributionTable from './ManagePreemContributionTable';
 import { ContributionWithUser } from '@/datastore/query-schema';
+import { render, screen } from '@/test-utils';
+
+import { ManagePreemContributionTable } from './ManagePreemContributionTable';
 
 // Mock child components
 jest.mock('@/components/UserAvatar/UserAvatar', () => ({
@@ -27,7 +28,11 @@ const mockContributions: ContributionWithUser[] = [
 
 describe('ManagePreemContributionTable component', () => {
   it('should render the contribution table', () => {
-    render(<ManagePreemContributionTable>{mockContributions}</ManagePreemContributionTable>);
+    render(
+      <ManagePreemContributionTable>
+        {mockContributions}
+      </ManagePreemContributionTable>,
+    );
 
     expect(screen.getByText('Mock UserAvatar')).toBeInTheDocument();
     expect(screen.getByText('$100')).toBeInTheDocument();

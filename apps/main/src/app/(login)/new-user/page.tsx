@@ -1,9 +1,19 @@
 'use server';
 
-import { getUserContext } from '@/user/server/user';
+import { Metadata } from 'next';
 import { redirect } from 'next/navigation';
+
+import { CommonLayout } from '@/components/layout/CommonLayout';
+import { getUserContext } from '@/user/server/user';
+
 import { newUserAction } from './new-user-action';
-import NewUser from './NewUser';
+import { NewUser } from './NewUser';
+
+export async function generateMetadata(): Promise<Metadata> {
+  return {
+    title: 'Welcome',
+  };
+}
 
 export default async function NewUserPage() {
   const { authUser, user } = await getUserContext();
@@ -21,5 +31,9 @@ export default async function NewUserPage() {
   }
 
   // Otherwise, the user needs to register.
-  return <NewUser newUserAction={newUserAction} />;
+  return (
+    <CommonLayout>
+      <NewUser newUserAction={newUserAction} />
+    </CommonLayout>
+  );
 }

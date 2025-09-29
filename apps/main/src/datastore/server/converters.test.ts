@@ -1,6 +1,7 @@
+import { QueryDocumentSnapshot, Timestamp } from 'firebase-admin/firestore';
 import { z } from 'zod';
+
 import { converter as firebaseConverter } from './converters';
-import { Timestamp, QueryDocumentSnapshot } from 'firebase-admin/firestore';
 
 // Mock Zod schema for testing
 const testSchema = z.object({

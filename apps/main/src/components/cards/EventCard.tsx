@@ -1,9 +1,11 @@
-import { Event } from '@/datastore/schema';
 import { TitleOrder } from '@mantine/core';
 import React from 'react';
-import DateStatusBadge from '../DateStatusBadge/DateStatusBadge';
-import { DateLocationDetail } from './DateLocationDetail';
+
+import { Event } from '@/datastore/schema';
+
+import { DateStatusBadge } from '../DateStatusBadge/DateStatusBadge';
 import { ContentCard } from './ContentCard';
+import { DateLocationDetail } from './DateLocationDetail';
 
 interface EventCardProps {
   event: Event;
@@ -13,13 +15,13 @@ interface EventCardProps {
   titleOrder?: TitleOrder;
 }
 
-const EventCard: React.FC<EventCardProps> = ({
+export function EventCard({
   event,
   children,
   style,
   withBorder = true,
   titleOrder = 3,
-}) => {
+}: EventCardProps) {
   return (
     <ContentCard
       title={event.name}
@@ -31,6 +33,4 @@ const EventCard: React.FC<EventCardProps> = ({
       titleOrder={titleOrder}
     />
   );
-};
-
-export default EventCard;
+}

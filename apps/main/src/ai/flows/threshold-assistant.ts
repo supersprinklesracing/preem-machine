@@ -7,8 +7,9 @@
  * - SuggestThresholdOutput - The return type for the suggestThreshold function.
  */
 
-import { ai } from '@/ai/genkit';
 import { z } from 'genkit';
+
+import { ai } from '@/ai/genkit';
 
 const SuggestThresholdInputSchema = z.object({
   raceId: z

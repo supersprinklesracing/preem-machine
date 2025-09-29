@@ -1,7 +1,8 @@
-import { fireEvent, render, screen } from '@/test-utils';
 import { User } from '@/datastore/schema';
+import { fireEvent, render, screen } from '@/test-utils';
+
 import { MainAppShellContext } from './MainAppShellContext';
-import Sidebar, { SidebarProps } from './Sidebar';
+import { Sidebar, SidebarProps } from './Sidebar';
 
 const mockUser: User = {
   id: 'user-1',

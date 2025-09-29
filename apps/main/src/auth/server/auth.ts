@@ -1,9 +1,11 @@
 /* Base level authentication. Should only be called from the @/user module. */
 
-import { serverConfigFn } from '@/firebase/server/config';
+import { cookies, headers } from 'next/headers';
 import { getTokens, Tokens } from 'next-firebase-auth-edge';
 import { filterStandardClaims } from 'next-firebase-auth-edge/lib/auth/claims';
-import { cookies, headers } from 'next/headers';
+
+import { serverConfigFn } from '@/firebase/server/config';
+
 import { ENV_E2E_TESTING } from '../../env/env';
 import { AuthUser } from '../user';
 

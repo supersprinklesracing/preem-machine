@@ -1,7 +1,11 @@
+import type { Firestore } from 'firebase-admin/firestore';
+
 import { AuthUser } from '@/auth/user';
+import { Event, Series } from '@/datastore/schema';
 import { getFirestore } from '@/firebase/server/firebase-admin';
 import { MOCK_AUTH_USER, setupMockDb } from '@/test-utils';
-import type { Firestore } from 'firebase-admin/firestore';
+
+import { isUserAuthorized } from '../access';
 import {
   createEvent,
   createPendingContribution,
@@ -9,9 +13,6 @@ import {
   createRace,
   createSeries,
 } from './create';
-
-import { Event, Series } from '@/datastore/schema';
-import { isUserAuthorized } from '../access';
 
 jest.mock('../access', () => ({
   isUserAuthorized: jest.fn().mockResolvedValue(true),

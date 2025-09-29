@@ -1,14 +1,8 @@
 'use client';
 
-import { useActionForm } from '@/components/forms/useActionForm';
-import OrganizationCard from '@/components/cards/OrganizationCard';
-import { FormActionResult } from '@/components/forms/forms';
-import { Organization } from '@/datastore/schema';
-import { MultiPanelLayout } from '@/components/layout/MultiPanelLayout';
 import {
   Button,
   Card,
-  Container,
   Group,
   Stack,
   Text,
@@ -19,9 +13,16 @@ import {
 import { useDebouncedValue } from '@mantine/hooks';
 import isEqual from 'fast-deep-equal';
 import { useRouter } from 'next/navigation';
+
+import { OrganizationCard } from '@/components/cards/OrganizationCard';
+import { FormActionResult } from '@/components/forms/forms';
+import { useActionForm } from '@/components/forms/useActionForm';
+import { MultiPanelLayout } from '@/components/layout/MultiPanelLayout';
+import { Organization } from '@/datastore/schema';
+
 import { organizationSchema } from '../organization-schema';
-import { StripeConnectCard } from './StripeConnectCard';
 import { EditOrganizationOptions } from './edit-organization-action';
+import { StripeConnectCard } from './StripeConnectCard';
 
 export function EditOrganization({
   editOrganizationAction,
@@ -63,53 +64,51 @@ export function EditOrganization({
   };
 
   return (
-    <Container>
-      <Stack>
-        <Title order={1}>Edit Organization</Title>
-        <MultiPanelLayout
-          leftPanel={
-            <Stack>
-              <Card withBorder>
-                <form onSubmit={form.onSubmit(handleSubmit)}>
-                  <Stack>
-                    <TextInput
-                      label="Organization Name"
-                      required
-                      {...form.getInputProps('name')}
-                    />
-                    <TextInput
-                      label="Website"
-                      {...form.getInputProps('website')}
-                    />
-                    <Textarea
-                      label="Description"
-                      {...form.getInputProps('description')}
-                    />
-                    <Group justify="right">
-                      <Button
-                        type="submit"
-                        loading={isLoading}
-                        disabled={
-                          !form.isValid() ||
-                          !isEqual(form.values, debouncedValues)
-                        }
-                      >
-                        Save Changes
-                      </Button>
-                    </Group>
-                    {submissionError && <Text c="red">{submissionError}</Text>}
-                  </Stack>
-                </form>
-              </Card>
-              <StripeConnectCard
-                organization={organization}
-                stripeError={stripeError}
-              />
-            </Stack>
-          }
-          rightPanel={<OrganizationCard organization={organizationPreview} />}
-        />
-      </Stack>
-    </Container>
+    <Stack>
+      <Title order={1}>Edit Organization</Title>
+      <MultiPanelLayout
+        topLeft={
+          <Stack>
+            <Card withBorder>
+              <form onSubmit={form.onSubmit(handleSubmit)}>
+                <Stack>
+                  <TextInput
+                    label="Organization Name"
+                    required
+                    {...form.getInputProps('name')}
+                  />
+                  <TextInput
+                    label="Website"
+                    {...form.getInputProps('website')}
+                  />
+                  <Textarea
+                    label="Description"
+                    {...form.getInputProps('description')}
+                  />
+                  <Group justify="right">
+                    <Button
+                      type="submit"
+                      loading={isLoading}
+                      disabled={
+                        !form.isValid() ||
+                        !isEqual(form.values, debouncedValues)
+                      }
+                    >
+                      Save Changes
+                    </Button>
+                  </Group>
+                  {submissionError && <Text c="red">{submissionError}</Text>}
+                </Stack>
+              </form>
+            </Card>
+            <StripeConnectCard
+              organization={organization}
+              stripeError={stripeError}
+            />
+          </Stack>
+        }
+        topRight={<OrganizationCard organization={organizationPreview} />}
+      />
+    </Stack>
   );
 }

@@ -1,9 +1,7 @@
 import { FormActionResult } from '@/components/forms/forms';
-
 import { act, fireEvent, render, screen, waitFor, within } from '@/test-utils';
+
 import { NewRace } from './NewRace';
-
-
 
 describe('NewRace component', () => {
   beforeEach(() => {

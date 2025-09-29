@@ -1,11 +1,12 @@
 'use server';
 
 import { SecretManagerServiceClient } from '@google-cloud/secret-manager';
+
+import { ENV_STRIPE_ENABLED } from '../env/env';
 import {
   isServiceAccountSecret,
   ServiceAccountSecret,
 } from './service-account-secret';
-import { ENV_STRIPE_ENABLED } from '../env/env';
 
 let cachedClient: unknown | null = null;
 async function getSecret(name: string): Promise<string> {

@@ -1,13 +1,13 @@
 import * as firestore from '@/datastore/server/query/query';
-
 import { render, screen } from '@/test-utils';
-import Home from './Home';
+
+import { Home } from './Home';
 import Page from './page';
 
 // Mock dependencies
 jest.mock('./Home', () => ({
   __esModule: true,
-  default: jest.fn(() => <div>Mock Home</div>),
+  Home: jest.fn(() => <div>Mock Home</div>),
 }));
 jest.mock('@/datastore/server/query/query');
 

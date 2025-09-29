@@ -1,11 +1,13 @@
 import { render, screen } from '@/test-utils';
-import Preem from './Preem';
 
-jest.mock(
-  '@/components/AnimatedNumber',
-  () =>
-    ({ value }: { value: number }) => <span>{value}</span>,
-);
+import { Preem } from './Preem';
+
+jest.mock('@/components/AnimatedNumber', () => ({
+  __esModule: true,
+  AnimatedNumber: jest.fn(({ value }: { value: number }) => (
+    <span>{value}</span>
+  )),
+}));
 
 const mockPreemData = {
   preem: {

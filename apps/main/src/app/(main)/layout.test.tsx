@@ -1,12 +1,15 @@
 import * as firestore from '@/datastore/server/query/query';
 import { render, screen, setupUserContext } from '@/test-utils';
+
 import Layout from './layout';
-import MainAppShell from './Shell/MainAppShell';
+import { MainAppShell } from './Shell/MainAppShell';
 
 // Mock dependencies
 jest.mock('./Shell/MainAppShell', () => ({
   __esModule: true,
-  default: jest.fn(({ children }) => <div>Mock MainAppShell{children}</div>),
+  MainAppShell: jest.fn(({ children }) => (
+    <div>Mock MainAppShell{children}</div>
+  )),
 }));
 jest.mock('@/datastore/server/query/query');
 

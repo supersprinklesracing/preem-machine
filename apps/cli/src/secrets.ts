@@ -1,13 +1,13 @@
-import { Octokit } from '@octokit/rest';
 import { SecretManagerServiceClient } from '@google-cloud/secret-manager';
+import { Octokit } from '@octokit/rest';
 import * as dotenv from 'dotenv';
 import * as fs from 'fs';
 import {
-  ready,
-  from_base64,
-  to_base64,
-  crypto_box_seal,
   base64_variants,
+  crypto_box_seal,
+  from_base64,
+  ready,
+  to_base64,
 } from 'libsodium-wrappers';
 import yargs from 'yargs';
 
@@ -190,7 +190,7 @@ export async function syncSecrets(options: SyncOptions) {
         } else {
           console.log(`[GCP] Secret is already up-to-date: ${key}`);
         }
-      } catch (error) {
+      } catch {
         console.log(`[GCP] Creating secret: ${key}`);
         // Secret does not exist, create it
         await gcpSecretClient.createSecret({
@@ -238,6 +238,7 @@ export async function syncSecrets(options: SyncOptions) {
       console.error(error.message);
       if ('status' in error) {
         console.error(
+          // eslint-disable-next-line @typescript-eslint/no-explicit-any
           `GitHub API responded with status: ${(error as any).status}`,
         );
       }
@@ -307,6 +308,7 @@ export const secretsCommand = {
             })
             .demandOption('project');
         },
+        // eslint-disable-next-line @typescript-eslint/no-explicit-any
         async (argv: any) => {
           await syncSecrets({
             githubToken: argv.githubToken,
@@ -329,6 +331,7 @@ export const secretsCommand = {
             })
             .demandOption('project');
         },
+        // eslint-disable-next-line @typescript-eslint/no-explicit-any
         async (argv: any) => {
           await pullFromGcp(argv.project, argv.dryRun);
         },

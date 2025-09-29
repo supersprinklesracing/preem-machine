@@ -2,10 +2,11 @@
 
 import { getEventsForUser } from '@/datastore/server/query/query';
 import { validUserContext } from '@/user/server/user';
-import MainAppShellProvider from './Shell/MainAppShellProvider';
-import AvatarCluster from './Shell/AvatarCluster';
-import MainAppShell from './Shell/MainAppShell';
-import Sidebar from './Shell/Sidebar';
+
+import { AvatarCluster } from './Shell/AvatarCluster';
+import { MainAppShell } from './Shell/MainAppShell';
+import { MainAppShellProvider } from './Shell/MainAppShellProvider';
+import { Sidebar } from './Shell/Sidebar';
 
 export interface MainProps {
   children: React.ReactNode;

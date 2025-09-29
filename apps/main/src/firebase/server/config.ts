@@ -1,9 +1,11 @@
 'use server';
 
-import { ENV_DEBUG_AUTH, ENV_USE_HTTPS } from '@/env/env';
-import { getSecrets } from '@/secrets';
 import type { ServiceAccount } from 'firebase-admin';
 import type { AuthMiddlewareOptions } from 'next-firebase-auth-edge/next/middleware';
+
+import { ENV_DEBUG_AUTH, ENV_USE_HTTPS } from '@/env/env';
+import { getSecrets } from '@/secrets';
+
 import { clientConfig } from '../client/config';
 
 let serviceAccount: ServiceAccount | null = null;

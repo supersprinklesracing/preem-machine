@@ -1,14 +1,7 @@
 'use client';
-
-import { DateLocationDetail } from '@/components/cards/DateLocationDetail';
-import RaceCard from '@/components/cards/RaceCard';
-import { organizationPath, seriesPath, toUrlPath } from '@/datastore/paths';
-import { RaceWithPreems } from '@/datastore/query-schema';
-import { Event as EventType } from '@/datastore/schema';
 import {
   Anchor,
   Button,
-  Container,
   Group,
   SimpleGrid,
   Stack,
@@ -17,6 +10,13 @@ import {
 } from '@mantine/core';
 import { IconChevronRight, IconWorldWww } from '@tabler/icons-react';
 import Link from 'next/link';
+
+import { DateLocationDetail } from '@/components/cards/DateLocationDetail';
+import { RaceCard } from '@/components/cards/RaceCard';
+import { MultiPanelLayout } from '@/components/layout/MultiPanelLayout';
+import { organizationPath, seriesPath, toUrlPath } from '@/datastore/paths';
+import { RaceWithPreems } from '@/datastore/query-schema';
+import { Event as EventType } from '@/datastore/schema';
 
 interface Props {
   event: Pick<
@@ -33,17 +33,20 @@ interface Props {
   children: RaceWithPreems[];
 }
 
-export default function Event({ event, children }: Props) {
+export function Event({ event, children }: Props) {
   const series = event.seriesBrief;
   const organization = series.organizationBrief;
 
   return (
-    <Container fluid>
+    <MultiPanelLayout>
       <Stack>
         <Title>{event.name}</Title>
         <Text>
           Part of{' '}
-          <Anchor component={Link} href={`/${toUrlPath(seriesPath(event.path))}`}>
+          <Anchor
+            component={Link}
+            href={`/${toUrlPath(seriesPath(event.path))}`}
+          >
             {series.name}
           </Anchor>{' '}
           hosted by{' '}
@@ -100,6 +103,6 @@ export default function Event({ event, children }: Props) {
           </SimpleGrid>
         </Stack>
       </Stack>
-    </Container>
+    </MultiPanelLayout>
   );
 }

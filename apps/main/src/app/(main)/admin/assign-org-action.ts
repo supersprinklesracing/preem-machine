@@ -1,9 +1,10 @@
 'use server';
 
 import { revalidatePath } from 'next/cache';
-import { getFirestore } from '@/firebase/server/firebase-admin';
+
 import { OrganizationSchema, UserSchema } from '@/datastore/schema';
 import { converter } from '@/datastore/server/converters';
+import { getFirestore } from '@/firebase/server/firebase-admin';
 
 export async function assignOrg(userId: string, orgId: string) {
   const db = await getFirestore();

@@ -1,7 +1,5 @@
 'use client';
 
-import { getThresholdSuggestion } from './threshold-suggestion-action';
-import { createToast } from '@/app/(main)/admin/createToast';
 import {
   Button,
   Card,
@@ -17,6 +15,10 @@ import {
 import { IconSparkles } from '@tabler/icons-react';
 import React, { useState } from 'react';
 
+import { createToast } from '@/app/(main)/admin/createToast';
+
+import { getThresholdSuggestion } from './threshold-suggestion-action';
+
 interface ThresholdAssistantModalProps {
   isOpen: boolean;
   onClose: () => void;
@@ -28,11 +30,11 @@ type Suggestion = {
   reasoning: string;
 };
 
-const ThresholdAssistantModal: React.FC<ThresholdAssistantModalProps> = ({
+export function ThresholdAssistantModal({
   isOpen,
   onClose,
   raceId,
-}) => {
+}: ThresholdAssistantModalProps) {
   const { toast } = createToast();
   const [formData, setFormData] = useState({
     averageContributionAmount: 50,
@@ -159,6 +161,4 @@ const ThresholdAssistantModal: React.FC<ThresholdAssistantModalProps> = ({
       </Group>
     </Modal>
   );
-};
-
-export default ThresholdAssistantModal;
+}

@@ -1,15 +1,16 @@
-import { fireEvent, PHONE_WIDTH, render, screen } from '@/test-utils';
 import MatchMediaMock from 'jest-matchmedia-mock';
-import { Race } from './Race';
 
 import { DateLocationDetail } from '@/components/cards/DateLocationDetail';
+import { fireEvent, PHONE_WIDTH, render, screen } from '@/test-utils';
+
+import { Race } from './Race';
 
 let matchMedia: MatchMediaMock;
 
 // Mock child components
 jest.mock('@/components/cards/RaceCard', () => ({
   __esModule: true,
-  default: jest.fn(({ race }) => (
+  RaceCard: jest.fn(({ race }) => (
     <div>
       Mock RaceCard
       <DateLocationDetail {...race} />
@@ -18,15 +19,15 @@ jest.mock('@/components/cards/RaceCard', () => ({
 }));
 jest.mock('@/components/AnimatedNumber', () => ({
   __esModule: true,
-  default: jest.fn(({ value }) => <span>{value}</span>),
+  AnimatedNumber: jest.fn(({ value }) => <span>{value}</span>),
 }));
 jest.mock('@/components/PreemStatusBadge/PreemStatusBadge', () => ({
   __esModule: true,
-  default: jest.fn(() => <div>Mock PreemStatusBadge</div>),
+  PreemStatusBadge: jest.fn(() => <div>Mock PreemStatusBadge</div>),
 }));
 jest.mock('@/components/ContributionModal', () => ({
   __esModule: true,
-  default: jest.fn(() => <div>Mock ContributionModal</div>),
+  ContributionModal: jest.fn(() => <div>Mock ContributionModal</div>),
 }));
 
 const mockData = {

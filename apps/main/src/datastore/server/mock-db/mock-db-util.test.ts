@@ -1,6 +1,7 @@
+import type { Firestore } from 'firebase-admin/firestore';
+
 import { getFirestore } from '@/firebase/server/firebase-admin';
 import { setupMockDb } from '@/test-utils';
-import type { Firestore } from 'firebase-admin/firestore';
 
 describe('firestore-mocks', () => {
   let firestore: Firestore;

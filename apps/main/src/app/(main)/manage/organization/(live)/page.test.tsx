@@ -1,12 +1,13 @@
-import { render, screen, setupMockDb } from '@/test-utils';
 import { NotFoundError } from '@/datastore/errors';
-import LiveOrganization from './LiveOrganization';
+import { render, screen, setupMockDb } from '@/test-utils';
+
+import { LiveOrganization } from './LiveOrganization';
 import LiveOrganizationPage from './page';
 
 // Mock dependencies
 jest.mock('./LiveOrganization', () => ({
   __esModule: true,
-  default: jest.fn(() => <div>Mock LiveOrganization</div>),
+  LiveOrganization: jest.fn(() => <div>Mock LiveOrganization</div>),
 }));
 
 setupMockDb();

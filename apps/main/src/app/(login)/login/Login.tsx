@@ -1,10 +1,5 @@
 'use client';
 
-import { appendRedirectParam } from '@/app/(login)/redirect';
-import { useRedirectAfterLogin } from '@/app/(login)/useRedirectAfterLogin';
-import { useRedirectParam } from '@/app/(login)/useRedirectParam';
-import { loginWithCredential } from '@/auth/client/auth';
-import { getFirebaseAuth } from '@/firebase/client/firebase-client';
 import {
   Anchor,
   Button,
@@ -19,22 +14,30 @@ import {
   Title,
 } from '@mantine/core';
 import {
-  UserCredential,
   getRedirectResult,
   isSignInWithEmailLink,
   sendSignInLinkToEmail,
   signInWithEmailAndPassword,
   signInWithEmailLink,
+  UserCredential,
 } from 'firebase/auth';
 import Link from 'next/link';
 import * as React from 'react';
 import { useLoadingCallback } from 'react-loading-hook';
+
+import { appendRedirectParam } from '@/app/(login)/redirect';
+import { useRedirectAfterLogin } from '@/app/(login)/useRedirectAfterLogin';
+import { useRedirectParam } from '@/app/(login)/useRedirectParam';
+import { loginWithCredential } from '@/auth/client/auth';
+import { MultiPanelLayout } from '@/components/layout/MultiPanelLayout';
+import { ENV_URL_PREFIX } from '@/env/env';
+import { getFirebaseAuth } from '@/firebase/client/firebase-client';
+
 import {
   getGoogleProvider,
   loginWithProvider,
   loginWithProviderUsingRedirect,
 } from './providers';
-import { ENV_URL_PREFIX } from '@/env/env';
 
 export function Login({
   loginAction,
@@ -169,99 +172,103 @@ export function Login({
 
   if (hasLogged) {
     return (
-      <Container size="xs" pt="xl">
-        <Stack>
-          <Title order={1}>Login</Title>
-          <Group>
-            <Text>
-              Redirecting to <strong>{redirect || '/'}</strong>
-            </Text>
-            <Loader />
-          </Group>
-        </Stack>
-      </Container>
+      <MultiPanelLayout>
+        <Container size="xs" pt="xl">
+          <Stack>
+            <Title order={1}>Login</Title>
+            <Group>
+              <Text>
+                Redirecting to <strong>{redirect || '/'}</strong>
+              </Text>
+              <Loader />
+            </Group>
+          </Stack>
+        </Container>
+      </MultiPanelLayout>
     );
   }
   return (
-    <Container size="md" pt="xl">
-      <Stack>
-        <Title order={1}>Login</Title>
+    <MultiPanelLayout>
+      <Container size="md" pt="xl">
         <Stack>
-          <form onSubmit={handleLoginWithEmailAndPassword}>
-            <Stack>
-              <TextInput
-                required
-                value={email}
-                onChange={(e) => setEmail(e.target.value)}
-                name="email"
-                type="email"
-                placeholder="Email address"
-              />
-              <PasswordInput
-                required
-                name="password"
-                value={password}
-                onChange={(e) => setPassword(e.target.value)}
-                placeholder="Password"
-                minLength={8}
-              />
-              <Switch
-                checked={shouldLoginWithAction}
-                onChange={(event) =>
-                  setShouldLoginWithAction(event.currentTarget.checked)
-                }
-                label="Login with Server Action"
-              />
-              {error && <Text c="red">{error.message}</Text>}
+          <Title order={1}>Login</Title>
+          <Stack>
+            <form onSubmit={handleLoginWithEmailAndPassword}>
+              <Stack>
+                <TextInput
+                  required
+                  value={email}
+                  onChange={(e) => setEmail(e.target.value)}
+                  name="email"
+                  type="email"
+                  placeholder="Email address"
+                />
+                <PasswordInput
+                  required
+                  name="password"
+                  value={password}
+                  onChange={(e) => setPassword(e.target.value)}
+                  placeholder="Password"
+                  minLength={8}
+                />
+                <Switch
+                  checked={shouldLoginWithAction}
+                  onChange={(event) =>
+                    setShouldLoginWithAction(event.currentTarget.checked)
+                  }
+                  label="Login with Server Action"
+                />
+                {error && <Text c="red">{error.message}</Text>}
+                <Button
+                  loading={isEmailLoading || isLoginActionPending}
+                  disabled={isEmailLoading || isLoginActionPending}
+                  type="submit"
+                >
+                  Submit
+                </Button>
+              </Stack>
+            </form>
+            <Group pt="xl">
               <Button
-                loading={isEmailLoading || isLoginActionPending}
-                disabled={isEmailLoading || isLoginActionPending}
-                type="submit"
+                loading={isGoogleLoading}
+                disabled={isGoogleLoading}
+                onClick={() => handleLoginWithGoogle()}
               >
-                Submit
+                Log in with Google (Popup)
               </Button>
-            </Stack>
-          </form>
-          <Group pt="xl">
-            <Button
-              loading={isGoogleLoading}
-              disabled={isGoogleLoading}
-              onClick={() => handleLoginWithGoogle()}
-            >
-              Log in with Google (Popup)
-            </Button>
-            <Button
-              loading={isGoogleUsingRedirectLoading}
-              disabled={isGoogleUsingRedirectLoading}
-              onClick={() => handleLoginWithGoogleUsingRedirect()}
-            >
-              Log in with Google (Redirect)
-            </Button>
-            <Button
-              loading={isEmailLinkLoading}
-              disabled={isEmailLinkLoading}
-              onClick={() => handleLoginWithEmailLink()}
-            >
-              Log in with Email Link
-            </Button>
-          </Group>
-          <Group>
-            <Anchor
-              component={Link}
-              href={appendRedirectParam('/reset-password', redirect)}
-            >
-              Reset password
-            </Anchor>
-            <Button
-              component={Link}
-              href={appendRedirectParam('/register', redirect)}
-              variant="outline"
-            >
-              Register
-            </Button>
-          </Group>
+              <Button
+                loading={isGoogleUsingRedirectLoading}
+                disabled={isGoogleUsingRedirectLoading}
+                onClick={() => handleLoginWithGoogleUsingRedirect()}
+              >
+                Log in with Google (Redirect)
+              </Button>
+              <Button
+                loading={isEmailLinkLoading}
+                disabled={isEmailLinkLoading}
+                onClick={() => handleLoginWithEmailLink()}
+              >
+                Log in with Email Link
+              </Button>
+            </Group>
+            <Group>
+              <Anchor
+                component={Link}
+                href={appendRedirectParam('/reset-password', redirect)}
+              >
+                Reset password
+              </Anchor>
+              <Button
+                component={Link}
+                href={appendRedirectParam('/register', redirect)}
+                variant="outline"
+              >
+                Register
+              </Button>
+            </Group>
+          </Stack>
         </Stack>
-      </Stack>
-    </Container>
+      </Container>
+    </MultiPanelLayout>
   );
 }

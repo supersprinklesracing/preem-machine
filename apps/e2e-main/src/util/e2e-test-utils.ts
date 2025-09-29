@@ -1,8 +1,6 @@
 import { Page, test } from '@playwright/test';
-import {
-  ENV_E2E_TESTING,
-  ENV_E2E_TESTING_USER
-} from './e2e-env';
+
+import { ENV_E2E_TESTING, ENV_E2E_TESTING_USER } from './e2e-env';
 
 if (!ENV_E2E_TESTING) {
   throw new Error('E2E_TESTING is not set.');

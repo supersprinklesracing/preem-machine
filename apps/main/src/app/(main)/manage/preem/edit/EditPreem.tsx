@@ -1,15 +1,8 @@
 'use client';
 
-import PreemCard from '@/components/cards/PreemCard';
-import { FormActionResult } from '@/components/forms/forms';
-import { useActionForm } from '@/components/forms/useActionForm';
-import { toUrlPath } from '@/datastore/paths';
-import { Preem } from '@/datastore/schema';
-import { MultiPanelLayout } from '@/components/layout/MultiPanelLayout';
 import {
   Button,
   Card,
-  Container,
   Group,
   NumberInput,
   Select,
@@ -22,6 +15,14 @@ import {
 import { DateTimePicker } from '@mantine/dates';
 import { useDebouncedValue } from '@mantine/hooks';
 import { useRouter } from 'next/navigation';
+
+import { PreemCard } from '@/components/cards/PreemCard';
+import { FormActionResult } from '@/components/forms/forms';
+import { useActionForm } from '@/components/forms/useActionForm';
+import { MultiPanelLayout } from '@/components/layout/MultiPanelLayout';
+import { toUrlPath } from '@/datastore/paths';
+import { Preem } from '@/datastore/schema';
+
 import { preemSchema } from '../preem-schema';
 import { validatePreemForm } from '../preem-validation';
 import { EditPreemOptions } from './edit-preem-action';
@@ -61,70 +62,68 @@ export function EditPreem({
   };
 
   return (
-    <Container fluid>
-      <Stack>
-        <Title order={1}>Edit Preem</Title>
-        <Title order={3}>{preem.name}</Title>
-        <MultiPanelLayout
-          leftPanel={
-            <Card withBorder>
-              <form onSubmit={form.onSubmit(handleSubmit)}>
-                <Stack>
-                  <TextInput
-                    label="Preem Name"
-                    required
-                    {...form.getInputProps('name')}
-                  />
-                  <Textarea
-                    label="Description"
-                    {...form.getInputProps('description')}
-                  />
-                  <Select
-                    label="Type"
-                    data={['Pooled', 'One-Shot']}
-                    {...form.getInputProps('type')}
-                  />
-                  <Select
-                    label="Status"
-                    data={['Open', 'Minimum Met', 'Awarded']}
-                    {...form.getInputProps('status')}
-                  />
-                  <NumberInput
-                    label="Prize Pool"
-                    {...form.getInputProps('prizePool')}
-                  />
-                  <DateTimePicker
-                    label="Time Limit"
-                    value={form.values.timeLimit}
-                    onChange={(value) =>
-                      form.setFieldValue(
-                        'timeLimit',
-                        value ? new Date(value) : undefined,
-                      )
-                    }
-                    error={form.errors.timeLimit}
-                  />
-                  <NumberInput
-                    label="Minimum Threshold"
-                    {...form.getInputProps('minimumThreshold')}
-                  />
-                  <Group justify="right">
-                    <Button
-                      type="submit"
-                      loading={isLoading}
-                      disabled={!form.isValid() || !form.isDirty()}
-                    >
-                      Save Changes
-                    </Button>
-                  </Group>
-                  {submissionError && <Text c="red">{submissionError}</Text>}
-                </Stack>
-              </form>
-            </Card>
-          }
-          rightPanel={<PreemCard preem={preemPreview} />}
-        />
-      </Stack>
-    </Container>
+    <Stack>
+      <Title order={1}>Edit Preem</Title>
+      <Title order={3}>{preem.name}</Title>
+      <MultiPanelLayout
+        topLeft={
+          <Card withBorder>
+            <form onSubmit={form.onSubmit(handleSubmit)}>
+              <Stack>
+                <TextInput
+                  label="Preem Name"
+                  required
+                  {...form.getInputProps('name')}
+                />
+                <Textarea
+                  label="Description"
+                  {...form.getInputProps('description')}
+                />
+                <Select
+                  label="Type"
+                  data={['Pooled', 'One-Shot']}
+                  {...form.getInputProps('type')}
+                />
+                <Select
+                  label="Status"
+                  data={['Open', 'Minimum Met', 'Awarded']}
+                  {...form.getInputProps('status')}
+                />
+                <NumberInput
+                  label="Prize Pool"
+                  {...form.getInputProps('prizePool')}
+                />
+                <DateTimePicker
+                  label="Time Limit"
+                  value={form.values.timeLimit}
+                  onChange={(value) =>
+                    form.setFieldValue(
+                      'timeLimit',
+                      value ? new Date(value) : undefined,
+                    )
+                  }
+                  error={form.errors.timeLimit}
+                />
+                <NumberInput
+                  label="Minimum Threshold"
+                  {...form.getInputProps('minimumThreshold')}
+                />
+                <Group justify="right">
+                  <Button
+                    type="submit"
+                    loading={isLoading}
+                    disabled={!form.isValid() || !form.isDirty()}
+                  >
+                    Save Changes
+                  </Button>
+                </Group>
+                {submissionError && <Text c="red">{submissionError}</Text>}
+              </Stack>
+            </form>
+          </Card>
+        }
+        topRight={<PreemCard preem={preemPreview} />}
+      />
+    </Stack>
   );
 }

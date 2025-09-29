@@ -1,3 +1,5 @@
+import { cache } from 'react';
+
 import { OrganizationWithSeries } from '@/datastore/query-schema';
 import { OrganizationSchema } from '@/datastore/schema';
 import {
@@ -6,7 +8,6 @@ import {
   getUserById,
 } from '@/datastore/server/query/query';
 import { verifyUserContext } from '@/user/server/user';
-import { cache } from 'react';
 
 export const getHubPageData = cache(async () => {
   const { authUser } = await verifyUserContext();

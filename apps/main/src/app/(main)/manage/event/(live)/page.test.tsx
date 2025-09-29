@@ -1,13 +1,13 @@
 import { NotFoundError } from '@/datastore/errors';
-
 import { render, screen, setupMockDb } from '@/test-utils';
-import LiveEvent from './LiveEvent';
+
+import { LiveEvent } from './LiveEvent';
 import LiveEventPage from './page';
 
 // Mock dependencies
 jest.mock('./LiveEvent', () => ({
   __esModule: true,
-  default: jest.fn(() => <div>Mock LiveEvent</div>),
+  LiveEvent: jest.fn(() => <div>Mock LiveEvent</div>),
 }));
 
 setupMockDb();

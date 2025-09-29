@@ -1,16 +1,10 @@
 'use client';
 
-import { useActionForm } from '@/components/forms/useActionForm';
-import EventCard from '@/components/cards/EventCard';
-import { FormActionResult } from '@/components/forms/forms';
-import { toUrlPath } from '@/datastore/paths';
-import { Event, Series } from '@/datastore/schema';
-import { MultiPanelLayout } from '@/components/layout/MultiPanelLayout';
 import {
   Button,
   Card,
-  Container,
   Group,
+  Select,
   Stack,
   Text,
   Textarea,
@@ -21,7 +15,15 @@ import { DatePicker } from '@mantine/dates';
 import { useDebouncedValue } from '@mantine/hooks';
 import isEqual from 'fast-deep-equal';
 import { useRouter } from 'next/navigation';
-import TimezoneSelect from 'react-timezone-select';
+import { useTimezoneSelect } from 'react-timezone-select';
+
+import { EventCard } from '@/components/cards/EventCard';
+import { FormActionResult } from '@/components/forms/forms';
+import { useActionForm } from '@/components/forms/useActionForm';
+import { MultiPanelLayout } from '@/components/layout/MultiPanelLayout';
+import { toUrlPath } from '@/datastore/paths';
+import { Event, Series } from '@/datastore/schema';
+
 import { eventSchema } from '../event-schema';
 import { validateEventForm } from '../event-validation';
 import { NewEventOptions } from './new-event-action';
@@ -40,6 +42,7 @@ export function NewEvent({
   onSuccess?: () => void;
 }) {
   const router = useRouter();
+  const { options } = useTimezoneSelect({});
 
   const { form, handleSubmit, isLoading, submissionError } = useActionForm({
     schema: eventSchema,
@@ -74,83 +77,77 @@ export function NewEvent({
   };
 
   return (
-    <Container>
-      <Stack>
-        <Title order={1}>Create Event</Title>
-        <MultiPanelLayout
-          leftPanel={
-            <Card withBorder>
-              <form onSubmit={form.onSubmit(handleSubmit)}>
-                <Stack>
-                  <TextInput
-                    label="Event Name"
-                    required
-                    {...form.getInputProps('name')}
-                    data-testid="name-input"
-                  />
-                  <Textarea
-                    label="Description"
-                    {...form.getInputProps('description')}
-                    data-testid="description-input"
-                  />
-                  <TextInput
-                    label="Website"
-                    {...form.getInputProps('website')}
-                    data-testid="website-input"
-                  />
-                  <TextInput
-                    label="Location"
-                    {...form.getInputProps('location')}
-                    data-testid="location-input"
-                  />
-                  <DatePicker
-                    type="range"
-                    allowSingleDateInRange
-                    value={[
-                      form.values.startDate ?? null,
-                      form.values.endDate ?? null,
-                    ]}
-                    onChange={([start, end]) => {
-                      form.setFieldValue(
-                        'startDate',
-                        start ? new Date(start) : undefined,
-                      );
-                      form.setFieldValue(
-                        'endDate',
-                        end ? new Date(end) : undefined,
-                      );
-                    }}
-                    data-testid="date-picker"
-                  />
-                  <TimezoneSelect
-                    value={form.values.timezone || ''}
-                    onChange={(tz) =>
-                      form.setFieldValue(
-                        'timezone',
-                        typeof tz === 'string' ? tz : tz.value,
-                      )
+    <Stack>
+      <Title order={1}>Create Event</Title>
+      <MultiPanelLayout
+        topLeft={
+          <Card withBorder>
+            <form onSubmit={form.onSubmit(handleSubmit)}>
+              <Stack>
+                <TextInput
+                  label="Event Name"
+                  required
+                  {...form.getInputProps('name')}
+                  data-testid="name-input"
+                />
+                <Textarea
+                  label="Description"
+                  {...form.getInputProps('description')}
+                  data-testid="description-input"
+                />
+                <TextInput
+                  label="Website"
+                  {...form.getInputProps('website')}
+                  data-testid="website-input"
+                />
+                <TextInput
+                  label="Location"
+                  {...form.getInputProps('location')}
+                  data-testid="location-input"
+                />
+                <DatePicker
+                  type="range"
+                  allowSingleDateInRange
+                  value={[
+                    form.values.startDate ?? null,
+                    form.values.endDate ?? null,
+                  ]}
+                  onChange={([start, end]) => {
+                    form.setFieldValue(
+                      'startDate',
+                      start ? new Date(start) : undefined,
+                    );
+                    form.setFieldValue(
+                      'endDate',
+                      end ? new Date(end) : undefined,
+                    );
+                  }}
+                  data-testid="date-picker"
+                />
+                <Select
+                  searchable
+                  label="Timezone"
+                  {...form.getInputProps('timezone')}
+                  data={options}
+                />
+                <Group justify="right">
+                  <Button
+                    type="submit"
+                    loading={isLoading}
+                    disabled={
+                      !form.isValid() || !isEqual(form.values, debouncedValues)
                     }
-                  />
-                  <Group justify="right">
-                    <Button
-                      type="submit"
-                      loading={isLoading}
-                      disabled={
-                        !form.isValid() ||
-                        !isEqual(form.values, debouncedValues)
-                      }
-                    >
-                      Create Event
-                    </Button>
-                  </Group>
-                  {submissionError && <Text c="red">{submissionError}</Text>}
-                </Stack>
-              </form>
-            </Card>
-          }
-          rightPanel={<EventCard event={eventPreview} />}
-        />
-      </Stack>
-    </Container>
+                  >
+                    Create Event
+                  </Button>
+                </Group>
+                {submissionError && <Text c="red">{submissionError}</Text>}
+              </Stack>
+            </form>
+          </Card>
+        }
+        topRight={<EventCard event={eventPreview} />}
+      />
+    </Stack>
   );
 }

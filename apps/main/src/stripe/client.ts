@@ -1,6 +1,7 @@
 'use client';
 
-import { type Stripe, loadStripe as loadStripeJs } from '@stripe/stripe-js';
+import { loadStripe as loadStripeJs, type Stripe } from '@stripe/stripe-js';
+
 import { ENV_STRIPE_ENABLED } from '../env/env';
 
 export const getStripeClient = async (): Promise<Stripe | null> => {

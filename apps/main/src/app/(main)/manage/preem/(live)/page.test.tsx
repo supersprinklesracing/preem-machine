@@ -1,12 +1,13 @@
-import { render, screen, setupMockDb } from '@/test-utils';
 import { NotFoundError } from '@/datastore/errors';
-import LivePreem from './LivePreem';
+import { render, screen, setupMockDb } from '@/test-utils';
+
+import { LivePreem } from './LivePreem';
 import LivePreemPage from './page';
 
 // Mock dependencies
 jest.mock('./LivePreem', () => ({
   __esModule: true,
-  default: jest.fn(() => <div>Mock LivePreem</div>),
+  LivePreem: jest.fn(() => <div>Mock LivePreem</div>),
 }));
 
 setupMockDb();

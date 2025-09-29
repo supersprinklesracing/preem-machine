@@ -1,6 +1,7 @@
-import { render, screen } from '@/test-utils';
-import PreemCard from './PreemCard';
 import { Preem } from '@/datastore/schema';
+import { render, screen } from '@/test-utils';
+
+import { PreemCard } from './PreemCard';
 
 const mockPreem: Preem = {
   id: 'preem-1',

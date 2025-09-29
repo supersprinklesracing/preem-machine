@@ -1,8 +1,9 @@
 'use server';
 
-import { getFirestore } from '@/firebase/server/firebase-admin';
 import { FieldValue } from 'firebase-admin/firestore';
 import Stripe from 'stripe';
+
+import { getFirestore } from '@/firebase/server/firebase-admin';
 
 /**
  * Processes a contribution by updating Firestore within a transaction.

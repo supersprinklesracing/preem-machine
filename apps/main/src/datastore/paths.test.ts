@@ -1,18 +1,18 @@
+import { InvalidPathError } from './errors';
 import {
-  toUrlPath,
-  getParentPathAsCollectionPath,
-  getCollectionGroup,
-  toDocPath,
-  isDocPath,
-  isUrlPath,
+  asCollectionPath,
   asDocPath,
   asUrlPath,
-  getDocPathFromSearchParams,
+  getCollectionGroup,
   getCollectionPathFromSearchParams,
+  getDocPathFromSearchParams,
+  getParentPathAsCollectionPath,
   isCollectionPath,
-  asCollectionPath,
+  isDocPath,
+  isUrlPath,
+  toDocPath,
+  toUrlPath,
 } from './paths';
-import { InvalidPathError } from './errors';
 
 describe('paths', () => {
   describe('isDocPath', () => {
@@ -35,9 +35,9 @@ describe('paths', () => {
       // trailing slash
       expect(isDocPath('organizations/')).toBe(false);
       // consecutive slashes
-      expect(
-        isDocPath('organizations/org-id/series//events/event-id'),
-      ).toBe(false);
+      expect(isDocPath('organizations/org-id/series//events/event-id')).toBe(
+        false,
+      );
     });
   });
 

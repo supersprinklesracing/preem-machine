@@ -1,8 +1,9 @@
-import type { RaceWithPreems } from '@/datastore/query-schema';
 import MatchMediaMock from 'jest-matchmedia-mock';
 
-import { render, screen, PHONE_WIDTH } from '@/test-utils';
-import ContributionsCard from './ContributionsCard';
+import type { RaceWithPreems } from '@/datastore/query-schema';
+import { PHONE_WIDTH, render, screen } from '@/test-utils';
+
+import { ContributionsCard } from './ContributionsCard';
 
 let matchMedia: MatchMediaMock;
 

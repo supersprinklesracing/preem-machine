@@ -1,12 +1,13 @@
-import { render, screen } from '@/test-utils';
-import { Breadcrumbs } from './Breadcrumbs';
 import {
-  OrganizationBrief,
-  SeriesBrief,
   EventBrief,
-  RaceBrief,
+  OrganizationBrief,
   PreemBrief,
+  RaceBrief,
+  SeriesBrief,
 } from '@/datastore/schema';
+import { render, screen } from '@/test-utils';
+
+import { Breadcrumbs } from './Breadcrumbs';
 
 describe('Breadcrumbs', () => {
   const org1: OrganizationBrief = {

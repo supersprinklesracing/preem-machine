@@ -1,5 +1,7 @@
-import { Series } from '@/datastore/schema';
 import { z } from 'zod';
+
+import { Series } from '@/datastore/schema';
+
 import { eventSchema } from './event-schema';
 
 export const validateEventForm = (

@@ -1,6 +1,4 @@
-import { PreemWithContributions } from '@/datastore/query-schema';
-import { Race } from '@/datastore/schema';
-import { TitleOrder, Anchor, Text, Group } from '@mantine/core';
+import { Anchor, Group, Text, TitleOrder } from '@mantine/core';
 import {
   IconAward,
   IconClock,
@@ -8,13 +6,17 @@ import {
   IconUsers,
   IconWorldWww,
 } from '@tabler/icons-react';
+import Link from 'next/link';
 import React from 'react';
-import DateStatusBadge from '../DateStatusBadge/DateStatusBadge';
+
+import { toUrlPath } from '@/datastore/paths';
+import { PreemWithContributions } from '@/datastore/query-schema';
+import { Race } from '@/datastore/schema';
+
+import { DateStatusBadge } from '../DateStatusBadge/DateStatusBadge';
+import { ContentCard } from './ContentCard';
 import { DateLocationDetail } from './DateLocationDetail';
 import { MetadataItem, MetadataRow } from './MetadataRow';
-import Link from 'next/link';
-import { toUrlPath } from '@/datastore/paths';
-import { ContentCard } from './ContentCard';
 
 const LARGE_PREEM_THRESHOLD = 100;
 
@@ -28,7 +30,7 @@ interface RaceCardProps {
   showEventLink?: boolean;
 }
 
-const RaceCard: React.FC<RaceCardProps> = ({
+export function RaceCard({
   race,
   preems,
   children,
@@ -36,7 +38,7 @@ const RaceCard: React.FC<RaceCardProps> = ({
   withBorder = true,
   titleOrder = 3,
   showEventLink = true,
-}) => {
+}: RaceCardProps) {
   const totalPrizePool = preems.reduce(
     (sum, { preem }) => sum + (preem.prizePool ?? 0),
     0,
@@ -135,6 +137,4 @@ const RaceCard: React.FC<RaceCardProps> = ({
       titleOrder={titleOrder}
     />
   );
-};
-
-export default RaceCard;
+}

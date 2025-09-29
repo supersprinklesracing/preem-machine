@@ -1,20 +1,9 @@
 'use client';
 
-import AnimatedNumber from '@/components/AnimatedNumber';
-import RaceCard from '@/components/cards/RaceCard';
-import ContributionModal from '@/components/ContributionModal';
-import CourseLink from '@/components/CourseLink/CourseLink';
-import { MultiPanelLayout } from '@/components/layout/MultiPanelLayout';
-import PreemStatusBadge from '@/components/PreemStatusBadge/PreemStatusBadge';
-import { UserAvatarIcon } from '@/components/UserAvatar/UserAvatar';
-import { toUrlPath } from '@/datastore/paths';
-import { PreemWithContributions } from '@/datastore/query-schema';
-import { Preem, Race as RaceType } from '@/datastore/schema';
 import {
   Box,
   Button,
   Card,
-  Container,
   Grid,
   Group,
   Stack,
@@ -25,15 +14,26 @@ import {
 import { IconCurrencyDollar, IconDeviceTv } from '@tabler/icons-react';
 import Link from 'next/link';
 import React, { useState } from 'react';
+
+import { AnimatedNumber } from '@/components/AnimatedNumber';
+import { PreemCard } from '@/components/cards/PreemCard';
+import { RaceCard } from '@/components/cards/RaceCard';
+import { ContributionModal } from '@/components/ContributionModal';
+import { CourseLink } from '@/components/CourseLink/CourseLink';
+import { MultiPanelLayout } from '@/components/layout/MultiPanelLayout';
+import { PreemStatusBadge } from '@/components/PreemStatusBadge/PreemStatusBadge';
+import { UserAvatarIcon } from '@/components/UserAvatar/UserAvatar';
+import { toUrlPath } from '@/datastore/paths';
+import { PreemWithContributions } from '@/datastore/query-schema';
+import { Preem, Race as RaceType } from '@/datastore/schema';
 import { getSponsorName } from '@/datastore/sponsors';
-import PreemCard from '@/components/cards/PreemCard';
 
 interface Props {
   race: RaceType;
   children: PreemWithContributions[];
 }
 
-export const Race: React.FC<Props> = ({ race, children }) => {
+export function Race({ race, children }: Props) {
   const [selectedPreem, setSelectedPreem] = useState<Preem | null>(null);
 
   const allContributions = children
@@ -175,13 +175,13 @@ export const Race: React.FC<Props> = ({ race, children }) => {
   });
 
   return (
-    <Container fluid>
+    <>
       <MultiPanelLayout
-        leftPanel={
+        topLeft={
           <RaceCard data-testid="race-details" race={race} preems={children} />
         }
-        rightPanel={<CourseLink courseLink={race.courseLink} />}
-        bottomPanel={
+        topRight={<CourseLink courseLink={race.courseLink} />}
+        children={
           <Grid gutter="xl">
             <Grid.Col span={{ base: 12, lg: 8 }}>
               <Group justify="space-between" mb="md">
@@ -253,8 +253,6 @@ export const Race: React.FC<Props> = ({ race, children }) => {
           }}
         />
       )}
-    </Container>
+    </>
   );
-};
-
-export default Race;
+}

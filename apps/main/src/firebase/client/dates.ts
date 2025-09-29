@@ -1,7 +1,8 @@
 'use client';
 
-import { format, fromZonedTime, formatInTimeZone } from 'date-fns-tz';
+import { format, formatInTimeZone, fromZonedTime } from 'date-fns-tz';
 import { Timestamp } from 'firebase/firestore';
+
 import { formatDateUrl } from '@/dates/dates';
 
 export function getDateFromTimestamp(value: Timestamp): Date;

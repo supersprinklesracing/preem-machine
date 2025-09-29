@@ -1,7 +1,9 @@
+import '@testing-library/jest-dom';
+
 import { Series } from '@/datastore/schema';
 import { render, screen } from '@/test-utils';
-import '@testing-library/jest-dom';
-import SeriesCard from './SeriesCard';
+
+import { SeriesCard } from './SeriesCard';
 
 const mockSeries: Series = {
   id: 'series-1',

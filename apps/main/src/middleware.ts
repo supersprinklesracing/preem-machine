@@ -1,12 +1,13 @@
-import { ENV_E2E_TESTING } from '@/env/env';
-import { serverConfigFn } from '@/firebase/server/config';
+import type { NextRequest } from 'next/server';
+import { NextResponse } from 'next/server';
 import {
   authMiddleware,
   redirectToHome,
   redirectToLogin,
 } from 'next-firebase-auth-edge';
-import type { NextRequest } from 'next/server';
-import { NextResponse } from 'next/server';
+
+import { ENV_E2E_TESTING } from '@/env/env';
+import { serverConfigFn } from '@/firebase/server/config';
 
 const LOGGED_OUT_ONLY = ['/register', '/login', '/reset-password'];
 const PROTECTED_PATHS = [

@@ -1,7 +1,8 @@
-import { render, screen, fireEvent, waitFor } from '@/test-utils';
-import { AssignOrgModal } from './AssignOrgModal';
-import { User, Organization } from '@/datastore/schema';
+import { Organization, User } from '@/datastore/schema';
+import { fireEvent, render, screen, waitFor } from '@/test-utils';
+
 import * as actions from './assign-org-action';
+import { AssignOrgModal } from './AssignOrgModal';
 
 // Mock the server action
 jest.mock('./assign-org-action', () => ({

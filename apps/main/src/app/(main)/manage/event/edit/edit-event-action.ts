@@ -1,10 +1,12 @@
 'use server';
 
-import { verifyUserContext } from '@/user/server/user';
+import { z } from 'zod';
+
 import { FormActionError, FormActionResult } from '@/components/forms/forms';
 import { DocPath } from '@/datastore/paths';
 import { updateEvent } from '@/datastore/server/update/update';
-import { z } from 'zod';
+import { verifyUserContext } from '@/user/server/user';
+
 import { eventSchema } from '../event-schema';
 
 export interface EditEventOptions {

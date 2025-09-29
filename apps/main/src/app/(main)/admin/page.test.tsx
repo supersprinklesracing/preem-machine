@@ -1,12 +1,13 @@
 import {
+  MOCK_ADMIN_AUTH_USER,
   render,
   screen,
   setupMockDb,
-  MOCK_ADMIN_AUTH_USER,
 } from '@/test-utils';
+import * as userServer from '@/user/server/user';
+
 import { Admin } from './Admin';
 import AdminPage from './page';
-import * as userServer from '@/user/server/user';
 
 // Mock dependencies
 jest.mock('next/navigation', () => ({

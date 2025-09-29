@@ -1,9 +1,11 @@
-import { renderHook, act } from '@testing-library/react';
 import { useForm } from '@mantine/form';
+import { act, renderHook } from '@testing-library/react';
 import imageCompression from 'browser-image-compression';
-import { useAvatarUpload } from './useAvatarUpload';
+
 import { generateSignedUploadUrl } from '@/app/(main)/account/upload-action';
 import { ENV_MAX_IMAGE_SIZE_BYTES } from '@/env/env';
+
+import { useAvatarUpload } from './useAvatarUpload';
 
 jest.mock('@/app/(main)/account/upload-action');
 jest.mock('browser-image-compression');

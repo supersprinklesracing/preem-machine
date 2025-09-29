@@ -9,11 +9,11 @@ interface DateLocationDetailProps {
   timezone?: string | null;
 }
 
-export const DateLocationDetail: React.FC<DateLocationDetailProps> = ({
+export function DateLocationDetail({
   startDate,
   location,
   timezone,
-}) => {
+}: DateLocationDetailProps) {
   return (
     <Group>
       {startDate && (
@@ -36,4 +36,4 @@ export const DateLocationDetail: React.FC<DateLocationDetailProps> = ({
       )}
     </Group>
   );
-};
+}

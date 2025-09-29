@@ -1,13 +1,15 @@
-import { render, screen, setupMockDb } from '@/test-utils';
 import React from 'react';
+
 import { NotFoundError } from '@/datastore/errors';
+import { render, screen, setupMockDb } from '@/test-utils';
+
 import RacePage from './page';
-import Race from './Race';
+import { Race } from './Race';
 
 // Mock dependencies
 jest.mock('./Race', () => ({
   __esModule: true,
-  default: jest.fn(() => <div>Mock Race</div>),
+  Race: jest.fn(() => <div>Mock Race</div>),
 }));
 
 setupMockDb();

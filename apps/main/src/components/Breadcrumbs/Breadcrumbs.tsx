@@ -1,4 +1,7 @@
 'use client';
+import { Anchor, Breadcrumbs as MantineBreadcrumbs } from '@mantine/core';
+import Link from 'next/link';
+
 import { toUrlPath } from '@/datastore/paths';
 import {
   EventBrief,
@@ -7,8 +10,6 @@ import {
   RaceBrief,
   SeriesBrief,
 } from '@/datastore/schema';
-import { Anchor, Breadcrumbs as MantineBreadcrumbs } from '@mantine/core';
-import Link from 'next/link';
 
 type Brief =
   | OrganizationBrief

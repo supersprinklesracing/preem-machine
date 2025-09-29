@@ -1,9 +1,7 @@
 import { Series } from '@/datastore/schema';
-
 import { act, fireEvent, render, screen, waitFor } from '@/test-utils';
+
 import { EditSeries } from './EditSeries';
-
-
 
 const mockSeries: Series = {
   id: 'series-1',

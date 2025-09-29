@@ -3,6 +3,7 @@
 import { cookies, headers } from 'next/headers';
 import { getTokens } from 'next-firebase-auth-edge';
 import { refreshServerCookies } from 'next-firebase-auth-edge/lib/next/cookies';
+
 import { serverConfigFn } from '@/firebase/server/config';
 
 export async function refreshCookies() {

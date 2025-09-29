@@ -1,13 +1,14 @@
 'use client';
 
+import { useElements, useStripe } from '@stripe/react-stripe-js';
+import { useState } from 'react';
+
 import { createToast } from '@/app/(main)/admin/createToast';
 import {
   confirmContributionOptimistically,
   createPaymentIntent,
 } from '@/stripe/actions';
 import { useUserContext } from '@/user/client/UserContext';
-import { useElements, useStripe } from '@stripe/react-stripe-js';
-import { useState } from 'react';
 
 interface ContributionDetails {
   amount: number;

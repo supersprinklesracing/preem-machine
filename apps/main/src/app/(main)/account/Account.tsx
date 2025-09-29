@@ -1,16 +1,9 @@
 'use client';
 
-import { useActionForm } from '@/components/forms/useActionForm';
-import { logout } from '@/auth/client/auth';
-import { FormActionResult } from '@/components/forms/forms';
-import UpdateUserProfileCard from '@/components/cards/UpdateUserProfileCard';
-import { toUrlPath } from '@/datastore/paths';
-import { User } from '@/datastore/schema';
 import {
   Box,
   Button,
   Card,
-  Container,
   Grid,
   Stack,
   Text,
@@ -19,10 +12,19 @@ import {
   Title,
 } from '@mantine/core';
 import { useDebouncedValue } from '@mantine/hooks';
-import { useRouter } from 'next/navigation';
-import { EditUserOptions } from './edit-user-action';
 import isEqual from 'fast-deep-equal';
+import { useRouter } from 'next/navigation';
+
+import { logout } from '@/auth/client/auth';
+import { UpdateUserProfileCard } from '@/components/cards/UpdateUserProfileCard';
+import { FormActionResult } from '@/components/forms/forms';
+import { useActionForm } from '@/components/forms/useActionForm';
 import { useAvatarUpload } from '@/components/forms/useAvatarUpload';
+import { MultiPanelLayout } from '@/components/layout/MultiPanelLayout';
+import { toUrlPath } from '@/datastore/paths';
+import { User } from '@/datastore/schema';
+
+import { EditUserOptions } from './edit-user-action';
 import { userSchema } from './user-schema';
 
 export interface AccountProps {
@@ -30,7 +32,7 @@ export interface AccountProps {
   editUserAction: (options: EditUserOptions) => Promise<FormActionResult>;
 }
 
-export default function Account({ user, editUserAction }: AccountProps) {
+export function Account({ user, editUserAction }: AccountProps) {
   const router = useRouter();
 
   const { form, handleSubmit, isLoading, submissionError } = useActionForm({
@@ -56,7 +58,7 @@ export default function Account({ user, editUserAction }: AccountProps) {
   const [debouncedValues] = useDebouncedValue(form.values, 100);
 
   return (
-    <Container>
+    <MultiPanelLayout>
       <form onSubmit={form.onSubmit(handleSubmit)}>
         <Grid>
           <Grid.Col span={{ base: 12, md: 4 }}>
@@ -143,6 +145,6 @@ export default function Account({ user, editUserAction }: AccountProps) {
           </Grid.Col>
         </Grid>
       </form>
-    </Container>
+    </MultiPanelLayout>
   );
 }

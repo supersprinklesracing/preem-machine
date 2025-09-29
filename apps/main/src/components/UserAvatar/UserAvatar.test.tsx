@@ -1,5 +1,7 @@
-import { render, screen, MOCK_USER, MOCK_USER_CONTEXT } from '@/test-utils';
 import React from 'react';
+
+import { MOCK_USER, MOCK_USER_CONTEXT, render, screen } from '@/test-utils';
+
 import { UserAvatar, UserAvatarIcon } from './UserAvatar';
 
 describe('UserAvatar', () => {

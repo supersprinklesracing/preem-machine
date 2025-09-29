@@ -1,17 +1,9 @@
 'use client';
 
-import AnimatedNumber from '@/components/AnimatedNumber';
-import ContributionModal from '@/components/ContributionModal';
-import PreemStatusBadge from '@/components/PreemStatusBadge/PreemStatusBadge';
-import { UserAvatar } from '@/components/UserAvatar/UserAvatar';
-import { compareDates, formatDateTime } from '@/dates/dates';
-import { racePath, toUrlPath } from '@/datastore/paths';
-import { Contribution, Preem as PreemType } from '@/datastore/schema';
 import {
   Box,
   Button,
   Card,
-  Container,
   Grid,
   Group,
   SimpleGrid,
@@ -28,7 +20,16 @@ import {
   IconUsers,
 } from '@tabler/icons-react';
 import Link from 'next/link';
-import React, { useState } from 'react';
+import { useState } from 'react';
+
+import { AnimatedNumber } from '@/components/AnimatedNumber';
+import { ContributionModal } from '@/components/ContributionModal';
+import { MultiPanelLayout } from '@/components/layout/MultiPanelLayout';
+import { PreemStatusBadge } from '@/components/PreemStatusBadge/PreemStatusBadge';
+import { UserAvatar } from '@/components/UserAvatar/UserAvatar';
+import { racePath, toUrlPath } from '@/datastore/paths';
+import { Contribution, Preem as PreemType } from '@/datastore/schema';
+import { compareDates, formatDateTime } from '@/dates/dates';
 
 interface Props {
   preem: Pick<
@@ -47,7 +48,7 @@ interface Props {
   children: Contribution[];
 }
 
-export const Preem: React.FC<Props> = ({ preem, children }) => {
+export function Preem({ preem, children }: Props) {
   const [isModalOpen, setIsModalOpen] = useState(false);
 
   const contributionRows = [...(children || [])]
@@ -74,100 +75,105 @@ export const Preem: React.FC<Props> = ({ preem, children }) => {
     });
 
   return (
-    <Container fluid>
-      <Stack gap="lg">
-        <Box>
-          <Button
-          component={Link}
-          href={`/${toUrlPath(racePath(preem.path))}`}
-          variant="subtle"
-          mb="sm"
-          leftSection={<IconArrowLeft size={16} />}
-        >
-          Back to {preem.raceBrief.name}
-        </Button>
-        <Title order={1}>{preem.name}</Title>
-        <Text c="dimmed">Part of {preem.raceBrief.name}</Text>
-        {preem.description && <Text mt="md">{preem.description}</Text>}
-      </Box>
-
-      <Grid gutter="lg">
-        <Grid.Col span={{ base: 12, md: 8 }}>
-          <Card withBorder padding="lg" radius="md">
-            <Title order={4} mb="md">
-              Details
-            </Title>
-            <SimpleGrid cols={2} spacing="md">
-              <Group>
-                <PreemStatusBadge status={preem.status || 'Open'} />
-              </Group>
-              <Group gap="xs">
-                <IconUsers size={18} stroke={1.5} />
-                <Text fw={500}>{preem.type}</Text>
-              </Group>
-              {preem.minimumThreshold && (
-                <Group gap="xs">
-                  <IconTarget size={18} stroke={1.5} />
-                  <Text fw={500}>Threshold: ${preem.minimumThreshold}</Text>
-                </Group>
-              )}
-              {preem.timeLimit && (
-                <Group gap="xs">
-                  <IconClock size={18} stroke={1.5} />
-                  <Text fw={500}>Ends: {formatDateTime(preem.timeLimit)}</Text>
-                </Group>
-              )}
-            </SimpleGrid>
-          </Card>
-        </Grid.Col>
-        <Grid.Col span={{ base: 12, md: 4 }}>
-          <Card
-            bg="dark.6"
-            c="white"
-            padding="lg"
-            radius="md"
-            style={{
-              display: 'flex',
-              flexDirection: 'column',
-              alignItems: 'center',
-              justifyContent: 'center',
-              textAlign: 'center',
-              height: '100%',
-            }}
-          >
-            <Text c="dimmed">Current Prize Pool</Text>
-            <Title order={1} style={{ fontSize: '3.5rem' }}>
-              $<AnimatedNumber value={preem.prizePool ?? 0} />
-            </Title>
+    <>
+      <MultiPanelLayout>
+        <Stack gap="lg">
+          <Box>
             <Button
-              color="yellow"
-              mt="md"
-              onClick={() => setIsModalOpen(true)}
-              leftSection={<IconCurrencyDollar size={18} />}
+              component={Link}
+              href={`/${toUrlPath(racePath(preem.path))}`}
+              variant="subtle"
+              mb="sm"
+              leftSection={<IconArrowLeft size={16} />}
             >
-              Contribute to this Preem
+              Back to {preem.raceBrief.name}
             </Button>
-          </Card>
-        </Grid.Col>
-      </Grid>
+            <Title order={1}>{preem.name}</Title>
+            <Text c="dimmed">Part of {preem.raceBrief.name}</Text>
+            {preem.description && <Text mt="md">{preem.description}</Text>}
+          </Box>
 
-      <Card withBorder padding="lg" radius="md">
-        <Title order={3}>Contribution History</Title>
-        <Text c="dimmed" size="sm">
-          {`${children?.length || 0} contributors have built this prize pool.`}
-        </Text>
-        <Table mt="md" highlightOnHover>
-          <Table.Thead>
-            <Table.Tr>
-              <Table.Th>Contributor</Table.Th>
-              <Table.Th>Amount</Table.Th>
-              <Table.Th>Date</Table.Th>
-              <Table.Th>Message</Table.Th>
-            </Table.Tr>
-          </Table.Thead>
-          <Table.Tbody>{contributionRows}</Table.Tbody>
-        </Table>
-      </Card>
+          <Grid gutter="lg">
+            <Grid.Col span={{ base: 12, md: 8 }}>
+              <Card withBorder padding="lg" radius="md">
+                <Title order={4} mb="md">
+                  Details
+                </Title>
+                <SimpleGrid cols={2} spacing="md">
+                  <Group>
+                    <PreemStatusBadge status={preem.status || 'Open'} />
+                  </Group>
+                  <Group gap="xs">
+                    <IconUsers size={18} stroke={1.5} />
+                    <Text fw={500}>{preem.type}</Text>
+                  </Group>
+                  {preem.minimumThreshold && (
+                    <Group gap="xs">
+                      <IconTarget size={18} stroke={1.5} />
+                      <Text fw={500}>Threshold: ${preem.minimumThreshold}</Text>
+                    </Group>
+                  )}
+                  {preem.timeLimit && (
+                    <Group gap="xs">
+                      <IconClock size={18} stroke={1.5} />
+                      <Text fw={500}>
+                        Ends: {formatDateTime(preem.timeLimit)}
+                      </Text>
+                    </Group>
+                  )}
+                </SimpleGrid>
+              </Card>
+            </Grid.Col>
+            <Grid.Col span={{ base: 12, md: 4 }}>
+              <Card
+                bg="dark.6"
+                c="white"
+                padding="lg"
+                radius="md"
+                style={{
+                  display: 'flex',
+                  flexDirection: 'column',
+                  alignItems: 'center',
+                  justifyContent: 'center',
+                  textAlign: 'center',
+                  height: '100%',
+                }}
+              >
+                <Text c="dimmed">Current Prize Pool</Text>
+                <Title order={1} style={{ fontSize: '3.5rem' }}>
+                  $<AnimatedNumber value={preem.prizePool ?? 0} />
+                </Title>
+                <Button
+                  color="yellow"
+                  mt="md"
+                  onClick={() => setIsModalOpen(true)}
+                  leftSection={<IconCurrencyDollar size={18} />}
+                >
+                  Contribute to this Preem
+                </Button>
+              </Card>
+            </Grid.Col>
+          </Grid>
+
+          <Card withBorder padding="lg" radius="md">
+            <Title order={3}>Contribution History</Title>
+            <Text c="dimmed" size="sm">
+              {`${children?.length || 0} contributors have built this prize pool.`}
+            </Text>
+            <Table mt="md" highlightOnHover>
+              <Table.Thead>
+                <Table.Tr>
+                  <Table.Th>Contributor</Table.Th>
+                  <Table.Th>Amount</Table.Th>
+                  <Table.Th>Date</Table.Th>
+                  <Table.Th>Message</Table.Th>
+                </Table.Tr>
+              </Table.Thead>
+              <Table.Tbody>{contributionRows}</Table.Tbody>
+            </Table>
+          </Card>
+        </Stack>
+      </MultiPanelLayout>
       <ContributionModal
         isOpen={isModalOpen}
         onClose={() => setIsModalOpen(false)}
@@ -177,9 +183,6 @@ export const Preem: React.FC<Props> = ({ preem, children }) => {
           name: preem.name ?? '',
         }}
       />
-      </Stack>
-    </Container>
+    </>
   );
-};
-
-export default Preem;
+}

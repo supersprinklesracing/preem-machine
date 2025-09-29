@@ -1,6 +1,7 @@
 import { createContext, use } from 'react';
-import type { User } from '@/datastore/schema';
+
 import { AuthUser } from '@/auth/user';
+import type { User } from '@/datastore/schema';
 
 export interface UserContextValue {
   authUser: AuthUser | null;

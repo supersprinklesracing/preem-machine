@@ -1,10 +1,12 @@
 'use server';
 
-import { verifyUserContext } from '@/user/server/user';
+import { z } from 'zod';
+
 import { FormActionError, FormActionResult } from '@/components/forms/forms';
 import { DocPath } from '@/datastore/paths';
 import { updateOrganization } from '@/datastore/server/update/update';
-import { z } from 'zod';
+import { verifyUserContext } from '@/user/server/user';
+
 import { organizationSchema } from '../organization-schema';
 
 export interface EditOrganizationOptions {

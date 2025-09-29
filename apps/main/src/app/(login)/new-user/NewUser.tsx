@@ -1,10 +1,5 @@
 'use client';
 
-import { userSchema } from '@/app/(main)/account/user-schema';
-import UserProfileCard from '@/components/cards/UpdateUserProfileCard';
-import { FormActionResult } from '@/components/forms/forms';
-import { useActionForm } from '@/components/forms/useActionForm';
-import { useUserContext } from '@/user/client/UserContext';
 import {
   Box,
   Button,
@@ -20,10 +15,18 @@ import {
 } from '@mantine/core';
 import { useDebouncedValue } from '@mantine/hooks';
 import { redirect, useRouter } from 'next/navigation';
+
+import { userSchema } from '@/app/(main)/account/user-schema';
+import { UpdateUserProfileCard } from '@/components/cards/UpdateUserProfileCard';
+import { FormActionResult } from '@/components/forms/forms';
+import { useActionForm } from '@/components/forms/useActionForm';
 import { useAvatarUpload } from '@/components/forms/useAvatarUpload';
+import { MultiPanelLayout } from '@/components/layout/MultiPanelLayout';
+import { useUserContext } from '@/user/client/UserContext';
+
 import { NewUserOptions } from './new-user-action';
 
-export default function NewUser({
+export function NewUser({
   newUserAction,
   onSuccess,
 }: {
@@ -66,101 +69,109 @@ export default function NewUser({
   const [debouncedName] = useDebouncedValue(form.values.name, 100);
 
   return (
-    <Container size="md" pt="xl">
-      <Title order={1}>Complete Your Profile</Title>
-      <Text c="dimmed" mb="xl">
-        Welcome! Please fill out the details below to get started.
-      </Text>
-      <form onSubmit={form.onSubmit(handleSubmit)}>
-        <Grid>
-          <Grid.Col span={{ base: 12, lg: 4 }}>
-            <Stack>
-              <UserProfileCard
-                name={debouncedName || authUser.displayName || 'Your full name'}
-                email={authUser.email ?? undefined}
-                avatarUrl={form.values.avatarUrl ?? undefined}
-                uploading={uploading}
-                error={error}
-                onFileChange={handleFileChange}
-                onRemovePhoto={handleRemovePhoto}
-              />
-              <Checkbox
-                mt="md"
-                label="I agree to the Terms and Conditions"
-                {...form.getInputProps('termsAccepted', { type: 'checkbox' })}
-              />
-              <Button
-                type="submit"
-                mt="sm"
-                loading={isLoading}
-                disabled={!form.isValid() || form.values.name !== debouncedName}
-              >
-                Save and Continue
-              </Button>
-              <Box h={24}>
-                {submissionError && (
-                  <Text c="red" size="sm" mt="sm">
-                    {submissionError}
-                  </Text>
-                )}
-              </Box>
-            </Stack>
-          </Grid.Col>
-          <Grid.Col span={{ lg: 8 }}>
-            <Card
-              withBorder
-              padding="lg"
-              radius="md"
-              style={{ height: '100%' }}
-            >
+    <MultiPanelLayout>
+      <Container size="md" pt="xl">
+        <Title order={1}>Complete Your Profile</Title>
+        <Text c="dimmed" mb="xl">
+          Welcome! Please fill out the details below to get started.
+        </Text>
+        <form onSubmit={form.onSubmit(handleSubmit)}>
+          <Grid>
+            <Grid.Col span={{ base: 12, lg: 4 }}>
               <Stack>
-                <Stack gap={0}>
-                  <TextInput
-                    label="Full Name"
-                    placeholder="Your full name"
-                    required
-                    {...form.getInputProps('name')}
-                  />
-                  <Box h={22} pt={2}>
-                    {form.errors.name && (
-                      <Text c="red" size="sm">
-                        {form.errors.name}
-                      </Text>
-                    )}
-                  </Box>
-                </Stack>
-                <TextInput
-                  label="Email"
-                  placeholder="Your email address"
-                  readOnly
-                  {...form.getInputProps('email')}
+                <UpdateUserProfileCard
+                  name={
+                    debouncedName || authUser.displayName || 'Your full name'
+                  }
+                  email={authUser.email ?? undefined}
+                  avatarUrl={form.values.avatarUrl ?? undefined}
+                  uploading={uploading}
+                  error={error}
+                  onFileChange={handleFileChange}
+                  onRemovePhoto={handleRemovePhoto}
                 />
-                <TextInput
-                  label="Avatar URL"
-                  placeholder="URL to your avatar image"
-                  {...form.getInputProps('avatarUrl')}
+                <Checkbox
+                  mt="md"
+                  label="I agree to the Terms and Conditions"
+                  {...form.getInputProps('termsAccepted', {
+                    type: 'checkbox',
+                  })}
                 />
-
-                <TextInput
-                  label="Affiliation"
-                  placeholder="Your club or team"
-                  {...form.getInputProps('affiliation')}
-                />
-                <TextInput
-                  label="Race License ID"
-                  placeholder="e.g., 123456"
-                  {...form.getInputProps('raceLicenseId')}
-                />
-                <Textarea
-                  label="Address"
-                  placeholder="123 Main St, Anytown, USA"
-                  {...form.getInputProps('address')}
-                />
+                <Button
+                  type="submit"
+                  mt="sm"
+                  loading={isLoading}
+                  disabled={
+                    !form.isValid() || form.values.name !== debouncedName
+                  }
+                >
+                  Save and Continue
+                </Button>
+                <Box h={24}>
+                  {submissionError && (
+                    <Text c="red" size="sm" mt="sm">
+                      {submissionError}
+                    </Text>
+                  )}
+                </Box>
               </Stack>
-            </Card>
-          </Grid.Col>
-        </Grid>
-      </form>
-    </Container>
+            </Grid.Col>
+            <Grid.Col span={{ lg: 8 }}>
+              <Card
+                withBorder
+                padding="lg"
+                radius="md"
+                style={{ height: '100%' }}
+              >
+                <Stack>
+                  <Stack gap={0}>
+                    <TextInput
+                      label="Full Name"
+                      placeholder="Your full name"
+                      required
+                      {...form.getInputProps('name')}
+                    />
+                    <Box h={22} pt={2}>
+                      {form.errors.name && (
+                        <Text c="red" size="sm">
+                          {form.errors.name}
+                        </Text>
+                      )}
+                    </Box>
+                  </Stack>
+                  <TextInput
+                    label="Email"
+                    placeholder="Your email address"
+                    readOnly
+                    {...form.getInputProps('email')}
+                  />
+                  <TextInput
+                    label="Avatar URL"
+                    placeholder="URL to your avatar image"
+                    {...form.getInputProps('avatarUrl')}
+                  />
+
+                  <TextInput
+                    label="Affiliation"
+                    placeholder="Your club or team"
+                    {...form.getInputProps('affiliation')}
+                  />
+                  <TextInput
+                    label="Race License ID"
+                    placeholder="e.g., 123456"
+                    {...form.getInputProps('raceLicenseId')}
+                  />
+                  <Textarea
+                    label="Address"
+                    placeholder="123 Main St, Anytown, USA"
+                    {...form.getInputProps('address')}
+                  />
+                </Stack>
+              </Card>
+            </Grid.Col>
+          </Grid>
+        </form>
+      </Container>
+    </MultiPanelLayout>
   );
 }

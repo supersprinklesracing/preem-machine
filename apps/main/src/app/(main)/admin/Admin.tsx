@@ -1,20 +1,15 @@
 'use client';
 
-import { User, Organization } from '@/datastore/schema';
-import {
-  Table,
-  Button,
-  Container,
-  Title,
-  Anchor,
-  Box,
-  Stack,
-} from '@mantine/core';
+import { Anchor, Box, Button, Stack, Table, Title } from '@mantine/core';
+import Link from 'next/link';
 import { useState } from 'react';
+
+import { MultiPanelLayout } from '@/components/layout/MultiPanelLayout';
+import { Organization, User } from '@/datastore/schema';
+
+import { AdminUserCard } from './AdminUserCard';
 import { AssignOrgModal } from './AssignOrgModal';
 import { makeAdmin } from './make-admin-action';
-import Link from 'next/link';
-import { AdminUserCard } from './AdminUserCard';
 
 interface AdminProps {
   users: User[];
@@ -29,7 +24,7 @@ export function Admin({ users, organizations }: AdminProps) {
   };
 
   return (
-    <Container py="xl">
+    <MultiPanelLayout>
       <Title order={1} mb="xl">
         Admin - User Management
       </Title>
@@ -98,6 +93,6 @@ export function Admin({ users, organizations }: AdminProps) {
           onClose={() => setSelectedUser(null)}
         />
       )}
-    </Container>
+    </MultiPanelLayout>
   );
 }

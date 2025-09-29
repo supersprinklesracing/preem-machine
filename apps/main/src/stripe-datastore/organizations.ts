@@ -1,9 +1,10 @@
 import 'server-only';
 
-import { getDoc } from '@/datastore/server/query/query';
-import { Organization, OrganizationSchema } from '@/datastore/schema';
-import { getStripeServer } from '@/stripe/server';
 import { cache } from 'react';
+
+import { Organization, OrganizationSchema } from '@/datastore/schema';
+import { getDoc } from '@/datastore/server/query/query';
+import { getStripeServer } from '@/stripe/server';
 
 export const getOrganizationAndRefreshStripeAccount = cache(
   async (

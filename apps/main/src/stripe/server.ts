@@ -1,7 +1,9 @@
 'use server';
 
 import Stripe from 'stripe';
+
 import { getSecrets } from '@/secrets';
+
 import { ENV_STRIPE_ENABLED } from '../env/env';
 
 export const getStripeServer = async (): Promise<Stripe | undefined> => {

@@ -11,7 +11,7 @@ interface MetadataRowProps {
   items: MetadataItem[];
 }
 
-export const MetadataRow: React.FC<MetadataRowProps> = ({ items }) => {
+export function MetadataRow({ items }: MetadataRowProps) {
   return (
     <Grid>
       {items.map((item) => (
@@ -26,4 +26,4 @@ export const MetadataRow: React.FC<MetadataRowProps> = ({ items }) => {
       ))}
     </Grid>
   );
-};
+}

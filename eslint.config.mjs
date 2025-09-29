@@ -1,6 +1,7 @@
 import json from '@eslint/json';
 import markdown from '@eslint/markdown';
 import nx from '@nx/eslint-plugin';
+import simpleImportSort from 'eslint-plugin-simple-import-sort';
 import unusedImports from 'eslint-plugin-unused-imports';
 
 export default [
@@ -35,9 +36,12 @@ export default [
   {
     files: ['**/*.ts', '**/*.tsx', '**/*.js', '**/*.jsx'],
     plugins: {
+      'simple-import-sort': simpleImportSort,
       'unused-imports': unusedImports,
     },
     rules: {
+      'simple-import-sort/imports': 'error',
+      'simple-import-sort/exports': 'error',
       '@typescript-eslint/no-unused-vars': 'off',
       'unused-imports/no-unused-imports': 'warn',
       'unused-imports/no-unused-vars': [

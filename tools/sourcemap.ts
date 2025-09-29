@@ -30,11 +30,14 @@ async function readStdin(): Promise<string> {
  * @returns The raw JSON string of the source map.
  */
 function extractSourceMap(fileContent: string): string {
-  const regex = /\/\/# sourceMappingURL=data:application\/json(?:;charset=utf-8)?;base64,([A-Za-z0-9+/=]+)/;
+  const regex =
+    /\/\/# sourceMappingURL=data:application\/json(?:;charset=utf-8)?;base64,([A-Za-z0-9+/=]+)/;
   const match = fileContent.match(regex);
 
   if (!match || !match[1]) {
-    throw new Error('Inline source map not found or is malformed in the JS file.');
+    throw new Error(
+      'Inline source map not found or is malformed in the JS file.',
+    );
   }
 
   const base64Data = match[1];
@@ -46,8 +49,12 @@ async function main() {
   // 1. Get the JS file path from the first command-line argument.
   const compiledJsFile = process.argv[2];
   if (!compiledJsFile) {
-    console.error('Error: Please provide the path to the compiled JS file as an argument.');
-    console.error('Usage: cat stacktrace.log | npx ts-node decode.ts <path-to-js-file>');
+    console.error(
+      'Error: Please provide the path to the compiled JS file as an argument.',
+    );
+    console.error(
+      'Usage: cat stacktrace.log | npx ts-node decode.ts <path-to-js-file>',
+    );
     process.exit(1);
   }
 
@@ -76,7 +83,12 @@ async function main() {
           column: parseInt(colStr, 10),
         });
 
-        const { source, line: origLine, column: origCol, name } = originalPosition;
+        const {
+          source,
+          line: origLine,
+          column: origCol,
+          name,
+        } = originalPosition;
         const functionName = name ? ` (as ${name})` : '';
         const decodedLine = ` -> at ${source}:${origLine}:${origCol}${functionName}`;
 

@@ -1,12 +1,13 @@
-import { render, screen, setupMockDb } from '@/test-utils';
 import { NotFoundError } from '@/datastore/errors';
-import Event from './Event';
+import { render, screen, setupMockDb } from '@/test-utils';
+
+import { Event } from './Event';
 import EventPage from './page';
 
 // Mock dependencies
 jest.mock('./Event', () => ({
   __esModule: true,
-  default: jest.fn(() => <div>Mock Event</div>),
+  Event: jest.fn(() => <div>Mock Event</div>),
 }));
 
 setupMockDb();

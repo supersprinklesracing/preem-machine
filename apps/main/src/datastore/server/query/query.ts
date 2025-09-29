@@ -1,8 +1,10 @@
 import 'server-only';
 
-import { getFirestore } from '@/firebase/server/firebase-admin';
 import { type DocumentSnapshot } from 'firebase-admin/firestore';
 import { cache } from 'react';
+
+import { getFirestore } from '@/firebase/server/firebase-admin';
+
 import { notFound } from '../../errors';
 import { docId, DocPath } from '../../paths';
 import {

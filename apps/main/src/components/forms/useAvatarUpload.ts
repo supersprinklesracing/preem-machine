@@ -1,10 +1,11 @@
 'use client';
 
-import { ENV_MAX_IMAGE_SIZE_BYTES } from '@/env/env';
 import { UseFormReturnType } from '@mantine/form';
 import imageCompression from 'browser-image-compression';
 import { useState } from 'react';
+
 import { generateSignedUploadUrl } from '@/app/(main)/account/upload-action';
+import { ENV_MAX_IMAGE_SIZE_BYTES } from '@/env/env';
 
 export function useAvatarUpload<T>(
   form: UseFormReturnType<T>,
@@ -52,7 +53,7 @@ export function useAvatarUpload<T>(
         throw new Error('Failed to upload file.');
       }
 
-    // eslint-disable-next-line @typescript-eslint/no-explicit-any
+      // eslint-disable-next-line @typescript-eslint/no-explicit-any
       form.setFieldValue(fieldName as any, publicUrl as any);
     } catch (err) {
       setError(
