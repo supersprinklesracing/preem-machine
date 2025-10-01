@@ -26,7 +26,7 @@ const nextConfig = {
     // reserved Next.js paths or API routes.
     // See Also: src/middleware.ts
     const nonReservedPathsRegex =
-      '((?!_next|\\.well-known|favicon\\.ico|__/auth|__/firebase|api).*)';
+      '((?!_next|\\.well-known|robots.txt|favicon\\.ico|__/auth|__/firebase|api).*)';
 
     return {
       // afterFiles avoids rewriting _next and .well-known.
