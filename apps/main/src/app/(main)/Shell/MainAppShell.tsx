@@ -1,6 +1,13 @@
 'use client';
 
-import { AppShell, Box, Burger, Group, Title, useMantineTheme } from '@mantine/core';
+import {
+  AppShell,
+  Box,
+  Burger,
+  Group,
+  Title,
+  useMantineTheme,
+} from '@mantine/core';
 import { Notifications } from '@mantine/notifications';
 import Image from 'next/image';
 import Link from 'next/link';
@@ -54,9 +61,7 @@ export function MainAppShell({
                     priority
                   />
                 </Box>
-                <Title order={3}>
-                  Preem Machine
-                </Title>
+                <Title order={3}>Preem Machine</Title>
               </Group>
             </Link>
           </Group>
