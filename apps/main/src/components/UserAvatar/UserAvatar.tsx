@@ -14,7 +14,7 @@ interface UserAvatarProps {
 
 export function UserAvatar({ user, size = 'md' }: UserAvatarProps) {
   const name = user?.name ?? 'Anonymous';
-  const linkHref = user?.path ? `/${toUrlPath(user.path)}` : '#';
+  const linkHref = user?.path ? `/view/${toUrlPath(user.path)}` : '#';
 
   const content = (
     <Group>
@@ -41,7 +41,7 @@ export function UserAvatar({ user, size = 'md' }: UserAvatarProps) {
 
 export function UserAvatarIcon({ user, size = 'md' }: UserAvatarProps) {
   const name = user?.name ?? 'Anonymous';
-  const linkHref = user?.path ? `/${toUrlPath(user.path)}` : '#';
+  const linkHref = user?.path ? `/view/${toUrlPath(user.path)}` : '#';
 
   const content = (
     <Avatar src={user?.avatarUrl} alt={name} radius="xl" size={size} />

@@ -10,7 +10,7 @@ describe('UserAvatar', () => {
     const link = screen.getByRole('link');
     expect(link).toHaveAttribute(
       'href',
-      `/user/${MOCK_USER_CONTEXT.authUser.uid}`,
+      `/view/user/${MOCK_USER_CONTEXT.authUser.uid}`,
     );
     expect(screen.getByText('Test User')).toBeInTheDocument();
     expect(screen.getByAltText('Test User')).toHaveAttribute(
@@ -44,7 +44,7 @@ describe('UserAvatarIcon', () => {
     const link = screen.getByRole('link');
     expect(link).toHaveAttribute(
       'href',
-      `/user/${MOCK_USER_CONTEXT.authUser.uid}`,
+      `/view/user/${MOCK_USER_CONTEXT.authUser.uid}`,
     );
     expect(screen.getByAltText('Test User')).toBeInTheDocument();
     expect(screen.queryByText('Test User')).not.toBeInTheDocument();
