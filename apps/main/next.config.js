@@ -159,7 +159,12 @@ const nextConfig = {
           destination: '/organization?path=organizations/:orgId',
         },
       ],
-      fallback: [],
+      fallback: [
+        {
+          source: '/__/:path*',
+          destination: `https://\${process.env.NEXT_PUBLIC_FIREBASE_AUTH_DOMAIN}/__/:path*`,
+        },
+      ],
     };
   },
 };
