@@ -1,5 +1,5 @@
 /* eslint-disable @typescript-eslint/no-empty-function */
-/* eslint-disable @eslint-react/hooks-extra/no-unnecessary-use-prefix */
+/* eslint-disable @eslint-react/no-unnecessary-use-prefix */
 export const usePathname = jest.fn().mockReturnValue('/');
 export const useRouter = () => ({
   push: () => {},
