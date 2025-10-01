@@ -1,6 +1,6 @@
 'use client';
 
-import { AppShell, Burger, Group, Title, useMantineTheme } from '@mantine/core';
+import { AppShell, Box, Burger, Group, Title, useMantineTheme } from '@mantine/core';
 import { Notifications } from '@mantine/notifications';
 import Image from 'next/image';
 import Link from 'next/link';
@@ -45,14 +45,16 @@ export function MainAppShell({
             />
             <Link href="/" style={{ textDecoration: 'none', color: 'inherit' }}>
               <Group>
-                <Image
-                  src="/logo.png"
-                  alt="App Logo"
-                  width={48}
-                  height={48}
-                  priority
-                />
-                <Title order={3} visibleFrom="sm">
+                <Box visibleFrom="sm">
+                  <Image
+                    src="/logo.png"
+                    alt="App Logo"
+                    width={48}
+                    height={48}
+                    priority
+                  />
+                </Box>
+                <Title order={3}>
                   Preem Machine
                 </Title>
               </Group>
