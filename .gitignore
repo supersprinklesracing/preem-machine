@@ -71,4 +71,7 @@ e2e-server.log
 
 gha-creds-*.json
 
+# Jules
 jules-scratch
+dev_server.log
+serve_static.log
