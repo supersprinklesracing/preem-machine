@@ -89,7 +89,7 @@ export const config = {
   matcher: [
     '/',
     // See also: ../next.config.js
-    '/((?!_next|\\.well-known|favicon\\.ico|__/auth|__/firebase|api).*)',
+    '/((?!_next|\\.well-known|robots.txt|favicon\\.ico|__/auth|__/firebase|api|.*\\.).*)',
     '/api/login',
     '/api/logout',
     '/api/refresh-token',
