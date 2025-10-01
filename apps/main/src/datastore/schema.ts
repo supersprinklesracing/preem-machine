@@ -64,7 +64,7 @@ export type User = z.infer<typeof UserSchema>;
 
 // Organization
 export const OrganizationSchema = baseDocSchema.extend({
-  name: z.string().optional(),
+  name: z.string().min(1, 'Organization name is required'),
   description: z.string().optional(),
   website: z.string().url().optional(),
   memberRefs: z.array(docRefSchema).optional(),

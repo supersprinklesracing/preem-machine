@@ -85,9 +85,7 @@ export function NewOrganization({
                   <Button
                     type="submit"
                     loading={isLoading}
-                    disabled={
-                      !form.isValid() || !isEqual(form.values, debouncedValues)
-                    }
+                    disabled={!form.isDirty() || !form.isValid()}
                   >
                     Create Organization
                   </Button>
