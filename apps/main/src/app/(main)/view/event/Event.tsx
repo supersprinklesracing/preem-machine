@@ -45,14 +45,14 @@ export function Event({ event, children }: Props) {
           Part of{' '}
           <Anchor
             component={Link}
-            href={`/${toUrlPath(seriesPath(event.path))}`}
+            href={`/view/${toUrlPath(seriesPath(event.path))}`}
           >
             {series.name}
           </Anchor>{' '}
           hosted by{' '}
           <Anchor
             component={Link}
-            href={`/${toUrlPath(organizationPath(event.path))}`}
+            href={`/view/${toUrlPath(organizationPath(event.path))}`}
           >
             {organization.name}
           </Anchor>
@@ -89,7 +89,7 @@ export function Event({ event, children }: Props) {
                   >
                     <Button
                       component={Link}
-                      href={`/${toUrlPath(race.path)}`}
+                      href={`/view/${toUrlPath(race.path)}`}
                       variant="light"
                       size="sm"
                       mt="md"

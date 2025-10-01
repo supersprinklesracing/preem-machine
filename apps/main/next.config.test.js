@@ -136,41 +136,41 @@ const testCases = [
     buildUrl('/manage/organization?path=organizations/super-sprinkles'),
   ],
   // VIEWS
-  ['view/user', buildUrl('/user'), buildUrl('/user')],
+  ['view/user', buildUrl('/view/user'), buildUrl('/view/user')],
   [
     'view/preem',
     buildUrl(
-      '/super-sprinkles/sprinkles-2025/giro-sf-2025/masters-women/first-lap',
+      '/view/super-sprinkles/sprinkles-2025/giro-sf-2025/masters-women/first-lap',
     ),
     buildUrl(
-      '/preem?path=organizations/super-sprinkles/series/sprinkles-2025/events/giro-sf-2025/races/masters-women/preems/first-lap',
+      '/view/preem?path=organizations/super-sprinkles/series/sprinkles-2025/events/giro-sf-2025/races/masters-women/preems/first-lap',
     ),
   ],
   [
     'view/race',
-    buildUrl('/super-sprinkles/sprinkles-2025/giro-sf-2025/masters-women'),
+    buildUrl('/view/super-sprinkles/sprinkles-2025/giro-sf-2025/masters-women'),
     buildUrl(
-      '/race?path=organizations/super-sprinkles/series/sprinkles-2025/events/giro-sf-2025/races/masters-women',
+      '/view/race?path=organizations/super-sprinkles/series/sprinkles-2025/events/giro-sf-2025/races/masters-women',
     ),
   ],
   [
     'view/event',
-    buildUrl('/super-sprinkles/sprinkles-2025/giro-sf-2025'),
+    buildUrl('/view/super-sprinkles/sprinkles-2025/giro-sf-2025'),
     buildUrl(
-      '/event?path=organizations/super-sprinkles/series/sprinkles-2025/events/giro-sf-2025',
+      '/view/event?path=organizations/super-sprinkles/series/sprinkles-2025/events/giro-sf-2025',
     ),
   ],
   [
     'view/series',
-    buildUrl('/super-sprinkles/sprinkles-2025'),
+    buildUrl('/view/super-sprinkles/sprinkles-2025'),
     buildUrl(
-      '/series?path=organizations/super-sprinkles/series/sprinkles-2025',
+      '/view/series?path=organizations/super-sprinkles/series/sprinkles-2025',
     ),
   ],
   [
     'view/organization',
-    buildUrl('/super-sprinkles'),
-    buildUrl('/organization?path=organizations/super-sprinkles'),
+    buildUrl('/view/super-sprinkles'),
+    buildUrl('/view/organization?path=organizations/super-sprinkles'),
   ],
 ];
 

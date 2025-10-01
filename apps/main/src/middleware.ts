@@ -9,7 +9,12 @@ import {
 import { ENV_E2E_TESTING } from '@/env/env';
 import { serverConfigFn } from '@/firebase/server/config';
 
-const LOGGED_OUT_ONLY = ['/register', '/login', '/reset-password'];
+// prettier-ignore
+const LOGGED_OUT_ONLY = [
+  '/login',
+  '/register',
+  '/reset-password'
+];
 const PROTECTED_PATHS = [
   '^/account(/.*)?$',
   '^/admin(/.*)?$',

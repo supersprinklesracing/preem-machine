@@ -10,7 +10,6 @@ import {
   Title,
 } from '@mantine/core';
 import { useDebouncedValue } from '@mantine/hooks';
-import isEqual from 'fast-deep-equal';
 import { useRouter } from 'next/navigation';
 
 import { OrganizationCard } from '@/components/cards/OrganizationCard';

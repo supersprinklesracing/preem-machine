@@ -6,7 +6,7 @@ test.describe('view: preem', () => {
   useMockedDateBeforeEach();
   test('basic', async ({ page }) => {
     await page.goto(
-      '/super-sprinkles/sprinkles-2025/giro-sf-2025/masters-women/first-lap',
+      '/view/super-sprinkles/sprinkles-2025/giro-sf-2025/masters-women/first-lap',
     );
     await expect(
       page.getByRole('heading', { name: 'First Lap Leader' }),
