@@ -17,7 +17,7 @@
     "@mantine/notifications": "^8.2.6",
     "@octokit/rest": "^22.0.0",
     "@stripe/react-stripe-js": "^4.0.0",
-    "@stripe/stripe-js": "^7.0.0",
+    "@stripe/stripe-js": "^8.0.0",
     "@tabler/icons-react": "^3.34.1",
     "@types/yargs": "^17.0.33",
     "browser-image-compression": "^2.0.2",
