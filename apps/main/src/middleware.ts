@@ -23,7 +23,7 @@ function isProtectedRoute(pathname: string): boolean {
 
 export async function middleware(request: NextRequest) {
   // TODO: This should probably live inside handle* methods...
-  const e2eTestingUser = useE2eTestingUser(request);
+  const e2eTestingUser = getE2eTestingUser(request);
   if (e2eTestingUser) {
     return e2eTestingUser;
   }
@@ -68,8 +68,7 @@ export async function middleware(request: NextRequest) {
   });
 }
 
-// eslint-disable-next-line @eslint-react/hooks-extra/no-unnecessary-use-prefix
-function useE2eTestingUser(request: NextRequest) {
+function getE2eTestingUser(request: NextRequest) {
   if (ENV_E2E_TESTING) {
     const e2eAuthUser = request.headers.get('X-e2e-auth-user');
     if (e2eAuthUser) {
