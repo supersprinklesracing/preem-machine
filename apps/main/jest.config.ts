@@ -26,7 +26,8 @@ const customJestConfig: Config = {
         ['github-actions', { silent: false }],
         ['default', {}],
       ]
-    : [['default', {}]],
+    // Hacky way to disable the summary output which corrupts terminals.
+    : [['default', {summaryThreshold: 1000}]],
 };
 
 // Export an async function to modify the final config
