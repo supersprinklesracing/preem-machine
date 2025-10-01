@@ -32,7 +32,7 @@ export function ManagePreemContributionTable({
           <Table.Td>
             <Text
               component={Link}
-              href={`/${toUrlPath(contribution.preemBrief.path)}`}
+              href={`/view/${toUrlPath(contribution.preemBrief.path)}`}
               style={{ textDecoration: 'none', color: 'inherit' }}
             >
               {contribution.preemBrief?.name}

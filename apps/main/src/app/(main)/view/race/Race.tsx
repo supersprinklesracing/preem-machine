@@ -57,7 +57,7 @@ export function Race({ race, children }: Props) {
       <Table.Tr key={preem.id}>
         <Table.Td>
           <Link
-            href={`/${toUrlPath(preem.path)}`}
+            href={`/view/${toUrlPath(preem.path)}`}
             passHref
             style={{ textDecoration: 'none', color: 'inherit' }}
           >
@@ -155,7 +155,7 @@ export function Race({ race, children }: Props) {
               to{' '}
               <Text
                 component={Link}
-                href={`/${toUrlPath(c.preemPath)}`}
+                href={`/view/${toUrlPath(c.preemPath)}`}
                 style={{ textDecoration: 'none', color: 'inherit' }}
               >
                 &quot;{c.preemName}&quot;

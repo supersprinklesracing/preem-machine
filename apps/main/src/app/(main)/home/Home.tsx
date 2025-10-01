@@ -33,7 +33,7 @@ export function Home({ eventsWithRaces, contributions }: Props) {
               >
                 <Stack>
                   <Link
-                    href={`/${toUrlPath(event.path)}`}
+                    href={`/view/${toUrlPath(event.path)}`}
                     style={{ textDecoration: 'none', color: 'inherit' }}
                   >
                     <Stack gap="sm">
@@ -60,7 +60,7 @@ export function Home({ eventsWithRaces, contributions }: Props) {
                     {children.map(({ race }) => (
                       <Link
                         key={race.path}
-                        href={`/${toUrlPath(race.path)}`}
+                        href={`/view/${toUrlPath(race.path)}`}
                         style={{ textDecoration: 'none', color: 'inherit' }}
                       >
                         <Text size="sm">

@@ -49,7 +49,10 @@ export function RaceCard({
     subheadings.push(
       <React.Fragment key="event-link">
         Part of{' '}
-        <Anchor component={Link} href={`/${toUrlPath(race.eventBrief.path)}`}>
+        <Anchor
+          component={Link}
+          href={`/view/${toUrlPath(race.eventBrief.path)}`}
+        >
           {race.eventBrief.name}
         </Anchor>
       </React.Fragment>,

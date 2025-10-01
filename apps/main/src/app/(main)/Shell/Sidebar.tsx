@@ -38,10 +38,10 @@ export function Sidebar({ events, user }: SidebarProps) {
       <Stack justify="space-between" style={{ minHeight: '100%' }}>
         <div>
           <NavLink
-            href="/"
+            href="/home"
             label="Home"
             leftSection={<IconHome size={18} />}
-            active={pathname === '/'}
+            active={pathname === '/home'}
             component={Link}
             onClick={handleLinkClick}
             data-testid="sidebar-home-link"
@@ -101,38 +101,37 @@ export function Sidebar({ events, user }: SidebarProps) {
                 defaultOpened
               >
                 <NavLink
-                  href="/user"
+                  href="/view/user"
                   label="User"
                   component={Link}
                   onClick={handleLinkClick}
                 />
-                {/* "/org-super-sprinkles/series-sprinkles-2025/event-giro-sf-2025/race-giro-sf-2025-masters-women/preem-giro-sf-2025-masters-women-mid-sprint/contrib-2" */}
                 <NavLink
-                  href="/org-super-sprinkles"
+                  href="/view/org-super-sprinkles"
                   label="Organization"
                   component={Link}
                   onClick={handleLinkClick}
                 />
                 <NavLink
-                  href="/org-super-sprinkles/series-sprinkles-2025"
+                  href="/view/org-super-sprinkles/series-sprinkles-2025"
                   label="Series"
                   component={Link}
                   onClick={handleLinkClick}
                 />
                 <NavLink
-                  href="/org-super-sprinkles/series-sprinkles-2025/event-giro-sf-2025"
+                  href="/view/org-super-sprinkles/series-sprinkles-2025/event-giro-sf-2025"
                   label="Event"
                   component={Link}
                   onClick={handleLinkClick}
                 />
                 <NavLink
-                  href="/org-super-sprinkles/series-sprinkles-2025/event-giro-sf-2025/race-giro-sf-2025-masters-women"
+                  href="/view/org-super-sprinkles/series-sprinkles-2025/event-giro-sf-2025/race-giro-sf-2025-masters-women"
                   label="Race"
                   component={Link}
                   onClick={handleLinkClick}
                 />
                 <NavLink
-                  href="/org-super-sprinkles/series-sprinkles-2025/event-giro-sf-2025/race-giro-sf-2025-masters-women/preem-giro-sf-2025-masters-women-mid-sprint"
+                  href="/view/org-super-sprinkles/series-sprinkles-2025/event-giro-sf-2025/race-giro-sf-2025-masters-women/preem-giro-sf-2025-masters-women-mid-sprint"
                   label="Preem"
                   component={Link}
                   onClick={handleLinkClick}

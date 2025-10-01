@@ -1,11 +1,11 @@
 import { expect, test } from '@playwright/test';
 
-import { useMockedDateBeforeEach } from '../util/e2e-test-utils';
+import { useMockedDateBeforeEach } from './util/e2e-test-utils';
 
-test.describe('view: home', () => {
+test.describe('home', () => {
   useMockedDateBeforeEach();
   test('basic', async ({ page }) => {
-    await page.goto('/');
+    await page.goto('/home');
     await expect(
       page.getByRole('heading', { name: 'Upcoming Events' }),
     ).toBeVisible();

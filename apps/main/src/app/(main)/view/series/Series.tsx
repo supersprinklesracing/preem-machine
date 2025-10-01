@@ -45,7 +45,7 @@ export function Series({ series, children: eventsWithRaces }: Props) {
           Hosted by{' '}
           <Anchor
             component={Link}
-            href={`/${toUrlPath(organizationPath(series.path))}`}
+            href={`/view/${toUrlPath(organizationPath(series.path))}`}
           >
             {organization.name}
           </Anchor>
@@ -76,7 +76,7 @@ export function Series({ series, children: eventsWithRaces }: Props) {
                   <EventCard key={event.path} event={event}>
                     <Button
                       component={Link}
-                      href={`/${toUrlPath(event.path)}`}
+                      href={`/view/${toUrlPath(event.path)}`}
                       variant="light"
                       size="sm"
                       mt="md"

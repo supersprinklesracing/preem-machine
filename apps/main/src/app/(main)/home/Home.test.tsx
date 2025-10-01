@@ -64,7 +64,10 @@ describe('Home component', () => {
       name: /Test Race 1/,
     });
     expect(raceLink).toBeInTheDocument();
-    expect(raceLink).toHaveAttribute('href', '/org-1/series-1/event-1/race-1');
+    expect(raceLink).toHaveAttribute(
+      'href',
+      '/view/org-1/series-1/event-1/race-1',
+    );
 
     // Check for the title of the LiveContributionFeed component
     expect(screen.getByText('Live Contribution Feed')).toBeInTheDocument();

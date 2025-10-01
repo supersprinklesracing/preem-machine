@@ -50,7 +50,7 @@ export function Breadcrumbs({ brief }: { brief: Brief | undefined }) {
     .map((b) => (
       <Anchor
         component={Link}
-        href={`/${toUrlPath(b.path)}`}
+        href={`/view/${toUrlPath(b.path)}`}
         key={b.path}
         size="sm"
         c="dimmed"

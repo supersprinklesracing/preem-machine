@@ -91,7 +91,7 @@ export function Organization({ organization, serieses, members }: Props) {
                 <SeriesCard key={series.path} series={series}>
                   <Button
                     component={Link}
-                    href={`/${toUrlPath(series.path)}`}
+                    href={`/view/${toUrlPath(series.path)}`}
                     variant="light"
                     rightSection={<IconChevronRight size={16} />}
                   >

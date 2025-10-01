@@ -81,7 +81,7 @@ export function Preem({ preem, children }: Props) {
           <Box>
             <Button
               component={Link}
-              href={`/${toUrlPath(racePath(preem.path))}`}
+              href={`/view/${toUrlPath(racePath(preem.path))}`}
               variant="subtle"
               mb="sm"
               leftSection={<IconArrowLeft size={16} />}

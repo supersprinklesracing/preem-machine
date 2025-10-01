@@ -71,7 +71,10 @@ export function PreemCard({
     subheadings.push(
       <Text c="dimmed">
         Part of{' '}
-        <Anchor component={Link} href={`/${toUrlPath(preem.raceBrief.path)}`}>
+        <Anchor
+          component={Link}
+          href={`/view/${toUrlPath(preem.raceBrief.path)}`}
+        >
           {preem.raceBrief.name}
         </Anchor>
       </Text>,
