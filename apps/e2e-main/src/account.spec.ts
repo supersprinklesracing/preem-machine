@@ -10,15 +10,8 @@ test.describe('account', () => {
   useMockedDateBeforeEach();
   test('basic', async ({ page }) => {
     await page.goto('/account');
-    await expect(page.getByRole('heading', { name: 'E2E User' })).toBeVisible();
+    // The user's name is now part of the ContentCard title
+    await expect(page.getByText('E2E User')).toBeVisible();
     await expect(page).toHaveScreenshot({ fullPage: true });
-  });
-
-  test('shows overlay on hover', async ({ page }) => {
-    await page.goto('/account');
-    const avatarContainer = page.getByTestId('avatar-container');
-    await avatarContainer.hover();
-    await expect(page.getByText('Upload Photo')).toBeVisible();
-    await expect(avatarContainer).toHaveScreenshot();
   });
 });

@@ -16,11 +16,10 @@ test.describe('admin', () => {
 
   test('org modal', async ({ page }) => {
     await page.goto('/admin');
-    await page
-      .locator('[data-testid="assign-org-button"]')
-      .locator('visible=true')
-      .first()
-      .click();
+
+    // Use a locator that finds the first visible button with this test id
+    await page.locator('[data-testid="assign-org-button"]:visible').first().click();
+
     await expect(
       page.getByRole('heading', { name: 'Assign Organization' }),
     ).toBeVisible();

@@ -73,7 +73,7 @@ export function Admin({ users, organizations }: AdminProps) {
       </Box>
 
       {/* Mobile view */}
-      <Box hiddenFrom="sm">
+      <Box hiddenFrom="sm" data-testid="mobile-admin-view">
         <Stack>
           {users.map((user) => (
             <AdminUserCard

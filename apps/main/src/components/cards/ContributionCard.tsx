@@ -1,12 +1,14 @@
 'use client';
 
-import { Card, Group, Stack, Text } from '@mantine/core';
+import { Group, Stack, Text } from '@mantine/core';
 import Link from 'next/link';
 
 import { UserAvatar } from '@/components/UserAvatar/UserAvatar';
 import { toUrlPath } from '@/datastore/paths';
 import { Contribution } from '@/datastore/schema';
 import { formatDateRelative } from '@/dates/dates';
+
+import { ContentCard } from './ContentCard';
 
 interface ContributionCardProps {
   contribution: Contribution;
@@ -18,34 +20,44 @@ export function ContributionCard({ contribution }: ContributionCardProps) {
     return null;
   }
 
+  const mainContent = (
+    <Stack gap="xs" mt="sm">
+      <Text>
+        <strong>Preem:</strong>{' '}
+        <Text
+          component={Link}
+          href={`/${toUrlPath(contribution.preemBrief.path)}`}
+          style={{ textDecoration: 'none', color: 'inherit' }}
+        >
+          {contribution.preemBrief?.name}
+        </Text>
+      </Text>
+      {contribution.message && (
+        <Text fs="italic" c="dimmed">
+          &quot;{contribution.message}&quot;
+        </Text>
+      )}
+    </Stack>
+  );
+
+  const bottomContent = (
+    <Text c="dimmed" size="xs" ta="right">
+      {formatDateRelative(contribution.date, { addSuffix: true })}
+    </Text>
+  );
+
   return (
-    <Card key={contribution.path} withBorder>
-      <Group justify="space-between">
-        <UserAvatar user={contributor} />
+    <ContentCard
+      key={contribution.path}
+      title={<UserAvatar user={contributor} />}
+      statusBadge={
         <Text c="green" fw={600}>
           ${contribution.amount}
         </Text>
-      </Group>
-      <Stack gap="xs" mt="sm">
-        <Text>
-          <strong>Preem:</strong>{' '}
-          <Text
-            component={Link}
-            href={`/${toUrlPath(contribution.preemBrief.path)}`}
-            style={{ textDecoration: 'none', color: 'inherit' }}
-          >
-            {contribution.preemBrief?.name}
-          </Text>
-        </Text>
-        {contribution.message && (
-          <Text fs="italic" c="dimmed">
-            &quot;{contribution.message}&quot;
-          </Text>
-        )}
-        <Text c="dimmed" size="xs" ta="right">
-          {formatDateRelative(contribution.date, { addSuffix: true })}
-        </Text>
-      </Stack>
-    </Card>
+      }
+      mainContent={mainContent}
+      bottomContent={bottomContent}
+      titleOrder={4}
+    />
   );
 }
