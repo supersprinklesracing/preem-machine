@@ -63,7 +63,7 @@ export function LiveContributionFeed({
             to{' '}
             <Text
               component={Link}
-              href={`/${toUrlPath(c.preemBrief.path)}`}
+              href={`/view/${toUrlPath(c.preemBrief.path)}`}
               style={{ textDecoration: 'none', color: 'inherit' }}
             >
               &quot;{c.preemBrief.name}&quot;
@@ -71,7 +71,7 @@ export function LiveContributionFeed({
             in the{' '}
             <Text
               component={Link}
-              href={`/${toUrlPath(c.preemBrief.raceBrief.path)}`}
+              href={`/view/${toUrlPath(c.preemBrief.raceBrief.path)}`}
               fw={600}
               style={{ textDecoration: 'none', color: 'inherit' }}
             >

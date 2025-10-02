@@ -21,25 +21,18 @@ const nextConfig = {
 
     return config;
   },
+  async redirects() {
+    return [
+      {
+        source: '/',
+        destination: '/home',
+        permanent: true,
+      }
+    ];
+  },
   async rewrites() {
-    // This regex ensures that the greedy rewrite rules below do not match
-    // reserved Next.js paths or API routes.
-    // See Also: src/middleware.ts
-    const nonReservedPathsRegex =
-      '((?!_next|\\.well-known|robots.txt|favicon\\.ico|__/auth|__/firebase|api).*)';
-
     return {
-      // afterFiles avoids rewriting _next and .well-known.
       afterFiles: [
-        {
-          source: '/manage/live',
-          destination: '/manage',
-        },
-        {
-          source: '/manage/hub',
-          destination: '/manage',
-        },
-
         // ==== MANAGE ====
         // Order is important here. Most specific routes must come first.
 
@@ -128,35 +121,32 @@ const nextConfig = {
 
         // ==== VIEWS ====
         {
-          source: '/user/:userId',
-          destination: '/user?path=users/:userId',
+          source: '/view/user/:userId',
+          destination: '/view/user?path=users/:userId',
         },
         {
-          source: `/:orgId${nonReservedPathsRegex}/:seriesId/:eventId/:raceId/:preemId`,
+          source: `/view/:orgId/:seriesId/:eventId/:raceId/:preemId`,
           destination:
-            '/preem?path=organizations/:orgId/series/:seriesId/events/:eventId/races/:raceId/preems/:preemId',
+            '/view/preem?path=organizations/:orgId/series/:seriesId/events/:eventId/races/:raceId/preems/:preemId',
         },
         {
-          source: `/:orgId${nonReservedPathsRegex}/:seriesId/:eventId/:raceId`,
+          source: `/view/:orgId/:seriesId/:eventId/:raceId`,
           destination:
-            '/race?path=organizations/:orgId/series/:seriesId/events/:eventId/races/:raceId',
+            '/view/race?path=organizations/:orgId/series/:seriesId/events/:eventId/races/:raceId',
         },
         {
-          source: `/:orgId${nonReservedPathsRegex}/:seriesId/:eventId`,
+          source: `/view/:orgId/:seriesId/:eventId`,
           destination:
-            '/event?path=organizations/:orgId/series/:seriesId/events/:eventId',
+            '/view/event?path=organizations/:orgId/series/:seriesId/events/:eventId',
         },
         {
-          source: `/:orgId${nonReservedPathsRegex}/:seriesId`,
-          destination: '/series?path=organizations/:orgId/series/:seriesId',
+          source: `/view/:orgId/:seriesId`,
+          destination:
+            '/view/series?path=organizations/:orgId/series/:seriesId',
         },
         {
-          source: '/user',
-          destination: '/account',
-        },
-        {
-          source: `/:orgId${nonReservedPathsRegex}`,
-          destination: '/organization?path=organizations/:orgId',
+          source: `/view/:orgId`,
+          destination: '/view/organization?path=organizations/:orgId',
         },
       ],
       fallback: [
