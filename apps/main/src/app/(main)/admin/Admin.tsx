@@ -1,6 +1,14 @@
 'use client';
 
-import { Anchor, Box, Button, Stack, Table, Title } from '@mantine/core';
+import {
+  Anchor,
+  Box,
+  Button,
+  Card,
+  Stack,
+  Table,
+  Title,
+} from '@mantine/core';
 import Link from 'next/link';
 import { useState } from 'react';
 
@@ -9,6 +17,8 @@ import { Organization, User } from '@/datastore/schema';
 
 import { AdminUserCard } from './AdminUserCard';
 import { AssignOrgModal } from './AssignOrgModal';
+import { inviteUser } from './invite-user-action';
+import { InviteUser } from './InviteUser';
 import { makeAdmin } from './make-admin-action';
 
 interface AdminProps {
@@ -25,9 +35,17 @@ export function Admin({ users, organizations }: AdminProps) {
 
   return (
     <MultiPanelLayout>
-      <Title order={1} mb="xl">
-        Admin - User Management
-      </Title>
+      <Stack>
+        <Title order={1} mb="xl">
+          Admin - User Management
+        </Title>
+        <Card shadow="sm" padding="lg" radius="md" withBorder>
+          <InviteUser
+            organizations={organizations}
+            inviteUserAction={inviteUser}
+          />
+        </Card>
+      </Stack>
 
       {/* Desktop view */}
       <Box visibleFrom="sm">

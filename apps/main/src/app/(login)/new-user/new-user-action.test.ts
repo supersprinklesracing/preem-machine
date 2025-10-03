@@ -1,13 +1,11 @@
-'use server';
-
 import { DocumentSnapshot } from 'firebase-admin/firestore';
 import { revalidatePath } from 'next/cache';
 
 import { AuthUser } from '@/auth/user';
 import { FormActionError } from '@/components/forms/forms';
 import { User } from '@/datastore/schema';
-import * as create from '@/datastore/server/create/create';
-import * as user from '@/user/server/user';
+import { createUser } from '@/datastore/server/create/create';
+import { getUserContext } from '@/user/server/user';
 
 import { newUserAction } from './new-user-action';
 
@@ -29,14 +27,11 @@ const MOCK_USER_VALUES: Omit<User, 'id' | 'path' | 'roles' | 'metadata'> = {
   email: 'test-user@example.com',
   avatarUrl: 'https://placehold.co/100x100.png',
   termsAccepted: true,
-  affiliation: '',
-  raceLicenseId: '',
-  address: '',
 };
 
 describe('newUserAction', () => {
-  const mockedVerifyUserContext = jest.mocked(user.verifyUserContext);
-  const mockedCreateUser = jest.mocked(create.createUser);
+  const mockedGetUserContext = jest.mocked(getUserContext);
+  const mockedCreateUser = jest.mocked(createUser);
   const mockedRevalidatePath = jest.mocked(revalidatePath);
 
   beforeEach(() => {
@@ -44,15 +39,20 @@ describe('newUserAction', () => {
   });
 
   it('should create a new user and return the path on success', async () => {
-    mockedVerifyUserContext.mockResolvedValue({
+    mockedGetUserContext.mockResolvedValue({
       authUser: MOCK_AUTH_USER,
       user: null,
     });
+    const mockNewUserDetails = { ...MOCK_USER_VALUES, id: 'new-user-id' };
     const mockSnapshot = {
       ref: { id: 'new-user-id', path: 'users/new-user-id' },
-      data: () => ({ ...MOCK_USER_VALUES, id: 'new-user-id' }),
+      data: () => mockNewUserDetails,
+      exists: true,
     } as unknown as DocumentSnapshot;
-    mockedCreateUser.mockResolvedValue(mockSnapshot);
+    mockedCreateUser.mockResolvedValue({
+      newUserDetails: mockNewUserDetails,
+      newUser: mockSnapshot,
+    });
 
     const result = await newUserAction({ values: MOCK_USER_VALUES });
 
@@ -60,12 +60,12 @@ describe('newUserAction', () => {
       expect.objectContaining(MOCK_USER_VALUES),
       MOCK_AUTH_USER,
     );
-    expect(mockedRevalidatePath).toHaveBeenCalledWith('/users/new-user-id');
+    expect(mockedRevalidatePath).toHaveBeenCalledWith('/view/user/new-user-id');
     expect(result).toEqual({ path: 'users/new-user-id' });
   });
 
   it('should throw a FormActionError if no authUser is found', async () => {
-    mockedVerifyUserContext.mockRejectedValue(new Error('Not authenticated'));
+    mockedGetUserContext.mockRejectedValue(new Error('Not authenticated'));
 
     await expect(newUserAction({ values: MOCK_USER_VALUES })).rejects.toThrow(
       new FormActionError('Failed to save profile: Not authenticated'),
@@ -73,7 +73,7 @@ describe('newUserAction', () => {
   });
 
   it('should throw a FormActionError if user creation fails', async () => {
-    mockedVerifyUserContext.mockResolvedValue({
+    mockedGetUserContext.mockResolvedValue({
       authUser: MOCK_AUTH_USER,
       user: null,
     });
@@ -85,15 +85,19 @@ describe('newUserAction', () => {
   });
 
   it('should throw a FormActionError if the created user data is missing', async () => {
-    mockedVerifyUserContext.mockResolvedValue({
+    mockedGetUserContext.mockResolvedValue({
       authUser: MOCK_AUTH_USER,
       user: null,
     });
     const mockSnapshot = {
       ref: { id: 'new-user-id', path: 'users/new-user-id' },
       data: () => null,
+      exists: false,
     } as unknown as DocumentSnapshot;
-    mockedCreateUser.mockResolvedValue(mockSnapshot);
+    mockedCreateUser.mockResolvedValue({
+      newUser: mockSnapshot,
+      newUserDetails: undefined,
+    });
 
     await expect(newUserAction({ values: MOCK_USER_VALUES })).rejects.toThrow(
       new FormActionError(
@@ -103,7 +107,7 @@ describe('newUserAction', () => {
   });
 
   it('should throw a FormActionError for invalid input data', async () => {
-    mockedVerifyUserContext.mockResolvedValue({
+    mockedGetUserContext.mockResolvedValue({
       authUser: MOCK_AUTH_USER,
       user: null,
     });

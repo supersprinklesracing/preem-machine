@@ -62,6 +62,19 @@ export const UserSchema = baseDocSchema.extend({
 });
 export type User = z.infer<typeof UserSchema>;
 
+// Invite
+export const InviteSchema = baseDocSchema
+  .extend({
+    email: z.string().email().optional(),
+    uid: z.string().optional(),
+    organizationRefs: z.array(docRefSchema),
+    status: z.enum(['pending', 'accepted']).default('pending'),
+  })
+  .refine((data) => data.email || data.uid, {
+    message: 'Either email or uid must be provided',
+  });
+export type Invite = z.infer<typeof InviteSchema>;
+
 // Organization
 export const OrganizationSchema = baseDocSchema.extend({
   name: z.string().min(1, 'Organization name is required'),

@@ -15,6 +15,8 @@ import {
   Event,
   EventBriefSchema,
   EventSchema,
+  Invite,
+  InviteSchema,
   Organization,
   OrganizationBriefSchema,
   OrganizationSchema,
@@ -46,20 +48,60 @@ const getCreateMetadata = (userRef: DocumentReference<DocumentData>) => ({
 });
 
 export const createUser = async (
-  user: Pick<User, 'name' | 'email' | 'avatarUrl'>,
+  newUserEdits: Pick<User, 'name' | 'avatarUrl'>,
   authUser: AuthUser,
 ) => {
+  // Any authorized user can create a record for themselves in the DB; but they
+  // can still only modifiy their own record due to the use of authUser.uid.
   const path = `users/${authUser.uid}`;
-  const userRef = await getDocRefInternal(UserSchema, `users/${authUser.uid}`);
-  const ref = await getDocRefInternal(UserSchema, path);
-  const newUser = {
-    ...user,
-    id: ref.id,
-    path: asDocPath(ref.path),
-    ...getCreateMetadata(userRef),
-  };
-  await ref.set(newUser);
-  return ref.get();
+  const newUserRef = await getDocRefInternal(UserSchema, path);
+
+  const newUserDetails = await newUserRef.firestore.runTransaction(async (transaction) => {
+    // Check for invites for the user's email address or UID
+    const invitesByEmailSnapshot = await (
+      await getCollectionRefInternal(InviteSchema, 'invites')
+    )
+      .where('email', '==', authUser.email)
+      .where('status', '==', 'pending')
+      .get();
+    const invitesByUidSnapshot = await (
+      await getCollectionRefInternal(InviteSchema, 'invites')
+    )
+      .where('uid', '==', authUser.uid)
+      .where('status', '==', 'pending')
+      .get();
+
+    const allInvites = [
+      ...invitesByEmailSnapshot.docs,
+      ...invitesByUidSnapshot.docs,
+    ];
+
+    const organizationRefsMap = new Map<
+      string,
+      {id: string, path: string}
+    >();
+
+    allInvites.forEach((doc) => {
+      (doc.data().organizationRefs ?? []).forEach((orgRef) => {
+        organizationRefsMap.set(orgRef.path, orgRef);
+      });
+      transaction.update(doc.ref, { status: 'accepted' });
+    });
+
+    const newUser: User = {
+      ...newUserEdits,
+      id: newUserRef.id,
+      path: asDocPath(newUserRef.path),
+      organizationRefs: Array.from(organizationRefsMap.values()),
+      ...getCreateMetadata(newUserRef),
+    };
+
+    transaction.set(newUserRef, newUser);
+    return newUser;
+  });
+  // This is a hack to satisfy tests (which have issues with reading a record
+  // after a transaction)
+  return {newUserDetails, newUser: await newUserRef.get()}
 };
 
 export const createOrganization = async (
@@ -229,5 +271,33 @@ export const createPendingContribution = async (
     ...getCreateMetadata(userRef),
   };
   await ref.set(newContribution);
+  return ref.get();
+};
+
+export const createInvite = async (
+  invite: Pick<Invite, 'email' | 'uid' | 'organizationRefs'>,
+  authUser: AuthUser,
+) => {
+  const authChecks = await Promise.all(
+    invite.organizationRefs.map((orgRef) =>
+      isUserAuthorized(authUser, orgRef.path),
+    ),
+  );
+
+  if (authChecks.some((isAuth) => !isAuth)) {
+    unauthorized();
+  }
+
+  const userRef = await getDocRefInternal(UserSchema, `users/${authUser.uid}`);
+  const ref = (await getCollectionRefInternal(InviteSchema, 'invites')).doc();
+  const newInvite = {
+    ...invite,
+    id: ref.id,
+    path: asDocPath(ref.path),
+    // eslint-disable-next-line @typescript-eslint/no-explicit-any
+    status: 'pending' as any,
+    ...getCreateMetadata(userRef),
+  };
+  await ref.set(newInvite);
   return ref.get();
 };

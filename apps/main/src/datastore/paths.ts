@@ -80,6 +80,16 @@ export const isDocPath = (path: string): path is DocPath => {
     return isValid;
   }
 
+  if (segments[0] === 'invites') {
+    const isValid = segments.length === 2;
+    if (!isValid) {
+      console.debug(
+        `isDocPath: (${path}): invalid invites path segment length: ${segments.length}`,
+      );
+    }
+    return isValid;
+  }
+
   if (segments[0] !== 'organizations') {
     console.debug(
       `isDocPath: (${path}): must start with "organizations" or "users": ${segments[0]}`,

@@ -1,11 +1,6 @@
-import {
-  act,
-  fireEvent,
-  MOCK_AUTH_USER,
-  render,
-  screen,
-  waitFor,
-} from '@/test-utils';
+import userEvent from '@testing-library/user-event';
+
+import { act, MOCK_AUTH_USER, render, screen, waitFor } from '@/test-utils';
 
 import { NewUser } from './NewUser';
 
@@ -19,6 +14,9 @@ describe('NewUser component', () => {
   });
 
   it('should call newUserAction with the correct data on form submission', async () => {
+    const user = userEvent.setup({
+      advanceTimers: jest.advanceTimersByTime,
+    });
     const mockNewUserAction = jest.fn(() => Promise.resolve({}));
     render(<NewUser newUserAction={mockNewUserAction} />, {
       userContext: { authUser: MOCK_AUTH_USER, user: null },
@@ -26,21 +24,17 @@ describe('NewUser component', () => {
 
     // Change the name in the form
     const nameInput = screen.getAllByDisplayValue('Test User')[0];
-    fireEvent.change(nameInput, { target: { value: 'New Name' } });
+    await user.clear(nameInput);
+    await user.type(nameInput, 'New Name');
 
     // Wait for the debounced value to update
     act(() => {
-      jest.advanceTimersByTime(600);
-    });
-
-    // Wait for the save button to be enabled
-    await waitFor(() => {
-      expect(screen.getByText('Save and Continue')).not.toBeDisabled();
+      jest.advanceTimersByTime(100);
     });
 
     // Click the save button
     const saveButton = screen.getByText('Save and Continue');
-    fireEvent.click(saveButton);
+    await user.click(saveButton);
 
     // Wait for the action to be called
     await waitFor(() => {
