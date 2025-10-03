@@ -1,12 +1,9 @@
-/* eslint-disable unused-imports/no-unused-vars */
-/* eslint-disable unused-imports/no-unused-imports */
-/* eslint-disable @typescript-eslint/no-unused-vars */
 import {
   getRewrittenUrl,
   unstable_getResponseFromNextConfig,
 } from 'next/experimental/testing/server';
 
-import nextConfig from './next.config.js';
+const nextConfig = require('./next.config.js');
 
 const buildUrl = (path) => {
   const url = new URL('http://localhost:3000');
@@ -174,22 +171,16 @@ const testCases = [
   ],
 ];
 
-// describe('Next Config', () => {
-//   describe.each(testCases)(`Rewrites`, (testName, source, expected) => {
-//     it(`${testName}: should rewrite ${source} to ${expected}`, async () => {
-//       const response = await unstable_getResponseFromNextConfig({
-//         url: source,
-//         nextConfig: await nextConfig(),
-//       });
+describe('Next Config', () => {
+  describe.each(testCases)(`Rewrites`, (testName, source, expected) => {
+    it(`${testName}: should rewrite ${source} to ${expected}`, async () => {
+      const response = await unstable_getResponseFromNextConfig({
+        url: source,
+        nextConfig: await nextConfig(),
+      });
 
-//       expect(response.status).toBe(200);
-//       expect(getRewrittenUrl(response)).toBe(expected);
-//     });
-//   });
-// });
-
-describe('Dummy(!) Next Config', () => {
-  it('Dummy Test', () => {
-    expect(true).toBe(true);
+      expect(response.status).toBe(200);
+      expect(getRewrittenUrl(response)).toBe(expected);
+    });
   });
 });
