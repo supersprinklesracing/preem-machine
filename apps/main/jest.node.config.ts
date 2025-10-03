@@ -6,19 +6,19 @@ const createJestConfig = nextJest({
 });
 
 const customJestConfig: Config = {
-  displayName: '@preem-machine/main',
+  displayName: '@preem-machine/main-node',
   preset: '../../jest.preset.js',
   transform: {
     '^(?!.*\\.(js|jsx|ts|tsx|css|json)$)': '@nx/react/plugins/jest',
   },
   moduleFileExtensions: ['ts', 'tsx', 'js', 'jsx'],
-  coverageDirectory: '../../coverage/apps/main',
-  testEnvironment: 'jsdom',
-  setupFilesAfterEnv: ['<rootDir>/jest.setup.ts'],
+  coverageDirectory: '../../coverage/apps/main-node',
+  testEnvironment: 'node',
+  testMatch: ['**/next.config.node.test.ts'],
   moduleNameMapper: {
     '^@/(.*)$': '<rootDir>/src/$1',
   },
-  testPathIgnorePatterns: ['/node_modules/', '\\.node\\.test\\.ts$'],
+  testPathIgnorePatterns: ['/node_modules/'],
 
   reporters: process.env.IS_CI
     ? [
