@@ -25,7 +25,7 @@ import { toUrlPath } from '@/datastore/paths';
 import { User } from '@/datastore/schema';
 
 import { EditUserOptions } from './edit-user-action';
-import { userSchema } from './user-schema';
+import { updateUserSchema } from './user-schema';
 
 export interface AccountProps {
   user: User;
@@ -36,7 +36,7 @@ export function Account({ user, editUserAction }: AccountProps) {
   const router = useRouter();
 
   const { form, handleSubmit, isLoading, submissionError } = useActionForm({
-    schema: userSchema,
+    schema: updateUserSchema,
     initialValues: {
       name: user?.name ?? '',
       email: user?.email ?? '',
@@ -44,9 +44,8 @@ export function Account({ user, editUserAction }: AccountProps) {
       affiliation: user?.affiliation ?? '',
       raceLicenseId: user?.raceLicenseId ?? '',
       address: user?.address ?? '',
-      termsAccepted: false,
     },
-    action: (values) => editUserAction({ path: user.path, edits: values }),
+    action: (values) => editUserAction({ edits: values }),
     onSuccess: () => {
       router.refresh();
     },
