@@ -5,8 +5,9 @@ import { z, ZodError } from 'zod';
 
 import { newUserSchema } from '@/app/(main)/account/user-schema';
 import { FormActionError, FormActionResult } from '@/components/forms/forms';
+import { unauthorized } from '@/datastore/errors';
 import { createUser } from '@/datastore/server/create/create';
-import { verifyUserContext } from '@/user/server/user';
+import { getUserContext } from '@/user/server/user';
 
 export interface NewUserOptions {
   values: z.infer<typeof newUserSchema>;
@@ -16,15 +17,17 @@ export async function newUserAction({
   values,
 }: NewUserOptions): Promise<FormActionResult<{ path: string }>> {
   try {
-    const { authUser } = await verifyUserContext();
+    const authUser = (await getUserContext()).authUser;
+    if (!authUser) {
+      unauthorized('Not authenticated');
+    }
     const parsedValues = newUserSchema.parse(values);
-    const newUserSnapshot = await createUser(parsedValues, authUser);
-    const newUser = newUserSnapshot.data();
-    if (!newUser) {
+    const { newUser } = await createUser(parsedValues, authUser);
+    if (!newUser.exists) {
       throw new Error(`Failed to create user document`);
     }
-    revalidatePath(`/users/${newUserSnapshot.ref.id}`);
-    return { path: newUserSnapshot.ref.path };
+    revalidatePath(`/view/user/${newUser.ref.id}`);
+    return { path: newUser.ref.path };
   } catch (error) {
     if (error instanceof ZodError) {
       throw new FormActionError('Failed to save profile: Validation error');

@@ -3,6 +3,10 @@ import { fireEvent, render, screen } from '@/test-utils';
 
 import { Admin } from './Admin';
 
+jest.mock('./invite-user-action', () => ({
+  inviteUser: jest.fn(),
+}));
+
 const mockUsers: User[] = [
   { id: '1', name: 'Test User 1', email: 'user1@example.com', path: 'users/1' },
   { id: '2', name: 'Test User 2', email: 'user2@example.com', path: 'users/2' },
