@@ -2,9 +2,10 @@ import type { Config } from 'jest';
 import nextJest from 'next/jest.js';
 
 const createJestConfig = nextJest({
-  dir: 'apps/main',
+  dir: './',
 });
 
+// Your custom config (without transformIgnorePatterns)
 const customJestConfig: Config = {
   displayName: '@preem-machine/main',
   preset: '../../jest.preset.js',
@@ -18,15 +19,15 @@ const customJestConfig: Config = {
   moduleNameMapper: {
     '^@/(.*)$': '<rootDir>/src/$1',
   },
-  testPathIgnorePatterns: ['/node_modules/', '\\.node\\.test\\.ts$'],
 
+  forceExit: true,
   reporters: process.env.IS_CI
     ? [
         ['github-actions', { silent: false }],
         ['default', {}],
       ]
-    : // Hacky way to disable the summary output which corrupts terminals.
-      [['default', { summaryThreshold: 1000 }]],
+    // Hacky way to disable the summary output which corrupts terminals.
+    : [['default', {summaryThreshold: 1000}]],
 };
 
 // Export an async function to modify the final config
