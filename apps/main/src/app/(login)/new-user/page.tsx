@@ -24,6 +24,10 @@ export default async function NewUserPage() {
     redirect('/login');
   }
 
+  if (!authUser.emailVerified) {
+    redirect('/verify-email');
+  }
+
   // Check if the user document already exists in Firestore, if so redirect them
   // to their account page.
   if (user) {

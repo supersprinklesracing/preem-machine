@@ -31,6 +31,7 @@ const MOCK_USER: User = {
 const MOCK_AUTH_USER = {
   uid: 'test-user-id',
   email: 'test@example.com',
+  emailVerified: true,
 };
 
 describe('user', () => {
