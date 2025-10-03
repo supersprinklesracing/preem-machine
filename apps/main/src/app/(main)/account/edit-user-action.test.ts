@@ -6,7 +6,7 @@ import { MOCK_AUTH_USER } from '@/test-utils';
 import { verifyUserContext } from '@/user/server/user';
 
 import { editUserAction } from './edit-user-action';
-import { userSchema } from './user-schema';
+import { updateUserSchema } from './user-schema';
 
 jest.mock('@/user/server/user');
 jest.mock('@/datastore/server/query/query');
@@ -14,6 +14,7 @@ jest.mock('@/datastore/server/update/update');
 jest.mock('@/firebase/server/firebase-admin', () => ({
   getFirebaseStorage: jest.fn(),
 }));
+
 describe('editUserAction', () => {
   const mockedVerifyUserContext = jest.mocked(verifyUserContext);
   const mockedGetFirebaseStorage = jest.mocked(getFirebaseStorage);
@@ -27,11 +28,11 @@ describe('editUserAction', () => {
   const mockBucket = {
     file: mockFile,
   };
-  (mockedGetFirebaseStorage as jest.Mock).mockResolvedValue({
+  (mockedGetFirebaseStorage as jest.Mock).mockReturnValue({
     bucket: () => mockBucket,
   });
 
-  const edits = userSchema.parse({
+  const edits = updateUserSchema.parse({
     name: 'New Name',
     avatarUrl: 'https://new.com/avatar.png',
   });
@@ -49,9 +50,12 @@ describe('editUserAction', () => {
   });
 
   it('should update user and delete old avatar on success', async () => {
-    await editUserAction({ path: 'users/test-user-id', edits });
+    await editUserAction({ edits });
 
-    expect(mockedGetDoc).toHaveBeenCalledWith(userSchema, 'users/test-user-id');
+    expect(mockedGetDoc).toHaveBeenCalledWith(
+      updateUserSchema,
+      `users/${MOCK_AUTH_USER.uid}`,
+    );
     expect(mockedUpdateUser).toHaveBeenCalledWith(edits, MOCK_AUTH_USER);
     expect(mockFile).toHaveBeenCalledWith('avatar.png');
     expect(mockDelete).toHaveBeenCalled();
@@ -63,7 +67,7 @@ describe('editUserAction', () => {
       avatarUrl: edits.avatarUrl,
     } as User);
 
-    await editUserAction({ path: 'users/test-user-id', edits });
+    await editUserAction({ edits });
 
     expect(mockedUpdateUser).toHaveBeenCalledWith(edits, MOCK_AUTH_USER);
     expect(mockDelete).not.toHaveBeenCalled();
@@ -75,7 +79,7 @@ describe('editUserAction', () => {
       avatarUrl: undefined,
     } as User);
 
-    await editUserAction({ path: 'users/test-user-id', edits });
+    await editUserAction({ edits });
 
     expect(mockedUpdateUser).toHaveBeenCalledWith(edits, MOCK_AUTH_USER);
     expect(mockDelete).not.toHaveBeenCalled();
@@ -89,7 +93,7 @@ describe('editUserAction', () => {
       });
     mockDelete.mockRejectedValue(new Error('Storage failed'));
 
-    await editUserAction({ path: 'users/test-user-id', edits });
+    await editUserAction({ edits });
 
     expect(mockedUpdateUser).toHaveBeenCalledWith(edits, MOCK_AUTH_USER);
     expect(mockDelete).toHaveBeenCalled();
@@ -103,8 +107,8 @@ describe('editUserAction', () => {
   it('should throw a FormActionError on failure', async () => {
     mockedVerifyUserContext.mockRejectedValue(new Error('Not authenticated'));
 
-    await expect(
-      editUserAction({ path: 'users/test-user-id', edits }),
-    ).rejects.toThrow('Failed to save profile: Not authenticated');
+    await expect(editUserAction({ edits })).rejects.toThrow(
+      'Failed to save profile: Not authenticated',
+    );
   });
 });

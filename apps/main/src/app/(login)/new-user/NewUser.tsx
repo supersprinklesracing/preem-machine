@@ -14,9 +14,10 @@ import {
   Title,
 } from '@mantine/core';
 import { useDebouncedValue } from '@mantine/hooks';
+import isEqual from 'fast-deep-equal';
 import { redirect, useRouter } from 'next/navigation';
 
-import { userSchema } from '@/app/(main)/account/user-schema';
+import { newUserSchema } from '@/app/(main)/account/user-schema';
 import { UpdateUserProfileCard } from '@/components/cards/UpdateUserProfileCard';
 import { FormActionResult } from '@/components/forms/forms';
 import { useActionForm } from '@/components/forms/useActionForm';
@@ -30,7 +31,7 @@ export function NewUser({
   newUserAction,
   onSuccess,
 }: {
-  newUserAction: ({ values }: NewUserOptions) => Promise<FormActionResult>;
+  newUserAction: (options: NewUserOptions) => Promise<FormActionResult<{ path: string }>>;
   onSuccess?: () => void;
 }) {
   const { authUser } = useUserContext();
@@ -41,7 +42,7 @@ export function NewUser({
   }
 
   const { form, handleSubmit, isLoading, submissionError } = useActionForm({
-    schema: userSchema,
+    schema: newUserSchema,
     initialValues: {
       name: authUser.displayName ?? '',
       email: authUser.email ?? '',
@@ -54,9 +55,11 @@ export function NewUser({
     action: (values) => {
       return newUserAction({ values });
     },
-    onSuccess: () => {
+    onSuccess: (data) => {
       if (onSuccess) {
         onSuccess();
+      } else if (data?.path) {
+        router.push(data.path);
       } else {
         router.push('/');
       }
@@ -66,7 +69,7 @@ export function NewUser({
   const { uploading, error, handleFileChange, handleRemovePhoto } =
     useAvatarUpload(form, 'avatarUrl');
 
-  const [debouncedName] = useDebouncedValue(form.values.name, 100);
+  const [debouncedValues] = useDebouncedValue(form.values, 100);
 
   return (
     <MultiPanelLayout>
@@ -81,7 +84,9 @@ export function NewUser({
               <Stack>
                 <UpdateUserProfileCard
                   name={
-                    debouncedName || authUser.displayName || 'Your full name'
+                    debouncedValues.name ||
+                    authUser.displayName ||
+                    'Your full name'
                   }
                   email={authUser.email ?? undefined}
                   avatarUrl={form.values.avatarUrl ?? undefined}
@@ -102,7 +107,7 @@ export function NewUser({
                   mt="sm"
                   loading={isLoading}
                   disabled={
-                    !form.isValid() || form.values.name !== debouncedName
+                    !form.isValid() || !isEqual(form.values, debouncedValues)
                   }
                 >
                   Save and Continue
