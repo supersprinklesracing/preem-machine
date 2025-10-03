@@ -1,5 +1,17 @@
 {
   "name": "@preem-machine/main",
   "version": "0.0.1",
-  "private": true
+  "private": true,
+  "nx": {
+    "targets": {
+      "test": {
+        "options": {
+          "passWithNoTests": true,
+          "color": false,
+          "colors": false,
+          "forceExit": true
+        }
+      }
+    }
+  }
 }

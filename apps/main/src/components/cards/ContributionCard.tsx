@@ -52,6 +52,7 @@ export function ContributionCard({ contribution }: ContributionCardProps) {
 
   return (
     <ContentCard
+      key={contribution.path}
       data-testid={`contribution-card-${contribution.id}`}
       title={title}
       rightColumnTop={rightColumnTop}
