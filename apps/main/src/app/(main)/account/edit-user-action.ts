@@ -8,22 +8,20 @@ import { updateUser } from '@/datastore/server/update/update';
 import { getFirebaseStorage } from '@/firebase/server/firebase-admin';
 import { verifyUserContext } from '@/user/server/user';
 
-import { userSchema } from './user-schema';
+import { updateUserSchema } from './user-schema';
 
 export interface EditUserOptions {
-  path: string;
-  edits: z.infer<typeof userSchema>;
+  edits: z.infer<typeof updateUserSchema>;
 }
 
 export async function editUserAction({
-  path,
   edits,
 }: EditUserOptions): Promise<FormActionResult> {
   try {
     const { authUser } = await verifyUserContext();
-    const parsedEdits = userSchema.parse(edits);
+    const parsedEdits = updateUserSchema.parse(edits);
 
-    const oldData = await getDoc(userSchema, path);
+    const oldData = await getDoc(updateUserSchema, `users/${authUser.uid}`);
     const oldAvatarUrl = oldData?.avatarUrl;
 
     await updateUser(parsedEdits, authUser);
