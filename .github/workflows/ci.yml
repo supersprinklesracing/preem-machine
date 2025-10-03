@@ -89,15 +89,10 @@ jobs:
         with:
           nx: run-many -t lint
 
-      - name: "Test (test:default)"
+      - name: Test
         uses: raegen/nx@v0.3.6
         with:
           nx: run-many -t test
-
-      - name: "Test (test:node)"
-        uses: raegen/nx@v0.3.6
-        with:
-          nx: run-many -t test:node
 
       # https://github.com/microsoft/playwright/issues/7249
       - name: E2E Playwright Deps Version

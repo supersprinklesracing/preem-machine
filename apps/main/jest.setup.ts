@@ -62,6 +62,7 @@ class ResizeObserver {
 window.ResizeObserver = ResizeObserver;
 
 jest.mock('react-timezone-select', () => ({
+  // eslint-disable-next-line @eslint-react/no-unnecessary-use-prefix
   useTimezoneSelect: () => ({
     options: [
       { value: 'America/New_York', label: 'Eastern' },

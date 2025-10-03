@@ -1,5 +1,9 @@
 {
   "nxConsole.generateAiAgentRules": true,
+  "jestrunner.jestCommand": "TS_NODE_COMPILER_OPTIONS=\"{\\\"moduleResolution\\\":\\\"Node10\\\",\\\"customConditions\\\":null}\" node '../../node_modules/jest/bin/jest.js'",
+  "jestrunner.projectPath": "apps/main",
+  "jest.jestCommandLine": "TS_NODE_COMPILER_OPTIONS=\"{\\\"moduleResolution\\\":\\\"Node10\\\",\\\"customConditions\\\":null}\" node '../../node_modules/jest/bin/jest.js'",
+  "jest.rootPath": "apps/main",
   "prettier.configPath": ".prettierrc",
   "prettier.requireConfig": true
 }
