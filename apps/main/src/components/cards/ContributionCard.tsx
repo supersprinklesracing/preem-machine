@@ -7,6 +7,7 @@ import { UserAvatar } from '@/components/UserAvatar/UserAvatar';
 import { toUrlPath } from '@/datastore/paths';
 import { Contribution } from '@/datastore/schema';
 import { formatDateRelative } from '@/dates/dates';
+
 import { ContentCard } from './ContentCard';
 
 interface ContributionCardProps {
