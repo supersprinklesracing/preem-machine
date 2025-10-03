@@ -8,17 +8,19 @@ import { MOCK_AUTH_USER, setupMockDb } from '@/test-utils';
 import { isUserAuthorized } from '../access';
 import {
   createEvent,
+  createInvite,
   createPendingContribution,
   createPreem,
   createRace,
   createSeries,
+  createUser,
 } from './create';
 
 jest.mock('../access', () => ({
   isUserAuthorized: jest.fn().mockResolvedValue(true),
 }));
 
-describe('create mutations', () => {
+describe('create', () => {
   let firestore: Firestore;
   const authUser = MOCK_AUTH_USER;
 
@@ -158,6 +160,93 @@ describe('create mutations', () => {
       await expect(
         createPendingContribution('preem-path', contribution, {} as AuthUser),
       ).rejects.toThrow('Unauthorized');
+    });
+  });
+
+  describe('createUser', () => {
+    it('should create a new user and consume matching invites', async () => {
+      const newUserEdits = {
+        name: 'Invited User',
+        email: 'invited-user@example.com',
+        avatarUrl: 'https://placehold.co/100x100.png',
+      };
+      const newAuthUser: AuthUser = {
+        uid: 'invited-user-id',
+        email: 'invited-user@example.com',
+      };
+
+      await createInvite(
+        {
+          email: 'invited-user@example.com',
+          organizationRefs: [
+            { id: 'super-sprinkles', path: 'organizations/super-sprinkles' },
+          ],
+        },
+        authUser,
+      );
+      await createInvite(
+        {
+          uid: 'invited-user-id',
+          organizationRefs: [
+            { id: 'another-org', path: 'organizations/another-org' },
+          ],
+        },
+        authUser,
+      );
+
+      const { newUserDetails, newUser } = await createUser(
+        newUserEdits,
+        newAuthUser,
+      );
+
+      expect(newUser.ref.path).toBe(`users/${newAuthUser.uid}`);
+      expect(newUserDetails?.email).toBe(newAuthUser.email);
+      expect(newUserDetails?.organizationRefs).toEqual(
+        expect.arrayContaining([
+          { id: 'super-sprinkles', path: 'organizations/super-sprinkles' },
+          { id: 'another-org', path: 'organizations/another-org' },
+        ]),
+      );
+
+      const invitesSnapshot = await firestore.collection('invites').get();
+      invitesSnapshot.docs.forEach((doc) => {
+        expect(doc.data()?.status).toBe('accepted');
+      });
+    });
+  });
+
+  describe('createInvite', () => {
+    it('should create a new invite', async () => {
+      const invite = {
+        email: 'new-user@example.com',
+        organizationRefs: [
+          {
+            id: 'super-sprinkles',
+            path: 'organizations/super-sprinkles',
+          },
+        ],
+      };
+      const doc = await createInvite(invite, authUser);
+      const data = doc.data();
+      expect(data?.path).toEqual(doc.ref.path);
+      expect(data?.email).toEqual(invite.email);
+      expect(data?.status).toEqual('pending');
+    });
+
+    it('should throw an error if the user is not authorized', async () => {
+      (isUserAuthorized as jest.Mock).mockResolvedValue(false);
+      const invite = {
+        email: 'new-user@example.com',
+        organizationRefs: [
+          {
+            id: 'super-sprinkles',
+            path: 'organizations/super-sprinkles',
+          },
+        ],
+      };
+      await expect(createInvite(invite, authUser)).rejects.toThrow(
+        'Unauthorized',
+      );
     });
   });
 });
