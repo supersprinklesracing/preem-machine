@@ -3,12 +3,12 @@
 import { DocumentSnapshot } from 'firebase-admin/firestore';
 import { revalidatePath } from 'next/cache';
 
+import { AuthUser } from '@/auth/user';
 import { FormActionError } from '@/components/forms/forms';
 import { User } from '@/datastore/schema';
 import * as create from '@/datastore/server/create/create';
 import * as user from '@/user/server/user';
 
-import { AuthUser } from './auth/user';
 import { newUserAction } from './new-user-action';
 
 jest.mock('@/user/server/user');
@@ -22,13 +22,9 @@ const MOCK_AUTH_USER: AuthUser = {
   name: 'Test User',
   email: 'test-user@example.com',
   avatarUrl: 'https://placehold.co/100x100.png',
-  termsAccepted: true,
-  affiliation: '',
-  raceLicenseId: '',
-  address: '',
 };
 
-const MOCK_USER_VALUES: User = {
+const MOCK_USER_VALUES: Omit<User, 'id' | 'path' | 'roles' | 'metadata'> = {
   name: 'Test User',
   email: 'test-user@example.com',
   avatarUrl: 'https://placehold.co/100x100.png',
@@ -39,7 +35,7 @@ const MOCK_USER_VALUES: User = {
 };
 
 describe('newUserAction', () => {
-  const mockedGetUserContext = jest.mocked(user.getUserContext);
+  const mockedVerifyUserContext = jest.mocked(user.verifyUserContext);
   const mockedCreateUser = jest.mocked(create.createUser);
   const mockedRevalidatePath = jest.mocked(revalidatePath);
 
@@ -48,7 +44,7 @@ describe('newUserAction', () => {
   });
 
   it('should create a new user and return the path on success', async () => {
-    mockedGetUserContext.mockResolvedValue({
+    mockedVerifyUserContext.mockResolvedValue({
       authUser: MOCK_AUTH_USER,
       user: null,
     });
@@ -64,12 +60,12 @@ describe('newUserAction', () => {
       expect.objectContaining(MOCK_USER_VALUES),
       MOCK_AUTH_USER,
     );
-    expect(mockedRevalidatePath).toHaveBeenCalledWith('user/new-user-id');
+    expect(mockedRevalidatePath).toHaveBeenCalledWith('/users/new-user-id');
     expect(result).toEqual({ path: 'users/new-user-id' });
   });
 
   it('should throw a FormActionError if no authUser is found', async () => {
-    mockedGetUserContext.mockResolvedValue({ authUser: null, user: null });
+    mockedVerifyUserContext.mockRejectedValue(new Error('Not authenticated'));
 
     await expect(newUserAction({ values: MOCK_USER_VALUES })).rejects.toThrow(
       new FormActionError('Failed to save profile: Not authenticated'),
@@ -77,7 +73,7 @@ describe('newUserAction', () => {
   });
 
   it('should throw a FormActionError if user creation fails', async () => {
-    mockedGetUserContext.mockResolvedValue({
+    mockedVerifyUserContext.mockResolvedValue({
       authUser: MOCK_AUTH_USER,
       user: null,
     });
@@ -89,7 +85,7 @@ describe('newUserAction', () => {
   });
 
   it('should throw a FormActionError if the created user data is missing', async () => {
-    mockedGetUserContext.mockResolvedValue({
+    mockedVerifyUserContext.mockResolvedValue({
       authUser: MOCK_AUTH_USER,
       user: null,
     });
@@ -107,14 +103,14 @@ describe('newUserAction', () => {
   });
 
   it('should throw a FormActionError for invalid input data', async () => {
-    mockedGetUserContext.mockResolvedValue({
+    mockedVerifyUserContext.mockResolvedValue({
       authUser: MOCK_AUTH_USER,
       user: null,
     });
     const invalidValues = { ...MOCK_USER_VALUES, avatarUrl: 'not-a-valid-url' }; // Invalid avatarUrl
 
     await expect(newUserAction({ values: invalidValues })).rejects.toThrow(
-      /Invalid URL/,
+      'Failed to save profile: Validation error',
     );
   });
 });
