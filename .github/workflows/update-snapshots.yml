@@ -27,18 +27,35 @@ jobs:
             ### Updating snapshots. Click [here](https://github.com/${{ github.repository }}/actions/runs/${{ github.run_id }}) to see the status.
 
       - name: Setup Node
-        uses: actions/setup-node@v4
+        uses: actions/setup-node@v5
         with:
           node-version: 22
 
-      - name: Install dependencies
-        run: npm ci
+      - name: Restore NPM CI Cache
+        id: node_modules-cache
+        uses: actions/cache/restore@v4
+        with:
+          path: node_modules
+          key: node-${{ runner.os }}-node-${{ hashFiles('**/package-lock.json') }}
 
-      - name: Install Playwright Browsers
-        run: npx playwright install --with-deps
+      - name: NPM CI
+        if: steps.node_modules-cache.outputs.cache-hit != 'true'
+        run: npm ci --legacy-peer-deps
+
+      - name: Restore E2E Playwright Cache Deps
+        id: playwright-cache
+        uses: actions/cache/restore@v4
+        with:
+          path: |
+            ~/.cache/ms-playwright
+          key: playwright-${{ runner.os }}-${{ hashFiles('**/package-lock.json') }}
+
+      - name: E2E Deps
+        if: steps.playwright-cache.outputs.cache-hit != 'true'
+        run: npx playwright install --with-deps chromium
 
       - name: Run Playwright update snapshots
-        run: npx nx e2e e2e-main --update-snapshots
+        run: npx nx run e2e-main:e2e --update-snapshots
 
       - name: Commit and push updated snapshots
         uses: stefanzweifel/git-auto-commit-action@v5
@@ -50,3 +67,18 @@ jobs:
         with:
           message: |
             ### 🎉 Successfully updated and committed Playwright snapshots! 🎉
+
+      - name: Save NPM CI Cache
+        if: always()
+        uses: actions/cache/save@v4
+        with:
+          path: node_modules
+          key: node-${{ runner.os }}-node-${{ hashFiles('**/package-lock.json') }}
+
+      - name: Save E2E Playwright Cache Deps
+        if: always()
+        uses: actions/cache/save@v4
+        with:
+          path: |
+            ~/.cache/ms-playwright
+          key: playwright-${{ runner.os }}-${{ hashFiles('**/package-lock.json') }}
