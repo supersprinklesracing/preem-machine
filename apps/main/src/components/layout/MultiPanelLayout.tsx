@@ -13,7 +13,7 @@ export function MultiPanelLayout({
   return (
     <Container fluid>
       <Stack>
-        <SimpleGrid cols={{ base: 1, md: 2 }}>
+        <SimpleGrid cols={2}>
           {topLeft}
           {topRight}
         </SimpleGrid>
