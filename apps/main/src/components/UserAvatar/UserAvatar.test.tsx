@@ -1,6 +1,6 @@
 import React from 'react';
 
-import { MOCK_USER, MOCK_USER_CONTEXT, render, screen } from '@/test-utils';
+import { MOCK_USER, render, screen } from '@/test-utils';
 
 import { UserAvatar, UserAvatarIcon } from './UserAvatar';
 
@@ -8,10 +8,7 @@ describe('UserAvatar', () => {
   it('renders a link with the user avatar and name', () => {
     render(<UserAvatar user={MOCK_USER} />);
     const link = screen.getByRole('link');
-    expect(link).toHaveAttribute(
-      'href',
-      `/view/user/${MOCK_USER_CONTEXT.authUser.uid}`,
-    );
+    expect(link).toHaveAttribute('href', `/view/user/${MOCK_USER.id}`);
     expect(screen.getByText('Test User')).toBeInTheDocument();
     expect(screen.getByAltText('Test User')).toHaveAttribute(
       'src',
@@ -42,10 +39,7 @@ describe('UserAvatarIcon', () => {
   it('renders a link with the user avatar', () => {
     render(<UserAvatarIcon user={MOCK_USER} />);
     const link = screen.getByRole('link');
-    expect(link).toHaveAttribute(
-      'href',
-      `/view/user/${MOCK_USER_CONTEXT.authUser.uid}`,
-    );
+    expect(link).toHaveAttribute('href', `/view/user/${MOCK_USER.id}`);
     expect(screen.getByAltText('Test User')).toBeInTheDocument();
     expect(screen.queryByText('Test User')).not.toBeInTheDocument();
   });
