@@ -11,19 +11,23 @@ import {
 } from '@mantine/core';
 import Link from 'next/link';
 import * as React from 'react';
-import { useLoadingCallback } from 'react-loading-hook';
+import { z } from 'zod';
 
+import { useActionForm } from '@/components/forms/useActionForm';
 import { MultiPanelLayout } from '@/components/layout/MultiPanelLayout';
 
 import { resendVerificationEmail } from './verify-email-action';
 
 export function VerifyEmail() {
-  const [handleResendEmail, isResending, resendError] =
-    useLoadingCallback(async () => {
-      await resendVerificationEmail();
-      // Optionally, show a success message to the user.
-      alert('A new verification email has been sent.');
-    });
+  const [success, setSuccess] = React.useState(false);
+  const { form, handleSubmit, isLoading, submissionError } = useActionForm({
+    schema: z.object({}),
+    initialValues: {},
+    action: async () => await resendVerificationEmail(),
+    onSuccess: () => {
+      setSuccess(true);
+    },
+  });
 
   return (
     <MultiPanelLayout>
@@ -38,16 +42,21 @@ export function VerifyEmail() {
           <Text>
             If you haven't received the email, you can request a new one.
           </Text>
-          {resendError && <Text c="red">{resendError.message}</Text>}
-          <Group>
-            <Button
-              loading={isResending}
-              disabled={isResending}
-              onClick={handleResendEmail}
-            >
-              Resend verification email
-            </Button>
-          </Group>
+          <form onSubmit={form.onSubmit(handleSubmit)}>
+            <Group>
+              <Button
+                type="submit"
+                loading={isLoading}
+                disabled={isLoading}
+              >
+                Resend verification email
+              </Button>
+            </Group>
+          </form>
+          {submissionError && <Text c="red">{submissionError}</Text>}
+          {success && (
+            <Text c="green">A new verification email has been sent.</Text>
+          )}
           <Group>
             <Anchor component={Link} href="/login">
               Back to Login
