@@ -97,74 +97,76 @@ export function EditEvent({
       <MultiPanelLayout
         topLeft={
           <Card withBorder>
-            <Stack>
-              <Card withBorder p="sm">
-                <Stack>
-                  <TextInput
-                    label="Event Name"
-                    required
-                    {...form.getInputProps('name')}
-                  />
-                  <TextInput
-                    label="Location"
-                    {...form.getInputProps('location')}
-                  />
-                  <TextInput
-                    label="Website"
-                    {...form.getInputProps('website')}
-                  />
-                  <Textarea
-                    label="Description"
-                    {...form.getInputProps('description')}
-                  />
-                </Stack>
-              </Card>
-              <Card withBorder p="sm">
-                <Stack>
-                  <Title order={5}>Event Date</Title>
-                  <DatePicker
-                    type="range"
-                    allowSingleDateInRange
-                    value={[
-                      form.values.startDate ?? null,
-                      form.values.endDate ?? null,
-                    ]}
-                    onChange={([start, end]) => {
-                      form.setFieldValue(
-                        'startDate',
-                        start ? new Date(start) : undefined,
-                      );
-                      form.setFieldValue(
-                        'endDate',
-                        end ? new Date(end) : undefined,
-                      );
-                    }}
-                    data-testid="date-picker"
-                  />
-                  <Select
-                    searchable
-                    label="Timezone"
-                    {...form.getInputProps('timezone')}
-                    data={options}
-                  />
-                </Stack>
-              </Card>
-              <Group justify="right">
-                <Button onClick={open} variant="outline">
-                  {ADD_RACE_BUTTON_TEXT}
-                </Button>
-                <Button
-                  onClick={() => handleSubmit(form.values)}
-                  loading={isLoading}
-                  disabled={
-                    !form.isValid() || !isEqual(form.values, debouncedValues)
-                  }
-                >
-                  Save Changes
-                </Button>
-              </Group>
-              {submissionError && <Text c="red">{submissionError}</Text>}
-            </Stack>
+            <form onSubmit={form.onSubmit(handleSubmit)}>
+              <Stack>
+                <Card withBorder p="sm">
+                  <Stack>
+                    <TextInput
+                      label="Event Name"
+                      required
+                      {...form.getInputProps('name')}
+                    />
+                    <TextInput
+                      label="Location"
+                      {...form.getInputProps('location')}
+                    />
+                    <TextInput
+                      label="Website"
+                      {...form.getInputProps('website')}
+                    />
+                    <Textarea
+                      label="Description"
+                      {...form.getInputProps('description')}
+                    />
+                  </Stack>
+                </Card>
+                <Card withBorder p="sm">
+                  <Stack>
+                    <Title order={5}>Event Date</Title>
+                    <DatePicker
+                      type="range"
+                      allowSingleDateInRange
+                      value={[
+                        form.values.startDate ?? null,
+                        form.values.endDate ?? null,
+                      ]}
+                      onChange={([start, end]) => {
+                        form.setFieldValue(
+                          'startDate',
+                          start ? new Date(start) : undefined,
+                        );
+                        form.setFieldValue(
+                          'endDate',
+                          end ? new Date(end) : undefined,
+                        );
+                      }}
+                      data-testid="date-picker"
+                    />
+                    <Select
+                      searchable
+                      label="Timezone"
+                      {...form.getInputProps('timezone')}
+                      data={options}
+                    />
+                  </Stack>
+                </Card>
+                <Group justify="right">
+                  <Button onClick={open} variant="outline">
+                    {ADD_RACE_BUTTON_TEXT}
+                  </Button>
+                  <Button
+                    type="submit"
+                    loading={isLoading}
+                    disabled={
+                      !form.isValid() || !isEqual(form.values, debouncedValues)
+                    }
+                  >
+                    Save Changes
+                  </Button>
+                </Group>
+                {submissionError && <Text c="red">{submissionError}</Text>}
+              </Stack>
+            </form>
           </Card>
         }
         topRight={<EventCard event={eventPreview} />}
