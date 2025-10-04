@@ -73,17 +73,20 @@ export const MOCK_USER_CONTEXT = { authUser: MOCK_AUTH_USER, user: MOCK_USER };
 
 export function setupUserContext() {
   const mockedGetUserContext = userServer.getUserContext as jest.Mock;
+  const mockedVerifyUser = userServer.verifyUser as jest.Mock;
   const mockedVerifyUserContext = userServer.verifyUserContext as jest.Mock;
   const mockedValidUserContext = userServer.validUserContext as jest.Mock;
 
   beforeEach(() => {
     mockedGetUserContext.mockResolvedValue({ authUser: null, user: null });
+    mockedVerifyUser.mockResolvedValue({ authUser: null, user: null });
     mockedVerifyUserContext.mockResolvedValue({ authUser: null, user: null });
     mockedValidUserContext.mockResolvedValue({ authUser: null, user: null });
   });
 
   return {
     mockedGetUserContext,
+    mockedVerifyUser,
     mockedVerifyUserContext,
     mockedValidUserContext,
   };

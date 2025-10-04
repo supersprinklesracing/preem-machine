@@ -1,7 +1,7 @@
 'use server';
 
 import { getEventsForUser } from '@/datastore/server/query/query';
-import { validUserContext } from '@/user/server/user';
+import { verifyUser } from '@/user/server/user';
 
 import { AvatarCluster } from './Shell/AvatarCluster';
 import { MainAppShell } from './Shell/MainAppShell';
@@ -13,7 +13,7 @@ export interface MainProps {
 }
 
 export default async function Layout({ children }: MainProps) {
-  const { user } = await validUserContext();
+  const { user } = await verifyUser();
   const events = user ? await getEventsForUser(user.id) : [];
 
   return (

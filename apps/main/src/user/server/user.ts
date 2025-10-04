@@ -61,15 +61,34 @@ export const verifyUser = async (
   return { authUser, user };
 };
 
-/**
- * @deprecated Use `verifyUser` instead.
- */
-export const verifyUserContext = verifyUser;
+export const verifyUserContext = async () => {
+  const authUser = await getAuthUser();
+  if (!authUser) {
+    redirect('/login');
+  }
+  const user = await getUser();
+  if (!user) {
+    redirect('/new-user');
+  }
+  return { uid: authUser.uid, authUser, user };
+};
 
-/**
- * @deprecated Use `verifyUser` instead.
- */
-export const validUserContext = verifyUser;
+export const validUserContext = async () => {
+  // A user may either be authorized and have a user profile; or they must be
+  // unauthorized.
+  const authUser = await getAuthUser();
+  const user = await getUser();
+  if (authUser && user) {
+    return { authUser, user };
+  } else if (authUser && !user) {
+    redirect('/new-user');
+  } else if (!authUser && user) {
+    // This can't ever really happen, cause getUser calls getAuthUser.
+    throw Error('Unexpected user state!');
+  } else {
+    return { authUser, user };
+  }
+};
 
 export const hasUserRole = async (
   requiredRole: string,

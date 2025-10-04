@@ -211,3 +211,13 @@ export const ContributionSchema = baseDocSchema.extend({
   preemBrief: PreemBriefSchema,
 });
 export type Contribution = z.infer<typeof ContributionSchema>;
+
+// Mail
+export const MailSchema = z.object({
+  to: z.string().email(),
+  message: z.object({
+    subject: z.string(),
+    html: z.string(),
+  }),
+});
+export type Mail = z.infer<typeof MailSchema>;

@@ -57,6 +57,7 @@ export const mockDbData: DatabaseCollections = {
       ...createIdAndPath(`users/${ENV_E2E_TESTING_USER}`),
       name: 'E2E User',
       email: 'e2e-user@example.com',
+      emailVerified: true,
       avatarUrl: 'https://placehold.co/100x100.png',
       organizationRefs: [createDocRef('organizations/super-sprinkles')],
       metadata: createMetadata('2024-07-01T10:00:00Z'),

@@ -1,13 +1,11 @@
 'use server';
 
-import { getAuth } from 'firebase-admin/auth';
 import {
   type DocumentData,
   type DocumentReference,
 } from 'firebase-admin/firestore';
 
 import { AuthUser } from '@/auth/user';
-import { getFirebaseAdminApp } from '@/firebase/server/firebase-admin';
 
 import { unauthorized } from '../../errors';
 import { asDocPath, CollectionPath, docId, DocPath } from '../../paths';
@@ -37,6 +35,7 @@ import { isUserAuthorized } from '../access';
 import { getDoc } from '../query/query';
 import { getCollectionRefInternal, getDocRefInternal } from '../util';
 import { validateEventDateRange, validateRaceDateRange } from '../validation';
+import { createVerificationEmail } from './mail';
 
 const getCreateMetadata = (userRef: DocumentReference<DocumentData>) => ({
   metadata: {
@@ -61,25 +60,10 @@ export const createUser = async (
     ...getCreateMetadata(userRef),
   };
   await ref.set(newUser);
-  await sendVerificationEmail(user.email);
+  if (user.email) {
+    await createVerificationEmail(user.email);
+  }
   return ref.get();
-};
-
-const sendVerificationEmail = async (email: string) => {
-  const app = getFirebaseAdminApp();
-  const auth = getAuth(app);
-  const link = await auth.generateEmailVerificationLink(email);
-  // The firestore-send-email extension is used in this project.
-  // I will add a document to the `mail` collection.
-  const { getFirestore } = await import('firebase-admin/firestore');
-  const db = getFirestore(app);
-  await db.collection('mail').add({
-    to: email,
-    message: {
-      subject: 'Verify your email for Preem Machine',
-      html: `Please verify your email by clicking this link: <a href="${link}">${link}</a>`,
-    },
-  });
 };
 
 export const createOrganization = async (
