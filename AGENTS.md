@@ -78,6 +78,9 @@ This is an NX monorepo. The key applications are:
 
 #### Testing
 
+**WARNING: Do not update E2E snapshots**
+You **MUST NOT** run E2E tests with `--update-snapshots` unless the user explicitly asks you to.
+
 Note: Always quote file path variables like `"${TEST_FILE}"` to prevent errors.
 
 - **Run all unit tests:** `./tools/nx/nx run @preem-machine/main:test`
