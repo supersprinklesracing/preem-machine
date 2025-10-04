@@ -22,7 +22,7 @@ function setTestExtraHttpHeaders() {
         uid: ENV_E2E_TESTING_USER,
         email: 'test-user@example.com',
         displayName: 'Test User',
-        emailVerifed: true,
+        emailVerified: true,
         customClaims: {},
       }),
     },
@@ -59,7 +59,7 @@ export function useE2eTestingUserBeforeEach() {
       uid: ENV_E2E_TESTING_USER,
       email: 'test-user@example.com',
       displayName: 'Test User',
-      emailVerifed: true,
+      emailVerified: true,
       customClaims: {},
     });
   });
@@ -71,7 +71,7 @@ export function useE2eTestingAdminBeforeEach() {
       uid: ENV_E2E_TESTING_USER,
       email: 'test-user@example.com',
       displayName: 'Test User',
-      emailVerifed: true,
+      emailVerified: true,
       customClaims: { roles: ['admin'] },
     });
   });

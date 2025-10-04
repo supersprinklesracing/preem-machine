@@ -49,7 +49,7 @@ export default defineConfig({
   /* Run your local dev server before starting the tests */
   webServer: {
     command:
-      'npx nx --tuiAutoExit --outputStyle=stream-without-prefixes run @preem-machine/main:start | tee e2e-server.log 2>&1 ',
+      './tools/nx/nx --tuiAutoExit --outputStyle=stream-without-prefixes run @preem-machine/main:start | tee e2e-server.log 2>&1 ',
 
     url: 'http://localhost:3000',
     reuseExistingServer: !process.env.CI,
