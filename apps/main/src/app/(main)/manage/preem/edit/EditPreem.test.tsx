@@ -1,5 +1,7 @@
+import userEvent from '@testing-library/user-event';
+
 import { Preem } from '@/datastore/schema';
-import { act, fireEvent, render, screen, waitFor } from '@/test-utils';
+import { act, render, screen, waitFor } from '@/test-utils';
 
 import { EditPreem } from './EditPreem';
 
@@ -58,20 +60,27 @@ describe('EditPreem component', () => {
   });
 
   it('should call editPreemAction with the correct data on form submission and refresh the router', async () => {
+    const user = userEvent.setup({
+      advanceTimers: jest.advanceTimersByTime,
+    });
     const editPreemAction = jest.fn(() => Promise.resolve({ ok: true }));
 
     render(<EditPreem preem={mockPreem} editPreemAction={editPreemAction} />);
 
     const nameInput = screen.getByDisplayValue('Test Preem');
-    fireEvent.change(nameInput, { target: { value: 'New Preem Name' } });
+    await user.clear(nameInput);
+    await user.type(nameInput, 'New Preem Name');
 
     const descriptionInput = screen.getByDisplayValue('Test Description');
-    fireEvent.change(descriptionInput, {
-      target: { value: 'New Description' },
+    await user.clear(descriptionInput);
+    await user.type(descriptionInput, 'New Description');
+
+    act(() => {
+      jest.advanceTimersByTime(100);
     });
 
     const saveButton = screen.getByRole('button', { name: /save changes/i });
-    fireEvent.click(saveButton);
+    await user.click(saveButton);
 
     await waitFor(() => {
       expect(editPreemAction).toHaveBeenCalledWith(
@@ -93,6 +102,9 @@ describe('EditPreem component', () => {
   });
 
   it('should display an error message if the action fails', async () => {
+    const user = userEvent.setup({
+      advanceTimers: jest.advanceTimersByTime,
+    });
     const editPreemAction = jest.fn(() =>
       Promise.reject(new Error('Failed to save')),
     );
@@ -100,17 +112,22 @@ describe('EditPreem component', () => {
     render(<EditPreem preem={mockPreem} editPreemAction={editPreemAction} />);
 
     const nameInput = screen.getByDisplayValue('Test Preem');
-    await act(async () => {
-      fireEvent.change(nameInput, { target: { value: 'New Preem Name' } });
+    await user.type(nameInput, 'A');
+
+    act(() => {
+      jest.advanceTimersByTime(100);
     });
 
     const saveButton = screen.getByRole('button', { name: /save changes/i });
-    fireEvent.click(saveButton);
+    await user.click(saveButton);
 
     await screen.findByText('Failed to save');
   });
 
   it('should disable the save button until the form is changed', async () => {
+    const user = userEvent.setup({
+      advanceTimers: jest.advanceTimersByTime,
+    });
     const editPreemAction = jest.fn(() => Promise.resolve({ ok: true }));
 
     render(<EditPreem preem={mockPreem} editPreemAction={editPreemAction} />);
@@ -119,7 +136,7 @@ describe('EditPreem component', () => {
     expect(saveButton).toBeDisabled();
 
     const nameInput = screen.getByDisplayValue('Test Preem');
-    fireEvent.change(nameInput, { target: { value: 'New Preem Name' } });
+    await user.type(nameInput, 'A');
 
     expect(saveButton).not.toBeDisabled();
   });
@@ -131,10 +148,8 @@ describe('EditPreem component', () => {
 
     const timeLimitInput = screen.getByLabelText('Time Limit');
     await act(async () => {
-      fireEvent.change(timeLimitInput, {
-        target: { value: 'September 1, 2028 1:00 PM' },
-      });
-      fireEvent.blur(timeLimitInput);
+      await userEvent.type(timeLimitInput, 'September 1, 2028 1:00 PM');
+      // fireEvent.blur(timeLimitInput);
       jest.runAllTimers();
     });
 

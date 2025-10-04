@@ -14,6 +14,7 @@ import {
 } from '@mantine/core';
 import { DateTimePicker } from '@mantine/dates';
 import { useDebouncedValue } from '@mantine/hooks';
+import isEqual from 'fast-deep-equal';
 import { useRouter } from 'next/navigation';
 
 import { PreemCard } from '@/components/cards/PreemCard';
@@ -121,7 +122,9 @@ export function NewPreem({
                   <Button
                     type="submit"
                     loading={isLoading}
-                    disabled={!form.isValid() || !form.isDirty()}
+                    disabled={
+                      !form.isValid() || !isEqual(form.values, debouncedValues)
+                    }
                   >
                     Create Preem
                   </Button>
