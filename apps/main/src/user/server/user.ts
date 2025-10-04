@@ -34,7 +34,11 @@ export const getUserContext = async (): Promise<UserContextValue> => {
   return { authUser, user };
 };
 
-export const verifyUserContext = async () => {
+export const verifyUserContext = async (): Promise<{
+  uid: string;
+  authUser: AuthUser;
+  user: User;
+}> => {
   const authUser = await getAuthUser();
   if (!authUser) {
     redirect('/login');
