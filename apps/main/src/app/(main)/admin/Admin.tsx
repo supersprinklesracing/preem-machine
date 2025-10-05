@@ -1,14 +1,6 @@
 'use client';
 
-import {
-  Anchor,
-  Box,
-  Button,
-  Card,
-  Stack,
-  Table,
-  Title,
-} from '@mantine/core';
+import { Anchor, Box, Button, Card, Stack, Table, Title } from '@mantine/core';
 import Link from 'next/link';
 import { useState } from 'react';
 
@@ -62,7 +54,7 @@ export function Admin({ users, organizations }: AdminProps) {
             {users.map((user) => (
               <Table.Tr key={user.id}>
                 <Table.Td>
-                  <Anchor component={Link} href={`/user/${user.id}`}>
+                  <Anchor component={Link} href={`/view/user/${user.id}`}>
                     {user.id}
                   </Anchor>
                 </Table.Td>

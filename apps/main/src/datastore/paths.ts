@@ -128,6 +128,9 @@ export const asDocPath = (path: string): DocPath => {
 
 export const toDocPath = (path: UrlPath): DocPath => {
   const urlSegments = path.split('/');
+  if (urlSegments[0] === 'view' && urlSegments[1] === 'user') {
+    return `users/${urlSegments[2]}`;
+  }
   if (urlSegments[0] === 'user') {
     return `users/${urlSegments[1]}`;
   }

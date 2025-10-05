@@ -84,7 +84,7 @@ export function Account({ user, editUserAction }: AccountProps) {
               {user && (
                 <Button
                   variant="outline"
-                  onClick={() => router.push(toUrlPath(user.path))}
+                  onClick={() => router.push(`/view/${toUrlPath(user.path)}`)}
                 >
                   View Public Profile
                 </Button>

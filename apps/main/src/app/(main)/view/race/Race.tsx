@@ -139,7 +139,9 @@ export function Race({ race, children }: Props) {
               <Text
                 component={Link}
                 href={
-                  contributor.path ? `/${toUrlPath(contributor.path)}` : '#'
+                  contributor.path
+                    ? `/view/${toUrlPath(contributor.path)}`
+                    : '#'
                 }
                 fw={600}
                 style={{ textDecoration: 'none', color: 'inherit' }}

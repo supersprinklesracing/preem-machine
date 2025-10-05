@@ -10,7 +10,7 @@ describe('AvatarCluster', () => {
     expect(avatarLink).toBeInTheDocument();
     expect(avatarLink).toHaveAttribute(
       'href',
-      `/view/user/${MOCK_USER_CONTEXT.authUser.uid}`,
+      `/view/user/${MOCK_USER_CONTEXT.user?.id}`,
     );
 
     const avatarImg = screen.getByAltText('Test User');

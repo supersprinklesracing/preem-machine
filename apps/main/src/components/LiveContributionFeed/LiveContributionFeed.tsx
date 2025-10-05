@@ -50,7 +50,9 @@ export function LiveContributionFeed({
           <Text size="sm">
             <Text
               component={Link}
-              href={contributor?.path ? `/${toUrlPath(contributor.path)}` : '#'}
+              href={
+                contributor?.path ? `/view/${toUrlPath(contributor.path)}` : '#'
+              }
               fw={600}
               style={{ textDecoration: 'none', color: 'inherit' }}
             >

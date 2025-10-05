@@ -19,7 +19,12 @@ export function AdminUserCard({
   return (
     <Card withBorder padding="lg" radius="md">
       <Group justify="space-between">
-        <Anchor component={Link} href={`/user/${user.id}`} size="lg" fw={500}>
+        <Anchor
+          component={Link}
+          href={`/view/user/${user.id}`}
+          size="lg"
+          fw={500}
+        >
           {user.name || user.id}
         </Anchor>
       </Group>
