@@ -49,6 +49,11 @@ const mockData = {
           id: 'race-1',
           path: 'organizations/org-1/series/series-1/events/event-1/races/race-1',
           name: 'Test Race',
+          eventBrief: {
+            id: 'event-1',
+            path: 'organizations/org-1/series/series-1/events/event-1',
+            name: 'Test Event',
+          },
         },
       },
       children: [],

@@ -3,6 +3,25 @@ import { render, screen, within } from '@/test-utils';
 import { Home } from './Home';
 
 const mockData = {
+  preems: [
+    {
+      id: 'preem-1',
+      path: 'organizations/org-1/series/series-1/events/event-1/races/race-1/preems/preem-1',
+      name: 'Test Preem',
+      status: 'Open',
+      raceBrief: {
+        id: 'race-1',
+        path: 'organizations/org-1/series/series-1/events/event-1/races/race-1',
+        name: 'Test Race 1',
+        startDate: new Date(),
+        eventBrief: {
+          id: 'event-1',
+          path: 'organizations/org-1/series/series-1/events/event-1',
+          name: 'Test Event 1',
+        },
+      },
+    },
+  ],
   eventsWithRaces: [
     {
       event: {
@@ -55,10 +74,8 @@ describe('Home component', () => {
     render(<Home {...mockData} />);
 
     // Check for event details
-    expect(screen.getByText('Test Event 1')).toBeInTheDocument();
-    expect(screen.getByText('Test Location 1')).toBeInTheDocument();
     const eventCard = screen
-      .getByText('Test Event 1')
+      .getByText('Test Location 1')
       .closest('div[class*="mantine-Card-root"]');
     const raceLink = within(eventCard).getByRole('link', {
       name: /Test Race 1/,

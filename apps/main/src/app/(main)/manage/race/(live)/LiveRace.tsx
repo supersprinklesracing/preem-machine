@@ -73,7 +73,8 @@ export function LiveRace({ race, children }: LiveRaceProps) {
         key={preem.path}
         preem={preem}
         contributions={children}
-        hideBrief
+        showRace={false}
+        showEvent={false}
       >
         <Button
           size="xs"
