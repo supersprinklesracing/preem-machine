@@ -142,17 +142,20 @@ describe('EditPreem component', () => {
   });
 
   it.skip('should display a validation error if the time limit is after the race start date', async () => {
+    const user = userEvent.setup({
+      advanceTimers: jest.advanceTimersByTime,
+    });
     const editPreemAction = jest.fn(() => Promise.resolve({ ok: true }));
 
     render(<EditPreem preem={mockPreem} editPreemAction={editPreemAction} />);
 
     const timeLimitInput = screen.getByLabelText('Time Limit');
-    await act(async () => {
-      await userEvent.type(timeLimitInput, 'September 1, 2028 1:00 PM');
-      // fireEvent.blur(timeLimitInput);
-      jest.runAllTimers();
-    });
+    await user.type(timeLimitInput, 'September 1, 2028 1:00 PM');
 
-    await screen.findByText('Preem time limit cannot be after race start date');
+    await waitFor(() => {
+      expect(
+        screen.getByText('Preem time limit cannot be after race start date'),
+      ).toBeInTheDocument();
+    });
   });
 });
