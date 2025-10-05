@@ -23,6 +23,7 @@ import { FormActionResult } from '@/components/forms/forms';
 import { useActionForm } from '@/components/forms/useActionForm';
 import { useAvatarUpload } from '@/components/forms/useAvatarUpload';
 import { MultiPanelLayout } from '@/components/layout/MultiPanelLayout';
+import { toUrlPath } from '@/datastore/paths';
 import { useUserContext } from '@/user/client/UserContext';
 
 import { NewUserOptions } from './new-user-action';
@@ -31,7 +32,9 @@ export function NewUser({
   newUserAction,
   onSuccess,
 }: {
-  newUserAction: (options: NewUserOptions) => Promise<FormActionResult<{ path: string }>>;
+  newUserAction: (
+    options: NewUserOptions,
+  ) => Promise<FormActionResult<{ path: string }>>;
   onSuccess?: () => void;
 }) {
   const { authUser } = useUserContext();
@@ -59,7 +62,7 @@ export function NewUser({
       if (onSuccess) {
         onSuccess();
       } else if (data?.path) {
-        router.push(data.path);
+        router.push(`/view/${toUrlPath(data.path)}`);
       } else {
         router.push('/');
       }
