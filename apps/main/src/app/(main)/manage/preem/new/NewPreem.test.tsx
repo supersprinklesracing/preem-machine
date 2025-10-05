@@ -1,6 +1,8 @@
+import userEvent from '@testing-library/user-event';
+
 import { FormActionResult } from '@/components/forms/forms';
 import { Race } from '@/datastore/schema';
-import { act, fireEvent, render, screen, waitFor } from '@/test-utils';
+import { act, render, screen, waitFor } from '@/test-utils';
 
 import { NewPreem } from './NewPreem';
 
@@ -46,6 +48,9 @@ describe('NewPreem component', () => {
   };
 
   it('should call newPreemAction with the correct data on form submission', async () => {
+    const user = userEvent.setup({
+      advanceTimers: jest.advanceTimersByTime,
+    });
     const newPreemAction = jest.fn(
       (): Promise<FormActionResult<{ path?: string }>> =>
         Promise.resolve({
@@ -65,18 +70,14 @@ describe('NewPreem component', () => {
     const nameInput = screen.getByTestId('name-input');
     const descriptionInput = screen.getByTestId('description-input');
 
+    await user.type(nameInput, 'New Test Preem');
+    await user.type(descriptionInput, 'Test Description');
     await act(async () => {
-      fireEvent.change(nameInput, {
-        target: { value: 'New Test Preem' },
-      });
-      fireEvent.change(descriptionInput, {
-        target: { value: 'Test Description' },
-      });
       jest.advanceTimersByTime(500);
     });
 
     const createButton = screen.getByRole('button', { name: /create preem/i });
-    fireEvent.click(createButton);
+    await user.click(createButton);
 
     await waitFor(() => {
       expect(newPreemAction).toHaveBeenCalledWith({
@@ -90,6 +91,9 @@ describe('NewPreem component', () => {
   });
 
   it('should display an error message if the action fails', async () => {
+    const user = userEvent.setup({
+      advanceTimers: jest.advanceTimersByTime,
+    });
     const newPreemAction = jest.fn(() =>
       Promise.reject(new Error('Failed to create')),
     );
@@ -103,15 +107,13 @@ describe('NewPreem component', () => {
     );
 
     const nameInput = screen.getByTestId('name-input');
+    await user.type(nameInput, 'New Test Preem');
     await act(async () => {
-      fireEvent.change(nameInput, {
-        target: { value: 'New Test Preem' },
-      });
       jest.advanceTimersByTime(500);
     });
 
     const createButton = screen.getByRole('button', { name: /create preem/i });
-    fireEvent.click(createButton);
+    await user.click(createButton);
 
     expect(await screen.findByText('Failed to create')).toBeInTheDocument();
   });
