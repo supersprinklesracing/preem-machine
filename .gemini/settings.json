@@ -1,10 +1,10 @@
 {
   "tools": {
     "allowed": [
-      "run_shell_command(./tools/nx/nx)",
-      "run_shell_command(./tools/nx/nx e2e e2e-main)",
-      "run_shell_command(./tools/nx/nx test main)",
-      "run_shell_command(./tools/nx/nx build main)",
+      "run_shell_command(./tools/nx)",
+      "run_shell_command(./tools/nx e2e e2e-main)",
+      "run_shell_command(./tools/nx test main)",
+      "run_shell_command(./tools/nx build main)",
       "run_shell_command(./tools/test.sh)",
       "run_shell_command(./tools/get-latest-ci.sh)",
       "run_shell_command(./tools/read-artifacts.sh)",
