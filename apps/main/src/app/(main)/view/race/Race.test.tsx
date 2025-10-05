@@ -92,7 +92,7 @@ describe('Race component', () => {
         advanceTimers: jest.advanceTimersByTime,
       });
       render(<Race {...mockData} />);
-      const contributeButton = screen.getByTestId('contribute-button-preem-1');
+      const contributeButton = screen.getAllByText('Contribute')[0];
       await user.click(contributeButton);
       expect(screen.getByText('Mock ContributionModal')).toBeInTheDocument();
     });
@@ -114,9 +114,7 @@ describe('Race component', () => {
         advanceTimers: jest.advanceTimersByTime,
       });
       render(<Race {...mockData} />);
-      const contributeButton = screen.getByTestId(
-        'contribute-button-mobile-preem-1',
-      );
+      const contributeButton = screen.getAllByText('Contribute')[0];
       await user.click(contributeButton);
       expect(screen.getByText('Mock ContributionModal')).toBeInTheDocument();
     });

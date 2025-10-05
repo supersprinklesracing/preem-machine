@@ -90,7 +90,13 @@ export function Preem({ preem, children }: Props) {
             </Button>
             <Title order={1}>{preem.name}</Title>
             <Text c="dimmed">Part of {preem.raceBrief.name}</Text>
-            {preem.description && <Text mt="md">{preem.description}</Text>}
+            {preem.description && (
+              <Box
+                mt="md"
+                // eslint-disable-next-line @eslint-react/dom/no-dangerously-set-innerhtml
+                dangerouslySetInnerHTML={{ __html: preem.description }}
+              />
+            )}
           </Box>
 
           <Grid gutter="lg">

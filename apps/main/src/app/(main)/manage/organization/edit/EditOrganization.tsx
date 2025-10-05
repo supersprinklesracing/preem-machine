@@ -6,7 +6,6 @@ import {
   Group,
   Stack,
   Text,
-  Textarea,
   TextInput,
   Title,
 } from '@mantine/core';
@@ -16,6 +15,7 @@ import { useRouter } from 'next/navigation';
 
 import { OrganizationCard } from '@/components/cards/OrganizationCard';
 import { FormActionResult } from '@/components/forms/forms';
+import { RichTextEditor } from '@/components/forms/RichTextEditor';
 import { useActionForm } from '@/components/forms/useActionForm';
 import { MultiPanelLayout } from '@/components/layout/MultiPanelLayout';
 import { Organization } from '@/datastore/schema';
@@ -81,9 +81,10 @@ export function EditOrganization({
                     label="Website"
                     {...form.getInputProps('website')}
                   />
-                  <Textarea
+                  <RichTextEditor
                     label="Description"
                     {...form.getInputProps('description')}
+                    data-testid="description-input"
                   />
                   <Group justify="right">
                     <Button

@@ -108,6 +108,10 @@ Note: Always quote file path variables like `"${TEST_FILE}"` to prevent errors.
 
 This project uses Jest for unit testing and Playwright for E2E testing. All new features and bug fixes must include tests. For detailed instructions on writing and running tests, mocking, and handling asynchronous operations, please refer to the [**Testing Guide (TESTING.md)**](./TESTING.md).
 
+### `userEvent` vs. `fireEvent`
+
+When writing tests, prefer `userEvent` over `fireEvent`. `userEvent` simulates full user interactions (including hover, focus, and keyboard events) more realistically than `fireEvent`, leading to more robust and reliable tests.
+
 ## 8. Handling Forms
 
 This project uses `@mantine/form` for state management and validation, and `@mantine/hooks` for debouncing user input to improve UX.

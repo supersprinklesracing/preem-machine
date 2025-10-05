@@ -66,7 +66,9 @@ export function LiveSeries({ series, children }: Props) {
           {series.location} |{' '}
           {formatDateRange(series.startDate, series.endDate, series.timezone)}
         </Text>
-        {series.description && <Text>{series.description}</Text>}
+        {series.description && (
+          <Text dangerouslySetInnerHTML={{ __html: series.description }} />
+        )}
         {series.website && (
           <Group gap="xs">
             <IconWorldWww size={16} />

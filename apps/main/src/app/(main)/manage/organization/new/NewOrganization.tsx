@@ -1,19 +1,12 @@
 'use client';
 
-import {
-  Button,
-  Card,
-  Group,
-  Stack,
-  Textarea,
-  TextInput,
-  Title,
-} from '@mantine/core';
+import { Button, Card, Group, Stack, TextInput, Title } from '@mantine/core';
 import { useDebouncedValue } from '@mantine/hooks';
 import { useRouter } from 'next/navigation';
 
 import { OrganizationCard } from '@/components/cards/OrganizationCard';
 import { FormActionResult } from '@/components/forms/forms';
+import { RichTextEditor } from '@/components/forms/RichTextEditor';
 import { useActionForm } from '@/components/forms/useActionForm';
 import { MultiPanelLayout } from '@/components/layout/MultiPanelLayout';
 import { toUrlPath } from '@/datastore/paths';
@@ -75,7 +68,7 @@ export function NewOrganization({
                   {...form.getInputProps('website')}
                   data-testid="website-input"
                 />
-                <Textarea
+                <RichTextEditor
                   label="Description"
                   {...form.getInputProps('description')}
                   data-testid="description-input"
