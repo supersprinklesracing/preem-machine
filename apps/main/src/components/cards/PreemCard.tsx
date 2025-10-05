@@ -18,7 +18,8 @@ interface PreemCardProps {
   style?: React.CSSProperties;
   withBorder?: boolean;
   titleOrder?: TitleOrder;
-  hideBrief?: boolean;
+  showEvent?: boolean;
+  showRace?: boolean;
 }
 
 export function PreemCard({
@@ -29,7 +30,8 @@ export function PreemCard({
   style,
   withBorder = true,
   titleOrder = 3,
-  hideBrief,
+  showEvent = true,
+  showRace = true,
 }: PreemCardProps) {
   const metadataItems: MetadataItem[] = [];
   if (preem.prizePool && preem.prizePool > 0) {
@@ -67,16 +69,27 @@ export function PreemCard({
   }
 
   const subheadings = [];
-  if (!hideBrief) {
+  if (showRace || showEvent) {
     subheadings.push(
-      <Text c="dimmed">
+      <Text c="dimmed" key="brief">
         Part of{' '}
-        <Anchor
-          component={Link}
-          href={`/view/${toUrlPath(preem.raceBrief.path)}`}
-        >
-          {preem.raceBrief.name}
-        </Anchor>
+        {showRace && (
+          <Anchor
+            component={Link}
+            href={`/view/${toUrlPath(preem.raceBrief.path)}`}
+          >
+            {preem.raceBrief.name}
+          </Anchor>
+        )}
+        {showRace && showEvent && ' at '}
+        {showEvent && (
+          <Anchor
+            component={Link}
+            href={`/view/${toUrlPath(preem.raceBrief.eventBrief.path)}`}
+          >
+            {preem.raceBrief.eventBrief.name}
+          </Anchor>
+        )}
       </Text>,
     );
   }
