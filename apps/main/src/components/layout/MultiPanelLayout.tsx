@@ -1,4 +1,4 @@
-import { Container, SimpleGrid, Stack } from '@mantine/core';
+import { Container, Grid, Stack } from '@mantine/core';
 import { ReactNode } from 'react';
 
 export function MultiPanelLayout({
@@ -13,11 +13,15 @@ export function MultiPanelLayout({
   return (
     <Container fluid>
       <Stack>
-        <SimpleGrid cols={{ base: 1, md: 2 }}>
-          {topLeft}
-          {topRight}
-        </SimpleGrid>
-        {children && <SimpleGrid cols={1}>{children}</SimpleGrid>}
+        <Grid>
+          <Grid.Col span={{ base: 12, md: 6 }}>{topLeft}</Grid.Col>
+          <Grid.Col span={{ base: 12, md: 6 }}>{topRight}</Grid.Col>
+        </Grid>
+        {children && (
+          <Grid>
+            <Grid.Col span={12}>{children}</Grid.Col>
+          </Grid>
+        )}
       </Stack>
     </Container>
   );
