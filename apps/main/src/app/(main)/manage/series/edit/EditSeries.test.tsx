@@ -1,5 +1,7 @@
+import userEvent from '@testing-library/user-event';
+
 import { Series } from '@/datastore/schema';
-import { act, fireEvent, render, screen, waitFor } from '@/test-utils';
+import { act, render, screen, waitFor } from '@/test-utils';
 
 import { EditSeries } from './EditSeries';
 
@@ -30,6 +32,9 @@ describe('EditSeries component', () => {
   });
 
   it('should call editSeriesAction with the correct data on form submission', async () => {
+    const user = userEvent.setup({
+      advanceTimers: jest.advanceTimersByTime,
+    });
     const newEventAction = jest.fn(() => Promise.resolve({ path: '' }));
     const editSeriesAction = jest.fn(() => Promise.resolve({}));
 
@@ -43,14 +48,16 @@ describe('EditSeries component', () => {
 
     // Change the name in the form
     const nameInput = screen.getByDisplayValue('Test Series');
+    await user.clear(nameInput);
+    await user.type(nameInput, 'New Series Name');
+
     await act(async () => {
-      fireEvent.change(nameInput, { target: { value: 'New Series Name' } });
       jest.advanceTimersByTime(500);
     });
 
     // Click the save button
     const saveButton = screen.getByText('Save Changes');
-    fireEvent.click(saveButton);
+    await user.click(saveButton);
 
     // Wait for the action to be called
     await waitFor(() => {
@@ -67,6 +74,9 @@ describe('EditSeries component', () => {
   });
 
   it('should display an error message if the action fails', async () => {
+    const user = userEvent.setup({
+      advanceTimers: jest.advanceTimersByTime,
+    });
     const newEventAction = jest.fn(() => Promise.resolve({ path: '' }));
     const editSeriesAction = jest.fn(() =>
       Promise.reject(new Error('Failed to save')),
@@ -82,14 +92,16 @@ describe('EditSeries component', () => {
 
     // Change the name in the form
     const nameInput = screen.getByDisplayValue('Test Series');
+    await user.clear(nameInput);
+    await user.type(nameInput, 'New Series Name');
+
     await act(async () => {
-      fireEvent.change(nameInput, { target: { value: 'New Series Name' } });
       jest.advanceTimersByTime(500);
     });
 
     // Click the save button
     const saveButton = screen.getByText('Save Changes');
-    fireEvent.click(saveButton);
+    await user.click(saveButton);
 
     // Wait for the error message to appear
     await screen.findByText('Failed to save');

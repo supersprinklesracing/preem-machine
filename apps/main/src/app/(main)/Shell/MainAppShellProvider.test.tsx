@@ -1,8 +1,9 @@
 'use client';
 
+import userEvent from '@testing-library/user-event';
 import React from 'react';
 
-import { fireEvent, render, screen } from '@/test-utils';
+import { render, screen } from '@/test-utils';
 
 import { useMainAppShell } from './MainAppShellContext';
 import { MainAppShellProvider } from './MainAppShellProvider';
@@ -34,6 +35,7 @@ jest.mock('./MainAppShell', () => {
 
 describe('MainAppShellProvider', () => {
   beforeEach(() => {
+    jest.useFakeTimers();
     Object.defineProperty(window, 'matchMedia', {
       writable: true,
       value: jest.fn().mockImplementation((query) => ({
@@ -49,6 +51,10 @@ describe('MainAppShellProvider', () => {
     });
   });
 
+  afterEach(() => {
+    jest.useRealTimers();
+  });
+
   it('provides the correct initial context values', () => {
     render(
       <MainAppShellProvider>
@@ -60,7 +66,8 @@ describe('MainAppShellProvider', () => {
     expect(screen.getByTestId('isSidebarOpened')).toHaveTextContent('false');
   });
 
-  it('toggles the sidebar state when toggleSidebar is called', () => {
+  it('toggles the sidebar state when toggleSidebar is called', async () => {
+    const user = userEvent.setup({ advanceTimers: jest.advanceTimersByTime });
     render(
       <MainAppShellProvider>
         <TestConsumer />
@@ -73,11 +80,11 @@ describe('MainAppShellProvider', () => {
     expect(screen.getByTestId('isSidebarOpened')).toHaveTextContent('false');
 
     // Click to open
-    fireEvent.click(toggleButton);
+    await user.click(toggleButton);
     expect(screen.getByTestId('isSidebarOpened')).toHaveTextContent('true');
 
     // Click to close
-    fireEvent.click(toggleButton);
+    await user.click(toggleButton);
     expect(screen.getByTestId('isSidebarOpened')).toHaveTextContent('false');
   });
 });
