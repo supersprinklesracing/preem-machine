@@ -6,20 +6,26 @@ import Link from 'next/link';
 
 import { toUrlPath } from '@/datastore/paths';
 import { EventWithRaces } from '@/datastore/query-schema';
-import { Contribution } from '@/datastore/schema';
+import { Contribution, Preem } from '@/datastore/schema';
 import { formatDateLong, formatTime } from '@/dates/dates';
 
 import { LiveContributionFeed } from '../../../components/LiveContributionFeed/LiveContributionFeed';
+import { PreemSection } from './PreemSection';
 
 interface Props {
   eventsWithRaces: EventWithRaces[];
   contributions: Contribution[];
+  preems: Preem[];
 }
 
-export function Home({ eventsWithRaces, contributions }: Props) {
+export function Home({ eventsWithRaces, contributions, preems }: Props) {
   return (
     <Stack>
-      <Title order={1}>Upcoming Events</Title>
+      <Title order={1}>Current & Upcoming Preems</Title>
+      <PreemSection preems={preems} />
+      <Title order={1} mt="xl">
+        Upcoming Events
+      </Title>
       <Grid>
         <Grid.Col span={{ base: 12, lg: 8 }}>
           <Stack>

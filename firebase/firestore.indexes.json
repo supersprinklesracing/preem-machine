@@ -194,6 +194,17 @@
       ]
     },
     {
+      "collectionGroup": "preems",
+      "fieldPath": "raceBrief.startDate",
+      "ttl": false,
+      "indexes": [
+        {
+          "order": "ASCENDING",
+          "queryScope": "COLLECTION_GROUP"
+        }
+      ]
+    },
+    {
       "collectionGroup": "races",
       "fieldPath": "id",
       "ttl": false,
