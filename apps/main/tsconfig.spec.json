@@ -3,6 +3,7 @@
   "compilerOptions": {
     "outDir": "./out-tsc/jest",
     "jsx": "preserve",
+    "esModuleInterop": true,
     "types": ["jest", "node"]
   },
   "include": [
