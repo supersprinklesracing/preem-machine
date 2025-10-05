@@ -1,145 +1,93 @@
-import {
-  act,
-  fireEvent,
-  render,
-  screen,
-  setupMockDb,
-  waitFor,
-  within,
-} from '@/test-utils';
+import userEvent from '@testing-library/user-event';
+
+import { Series } from '@/datastore/schema';
+import { act, render, screen, waitFor } from '@/test-utils';
 
 import { NewEvent } from './NewEvent';
 
 describe('NewEvent component', () => {
-  setupMockDb();
-
-  const mockDate = new Date('2025-08-15T12:00:00Z');
-  beforeEach(() => {
-    jest.useFakeTimers();
-    jest.setSystemTime(mockDate);
-  });
-
-  afterEach(() => {
-    jest.useRealTimers();
-  });
+  const mockSeries: Series = {
+    id: 'series-1',
+    path: 'organizations/org-1/series/series-1',
+    name: 'Test Series',
+    organizationBrief: {
+      id: 'org-1',
+      path: 'organizations/org-1',
+      name: 'Test Organization',
+    },
+  };
 
   it('should call newEventAction with the correct data on form submission', async () => {
+    const user = userEvent.setup({ advanceTimers: jest.advanceTimersByTime });
     const newEventAction = jest.fn(() =>
       Promise.resolve({ path: 'new-event-id' }),
     );
 
     render(
       <NewEvent
-        series={{
-          id: 'series-sprinkles-2025',
-          path: 'organizations/org-super-sprinkles/series/series-sprinkles-2025',
-          name: 'Test Series',
-          timezone: 'America/New_York',
-          organizationBrief: {
-            id: 'org-super-sprinkles',
-            path: 'organizations/org-super-sprinkles',
-            name: 'Test Organization',
-          },
-        }}
+        series={mockSeries}
         newEventAction={newEventAction}
-        path="series/some-series-id"
+        path="organizations/org-1/series/series-1"
       />,
     );
 
-    // Fill out the form
-    const nameInput = screen.getByTestId('name-input');
-    const descriptionInput = screen.getByTestId('description-input');
-    const websiteInput = screen.getByTestId('website-input');
-    const locationInput = screen.getByTestId('location-input');
-    const datePicker = screen.getByTestId('date-picker');
-
+    await user.type(screen.getByTestId('name-input'), 'New Test Event');
+    await user.type(screen.getByTestId('location-input'), 'Test Location');
+    await user.type(screen.getByTestId('website-input'), 'https://example.com');
+    await user.type(
+      screen.getByTestId('description-input'),
+      '<p>A description</p>',
+    );
     await act(async () => {
-      fireEvent.change(nameInput, {
-        target: { value: 'New Test Event' },
-      });
-      fireEvent.change(descriptionInput, {
-        target: { value: 'A description' },
-      });
-      fireEvent.change(websiteInput, {
-        target: { value: 'https://new-example.com' },
-      });
-      fireEvent.change(locationInput, {
-        target: { value: 'Outer space' },
-      });
-      fireEvent.click(datePicker);
       jest.advanceTimersByTime(500);
     });
 
-    const createButton = screen.getByRole('button', {
-      name: /create event/i,
-    });
-    await waitFor(() => {
-      expect(createButton).not.toBeDisabled();
-    });
-    await act(async () => {
-      fireEvent.click(createButton);
-    });
+    const createButton = screen.getByRole('button', { name: /create event/i });
+    await waitFor(() => expect(createButton).toBeEnabled());
+    await user.click(createButton);
 
     await waitFor(() => {
       expect(newEventAction).toHaveBeenCalledWith({
-        path: 'series/some-series-id',
+        path: 'organizations/org-1/series/series-1',
         values: expect.objectContaining({
           name: 'New Test Event',
-          timezone: 'America/New_York',
+          location: 'Test Location',
+          website: 'https://example.com',
+          description: '<p>A description</p>',
         }),
       });
     });
   });
 
-  it.skip('should display an error message if the action fails', async () => {
+  it('should display an error message if the action fails', async () => {
+    const user = userEvent.setup({ advanceTimers: jest.advanceTimersByTime });
     const newEventAction = jest.fn(() =>
       Promise.reject(new Error('Failed to create')),
     );
 
     render(
       <NewEvent
-        series={{
-          id: 'series-sprinkles-2025',
-          path: 'organizations/org-super-sprinkles/series/series-sprinkles-2025',
-          name: 'Test Series',
-          organizationBrief: {
-            id: 'org-super-sprinkles',
-            path: 'organizations/org-super-sprinkles',
-            name: 'Test Organization',
-          },
-        }}
+        series={mockSeries}
         newEventAction={newEventAction}
-        path="series/some-series-id"
+        path="organizations/org-1/series/series-1"
       />,
     );
 
-    const nameInput = screen.getByTestId('name-input');
-    const descriptionInput = screen.getByTestId('description-input');
-    const datePicker = screen.getByTestId('date-picker');
-
+    await user.type(screen.getByTestId('name-input'), 'New Test Event');
+    await user.type(screen.getByTestId('location-input'), 'Test Location');
+    await user.type(screen.getByTestId('website-input'), 'https://example.com');
+    await user.type(
+      screen.getByTestId('description-input'),
+      '<p>A description</p>',
+    );
     await act(async () => {
-      fireEvent.change(nameInput, {
-        target: { value: 'New Test Event' },
-      });
-      fireEvent.change(descriptionInput, {
-        target: { value: 'This is a test description' },
-      });
-      fireEvent.click(datePicker);
-      const popover = await screen.findByRole('table');
-      fireEvent.click(within(popover).getByLabelText('15 August 2025'));
-      await jest.runAllTimersAsync(); // Let popover close
+      jest.advanceTimersByTime(500);
     });
 
-    const createButton = screen.getByRole('button', {
-      name: /create event/i,
-    });
-    await act(async () => {
-      fireEvent.click(createButton);
-    });
+    const createButton = screen.getByRole('button', { name: /create event/i });
+    await waitFor(() => expect(createButton).toBeEnabled());
+    await user.click(createButton);
 
-    // Wait for the error message to appear
-    await screen.findByText('Failed to create');
-    console.log(document.body.innerHTML);
-    expect(screen.getByText('Failed to create')).toBeInTheDocument();
+    expect(await screen.findByText('Failed to create')).toBeInTheDocument();
   });
 });

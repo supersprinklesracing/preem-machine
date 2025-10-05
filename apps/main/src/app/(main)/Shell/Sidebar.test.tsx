@@ -1,5 +1,7 @@
+import userEvent from '@testing-library/user-event';
+
 import { User } from '@/datastore/schema';
-import { fireEvent, render, screen } from '@/test-utils';
+import { render, screen } from '@/test-utils';
 
 import { MainAppShellContext } from './MainAppShellContext';
 import { Sidebar, SidebarProps } from './Sidebar';
@@ -7,7 +9,7 @@ import { Sidebar, SidebarProps } from './Sidebar';
 const mockUser: User = {
   id: 'user-1',
   path: 'users/user-1',
-  displayName: 'Test User',
+  name: 'Test User',
   organizationRefs: [{ id: 'org-1', path: 'organizations/org-1' }],
 };
 
@@ -28,6 +30,14 @@ const mockData: SidebarProps = {
 };
 
 describe('Sidebar component', () => {
+  beforeEach(() => {
+    jest.useFakeTimers();
+  });
+
+  afterEach(() => {
+    jest.useRealTimers();
+  });
+
   it('should render event links', () => {
     render(
       <MainAppShellContext
@@ -49,7 +59,8 @@ describe('Sidebar component', () => {
     ).toBeInTheDocument();
   });
 
-  it('should call onLinkClick when a link is clicked on mobile', () => {
+  it('should call onLinkClick when a link is clicked on mobile', async () => {
+    const user = userEvent.setup({ advanceTimers: jest.advanceTimersByTime });
     const onLinkClick = jest.fn();
     render(
       <MainAppShellContext
@@ -64,12 +75,13 @@ describe('Sidebar component', () => {
       </MainAppShellContext>,
     );
 
-    fireEvent.click(screen.getByRole('link', { name: 'Test Event 1' }));
+    await user.click(screen.getByRole('link', { name: 'Test Event 1' }));
 
     expect(onLinkClick).toHaveBeenCalledTimes(1);
   });
 
-  it('should not call onLinkClick when a link is clicked on desktop', () => {
+  it('should not call onLinkClick when a link is clicked on desktop', async () => {
+    const user = userEvent.setup({ advanceTimers: jest.advanceTimersByTime });
     const onLinkClick = jest.fn();
     render(
       <MainAppShellContext
@@ -84,7 +96,7 @@ describe('Sidebar component', () => {
       </MainAppShellContext>,
     );
 
-    fireEvent.click(screen.getByRole('link', { name: 'Test Event 1' }));
+    await user.click(screen.getByRole('link', { name: 'Test Event 1' }));
 
     expect(onLinkClick).not.toHaveBeenCalled();
   });

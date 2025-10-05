@@ -15,6 +15,13 @@ import {
 } from './paths';
 
 describe('paths', () => {
+  beforeEach(() => {
+    jest.spyOn(console, 'debug').mockImplementation(() => { /* empty */ });
+  });
+
+  afterEach(() => {
+    jest.restoreAllMocks();
+  });
   describe('isDocPath', () => {
     it('should return true for valid doc paths', () => {
       expect(isDocPath('organizations/org-id')).toBe(true);

@@ -1,6 +1,7 @@
 import { useMantineColorScheme } from '@mantine/core';
+import userEvent from '@testing-library/user-event';
 
-import { fireEvent, render, screen } from '@/test-utils';
+import { render, screen } from '@/test-utils';
 
 import { PreferencesPanel } from './PreferencesPanel';
 
@@ -14,11 +15,16 @@ const mockSetColorScheme = jest.fn();
 
 describe('PreferencesPanel component', () => {
   beforeEach(() => {
+    jest.useFakeTimers();
     (useMantineColorScheme as jest.Mock).mockReturnValue({
       colorScheme: 'auto',
       setColorScheme: mockSetColorScheme,
     });
     mockSetColorScheme.mockClear();
+  });
+
+  afterEach(() => {
+    jest.useRealTimers();
   });
 
   it('should render the preferences panel', () => {
@@ -30,11 +36,12 @@ describe('PreferencesPanel component', () => {
     expect(screen.getByText('Dark')).toBeInTheDocument();
   });
 
-  it('should call setColorScheme when a new color scheme is selected', () => {
+  it('should call setColorScheme when a new color scheme is selected', async () => {
+    const user = userEvent.setup({ advanceTimers: jest.advanceTimersByTime });
     render(<PreferencesPanel />);
 
     // The SegmentedControl renders radio buttons
-    fireEvent.click(screen.getByRole('radio', { name: 'Light' }));
+    await user.click(screen.getByRole('radio', { name: 'Light' }));
 
     expect(mockSetColorScheme).toHaveBeenCalledWith('light');
   });

@@ -1,4 +1,6 @@
-import { fireEvent, render, screen } from '@/test-utils';
+import userEvent from '@testing-library/user-event';
+
+import { render, screen } from '@/test-utils';
 
 import { Hub } from './Hub';
 
@@ -45,6 +47,14 @@ const mockData = {
 };
 
 describe('Hub component', () => {
+  beforeEach(() => {
+    jest.useFakeTimers();
+  });
+
+  afterEach(() => {
+    jest.useRealTimers();
+  });
+
   it('should render the organization name', () => {
     render(<Hub {...mockData} />);
     expect(screen.getByText('Test Org')).toBeInTheDocument();
@@ -57,12 +67,13 @@ describe('Hub component', () => {
     ).toBeInTheDocument();
   });
 
-  it('should open the AI modal when the button is clicked', () => {
+  it('should open the AI modal when the button is clicked', async () => {
+    const user = userEvent.setup({ advanceTimers: jest.advanceTimersByTime });
     render(<Hub {...mockData} />);
     const aiButton = screen.getByText('AI Threshold Assistant');
     expect(aiButton).toBeInTheDocument();
     // A full test of the modal's visibility is too complex for a baseline test.
     // We just check that the button exists and can be clicked.
-    fireEvent.click(aiButton);
+    await user.click(aiButton);
   });
 });

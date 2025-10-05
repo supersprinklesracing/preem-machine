@@ -1,5 +1,7 @@
+import userEvent from '@testing-library/user-event';
+
 import { Organization } from '@/datastore/schema';
-import { fireEvent, render, screen } from '@/test-utils';
+import { render, screen } from '@/test-utils';
 
 import { StripeConnectCard } from './StripeConnectCard';
 import { useStripeConnect } from './useStripeConnect';
@@ -36,7 +38,8 @@ describe('StripeConnectCard component', () => {
     handleOnboardingLink.mockClear();
   });
 
-  it('should render the "Create Stripe Account" button when there is no account', () => {
+  it('should render the "Create Stripe Account" button when there is no account', async () => {
+    const user = userEvent.setup({ advanceTimers: jest.advanceTimersByTime });
     const mockOrganization: Organization = {
       id: 'org-1',
       path: 'organizations/org-1',
@@ -44,12 +47,13 @@ describe('StripeConnectCard component', () => {
     render(<StripeConnectCard organization={mockOrganization} />);
 
     const createButton = screen.getByText('Create Stripe Account');
-    fireEvent.click(createButton);
+    await user.click(createButton);
 
     expect(handleCreateAccount).toHaveBeenCalledTimes(1);
   });
 
-  it('should render the "Complete Onboarding" button when details are not submitted', () => {
+  it('should render the "Complete Onboarding" button when details are not submitted', async () => {
+    const user = userEvent.setup({ advanceTimers: jest.advanceTimersByTime });
     const mockOrganization: Organization = {
       id: 'org-1',
       path: 'organizations/org-1',
@@ -58,12 +62,13 @@ describe('StripeConnectCard component', () => {
     render(<StripeConnectCard organization={mockOrganization} />);
 
     const onboardingButton = screen.getByText('Complete Onboarding');
-    fireEvent.click(onboardingButton);
+    await user.click(onboardingButton);
 
     expect(handleOnboardingLink).toHaveBeenCalledTimes(1);
   });
 
-  it('should render the "View Dashboard" button when details are submitted', () => {
+  it('should render the "View Dashboard" button when details are submitted', async () => {
+    const user = userEvent.setup({ advanceTimers: jest.advanceTimersByTime });
     const mockOrganization: Organization = {
       id: 'org-1',
       path: 'organizations/org-1',
@@ -72,7 +77,7 @@ describe('StripeConnectCard component', () => {
     render(<StripeConnectCard organization={mockOrganization} />);
 
     const dashboardButton = screen.getByText('View Dashboard');
-    fireEvent.click(dashboardButton);
+    await user.click(dashboardButton);
 
     expect(handleDashboardLink).toHaveBeenCalledTimes(1);
   });

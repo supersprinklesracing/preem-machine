@@ -1,4 +1,6 @@
-import { act, fireEvent, render, screen, waitFor } from '@/test-utils';
+import userEvent from '@testing-library/user-event';
+
+import { act, render, screen, waitFor } from '@/test-utils';
 
 import { NewOrganization } from './NewOrganization';
 
@@ -12,6 +14,9 @@ describe('NewOrganization component', () => {
   });
 
   it('should call newOrganizationAction with the correct data on form submission', async () => {
+    const user = userEvent.setup({
+      advanceTimers: jest.advanceTimersByTime,
+    });
     const newOrganizationAction = jest.fn(() =>
       Promise.resolve({ path: 'new-org-id' }),
     );
@@ -23,16 +28,10 @@ describe('NewOrganization component', () => {
     const descriptionInput = screen.getByTestId('description-input');
     const websiteInput = screen.getByTestId('website-input');
 
+    await user.type(nameInput, 'New Test Organization');
+    await user.type(descriptionInput, 'This is a test description');
+    await user.type(websiteInput, 'https://new-example.com');
     await act(async () => {
-      fireEvent.change(nameInput, {
-        target: { value: 'New Test Organization' },
-      });
-      fireEvent.change(descriptionInput, {
-        target: { value: 'This is a test description' },
-      });
-      fireEvent.change(websiteInput, {
-        target: { value: 'https://new-example.com' },
-      });
       jest.advanceTimersByTime(500);
     });
 
@@ -40,7 +39,7 @@ describe('NewOrganization component', () => {
     const createButton = screen.getByRole('button', {
       name: /create organization/i,
     });
-    fireEvent.click(createButton);
+    await user.click(createButton);
 
     await waitFor(() => {
       expect(newOrganizationAction).toHaveBeenCalledWith({
@@ -63,6 +62,9 @@ describe('NewOrganization component', () => {
   });
 
   it('should display an error message if the action fails', async () => {
+    const user = userEvent.setup({
+      advanceTimers: jest.advanceTimersByTime,
+    });
     const newOrganizationAction = jest.fn(() =>
       Promise.reject(new Error('Failed to create')),
     );
@@ -73,16 +75,10 @@ describe('NewOrganization component', () => {
     const nameInput = screen.getByTestId('name-input');
     const descriptionInput = screen.getByTestId('description-input');
     const websiteInput = screen.getByTestId('website-input');
+    await user.type(nameInput, 'New Test Organization');
+    await user.type(descriptionInput, 'This is a test description');
+    await user.type(websiteInput, 'https://new-example.com');
     await act(async () => {
-      fireEvent.change(nameInput, {
-        target: { value: 'New Test Organization' },
-      });
-      fireEvent.change(descriptionInput, {
-        target: { value: 'This is a test description' },
-      });
-      fireEvent.change(websiteInput, {
-        target: { value: 'https://new-example.com' },
-      });
       jest.advanceTimersByTime(500);
     });
 
@@ -96,9 +92,7 @@ describe('NewOrganization component', () => {
     });
 
     // Click the create button
-    await act(async () => {
-      fireEvent.click(createButton);
-    });
+    await user.click(createButton);
 
     // Wait for the error message to appear
     expect(await screen.findByText('Failed to create')).toBeInTheDocument();

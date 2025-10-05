@@ -1,5 +1,7 @@
+import userEvent from '@testing-library/user-event';
+
 import { Organization, User } from '@/datastore/schema';
-import { fireEvent, render, screen } from '@/test-utils';
+import { act, render, screen } from '@/test-utils';
 
 import { Admin } from './Admin';
 
@@ -18,6 +20,14 @@ const mockOrgs: Organization[] = [
 ];
 
 describe('Admin', () => {
+  beforeEach(() => {
+    jest.useFakeTimers();
+  });
+
+  afterEach(() => {
+    jest.useRealTimers();
+  });
+
   it('renders a table of users', () => {
     render(<Admin users={mockUsers} organizations={mockOrgs} />);
     expect(
@@ -28,10 +38,13 @@ describe('Admin', () => {
     ).toBeInTheDocument();
   });
 
-  it('opens the assign organization modal when edit is clicked', () => {
+  it('opens the assign organization modal when edit is clicked', async () => {
+    const user = userEvent.setup({ advanceTimers: jest.advanceTimersByTime });
     render(<Admin users={mockUsers} organizations={mockOrgs} />);
     const editButtons = screen.getAllByRole('button', { name: 'Assign Org' });
-    fireEvent.click(editButtons[0]);
+    await act(async () => {
+      await user.click(editButtons[0]);
+    });
     expect(
       screen.getByText('Assign Organization to Test User 1'),
     ).toBeInTheDocument();

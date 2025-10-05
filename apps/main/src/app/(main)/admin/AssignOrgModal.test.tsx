@@ -1,5 +1,7 @@
+import userEvent from '@testing-library/user-event';
+
 import { Organization, User } from '@/datastore/schema';
-import { fireEvent, render, screen, waitFor } from '@/test-utils';
+import { act, render, screen, waitFor } from '@/test-utils';
 
 import * as actions from './assign-org-action';
 import { AssignOrgModal } from './AssignOrgModal';
@@ -25,7 +27,12 @@ const mockOnClose = jest.fn();
 
 describe('AssignOrgModal', () => {
   beforeEach(() => {
+    jest.useFakeTimers();
     jest.clearAllMocks();
+  });
+
+  afterEach(() => {
+    jest.useRealTimers();
   });
 
   it('renders the modal with the user name', () => {
@@ -53,6 +60,7 @@ describe('AssignOrgModal', () => {
   });
 
   it('calls assignOrg and onClose when an organization is selected and assign is clicked', async () => {
+    const user = userEvent.setup({ advanceTimers: jest.advanceTimersByTime });
     render(
       <AssignOrgModal
         user={mockUser}
@@ -62,13 +70,15 @@ describe('AssignOrgModal', () => {
     );
 
     const select = screen.getByPlaceholderText('Select an organization');
-    fireEvent.mouseDown(select);
+    await act(async () => {
+      await user.click(select);
+    });
     const option = await screen.findByText('Org 1');
-    fireEvent.click(option);
+    await user.click(option);
 
     const assignButton = screen.getByRole('button', { name: 'Assign' });
     expect(assignButton).not.toBeDisabled();
-    fireEvent.click(assignButton);
+    await user.click(assignButton);
 
     await waitFor(() => {
       expect(actions.assignOrg).toHaveBeenCalledWith('1', '1');

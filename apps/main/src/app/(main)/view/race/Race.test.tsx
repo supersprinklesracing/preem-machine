@@ -1,7 +1,8 @@
+import userEvent from '@testing-library/user-event';
 import MatchMediaMock from 'jest-matchmedia-mock';
 
 import { DateLocationDetail } from '@/components/cards/DateLocationDetail';
-import { fireEvent, PHONE_WIDTH, render, screen } from '@/test-utils';
+import { PHONE_WIDTH, render, screen } from '@/test-utils';
 
 import { Race } from './Race';
 
@@ -66,7 +67,12 @@ describe('Race component', () => {
     matchMedia = new MatchMediaMock();
   });
 
+  beforeEach(() => {
+    jest.useFakeTimers();
+  });
+
   afterEach(() => {
+    jest.useRealTimers();
     matchMedia.clear();
   });
 
@@ -81,10 +87,13 @@ describe('Race component', () => {
       expect(screen.getAllByText('Test Preem 1').length).toBeGreaterThan(0);
     });
 
-    it('should open the contribution modal when "Contribute" is clicked', () => {
+    it('should open the contribution modal when "Contribute" is clicked', async () => {
+      const user = userEvent.setup({
+        advanceTimers: jest.advanceTimersByTime,
+      });
       render(<Race {...mockData} />);
-      const contributeButton = screen.getAllByText('Contribute')[0];
-      fireEvent.click(contributeButton);
+      const contributeButton = screen.getByTestId('contribute-button-preem-1');
+      await user.click(contributeButton);
       expect(screen.getByText('Mock ContributionModal')).toBeInTheDocument();
     });
   });
@@ -100,10 +109,15 @@ describe('Race component', () => {
       expect(screen.getAllByText('Test Preem 1').length).toBeGreaterThan(0);
     });
 
-    it('should open the contribution modal when "Contribute" is clicked', () => {
+    it('should open the contribution modal when "Contribute" is clicked', async () => {
+      const user = userEvent.setup({
+        advanceTimers: jest.advanceTimersByTime,
+      });
       render(<Race {...mockData} />);
-      const contributeButton = screen.getAllByText('Contribute')[0];
-      fireEvent.click(contributeButton);
+      const contributeButton = screen.getByTestId(
+        'contribute-button-mobile-preem-1',
+      );
+      await user.click(contributeButton);
       expect(screen.getByText('Mock ContributionModal')).toBeInTheDocument();
     });
   });

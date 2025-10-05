@@ -1,5 +1,7 @@
+import userEvent from '@testing-library/user-event';
+
 import { Organization } from '@/datastore/schema';
-import { act, fireEvent, render, screen, waitFor } from '@/test-utils';
+import { act, render, screen, waitFor } from '@/test-utils';
 
 import { EditOrganization } from './EditOrganization';
 
@@ -26,6 +28,9 @@ describe('EditOrganization component', () => {
   });
 
   it('should call updateOrganizationAction with the correct data on form submission', async () => {
+    const user = userEvent.setup({
+      advanceTimers: jest.advanceTimersByTime,
+    });
     const updateOrganizationAction = jest.fn(() =>
       Promise.resolve({ ok: true }),
     );
@@ -39,14 +44,22 @@ describe('EditOrganization component', () => {
 
     // Change the name in the form
     const nameInput = screen.getByDisplayValue('Test Organization');
+    const descriptionInput = screen.getByDisplayValue(
+      'This is a test description',
+    );
+
+    await user.clear(nameInput);
+    await user.type(nameInput, 'New Org Name');
+    await user.clear(descriptionInput);
+    await user.type(descriptionInput, 'New Description');
+
     await act(async () => {
-      fireEvent.change(nameInput, { target: { value: 'New Org Name' } });
       jest.advanceTimersByTime(500);
     });
 
     // Click the save button
     const saveButton = screen.getByText('Save Changes');
-    fireEvent.click(saveButton);
+    await user.click(saveButton);
 
     // Wait for the action to be called
     await waitFor(() => {
@@ -55,23 +68,17 @@ describe('EditOrganization component', () => {
           path: 'organizations/org-1',
           edits: expect.objectContaining({
             name: 'New Org Name',
+            description: 'New Description',
           }),
         }),
       );
     });
-
-    // Assert that the action was called with the correct data
-    expect(updateOrganizationAction).toHaveBeenCalledWith(
-      expect.objectContaining({
-        path: 'organizations/org-1',
-        edits: expect.objectContaining({
-          name: 'New Org Name',
-        }),
-      }),
-    );
   });
 
   it('should display an error message if the action fails', async () => {
+    const user = userEvent.setup({
+      advanceTimers: jest.advanceTimersByTime,
+    });
     const editOrganizationAction = jest.fn(() =>
       Promise.reject(new Error('Failed to save')),
     );
@@ -85,14 +92,16 @@ describe('EditOrganization component', () => {
 
     // Change the name in the form
     const nameInput = screen.getByDisplayValue('Test Organization');
+    await user.clear(nameInput);
+    await user.type(nameInput, 'New Org Name');
+
     await act(async () => {
-      fireEvent.change(nameInput, { target: { value: 'New Org Name' } });
       jest.advanceTimersByTime(500);
     });
 
     // Click the save button
     const saveButton = screen.getByText('Save Changes');
-    fireEvent.click(saveButton);
+    await user.click(saveButton);
 
     // Wait for the error message to appear
     await screen.findByText('Failed to save');

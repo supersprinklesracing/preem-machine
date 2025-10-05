@@ -85,6 +85,7 @@ export function Race({ race, children }: Props) {
                 setSelectedPreem(preem);
               }}
               leftSection={<IconCurrencyDollar size={14} />}
+              data-testid={`contribute-button-${preem.id}`}
             >
               Contribute
             </Button>
@@ -109,6 +110,7 @@ export function Race({ race, children }: Props) {
           leftSection={<IconCurrencyDollar size={14} />}
           fullWidth
           mt="md"
+          data-testid={`contribute-button-mobile-${preem.id}`}
         >
           Contribute
         </Button>
