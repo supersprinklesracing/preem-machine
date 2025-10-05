@@ -13,13 +13,9 @@ export function MainAppShellProvider({
 }) {
   const [isSidebarOpened, { toggle: toggleSidebar }] = useDisclosure();
   const theme = useMantineTheme();
-  const isMobile = useMediaQuery(
-    `(max-width: ${theme.breakpoints.sm})`,
-    false,
-    {
-      getInitialValueInEffect: false,
-    },
-  );
+  const isMobile = useMediaQuery(`(max-width: ${theme.breakpoints.sm})`, true, {
+    getInitialValueInEffect: true,
+  });
 
   const handleLinkClick = useCallback(() => {
     if (isMobile) {
