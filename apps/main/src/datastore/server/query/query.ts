@@ -341,15 +341,25 @@ export const getRenderableEventDataForPage = cache(async (path: DocPath) => {
 
 export const getRenderableHomeDataForPage = cache(async () => {
   const db = await getFirestore();
+  const now = new Date();
 
   // Fetch upcoming events
-  const now = new Date();
   const eventsSnap = await db
     .collectionGroup('events')
     .where('startDate', '>=', now)
     .orderBy('startDate', 'asc')
     .withConverter(converter(EventSchema))
     .get();
+
+  // Fetch upcoming preems
+  const preemsSnap = await db
+    .collectionGroup('preems')
+    .where('raceBrief.startDate', '>=', now)
+    .orderBy('raceBrief.startDate', 'asc')
+    .withConverter(converter(PreemSchema))
+    .get();
+  const preems = preemsSnap.docs.map((doc) => doc.data());
+
   const contributionsSnap = await db
     .collectionGroup('contributions')
     .withConverter(converter(ContributionSchema))
@@ -360,7 +370,7 @@ export const getRenderableHomeDataForPage = cache(async () => {
     doc.data(),
   );
 
-  const preemIds = [
+  const recentPreemIds = [
     ...new Set(
       recentContributionsRaw
         .map((c) => c.preemBrief?.id)
@@ -368,18 +378,18 @@ export const getRenderableHomeDataForPage = cache(async () => {
     ),
   ];
 
-  const preems =
-    preemIds.length > 0
+  const recentPreems =
+    recentPreemIds.length > 0
       ? (
           await db
             .collectionGroup('preems')
-            .where('id', 'in', preemIds)
+            .where('id', 'in', recentPreemIds)
             .withConverter(converter(PreemSchema))
             .get()
         ).docs.map((d) => d.data())
       : [];
 
-  const preemsMap = preems.reduce(
+  const preemsMap = recentPreems.reduce(
     (acc, preem) => {
       acc[preem.path] = preem;
       return acc;
@@ -404,6 +414,7 @@ export const getRenderableHomeDataForPage = cache(async () => {
   return {
     eventsWithRaces,
     contributions,
+    preems,
   };
 });
 
