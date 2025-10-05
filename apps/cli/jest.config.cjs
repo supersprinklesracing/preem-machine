@@ -8,6 +8,8 @@ const swcJestConfig = JSON.parse(
 // Disable .swcrc look-up by SWC core because we're passing in swcJestConfig ourselves
 swcJestConfig.swcrc = false;
 
+const esmModules = ['@octokit', 'libsodium-wrappers', '@babel'].join('|');
+
 module.exports = {
   displayName: '@preem-machine/cli',
   preset: '../../jest.preset.js',
@@ -15,6 +17,7 @@ module.exports = {
   transform: {
     '^.+\\.[tj]s$': ['@swc/jest', swcJestConfig],
   },
+  transformIgnorePatterns: [`node_modules/(?!(${esmModules}))`],
   moduleFileExtensions: ['ts', 'js', 'html'],
   coverageDirectory: 'test-output/jest/coverage',
 };

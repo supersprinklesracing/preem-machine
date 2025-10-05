@@ -72,9 +72,9 @@ This is an NX monorepo. The key applications are:
 
 #### Building & Running
 
-- **Run Dev Server:** `./tools/nx/nx run @preem-machine/main:dev`
-- **Verify Build:** `./tools/nx/nx run @preem-machine/main:build:verify`
-- **Production Bundle:** `./tools/nx/nx run @preem-machine/main:build`
+- **Run Dev Server:** `./tools/nx run @preem-machine/main:dev`
+- **Verify Build:** `./tools/nx run @preem-machine/main:build:verify`
+- **Production Bundle:** `./tools/nx run @preem-machine/main:build`
 
 #### Testing
 
@@ -83,19 +83,19 @@ You **MUST NOT** run E2E tests with `--update-snapshots` unless the user explici
 
 Note: Always quote file path variables like `"${TEST_FILE}"` to prevent errors.
 
-- **Run all unit tests:** `./tools/nx/nx run @preem-machine/main:test`
-- **Run a single unit test:** `./tools/nx/nx run @preem-machine/main:test --testFile="${TEST_FILE}"`
-- **Run all E2E tests:** `./tools/nx/nx e2e e2e-main`
-- **Run a single E2E test:** `./tools/nx/nx e2e e2e-main -- "${TEST_FILE}"`
-- **Update E2E snapshots:** `./tools/nx/nx e2e e2e-main --update-snapshots`
-- **Update a single E2E snapshot:** `./tools/nx/nx e2e e2e-main --update-snapshots -- "${TEST_FILE}"`
+- **Run all unit tests:** `./tools/nx run @preem-machine/main:test`
+- **Run a single unit test:** `./tools/nx run @preem-machine/main:test --testFile="${TEST_FILE}"`
+- **Run all E2E tests:** `./tools/nx e2e e2e-main`
+- **Run a single E2E test:** `./tools/nx e2e e2e-main -- "${TEST_FILE}"`
+- **Update E2E snapshots:** `./tools/nx e2e e2e-main --update-snapshots`
+- **Update a single E2E snapshot:** `./tools/nx e2e e2e-main --update-snapshots -- "${TEST_FILE}"`
 
 #### Code Style & Formatting
 
-- **Lint all affected files:** `./tools/nx/nx affected:lint --fix`
-- **Format all affected files:**: `./tools/nx/nx format:write`
-- **Lint all affected files in the branch:**: `./tools/nx/nx affected -t lint --base=main --head=HEAD`
-- **Format all affected files in the branch:**: `./tools/nx/nx format:write --base=main --head HEAD`
+- **Lint all affected files:** `./tools/nx affected:lint --fix`
+- **Format all affected files:**: `./tools/nx format:write`
+- **Lint all affected files in the branch:**: `./tools/nx affected -t lint --base=main --head=HEAD`
+- **Format all affected files in the branch:**: `./tools/nx format:write --base=main --head HEAD`
 
 ### File System & Search Tools
 

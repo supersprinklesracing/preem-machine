@@ -1,0 +1,19 @@
+{
+  "extends": "../../tsconfig.base.json",
+  "compilerOptions": {
+    "outDir": "./out-tsc/jest",
+    "jsx": "preserve",
+    "types": ["jest", "node"]
+  },
+  "include": [
+    "jest.node.config.ts",
+    "src/**/*.node.test.ts",
+    "src/**/*.node.spec.ts",
+    "src/**/*.d.ts"
+  ],
+  "references": [
+    {
+      "path": "./tsconfig.json"
+    }
+  ]
+}

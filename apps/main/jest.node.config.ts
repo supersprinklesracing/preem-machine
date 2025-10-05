@@ -5,23 +5,20 @@ const createJestConfig = nextJest({
   dir: 'apps/main',
 });
 
-// Array of ESM modules that need to be transformed
-const esmModules = ['node-fetch'].join('|');
-
 const customJestConfig: Config = {
-  displayName: '@preem-machine/main',
+  displayName: '@preem-machine/main-node',
   preset: '../../jest.preset.js',
   transform: {
-    '^.+\\.[tj]sx?$': '@nx/react/plugins/jest',
+    '^(?!.*\\.(js|jsx|ts|tsx|css|json)$)': '@nx/react/plugins/jest',
   },
   moduleFileExtensions: ['ts', 'tsx', 'js', 'jsx'],
-  coverageDirectory: '../../coverage/apps/main',
-  testEnvironment: 'jsdom',
-  setupFilesAfterEnv: ['<rootDir>/jest.setup.ts'],
+  coverageDirectory: '../../coverage/apps/main-node',
+  testEnvironment: 'node',
+  testMatch: ['**/next.config.node.test.ts'],
   moduleNameMapper: {
     '^@/(.*)$': '<rootDir>/src/$1',
   },
-  testPathIgnorePatterns: ['/node_modules/', '\\.node\\.test\\.ts$'],
+  testPathIgnorePatterns: ['/node_modules/'],
 
   reporters: process.env.IS_CI
     ? [
@@ -36,6 +33,9 @@ const customJestConfig: Config = {
 export default async () => {
   // Get the base config from next/jest
   const config = await createJestConfig(customJestConfig)();
+
+  // Array of ESM modules that need to be transformed
+  const esmModules = ['node-fetch'].join('|');
 
   // Modify the transformIgnorePatterns to include your modules
   config.transformIgnorePatterns = [
