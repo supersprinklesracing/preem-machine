@@ -19,7 +19,7 @@ import { Contribution } from '@/datastore/schema';
 interface LiveContributionFeedProps {
   contributions: Pick<
     Contribution,
-    'id' | 'contributor' | 'amount' | 'preemBrief' | 'message'
+    'id' | 'path' | 'contributor' | 'amount' | 'preemBrief' | 'message'
   >[];
 }
 
@@ -44,7 +44,7 @@ export function LiveContributionFeed({
   const contributionFeed = contributions.map((c) => {
     const contributor = c.contributor;
     return (
-      <Group key={c.id} wrap="nowrap">
+      <Group key={c.path} wrap="nowrap">
         <UserAvatarIcon user={contributor} />
         <div>
           <Text size="sm">
