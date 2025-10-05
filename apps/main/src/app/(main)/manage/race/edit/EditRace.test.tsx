@@ -1,5 +1,7 @@
+import userEvent from '@testing-library/user-event';
+
 import { Race } from '@/datastore/schema';
-import { act, fireEvent, render, screen, waitFor } from '@/test-utils';
+import { act, render, screen, waitFor } from '@/test-utils';
 
 import { EditRace } from './EditRace';
 
@@ -40,21 +42,24 @@ describe('EditRace component', () => {
   });
 
   it('should call editRaceAction with the correct data on form submission', async () => {
+    const user = userEvent.setup({
+      advanceTimers: jest.advanceTimersByTime,
+    });
     const editRaceAction = jest.fn(() => Promise.resolve({ ok: true }));
 
     render(<EditRace race={mockRace} editRaceAction={editRaceAction} />);
 
     // Change the name in the form
     const nameInput = screen.getByDisplayValue('Test Race');
-    fireEvent.change(nameInput, { target: { value: 'New Race Name' } });
+    await user.clear(nameInput);
+    await user.type(nameInput, 'New Race Name');
 
     // Change the course link in the form
     const courseLinkInput = screen.getByDisplayValue(
       'https://strava.com/routes/123',
     );
-    fireEvent.change(courseLinkInput, {
-      target: { value: 'https://strava.com/routes/456' },
-    });
+    await user.clear(courseLinkInput);
+    await user.type(courseLinkInput, 'https://strava.com/routes/456');
 
     await act(async () => {
       jest.advanceTimersByTime(500);
@@ -62,7 +67,7 @@ describe('EditRace component', () => {
 
     // Click the save button
     const saveButton = screen.getByText('Save Changes');
-    fireEvent.click(saveButton);
+    await user.click(saveButton);
 
     // Wait for the action to be called
     await waitFor(() => {
@@ -80,6 +85,9 @@ describe('EditRace component', () => {
   });
 
   it('should display an error message if the action fails', async () => {
+    const user = userEvent.setup({
+      advanceTimers: jest.advanceTimersByTime,
+    });
     const editRaceAction = jest.fn(() =>
       Promise.reject(new Error('Failed to save')),
     );
@@ -88,14 +96,15 @@ describe('EditRace component', () => {
 
     // Change the name in the form
     const nameInput = screen.getByDisplayValue('Test Race');
+    await user.clear(nameInput);
+    await user.type(nameInput, 'New Race Name');
     await act(async () => {
-      fireEvent.change(nameInput, { target: { value: 'New Race Name' } });
       jest.advanceTimersByTime(500);
     });
 
     // Click the save button
     const saveButton = screen.getByText('Save Changes');
-    fireEvent.click(saveButton);
+    await user.click(saveButton);
 
     // Wait for the error message to appear
     await screen.findByText('Failed to save');
