@@ -1,4 +1,4 @@
 npx lint-staged --relative
-npx nx --tuiAutoExit --outputStyle=static run-many -t build
-npx nx --tuiAutoExit --outputStyle=static run-many -t test --forceExit
-npx nx --tuiAutoExit --outputStyle=stream-without-prefixes run e2e-main:e2e
+./tools/nx run-many -t build
+./tools/nx run-many --targets test,test:node --forceExit
+./tools/nx run e2e-main:e2e

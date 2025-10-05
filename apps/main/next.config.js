@@ -27,7 +27,7 @@ const nextConfig = {
         source: '/',
         destination: '/home',
         permanent: true,
-      }
+      },
     ];
   },
   async rewrites() {
@@ -115,11 +115,23 @@ const nextConfig = {
           destination: '/manage/organization/new?path=organizations',
         },
         {
+          source: '/manage/live',
+          destination: '/manage',
+        },
+        {
+          source: '/manage/hub',
+          destination: '/manage',
+        },
+        {
           source: '/manage/:orgId',
           destination: '/manage/organization?path=organizations/:orgId',
         },
 
         // ==== VIEWS ====
+        {
+          source: '/view/user',
+          destination: '/view/user',
+        },
         {
           source: '/view/user/:userId',
           destination: '/view/user?path=users/:userId',
