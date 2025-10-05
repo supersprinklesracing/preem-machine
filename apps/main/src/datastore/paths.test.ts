@@ -129,6 +129,7 @@ describe('paths', () => {
       expect(isUrlPath('org-id')).toBe(true);
       expect(isUrlPath('org-id/series-id')).toBe(true);
       expect(isUrlPath('user/user-id')).toBe(true);
+      expect(isUrlPath('view/user/user-id')).toBe(true);
     });
 
     it('should return false for invalid url paths', () => {
@@ -167,6 +168,12 @@ describe('paths', () => {
 
     it('should convert a user URL path to a doc path', () => {
       const urlPath = 'user/user-id';
+      const expectedDocPath = 'users/user-id';
+      expect(toDocPath(urlPath)).toEqual(expectedDocPath);
+    });
+
+    it('should convert a view user URL path to a doc path', () => {
+      const urlPath = 'view/user/user-id';
       const expectedDocPath = 'users/user-id';
       expect(toDocPath(urlPath)).toEqual(expectedDocPath);
     });
