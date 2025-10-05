@@ -1,5 +1,8 @@
 # See https://docs.github.com/en/get-started/getting-started-with-git/ignoring-files for more about ignoring files.
 
+# Probably never intentional
+*.log
+
 # compiled output
 dist
 tmp
@@ -75,3 +78,4 @@ gha-creds-*.json
 jules-scratch
 dev_server.log
 serve_static.log
+firestore-debug.log

@@ -84,9 +84,11 @@ You **MUST NOT** run E2E tests with `--update-snapshots` unless the user explici
 Note: Always quote file path variables like `"${TEST_FILE}"` to prevent errors.
 
 - **Run all unit tests:** `./tools/nx/nx run @preem-machine/main:test`
-- **Run single unit test:** `./tools/nx/nx run @preem-machine/main:test --testFile='"${TEST_FILE}"'`
+- **Run a single unit test:** `./tools/nx/nx run @preem-machine/main:test --testFile="${TEST_FILE}"`
 - **Run all E2E tests:** `./tools/nx/nx e2e e2e-main`
+- **Run a single E2E test:** `./tools/nx/nx e2e e2e-main -- "${TEST_FILE}"`
 - **Update E2E snapshots:** `./tools/nx/nx e2e e2e-main --update-snapshots`
+- **Update a single E2E snapshot:** `./tools/nx/nx e2e e2e-main --update-snapshots -- "${TEST_FILE}"`
 
 #### Code Style & Formatting
 
