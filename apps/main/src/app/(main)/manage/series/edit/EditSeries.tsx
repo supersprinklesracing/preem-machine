@@ -8,7 +8,6 @@ import {
   Select,
   Stack,
   Text,
-  Textarea,
   TextInput,
   Title,
 } from '@mantine/core';
@@ -20,6 +19,7 @@ import { useTimezoneSelect } from 'react-timezone-select';
 
 import { SeriesCard } from '@/components/cards/SeriesCard';
 import { FormActionResult } from '@/components/forms/forms';
+import { RichTextEditor } from '@/components/forms/RichTextEditor';
 import { useActionForm } from '@/components/forms/useActionForm';
 import { MultiPanelLayout } from '@/components/layout/MultiPanelLayout';
 import { Series } from '@/datastore/schema';
@@ -116,7 +116,7 @@ export function EditSeries({
                   {...form.getInputProps('location')}
                 />
                 <TextInput label="Website" {...form.getInputProps('website')} />
-                <Textarea
+                <RichTextEditor
                   label="Description"
                   {...form.getInputProps('description')}
                 />

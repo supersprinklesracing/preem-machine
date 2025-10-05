@@ -25,6 +25,7 @@ describe('StripeConnectCard component', () => {
   const handleOnboardingLink = jest.fn();
 
   beforeEach(() => {
+    jest.useFakeTimers();
     mockUseStripeConnect.mockReturnValue({
       isCreatingAccount: false,
       isCreatingLink: false,
@@ -38,11 +39,16 @@ describe('StripeConnectCard component', () => {
     handleOnboardingLink.mockClear();
   });
 
+  afterEach(() => {
+    jest.useRealTimers();
+  });
+
   it('should render the "Create Stripe Account" button when there is no account', async () => {
     const user = userEvent.setup({ advanceTimers: jest.advanceTimersByTime });
     const mockOrganization: Organization = {
       id: 'org-1',
       path: 'organizations/org-1',
+      name: 'Org 1',
     };
     render(<StripeConnectCard organization={mockOrganization} />);
 
@@ -57,6 +63,7 @@ describe('StripeConnectCard component', () => {
     const mockOrganization: Organization = {
       id: 'org-1',
       path: 'organizations/org-1',
+      name: 'Org 1',
       stripe: { account: { details_submitted: false } },
     };
     render(<StripeConnectCard organization={mockOrganization} />);
@@ -72,6 +79,7 @@ describe('StripeConnectCard component', () => {
     const mockOrganization: Organization = {
       id: 'org-1',
       path: 'organizations/org-1',
+      name: 'Org 1',
       stripe: { account: { details_submitted: true } },
     };
     render(<StripeConnectCard organization={mockOrganization} />);
@@ -87,6 +95,7 @@ describe('StripeConnectCard component', () => {
     const mockOrganization: Organization = {
       id: 'org-1',
       path: 'organizations/org-1',
+      name: 'Org 1',
     };
     render(<StripeConnectCard organization={mockOrganization} />);
     expect(screen.queryByText('Stripe Connect')).toBeNull();

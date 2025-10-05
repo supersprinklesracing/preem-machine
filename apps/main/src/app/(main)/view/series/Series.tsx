@@ -53,7 +53,10 @@ export function Series({ series, children: eventsWithRaces }: Props) {
         <Group>
           <DateLocationDetail {...series} />
         </Group>
-        {series.description && <Text>{series.description}</Text>}
+        {series.description && (
+          // eslint-disable-next-line @eslint-react/dom/no-dangerously-set-innerhtml
+          <div dangerouslySetInnerHTML={{ __html: series.description }} />
+        )}
         <Stack>
           <Group justify="space-between">
             <Stack gap={0}>

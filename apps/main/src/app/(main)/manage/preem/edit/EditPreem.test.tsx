@@ -5,6 +5,8 @@ import { act, render, screen, waitFor } from '@/test-utils';
 
 import { EditPreem } from './EditPreem';
 
+jest.mock('@/components/forms/RichTextEditor');
+
 const mockRouterPush = jest.fn();
 
 // Mock next/navigation

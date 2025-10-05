@@ -8,7 +8,6 @@ import {
   Select,
   Stack,
   Text,
-  Textarea,
   TextInput,
   Title,
 } from '@mantine/core';
@@ -19,6 +18,7 @@ import { useRouter } from 'next/navigation';
 
 import { PreemCard } from '@/components/cards/PreemCard';
 import { FormActionResult } from '@/components/forms/forms';
+import { RichTextEditor } from '@/components/forms/RichTextEditor';
 import { useActionForm } from '@/components/forms/useActionForm';
 import { MultiPanelLayout } from '@/components/layout/MultiPanelLayout';
 import { DocPath, toUrlPath } from '@/datastore/paths';
@@ -84,7 +84,7 @@ export function NewPreem({
                   {...form.getInputProps('name')}
                   data-testid="name-input"
                 />
-                <Textarea
+                <RichTextEditor
                   label="Description"
                   {...form.getInputProps('description')}
                   data-testid="description-input"

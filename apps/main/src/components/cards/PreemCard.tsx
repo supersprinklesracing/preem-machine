@@ -100,9 +100,14 @@ export function PreemCard({
       title={preem.name}
       subheadings={subheadings}
       mainContent={
-        <Text size="sm" mt="md" mb="md">
-          {preem.description}
-        </Text>
+        preem.description ? (
+          <Text
+            size="sm"
+            mt="md"
+            mb="md"
+            dangerouslySetInnerHTML={{ __html: preem.description }}
+          />
+        ) : null
       }
       bottomContent={<MetadataRow items={metadataItems} />}
       rightColumnBottom={children}
