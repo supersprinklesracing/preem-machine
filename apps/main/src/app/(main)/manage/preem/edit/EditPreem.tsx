@@ -70,11 +70,7 @@ export function EditPreem({
           <Card withBorder>
             <form onSubmit={form.onSubmit(handleSubmit)}>
               <Stack>
-                <TextInput
-                  label="Preem Name"
-                  required
-                  {...form.getInputProps('name')}
-                />
+                <TextInput label="Preem Name" {...form.getInputProps('name')} />
                 <Textarea
                   label="Description"
                   {...form.getInputProps('description')}
