@@ -104,7 +104,7 @@ export type SeriesBrief = z.infer<typeof SeriesBriefSchema>;
 
 // Series
 export const SeriesSchema = baseDocSchema.extend({
-  name: z.string().optional(),
+  name: z.string().min(1, 'Series name is required'),
   description: z.string().optional(),
   website: z.string().url().optional(),
   location: z.string().optional(),
