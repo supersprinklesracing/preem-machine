@@ -18,7 +18,7 @@
   "tui": {
     "enabled": false
   },
-  "defaultProject": "apps/main",
+  "defaultProject": "@preem-machine/main",
   "plugins": [
     {
       "plugin": "@nx/js/typescript",
