@@ -59,7 +59,8 @@ export function EditEvent({
 
   const { form, handleSubmit, isLoading, submissionError } = useActionForm({
     schema: eventSchema,
-    validate: (values) => validateEventForm(values, event.seriesBrief),
+    validate: (values) =>
+      validateEventForm({ ...values, name: values.name ?? '' }, event.seriesBrief),
     initialValues: {
       name: event.name ?? '',
       location: event.location ?? '',
