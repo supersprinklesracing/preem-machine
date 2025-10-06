@@ -242,8 +242,8 @@ export const mockDbData: DatabaseCollections = {
                                       'organizations/super-sprinkles/series/sprinkles-2025/events/giro-sf-2025/races/masters-women/preems/mid-sprint/contributions/contrib-4',
                                     ),
                                     contributor: {
-                                      ...createIdAndPath('users/anonymous'),
-                                      name: 'Anonymous',
+                                      ...createIdAndPath('users/test-user-1'),
+                                      name: 'Test User 1',
                                       avatarUrl:
                                         'https://placehold.co/100x100.png',
                                     },
