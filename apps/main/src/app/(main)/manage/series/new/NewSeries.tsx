@@ -1,5 +1,3 @@
-'use client';
-
 import {
   Button,
   Card,
@@ -15,6 +13,7 @@ import { DatePicker } from '@mantine/dates';
 import { useDebouncedValue } from '@mantine/hooks';
 import isEqual from 'fast-deep-equal';
 import { useRouter } from 'next/navigation';
+import { useEffect } from 'react';
 import { useTimezoneSelect } from 'react-timezone-select';
 
 import { SeriesCard } from '@/components/cards/SeriesCard';
@@ -105,6 +104,7 @@ export function NewSeries({
                 <DatePicker
                   type="range"
                   allowSingleDateInRange
+                  required
                   value={[
                     form.values.startDate ?? null,
                     form.values.endDate ?? null,
