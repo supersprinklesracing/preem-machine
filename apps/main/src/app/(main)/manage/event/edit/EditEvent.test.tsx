@@ -49,10 +49,6 @@ describe('EditEvent component', () => {
     await user.clear(nameInput);
     await user.type(nameInput, 'New Event Name');
 
-    await act(async () => {
-      await jest.advanceTimersByTime(500);
-    });
-
     // Click the save button
     const saveButton = screen.getByText('Save Changes');
     await user.click(saveButton);
@@ -85,10 +81,6 @@ describe('EditEvent component', () => {
     const nameInput = screen.getByDisplayValue('Test Event');
     await user.clear(nameInput);
     await user.type(nameInput, 'New Event Name');
-
-    await act(async () => {
-      await jest.advanceTimersByTime(500);
-    });
 
     // Click the save button
     const saveButton = screen.getByText('Save Changes');
