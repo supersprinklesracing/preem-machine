@@ -106,7 +106,6 @@ export function NewSeries({
                 <DatePicker
                   type="range"
                   allowSingleDateInRange
-                  required
                   value={[
                     form.values.startDate ?? null,
                     form.values.endDate ?? null,
