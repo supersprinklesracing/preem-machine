@@ -6,30 +6,15 @@ import { act, render, screen, waitFor } from '@/test-utils';
 
 import { NewPreem } from './NewPreem';
 
-// Mock dependencies
-jest.mock('next/navigation', () => ({
-  // eslint-disable-next-line @eslint-react/no-unnecessary-use-prefix
-  useRouter: () => ({
-    push: jest.fn(),
-  }),
-}));
+jest.mock('@/components/forms/RichTextEditor');
 
 describe('NewPreem component', () => {
-  beforeEach(() => {
-    jest.useFakeTimers();
-    jest.setSystemTime(new Date('2025-08-05T12:00:00'));
-  });
-
-  afterEach(() => {
-    jest.useRealTimers();
-    jest.restoreAllMocks();
-  });
-
   const mockRace: Race = {
     id: 'race-1',
     path: 'organizations/org-1/series/series-1/events/event-1/races/race-1',
     name: 'Test Race',
     startDate: new Date('2025-09-01T12:00:00Z'),
+    endDate: new Date('2025-09-02T12:00:00Z'),
     eventBrief: {
       id: 'event-1',
       path: 'organizations/org-1/series/series-1/events/event-1',
@@ -47,10 +32,17 @@ describe('NewPreem component', () => {
     },
   };
 
+  beforeEach(() => {
+    jest.useFakeTimers();
+    jest.setSystemTime(new Date('2025-08-05T12:00:00'));
+  });
+
+  afterEach(() => {
+    jest.useRealTimers();
+  });
+
   it('should call newPreemAction with the correct data on form submission', async () => {
-    const user = userEvent.setup({
-      advanceTimers: jest.advanceTimersByTime,
-    });
+    const user = userEvent.setup({ advanceTimers: jest.advanceTimersByTime });
     const newPreemAction = jest.fn(
       (): Promise<FormActionResult<{ path?: string }>> =>
         Promise.resolve({
@@ -67,16 +59,20 @@ describe('NewPreem component', () => {
     );
 
     // Fill out the form
-    const nameInput = screen.getByTestId('name-input');
-    const descriptionInput = screen.getByTestId('description-input');
+    await user.type(screen.getByTestId('name-input'), 'New Test Preem');
+    await user.type(
+      screen.getByTestId('description-input'),
+      '<p>This is a test preem description.</p>',
+    );
 
-    await user.type(nameInput, 'New Test Preem');
-    await user.type(descriptionInput, 'Test Description');
     await act(async () => {
       jest.advanceTimersByTime(500);
     });
 
     const createButton = screen.getByRole('button', { name: /create preem/i });
+    await waitFor(() => {
+      expect(createButton).toBeEnabled();
+    });
     await user.click(createButton);
 
     await waitFor(() => {
@@ -84,16 +80,14 @@ describe('NewPreem component', () => {
         path: 'organizations/org-1/series/series-1/events/event-1/races/race-1/preems',
         values: expect.objectContaining({
           name: 'New Test Preem',
-          description: 'Test Description',
+          description: '<p>This is a test preem description.</p>',
         }),
       });
     });
   });
 
   it('should display an error message if the action fails', async () => {
-    const user = userEvent.setup({
-      advanceTimers: jest.advanceTimersByTime,
-    });
+    const user = userEvent.setup({ advanceTimers: jest.advanceTimersByTime });
     const newPreemAction = jest.fn(() =>
       Promise.reject(new Error('Failed to create')),
     );
@@ -106,15 +100,17 @@ describe('NewPreem component', () => {
       />,
     );
 
-    const nameInput = screen.getByTestId('name-input');
-    await user.type(nameInput, 'New Test Preem');
+    await user.type(screen.getByTestId('name-input'), 'New Preem Name');
     await act(async () => {
       jest.advanceTimersByTime(500);
     });
 
     const createButton = screen.getByRole('button', { name: /create preem/i });
+    await waitFor(() => {
+      expect(createButton).toBeEnabled();
+    });
     await user.click(createButton);
 
-    expect(await screen.findByText('Failed to create')).toBeInTheDocument();
+    await screen.findByText('Failed to create');
   });
 });

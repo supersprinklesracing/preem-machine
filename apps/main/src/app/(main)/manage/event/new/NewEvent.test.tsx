@@ -5,6 +5,16 @@ import { act, render, screen, waitFor } from '@/test-utils';
 
 import { NewEvent } from './NewEvent';
 
+jest.mock('@/components/forms/RichTextEditor', () => ({
+  RichTextEditor: (props: any) => (
+    <textarea
+      data-testid="description-input"
+      onChange={(e) => props.onChange(e.target.value)}
+      value={props.value}
+    />
+  ),
+}));
+
 describe('NewEvent component', () => {
   const mockSeries: Series = {
     id: 'series-1',

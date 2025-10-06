@@ -74,7 +74,10 @@ export function Organization({ organization, serieses, members }: Props) {
     <MultiPanelLayout>
       <Stack>
         <Title>{organization.name}</Title>
-        {organization.description && <Text>{organization.description}</Text>}
+        {organization.description && (
+          // eslint-disable-next-line @eslint-react/dom/no-dangerously-set-innerhtml
+          <div dangerouslySetInnerHTML={{ __html: organization.description }} />
+        )}
         {organization.website && (
           <Group gap="xs">
             <IconWorldWww size={16} />

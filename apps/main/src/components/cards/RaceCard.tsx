@@ -98,12 +98,14 @@ export function RaceCard({
       <Group mt="md" mb="md" hiddenFrom="lg">
         <DateLocationDetail {...race} />
       </Group>
-      <Text size="sm" mt="md" mb="md">
-        {race.description}
-      </Text>
-      <Text size="sm" mt="md" mb="md">
-        {race.courseDetails}
-      </Text>
+      {race.description && (
+        // eslint-disable-next-line @eslint-react/dom/no-dangerously-set-innerhtml
+        <div dangerouslySetInnerHTML={{ __html: race.description }} />
+      )}
+      {race.courseDetails && (
+        // eslint-disable-next-line @eslint-react/dom/no-dangerously-set-innerhtml
+        <div dangerouslySetInnerHTML={{ __html: race.courseDetails }} />
+      )}
       {race.website && (
         <Group gap="xs">
           <IconWorldWww size={16} />

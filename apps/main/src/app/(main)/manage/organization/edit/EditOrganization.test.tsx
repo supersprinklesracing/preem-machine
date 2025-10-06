@@ -5,6 +5,16 @@ import { act, render, screen, waitFor } from '@/test-utils';
 
 import { EditOrganization } from './EditOrganization';
 
+jest.mock('@/components/forms/RichTextEditor', () => ({
+  RichTextEditor: (props: any) => (
+    <textarea
+      data-testid={props['data-testid'] || 'description-input'}
+      onChange={(e) => props.onChange(e.target.value)}
+      value={props.value}
+    />
+  ),
+}));
+
 jest.mock('./StripeConnectCard', () => ({
   __esModule: true,
   StripeConnectCard: jest.fn(() => <div>Mock StripeConnectCard</div>),

@@ -61,7 +61,10 @@ export function Event({ event, children }: Props) {
           <Group>
             <DateLocationDetail {...event} />
           </Group>
-          {event.description && <Text>{event.description}</Text>}
+          {event.description && (
+            // eslint-disable-next-line @eslint-react/dom/no-dangerously-set-innerhtml
+            <div dangerouslySetInnerHTML={{ __html: event.description }} />
+          )}
           {event.website && (
             <Group gap="xs">
               <IconWorldWww size={16} />

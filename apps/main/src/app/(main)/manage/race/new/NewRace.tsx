@@ -9,7 +9,6 @@ import {
   Stack,
   TagsInput,
   Text,
-  Textarea,
   TextInput,
   Title,
 } from '@mantine/core';
@@ -21,6 +20,7 @@ import { useTimezoneSelect } from 'react-timezone-select';
 
 import { RaceCard } from '@/components/cards/RaceCard';
 import { FormActionResult } from '@/components/forms/forms';
+import { RichTextEditor } from '@/components/forms/RichTextEditor';
 import { useActionForm } from '@/components/forms/useActionForm';
 import { MultiPanelLayout } from '@/components/layout/MultiPanelLayout';
 import { toUrlPath } from '@/datastore/paths';
@@ -128,7 +128,7 @@ export function NewRace({
                   {...form.getInputProps('website')}
                   data-testid="website-input"
                 />
-                <Textarea
+                <RichTextEditor
                   label="Description"
                   {...form.getInputProps('description')}
                   data-testid="description-input"
@@ -138,7 +138,7 @@ export function NewRace({
                   {...form.getInputProps('category')}
                 />
                 <TextInput label="Gender" {...form.getInputProps('gender')} />
-                <Textarea
+                <RichTextEditor
                   label="Course Details"
                   {...form.getInputProps('courseDetails')}
                   data-testid="course-details-input"
