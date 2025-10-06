@@ -1,4 +1,5 @@
 {
+  "name": "@preem-machine/main",
   "targets": {
     "test": {
       "executor": "@nx/jest:jest",
