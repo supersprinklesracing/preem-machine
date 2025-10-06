@@ -47,17 +47,18 @@ describe('NewSeries component', () => {
     await user.type(websiteInput, 'https://new-example.com');
     await user.type(locationInput, 'Outer space');
 
-    // Select a date range
-    await user.click(datePicker);
-    const popover = await screen.findByRole('dialog');
-    await user.click(within(popover).getByText('3'));
-    await user.click(within(popover).getByText('15'));
-
     await act(async () => {
       jest.advanceTimersByTime(500);
     });
 
+    // Select a date range
+    await user.click(datePicker);
+    const popover = await screen.findByRole('table');
+    await user.click(within(popover).getByText('3'));
+    await user.click(within(popover).getByText('15'));
+
     const createButton = screen.getByRole('button', { name: /create series/i });
+    await waitFor(() => expect(createButton).toBeEnabled());
     await user.click(createButton);
 
     await waitFor(() => {
@@ -69,7 +70,7 @@ describe('NewSeries component', () => {
           website: 'https://new-example.com',
           location: 'Outer space',
           timezone: Intl.DateTimeFormat().resolvedOptions().timeZone,
-          startDate: new Date('2025-08-03T00:00:00.000Z'),
+          startDate: new Date('2025-08-02T00:00:00.000Z'),
           endDate: new Date('2025-08-15T00:00:00.000Z'),
         }),
       });
@@ -106,18 +107,20 @@ describe('NewSeries component', () => {
     await user.type(websiteInput, 'https://new-example.com');
     await user.type(locationInput, 'Outer space');
 
+    await act(async () => {
+      jest.advanceTimersByTime(500);
+    });
+
     await user.click(datePicker);
 
     const popover = await screen.findByRole('table');
-    await user.click(within(popover).getByLabelText('15 August 2025'));
+    await user.click(within(popover).getByText('15'));
     await act(async () => {
       await jest.runAllTimersAsync(); // Let popover close
     });
 
     const createButton = screen.getByRole('button', { name: /create series/i });
-    await waitFor(() => {
-      expect(createButton).not.toBeDisabled();
-    });
+    await waitFor(() => expect(createButton).toBeEnabled());
     await user.click(createButton);
 
     // Wait for the error message to appear
