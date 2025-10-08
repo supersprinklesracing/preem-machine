@@ -1,4 +1,4 @@
-import { expect, test } from '@playwright/test';
+import { expect, test } from '../fixtures';
 
 import { ENV_E2E_TESTING_USER } from '../util/e2e-env';
 import {

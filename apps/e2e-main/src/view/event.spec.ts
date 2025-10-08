@@ -1,4 +1,4 @@
-import { expect, test } from '@playwright/test';
+import { expect, test } from '../fixtures';
 
 import { useMockedDateBeforeEach } from '../util/e2e-test-utils';
 
