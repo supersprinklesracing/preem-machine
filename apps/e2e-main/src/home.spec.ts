@@ -1,9 +1,6 @@
-import { expect, test } from './fixtures';
-
-import { useMockedDateBeforeEach } from './util/e2e-test-utils';
+import { expect, test } from './util/fixtures';
 
 test.describe('home', () => {
-  useMockedDateBeforeEach();
   test('basic', async ({ page }) => {
     page.on('request', (request) =>
       console.log('>>', request.method(), request.url()),

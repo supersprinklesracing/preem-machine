@@ -1,14 +1,11 @@
-import { expect, test } from '../fixtures';
-
 import { ENV_E2E_TESTING_USER } from '../util/e2e-env';
 import {
   useE2eTestingUserBeforeEach,
-  useMockedDateBeforeEach,
 } from '../util/e2e-test-utils';
+import { expect, test } from '../util/fixtures';
 
 test.describe('view', () => {
   test.describe('user', () => {
-    useMockedDateBeforeEach();
     test('basic', async ({ page }) => {
       await page.goto('/view/user/user-alex-doe');
       await expect(
@@ -19,7 +16,6 @@ test.describe('view', () => {
   });
 
   test.describe('self', () => {
-    useMockedDateBeforeEach();
     useE2eTestingUserBeforeEach();
     test('basic', async ({ page }) => {
       await page.goto(`/view/user/${ENV_E2E_TESTING_USER}`);

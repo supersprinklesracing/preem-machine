@@ -1,12 +1,7 @@
-import { expect, test } from './fixtures';
-
-import {
-  useE2eTestingAdminBeforeEach,
-  useMockedDateBeforeEach,
-} from './util/e2e-test-utils';
+import { useE2eTestingAdminBeforeEach } from './util/e2e-test-utils';
+import { expect, test } from './util/fixtures';
 
 test.describe('admin', () => {
-  useMockedDateBeforeEach();
   useE2eTestingAdminBeforeEach();
 
   test('basic', async ({ page }) => {

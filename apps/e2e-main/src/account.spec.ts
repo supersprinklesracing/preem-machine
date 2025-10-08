@@ -1,13 +1,10 @@
-import { expect, test } from './fixtures';
-
 import {
   useE2eTestingUserBeforeEach,
-  useMockedDateBeforeEach,
 } from './util/e2e-test-utils';
+import { expect, test } from './util/fixtures';
 
 test.describe('account', () => {
   useE2eTestingUserBeforeEach();
-  useMockedDateBeforeEach();
   test('basic', async ({ page }) => {
     await page.goto('/account');
     await expect(page.getByRole('heading', { name: 'E2E User' })).toBeVisible();

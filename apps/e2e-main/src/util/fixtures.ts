@@ -19,6 +19,8 @@ export const test = base.extend({
       }
     });
 
+    await page.clock.setFixedTime(new Date('2025-07-13T00:00:00-07:00'));
+
     await use(page);
   },
 });

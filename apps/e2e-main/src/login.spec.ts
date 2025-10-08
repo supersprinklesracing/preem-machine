@@ -1,12 +1,7 @@
-import { expect, test } from './fixtures';
-
-import {
-  useE2eTestingUserBeforeEach,
-  useMockedDateBeforeEach,
-} from './util/e2e-test-utils';
+import { useE2eTestingUserBeforeEach } from './util/e2e-test-utils';
+import { expect, test } from './util/fixtures';
 
 test.describe('login', () => {
-  useMockedDateBeforeEach();
   test.describe('unauthed', () => {
     test('basic', async ({ page }) => {
       await page.goto('/login');

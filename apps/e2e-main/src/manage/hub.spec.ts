@@ -1,13 +1,8 @@
-import { expect, test } from '../fixtures';
-
-import {
-  useE2eTestingUserBeforeEach,
-  useMockedDateBeforeEach,
-} from '../util/e2e-test-utils';
+import { useE2eTestingUserBeforeEach } from '../util/e2e-test-utils';
+import { expect, test } from '../util/fixtures';
 
 test.describe('manage: hub', () => {
   useE2eTestingUserBeforeEach();
-  useMockedDateBeforeEach();
 
   test('basic', async ({ page }) => {
     await page.goto('/manage');
