@@ -34,7 +34,7 @@ export async function POST(_request: Request) {
     await seedFirestore();
     return NextResponse.json({ success: true });
   } catch (error) {
-    console.error('Error in load-firestore-test-data route:', error);
+    console.error('Error seeding Firestore:', error);
     return NextResponse.json(
       { success: false, error: (error as Error).message },
       { status: 500 },

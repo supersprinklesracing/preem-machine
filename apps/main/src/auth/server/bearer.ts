@@ -10,7 +10,7 @@ export const verifyBearerToken = async (): Promise<DecodedIdToken | null> => {
     return null;
   }
 
-  const token = authorization.split('Bearer ')[1];
+  const [, token] = authorization.split('Bearer ');
   if (!token) {
     return null;
   }
