@@ -26,7 +26,6 @@ import { toUrlPath } from '@/datastore/paths';
 import { Organization, Series } from '@/datastore/schema';
 
 import { seriesSchema } from '../series-schema';
-import { validateSeriesForm } from '../series-validation';
 import { NewSeriesOptions } from './new-series-action';
 
 export function NewSeries({
@@ -45,7 +44,6 @@ export function NewSeries({
 
   const { form, handleSubmit, isLoading, submissionError } = useActionForm({
     schema: seriesSchema,
-    validate: validateSeriesForm,
     initialValues: {
       name: '',
       location: '',
@@ -86,6 +84,7 @@ export function NewSeries({
               <Stack>
                 <TextInput
                   label="Series Name"
+                  required
                   data-testid="name-input"
                   {...form.getInputProps('name')}
                 />

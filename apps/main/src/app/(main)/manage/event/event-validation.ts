@@ -4,11 +4,9 @@ import { Series } from '@/datastore/schema';
 
 import { eventSchema } from './event-schema';
 
-import { SeriesBrief } from '@/datastore/schema';
-
 export const validateEventForm = (
   values: z.infer<typeof eventSchema>,
-  series: SeriesBrief,
+  series: Series,
 ) => {
   if (values.startDate && values.endDate) {
     if (values.endDate < values.startDate) {

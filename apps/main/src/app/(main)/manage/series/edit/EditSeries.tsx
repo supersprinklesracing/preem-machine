@@ -27,7 +27,6 @@ import { Series } from '@/datastore/schema';
 import { NewEventOptions } from '../../event/new/new-event-action';
 import { NewEvent } from '../../event/new/NewEvent';
 import { seriesSchema } from '../series-schema';
-import { validateSeriesForm } from '../series-validation';
 import { EditSeriesOptions } from './edit-series-action';
 
 export function EditSeries({
@@ -64,7 +63,6 @@ export function EditSeries({
 
   const { form, handleSubmit, isLoading, submissionError } = useActionForm({
     schema: seriesSchema,
-    validate: validateSeriesForm,
     initialValues: {
       name: series.name ?? '',
       location: series.location ?? '',
@@ -110,6 +108,7 @@ export function EditSeries({
               <Stack>
                 <TextInput
                   label="Series Name"
+                  required
                   {...form.getInputProps('name')}
                 />
                 <TextInput

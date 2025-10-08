@@ -6,7 +6,7 @@ import { raceSchema } from './race-schema';
 
 export const validateRaceForm = (
   values: z.infer<typeof raceSchema>,
-  event: Pick<Event, 'startDate' | 'endDate'>,
+  event: Event,
 ) => {
   if (values.startDate && values.endDate) {
     if (values.endDate < values.startDate) {
@@ -26,13 +26,6 @@ export const validateRaceForm = (
     if (values.endDate > event.endDate) {
       return {
         endDate: 'Race end date cannot be after event end date',
-      };
-    }
-  }
-  if (event.endDate && values.startDate) {
-    if (values.startDate > event.endDate) {
-      return {
-        startDate: 'Race start date cannot be after event end date',
       };
     }
   }

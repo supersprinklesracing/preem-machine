@@ -27,7 +27,6 @@ import { toUrlPath } from '@/datastore/paths';
 import { Event, Race } from '@/datastore/schema';
 
 import { raceSchema } from '../race-schema';
-import { validateRaceForm } from '../race-validation';
 import { NewRaceOptions } from './new-race-action';
 
 export function NewRace({
@@ -46,7 +45,30 @@ export function NewRace({
 
   const { form, handleSubmit, isLoading, submissionError } = useActionForm({
     schema: raceSchema,
-    validate: (values) => validateRaceForm(values, event),
+    validate: (values) => {
+      if (values.startDate && values.endDate) {
+        if (values.endDate < values.startDate) {
+          return {
+            endDate: 'End date must be after start date',
+          };
+        }
+      }
+      if (event.startDate && values.startDate) {
+        if (values.startDate < event.startDate) {
+          return {
+            startDate: 'Race start date cannot be before event start date',
+          };
+        }
+      }
+      if (event.endDate && values.endDate) {
+        if (values.endDate > event.endDate) {
+          return {
+            endDate: 'Race end date cannot be after event end date',
+          };
+        }
+      }
+      return {};
+    },
     initialValues: {
       name: '',
       location: '',
@@ -92,6 +114,7 @@ export function NewRace({
               <Stack>
                 <TextInput
                   label="Race Name"
+                  required
                   {...form.getInputProps('name')}
                   data-testid="name-input"
                 />
