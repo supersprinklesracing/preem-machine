@@ -52,7 +52,9 @@ export function User({ user, contributions }: Props) {
     .sort((a, b) => compareDates(a.date!, b.date!))
     .map((c) => (
       <Table.Tr key={c.path}>
-        <Table.Td>{formatDateShort(c.date)}</Table.Td>
+        <Table.Td>
+          {formatDateShort(c.date, c.preemBrief?.raceBrief?.timezone)}
+        </Table.Td>
         <Table.Td>{c.preemBrief?.raceBrief?.name}</Table.Td>
         <Table.Td>{c.preemBrief?.name}</Table.Td>
         <Table.Td>

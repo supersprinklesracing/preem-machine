@@ -64,7 +64,9 @@ export function Preem({ preem, children }: Props) {
               ${contribution.amount?.toLocaleString()}
             </Text>
           </Table.Td>
-          <Table.Td>{formatDateTime(contribution.date)}</Table.Td>
+          <Table.Td>
+            {formatDateTime(contribution.date, preem.raceBrief.timezone)}
+          </Table.Td>
           <Table.Td>
             <Text c="dimmed" fs="italic">
               {contribution.message || ''}
@@ -117,7 +119,11 @@ export function Preem({ preem, children }: Props) {
                     <Group gap="xs">
                       <IconClock size={18} stroke={1.5} />
                       <Text fw={500}>
-                        Ends: {formatDateTime(preem.timeLimit)}
+                        Ends:{' '}
+                        {formatDateTime(
+                          preem.timeLimit,
+                          preem.raceBrief.timezone,
+                        )}
                       </Text>
                     </Group>
                   )}
