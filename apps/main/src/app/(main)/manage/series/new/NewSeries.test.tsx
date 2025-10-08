@@ -47,6 +47,10 @@ describe('NewSeries component', () => {
     await user.type(websiteInput, 'https://new-example.com');
     await user.type(locationInput, 'Outer space');
 
+    await act(async () => {
+      jest.advanceTimersByTime(500);
+    });
+
     // Select a date range
     await user.click(datePicker);
     const popover = await screen.findByRole('table');
@@ -102,6 +106,10 @@ describe('NewSeries component', () => {
     await user.type(descriptionInput, 'This is a test series description.');
     await user.type(websiteInput, 'https://new-example.com');
     await user.type(locationInput, 'Outer space');
+
+    await act(async () => {
+      jest.advanceTimersByTime(500);
+    });
 
     await user.click(datePicker);
 
