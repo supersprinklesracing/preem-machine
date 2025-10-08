@@ -28,6 +28,7 @@ import { Event } from '@/datastore/schema';
 import { newRaceAction } from '../../race/new/new-race-action';
 import { NewRace } from '../../race/new/NewRace';
 import { eventSchema } from '../event-schema';
+import { validateEventForm } from '../event-validation';
 import { EditEventOptions } from './edit-event-action';
 
 const ADD_RACE_BUTTON_TEXT = 'Add Race';
@@ -58,6 +59,7 @@ export function EditEvent({
 
   const { form, handleSubmit, isLoading, submissionError } = useActionForm({
     schema: eventSchema,
+    validate: (values) => validateEventForm(values, event.seriesBrief),
     initialValues: {
       name: event.name ?? '',
       location: event.location ?? '',

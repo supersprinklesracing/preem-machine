@@ -26,6 +26,7 @@ import { MultiPanelLayout } from '@/components/layout/MultiPanelLayout';
 import { Race } from '@/datastore/schema';
 
 import { raceSchema } from '../race-schema';
+import { validateRaceForm } from '../race-validation';
 import { EditRaceOptions } from './edit-race-action';
 
 export function EditRace({
@@ -61,30 +62,7 @@ export function EditRace({
 
   const { form, handleSubmit, isLoading, submissionError } = useActionForm({
     schema: raceSchema,
-    validate: (values) => {
-      if (values.startDate && values.endDate) {
-        if (values.endDate < values.startDate) {
-          return {
-            endDate: 'End date must be after start date',
-          };
-        }
-      }
-      if (race.eventBrief.startDate && values.startDate) {
-        if (values.startDate < race.eventBrief.startDate) {
-          return {
-            startDate: 'Race start date cannot be before event start date',
-          };
-        }
-      }
-      if (race.eventBrief.endDate && values.endDate) {
-        if (values.endDate > race.eventBrief.endDate) {
-          return {
-            endDate: 'Race end date cannot be after event end date',
-          };
-        }
-      }
-      return {};
-    },
+    validate: (values) => validateRaceForm(values, race.eventBrief),
     initialValues: {
       name: race.name ?? '',
       location: race.location ?? '',
@@ -127,7 +105,6 @@ export function EditRace({
               <Stack>
                 <TextInput
                   label="Race Name"
-                  required
                   {...form.getInputProps('name')}
                 />
                 <TextInput
