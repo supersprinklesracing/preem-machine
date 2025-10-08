@@ -1,8 +1,17 @@
 'use client';
 
-import { Card, Grid, Group, Stack, Text, Title } from '@mantine/core';
+import {
+  Card,
+  Grid,
+  Group,
+  Skeleton,
+  Stack,
+  Text,
+  Title,
+} from '@mantine/core';
 import { IconCalendar, IconMapPin } from '@tabler/icons-react';
 import Link from 'next/link';
+import { useEffect, useState } from 'react';
 
 import { toUrlPath } from '@/datastore/paths';
 import { EventWithRaces } from '@/datastore/query-schema';
@@ -19,6 +28,12 @@ interface Props {
 }
 
 export function Home({ eventsWithRaces, contributions, preems }: Props) {
+  const [isMounted, setIsMounted] = useState(false);
+
+  useEffect(() => {
+    setIsMounted(true);
+  }, []);
+
   return (
     <Stack>
       <Title order={1}>Current & Upcoming Preems</Title>
@@ -49,9 +64,11 @@ export function Home({ eventsWithRaces, contributions, preems }: Props) {
                       <Group>
                         <Group gap="xs">
                           <IconCalendar size={16} />
-                          <Text size="sm" c="dimmed">
-                            {formatDateLong(event?.startDate)}
-                          </Text>
+                          <Skeleton visible={!isMounted} width={100}>
+                            <Text size="sm" c="dimmed">
+                              {formatDateLong(event?.startDate)}
+                            </Text>
+                          </Skeleton>
                         </Group>
                         <Group gap="xs">
                           <IconMapPin size={16} />
@@ -69,10 +86,12 @@ export function Home({ eventsWithRaces, contributions, preems }: Props) {
                         href={`/view/${toUrlPath(race.path)}`}
                         style={{ textDecoration: 'none', color: 'inherit' }}
                       >
-                        <Text size="sm">
-                          {formatTime(race.startDate)} - {race.name} (
-                          {race.category})
-                        </Text>
+                        <Skeleton visible={!isMounted} width="100%">
+                          <Text size="sm">
+                            {formatTime(race.startDate)} - {race.name} (
+                            {race.category})
+                          </Text>
+                        </Skeleton>
                       </Link>
                     ))}
                   </Stack>
