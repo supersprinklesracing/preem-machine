@@ -1,9 +1,13 @@
 'use client';
 
-import { format, formatInTimeZone, fromZonedTime } from 'date-fns-tz';
+import { fromZonedTime } from 'date-fns-tz';
 import { Timestamp } from 'firebase/firestore';
 
-import { formatDateUrl } from '@/dates/dates';
+import {
+  formatDateRange,
+  formatDateUrl,
+  getISODateFromDate,
+} from '@/dates/dates';
 
 export function getDateFromTimestamp(value: Timestamp): Date;
 export function getDateFromTimestamp(
@@ -66,37 +70,4 @@ export function formatTimestampAsDate(value: Timestamp | undefined) {
   return formatDateUrl(getDateFromTimestamp(value));
 }
 
-export function getISODateFromDate(value: Date | null): string | undefined;
-export function getISODateFromDate(value: Date | undefined): string | undefined;
-export function getISODateFromDate(value: Date | null | undefined) {
-  return value ? value.toISOString() : undefined;
-}
-
-export function formatDateRange(
-  startDate: Date | undefined,
-  endDate: Date | undefined,
-  timezone?: string | null,
-) {
-  if (!startDate) {
-    return '';
-  }
-
-  const start = new Date(startDate);
-  const end = endDate ? new Date(endDate) : null;
-
-  const formatFn = (date: Date, formatString: string) => {
-    return timezone
-      ? formatInTimeZone(date, timezone, formatString)
-      : format(date, formatString);
-  };
-
-  if (end && start.toDateString() === end.toDateString()) {
-    return formatFn(start, 'PP');
-  }
-
-  if (end) {
-    return `${formatFn(start, 'PP')} - ${formatFn(end, 'PP')}`;
-  }
-
-  return formatFn(start, 'PP');
-}
+export { formatDateRange, getISODateFromDate };

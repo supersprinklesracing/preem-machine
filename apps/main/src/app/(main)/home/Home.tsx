@@ -1,14 +1,6 @@
 'use client';
 
-import {
-  Card,
-  Grid,
-  Group,
-  Skeleton,
-  Stack,
-  Text,
-  Title,
-} from '@mantine/core';
+import { Card, Grid, Group, Skeleton, Stack, Text, Title } from '@mantine/core';
 import { IconCalendar, IconMapPin } from '@tabler/icons-react';
 import Link from 'next/link';
 import { useEffect, useState } from 'react';
@@ -66,7 +58,10 @@ export function Home({ eventsWithRaces, contributions, preems }: Props) {
                           <IconCalendar size={16} />
                           <Skeleton visible={!isMounted} width={100}>
                             <Text size="sm" c="dimmed">
-                              {formatDateLong(event?.startDate)}
+                              {formatDateLong(
+                                event?.startDate,
+                                event?.timezone,
+                              )}
                             </Text>
                           </Skeleton>
                         </Group>
@@ -88,8 +83,8 @@ export function Home({ eventsWithRaces, contributions, preems }: Props) {
                       >
                         <Skeleton visible={!isMounted} width="100%">
                           <Text size="sm">
-                            {formatTime(race.startDate)} - {race.name} (
-                            {race.category})
+                            {formatTime(race.startDate, race.timezone)} -{' '}
+                            {race.name} ({race.category})
                           </Text>
                         </Skeleton>
                       </Link>

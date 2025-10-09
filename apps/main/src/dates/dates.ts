@@ -1,12 +1,5 @@
 import { format, formatDistanceToNow, isAfter } from 'date-fns';
-
-export const LONG_FORMATTER = new Intl.DateTimeFormat('en-US', {
-  weekday: 'long',
-  year: 'numeric',
-  month: 'long',
-  day: 'numeric',
-  timeZone: 'UTC',
-});
+import { formatInTimeZone } from 'date-fns-tz';
 
 export function getISODateFromDate(value: Date | null): string | undefined;
 export function getISODateFromDate(value: Date | undefined): string | undefined;
@@ -23,6 +16,7 @@ export function formatDateUrl(value: Date | undefined) {
 export function formatDateRange(
   startDate: Date | undefined,
   endDate: Date | undefined,
+  timeZone?: string,
 ) {
   if (!startDate) {
     return '';
@@ -31,32 +25,37 @@ export function formatDateRange(
   const start = new Date(startDate);
   const end = endDate ? new Date(endDate) : null;
 
-  if (end && start.toDateString() === end.toDateString()) {
-    return formatDateShort(start);
+  const format = (d: Date) => formatDateShort(d, timeZone);
+
+  if (end && format(start) === format(end)) {
+    return format(start);
   }
 
   if (end) {
-    return `${formatDateShort(start)} - ${formatDateShort(end)}`;
+    return `${format(start)} - ${format(end)}`;
   }
 
-  return formatDateShort(start);
+  return format(start);
 }
 
-function withDate(fn: (date: Date) => string) {
-  return (date: Date | string | undefined) => {
+function withDate(formatString: string) {
+  return (date: Date | string | undefined, timeZone?: string) => {
     if (!date) return '';
     const dateObj = typeof date === 'string' ? new Date(date) : date;
-    return fn(dateObj);
+    if (timeZone) {
+      return formatInTimeZone(dateObj, timeZone, formatString);
+    }
+    return format(dateObj, formatString);
   };
 }
 
-export const formatDateLong = withDate((date) => format(date, 'PPP'));
+export const formatDateLong = withDate('PPP');
 
-export const formatTime = withDate((date) => format(date, 'p'));
+export const formatTime = withDate('p');
 
-export const formatDateShort = withDate((date) => format(date, 'PP'));
+export const formatDateShort = withDate('PP');
 
-export const formatDateTime = withDate((date) => format(date, 'PP p'));
+export const formatDateTime = withDate('PP p');
 
 export function formatDateRelative(
   date: Date | string | undefined,

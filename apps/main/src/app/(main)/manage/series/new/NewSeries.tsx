@@ -15,7 +15,6 @@ import { DatePicker } from '@mantine/dates';
 import { useDebouncedValue } from '@mantine/hooks';
 import isEqual from 'fast-deep-equal';
 import { useRouter } from 'next/navigation';
-import { useEffect } from 'react';
 import { useTimezoneSelect } from 'react-timezone-select';
 
 import { SeriesCard } from '@/components/cards/SeriesCard';
