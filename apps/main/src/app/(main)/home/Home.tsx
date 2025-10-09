@@ -1,14 +1,6 @@
 'use client';
 
-import {
-  Card,
-  Grid,
-  Group,
-  Skeleton,
-  Stack,
-  Text,
-  Title,
-} from '@mantine/core';
+import { Card, Grid, Group, Skeleton, Stack, Text, Title } from '@mantine/core';
 import { IconCalendar, IconMapPin } from '@tabler/icons-react';
 import Link from 'next/link';
 import { useEffect, useState } from 'react';
