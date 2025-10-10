@@ -1,9 +1,6 @@
-'use client';
-
-import { Card, Grid, Group, Skeleton, Stack, Text, Title } from '@mantine/core';
+import { Card, Grid, GridCol, Group, Stack, Text, Title } from '@mantine/core';
 import { IconCalendar, IconMapPin } from '@tabler/icons-react';
 import Link from 'next/link';
-import { useEffect, useState } from 'react';
 
 import { toUrlPath } from '@/datastore/paths';
 import { EventWithRaces } from '@/datastore/query-schema';
@@ -20,12 +17,6 @@ interface Props {
 }
 
 export function Home({ eventsWithRaces, contributions, preems }: Props) {
-  const [isMounted, setIsMounted] = useState(false);
-
-  useEffect(() => {
-    setIsMounted(true);
-  }, []);
-
   return (
     <Stack>
       <Title order={1}>Current & Upcoming Preems</Title>
@@ -34,7 +25,7 @@ export function Home({ eventsWithRaces, contributions, preems }: Props) {
         Upcoming Events
       </Title>
       <Grid>
-        <Grid.Col span={{ base: 12, lg: 8 }}>
+        <GridCol span={{ base: 12, lg: 8 }}>
           <Stack>
             {eventsWithRaces.map(({ event, children }) => (
               <Card
@@ -56,14 +47,12 @@ export function Home({ eventsWithRaces, contributions, preems }: Props) {
                       <Group>
                         <Group gap="xs">
                           <IconCalendar size={16} />
-                          <Skeleton visible={!isMounted} width={100}>
-                            <Text size="sm" c="dimmed">
-                              {formatDateLong(
-                                event?.startDate,
-                                event?.timezone,
-                              )}
-                            </Text>
-                          </Skeleton>
+                          <Text size="sm" c="dimmed">
+                            {formatDateLong(
+                              event?.startDate,
+                              event?.timezone,
+                            )}
+                          </Text>
                         </Group>
                         <Group gap="xs">
                           <IconMapPin size={16} />
@@ -81,12 +70,10 @@ export function Home({ eventsWithRaces, contributions, preems }: Props) {
                         href={`/view/${toUrlPath(race.path)}`}
                         style={{ textDecoration: 'none', color: 'inherit' }}
                       >
-                        <Skeleton visible={!isMounted} width="100%">
-                          <Text size="sm">
-                            {formatTime(race.startDate, race.timezone)} -{' '}
-                            {race.name} ({race.category})
-                          </Text>
-                        </Skeleton>
+                        <Text size="sm">
+                          {formatTime(race.startDate, race.timezone)} -{' '}
+                          {race.name} ({race.category})
+                        </Text>
                       </Link>
                     ))}
                   </Stack>
@@ -94,10 +81,10 @@ export function Home({ eventsWithRaces, contributions, preems }: Props) {
               </Card>
             ))}
           </Stack>
-        </Grid.Col>
-        <Grid.Col span={{ base: 12, lg: 4 }}>
+        </GridCol>
+        <GridCol span={{ base: 12, lg: 4 }}>
           <LiveContributionFeed contributions={contributions} />
-        </Grid.Col>
+        </GridCol>
       </Grid>
     </Stack>
   );
