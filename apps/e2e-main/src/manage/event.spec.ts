@@ -1,13 +1,8 @@
-import { expect, test } from '@playwright/test';
-
-import {
-  useE2eTestingUserBeforeEach,
-  useMockedDateBeforeEach,
-} from '../util/e2e-test-utils';
+import { useE2eTestingUserBeforeEach } from '../util/e2e-test-utils';
+import { expect, test } from '../util/fixtures';
 
 test.describe('manage: event', () => {
   useE2eTestingUserBeforeEach();
-  useMockedDateBeforeEach();
 
   test('live', async ({ page }) => {
     await page.goto('/manage/super-sprinkles/sprinkles-2025/giro-sf-2025');

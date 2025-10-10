@@ -1,9 +1,6 @@
-import { expect, test } from '@playwright/test';
-
-import { useMockedDateBeforeEach } from '../util/e2e-test-utils';
+import { expect, test } from '../util/fixtures';
 
 test.describe('view: series', () => {
-  useMockedDateBeforeEach();
   test('basic', async ({ page }) => {
     await page.goto('/view/super-sprinkles/sprinkles-2025');
     await expect(
