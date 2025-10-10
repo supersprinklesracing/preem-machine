@@ -30,7 +30,6 @@ interface Props {
     | 'avatarUrl'
     | 'affiliation'
     | 'raceLicenseId'
-    | 'address'
   >;
   contributions: Pick<
     Contribution,
@@ -82,7 +81,6 @@ export function User({ user, contributions }: Props) {
               {user.raceLicenseId && (
                 <Text>Race License ID: {user.raceLicenseId}</Text>
               )}
-              {user.address && <Text>Address: {user.address}</Text>}
               {isOwnProfile ? (
                 <Button
                   component={Link}
