@@ -7,7 +7,6 @@ import {
   formatDateRange,
   formatDateUrl,
   getISODateFromDate,
-  LONG_FORMATTER,
 } from '@/dates/dates';
 
 export function getDateFromTimestamp(value: Timestamp): Date;
@@ -71,4 +70,4 @@ export function formatTimestampAsDate(value: Timestamp | undefined) {
   return formatDateUrl(getDateFromTimestamp(value));
 }
 
-export { formatDateRange, getISODateFromDate, LONG_FORMATTER };
+export { formatDateRange, getISODateFromDate };
