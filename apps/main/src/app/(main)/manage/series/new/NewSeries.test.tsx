@@ -1,6 +1,6 @@
 import userEvent from '@testing-library/user-event';
 
-import { act, render, screen, waitFor, within } from '@/test-utils';
+import { render, screen, waitFor, within } from '@/test-utils';
 
 import { NewSeries } from './NewSeries';
 
@@ -46,10 +46,6 @@ describe('NewSeries component', () => {
     await user.type(descriptionInput, 'This is a test series description.');
     await user.type(websiteInput, 'https://new-example.com');
     await user.type(locationInput, 'Outer space');
-
-    await act(async () => {
-      jest.advanceTimersByTime(500);
-    });
 
     // Select a date range
     await user.click(datePicker);
@@ -107,17 +103,10 @@ describe('NewSeries component', () => {
     await user.type(websiteInput, 'https://new-example.com');
     await user.type(locationInput, 'Outer space');
 
-    await act(async () => {
-      jest.advanceTimersByTime(500);
-    });
-
     await user.click(datePicker);
 
     const popover = await screen.findByRole('table');
     await user.click(within(popover).getByText('15'));
-    await act(async () => {
-      await jest.runAllTimersAsync(); // Let popover close
-    });
 
     const createButton = screen.getByRole('button', { name: /create series/i });
     await waitFor(() => expect(createButton).toBeEnabled());
