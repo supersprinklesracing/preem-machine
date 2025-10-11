@@ -2,7 +2,7 @@ import userEvent from '@testing-library/user-event';
 
 import { FormActionResult } from '@/components/forms/forms';
 import { Event } from '@/datastore/schema';
-import { act, render, screen, waitFor } from '@/test-utils';
+import { render, screen, waitFor } from '@/test-utils';
 
 import { NewRace } from './NewRace';
 
@@ -24,7 +24,7 @@ describe('NewRace component', () => {
   };
 
   it('should call newRaceAction with the correct data on form submission', async () => {
-    const user = userEvent.setup({ advanceTimers: jest.advanceTimersByTime });
+    const user = userEvent.setup({});
     const newRaceAction = jest.fn(
       (): Promise<FormActionResult<{ path?: string }>> =>
         Promise.resolve({ path: 'new-race-id' }),
@@ -49,9 +49,6 @@ describe('NewRace component', () => {
       screen.getByTestId('course-details-input'),
       '<p>Test Course Details</p>',
     );
-    await act(async () => {
-      jest.advanceTimersByTime(500);
-    });
 
     const createButton = screen.getByRole('button', { name: /create race/i });
     await waitFor(() => expect(createButton).toBeEnabled());
@@ -72,7 +69,7 @@ describe('NewRace component', () => {
   });
 
   it('should display an error message if the action fails', async () => {
-    const user = userEvent.setup({ advanceTimers: jest.advanceTimersByTime });
+    const user = userEvent.setup({});
     const newRaceAction = jest.fn(
       (): Promise<FormActionResult<{ path?: string }>> =>
         Promise.reject(new Error('Failed to create')),
@@ -97,9 +94,6 @@ describe('NewRace component', () => {
       screen.getByTestId('course-details-input'),
       '<p>Test Course Details</p>',
     );
-    await act(async () => {
-      jest.advanceTimersByTime(500);
-    });
 
     const createButton = screen.getByRole('button', { name: /create race/i });
     await waitFor(() => expect(createButton).toBeEnabled());
