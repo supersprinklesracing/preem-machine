@@ -82,6 +82,12 @@ export function setupUserContext() {
     mockedValidUserContext.mockResolvedValue({ authUser: null, user: null });
   });
 
+  afterEach(() => {
+    mockedGetUserContext.mockClear();
+    mockedVerifyUserContext.mockClear();
+    mockedValidUserContext.mockClear();
+  });
+
   return {
     mockedGetUserContext,
     mockedVerifyUserContext,
@@ -126,9 +132,34 @@ export const setupMockDb = () => {
   // 'use server';
 
   let firestore: MockFirestore;
+  let originalDatabase: ReturnType<typeof createMockDb>;
+
   beforeAll(async () => {
     firestore = (await getFirestore()) as MockFirestore;
-    firestore.database = createMockDb(firestore);
+    originalDatabase = createMockDb(firestore);
+  });
+
+  beforeEach(() => {
+    // eslint-disable-next-line @typescript-eslint/no-explicit-any
+    const deepClone = (obj: any): any => {
+      if (obj === null || typeof obj !== 'object') {
+        return obj;
+      }
+      if (obj instanceof Date) {
+        return new Date(obj.getTime());
+      }
+      if (Array.isArray(obj)) {
+        return obj.map(deepClone);
+      }
+      const clone = Object.create(Object.getPrototypeOf(obj));
+      for (const key in obj) {
+        if (Object.prototype.hasOwnProperty.call(obj, key)) {
+          clone[key] = deepClone(obj[key]);
+        }
+      }
+      return clone;
+    };
+    firestore.database = deepClone(originalDatabase);
   });
 };
 
