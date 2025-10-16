@@ -6,7 +6,20 @@ import { act, render, screen, waitFor } from '@/test-utils';
 
 import { NewRace } from './NewRace';
 
+import { setupMockDb, setupUserContext } from '@/test-utils';
+
 describe('NewRace component', () => {
+  setupMockDb();
+  setupUserContext();
+
+  beforeEach(() => {
+    jest.useFakeTimers();
+  });
+
+  afterEach(() => {
+    jest.useRealTimers();
+  });
+
   const mockEvent: Event = {
     id: 'event-1',
     path: 'organizations/org-1/series/series-1/events/event-1',
@@ -57,6 +70,10 @@ describe('NewRace component', () => {
     await waitFor(() => expect(createButton).toBeEnabled());
     await user.click(createButton);
 
+    await act(async () => {
+      await jest.runAllTimersAsync();
+    });
+
     await waitFor(() => {
       expect(newRaceAction).toHaveBeenCalledWith({
         path: 'organizations/org-1/series/series-1/events/event-1/races',
@@ -104,6 +121,10 @@ describe('NewRace component', () => {
     const createButton = screen.getByRole('button', { name: /create race/i });
     await waitFor(() => expect(createButton).toBeEnabled());
     await user.click(createButton);
+
+    await act(async () => {
+      await jest.runAllTimersAsync();
+    });
 
     expect(await screen.findByText('Failed to create')).toBeInTheDocument();
   });

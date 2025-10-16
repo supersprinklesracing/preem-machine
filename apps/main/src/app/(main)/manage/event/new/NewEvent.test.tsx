@@ -5,7 +5,20 @@ import { act, render, screen, waitFor } from '@/test-utils';
 
 import { NewEvent } from './NewEvent';
 
+import { setupMockDb, setupUserContext } from '@/test-utils';
+
 describe('NewEvent component', () => {
+  setupMockDb();
+  setupUserContext();
+
+  beforeEach(() => {
+    jest.useFakeTimers();
+  });
+
+  afterEach(() => {
+    jest.useRealTimers();
+  });
+
   const mockSeries: Series = {
     id: 'series-1',
     path: 'organizations/org-1/series/series-1',
