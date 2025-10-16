@@ -1,11 +1,19 @@
 import userEvent from '@testing-library/user-event';
 
 import { Series } from '@/datastore/schema';
-import { act, render, screen, waitFor } from '@/test-utils';
+import {
+  act,
+  render,
+  screen,
+  setupTimeMocking,
+  waitFor,
+} from '@/test-utils';
 
 import { NewEvent } from './NewEvent';
 
 describe('NewEvent component', () => {
+  setupTimeMocking();
+
   const mockSeries: Series = {
     id: 'series-1',
     path: 'organizations/org-1/series/series-1',

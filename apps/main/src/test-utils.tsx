@@ -132,5 +132,17 @@ export const setupMockDb = () => {
   });
 };
 
+export const MOCK_DATE = new Date('2024-01-01T00:00:00.000Z');
+
+export function setupTimeMocking() {
+  beforeEach(() => {
+    jest.spyOn(Date, 'now').mockReturnValue(MOCK_DATE.getTime());
+  });
+
+  afterEach(() => {
+    jest.restoreAllMocks();
+  });
+}
+
 export * from '@testing-library/react';
 export { customRender as render };

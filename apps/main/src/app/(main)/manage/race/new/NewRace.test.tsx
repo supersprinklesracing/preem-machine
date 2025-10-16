@@ -7,6 +7,16 @@ import { act, render, screen, waitFor } from '@/test-utils';
 import { NewRace } from './NewRace';
 
 describe('NewRace component', () => {
+  beforeEach(() => {
+    jest.useFakeTimers();
+    jest.spyOn(Date, 'now').mockReturnValue(new Date('2024-01-01T00:00:00.000Z').getTime());
+  });
+
+  afterEach(() => {
+    jest.useRealTimers();
+    jest.restoreAllMocks();
+  });
+
   const mockEvent: Event = {
     id: 'event-1',
     path: 'organizations/org-1/series/series-1/events/event-1',
@@ -24,7 +34,9 @@ describe('NewRace component', () => {
   };
 
   it('should call newRaceAction with the correct data on form submission', async () => {
-    const user = userEvent.setup({ advanceTimers: jest.advanceTimersByTime });
+    const user = userEvent.setup({
+      advanceTimers: jest.advanceTimersByTime,
+    });
     const newRaceAction = jest.fn(
       (): Promise<FormActionResult<{ path?: string }>> =>
         Promise.resolve({ path: 'new-race-id' }),
@@ -50,7 +62,7 @@ describe('NewRace component', () => {
       '<p>Test Course Details</p>',
     );
     await act(async () => {
-      jest.advanceTimersByTime(500);
+      jest.advanceTimersByTime(100);
     });
 
     const createButton = screen.getByRole('button', { name: /create race/i });
@@ -72,7 +84,9 @@ describe('NewRace component', () => {
   });
 
   it('should display an error message if the action fails', async () => {
-    const user = userEvent.setup({ advanceTimers: jest.advanceTimersByTime });
+    const user = userEvent.setup({
+      advanceTimers: jest.advanceTimersByTime,
+    });
     const newRaceAction = jest.fn(
       (): Promise<FormActionResult<{ path?: string }>> =>
         Promise.reject(new Error('Failed to create')),
@@ -98,7 +112,7 @@ describe('NewRace component', () => {
       '<p>Test Course Details</p>',
     );
     await act(async () => {
-      jest.advanceTimersByTime(500);
+      jest.advanceTimersByTime(100);
     });
 
     const createButton = screen.getByRole('button', { name: /create race/i });

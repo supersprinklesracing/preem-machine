@@ -1,14 +1,18 @@
 import userEvent from '@testing-library/user-event';
 
-import { act, render, screen, waitFor, within } from '@/test-utils';
+import {
+  act,
+  render,
+  screen,
+  waitFor,
+  within,
+} from '@/test-utils';
 
 import { NewSeries } from './NewSeries';
 
 describe('NewSeries component', () => {
-  const mockDate = new Date('2025-08-15T12:00:00Z');
   beforeEach(() => {
-    jest.useFakeTimers();
-    jest.setSystemTime(mockDate);
+    jest.useFakeTimers({ now: new Date('2025-08-15T12:00:00Z') });
   });
 
   afterEach(() => {
