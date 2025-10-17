@@ -1,7 +1,7 @@
 import userEvent from '@testing-library/user-event';
 
 import { Organization } from '@/datastore/schema';
-import { render, screen, waitFor } from '@/test-utils';
+import { render, screen, setupTimeMocking, waitFor } from '@/test-utils';
 
 import { InviteUser } from './InviteUser';
 
@@ -11,13 +11,7 @@ const mockOrganizations: Organization[] = [
 ];
 
 describe('InviteUser', () => {
-  beforeEach(() => {
-    jest.useFakeTimers();
-  });
-
-  afterEach(() => {
-    jest.useRealTimers();
-  });
+  setupTimeMocking();
 
   it('should call inviteUserAction with the correct values on form submission', async () => {
     const user = userEvent.setup({

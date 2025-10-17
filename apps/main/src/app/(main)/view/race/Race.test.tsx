@@ -2,7 +2,7 @@ import userEvent from '@testing-library/user-event';
 import MatchMediaMock from 'jest-matchmedia-mock';
 
 import { DateLocationDetail } from '@/components/cards/DateLocationDetail';
-import { PHONE_WIDTH, render, screen } from '@/test-utils';
+import { PHONE_WIDTH, render, screen, setupTimeMocking } from '@/test-utils';
 
 import { Race } from './Race';
 
@@ -63,16 +63,13 @@ const mockData = {
 };
 
 describe('Race component', () => {
+  setupTimeMocking();
+
   beforeAll(() => {
     matchMedia = new MatchMediaMock();
   });
 
-  beforeEach(() => {
-    jest.useFakeTimers();
-  });
-
   afterEach(() => {
-    jest.useRealTimers();
     matchMedia.clear();
   });
 

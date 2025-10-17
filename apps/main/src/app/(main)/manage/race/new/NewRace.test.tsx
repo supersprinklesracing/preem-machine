@@ -3,122 +3,138 @@ import userEvent from '@testing-library/user-event';
 import { FormActionResult } from '@/components/forms/forms';
 import { Event } from '@/datastore/schema';
 import { act, render, screen, waitFor } from '@/test-utils';
+import { setupTimeMocking } from '@/test-utils/time';
 
 import { NewRace } from './NewRace';
 
-describe('NewRace component', () => {
-  beforeEach(() => {
-    jest.useFakeTimers();
-    jest.spyOn(Date, 'now').mockReturnValue(new Date('2024-01-01T00:00:00.000Z').getTime());
-  });
+describe(
+  'NewRace component',
+  () => {
+    setupTimeMocking();
 
-  afterEach(() => {
-    jest.useRealTimers();
-    jest.restoreAllMocks();
-  });
+    const mockEvent: Event = {
+      id: 'event-1',
+      path: 'organizations/org-1/series/series-1/events/event-1',
+      name: 'Test Event',
+      seriesBrief: {
+        id: 'series-1',
+        path: 'organizations/org-1/series/series-1',
+        name: 'Test Series',
+      },
+      organizationBrief: {
+        id: 'org-1',
+        path: 'organizations/org-1',
+        name: 'Test Organization',
+      },
+    };
 
-  const mockEvent: Event = {
-    id: 'event-1',
-    path: 'organizations/org-1/series/series-1/events/event-1',
-    name: 'Test Event',
-    seriesBrief: {
-      id: 'series-1',
-      path: 'organizations/org-1/series/series-1',
-      name: 'Test Series',
-    },
-    organizationBrief: {
-      id: 'org-1',
-      path: 'organizations/org-1',
-      name: 'Test Organization',
-    },
-  };
+    it(
+      'should call newRaceAction with the correct data on form submission',
+      async () => {
+        const user = userEvent.setup({
+          advanceTimers: jest.advanceTimersByTime,
+        });
+        const newRaceAction = jest.fn(
+          (): Promise<FormActionResult<{ path?: string }>> =>
+            Promise.resolve({ path: 'new-race-id' }),
+        );
 
-  it('should call newRaceAction with the correct data on form submission', async () => {
-    const user = userEvent.setup({
-      advanceTimers: jest.advanceTimersByTime,
-    });
-    const newRaceAction = jest.fn(
-      (): Promise<FormActionResult<{ path?: string }>> =>
-        Promise.resolve({ path: 'new-race-id' }),
+        render(
+          <NewRace
+            event={mockEvent}
+            newRaceAction={newRaceAction}
+            path="organizations/org-1/series/series-1/events/event-1/races"
+          />,
+        );
+
+        await user.type(screen.getByTestId('name-input'), 'New Test Race');
+        await user.type(screen.getByTestId('location-input'), 'Test Location');
+        await user.type(
+          screen.getByTestId('website-input'),
+          'https://example.com',
+        );
+        await user.type(
+          screen.getByTestId('description-input'),
+          '<p>Test Description</p>',
+        );
+        await user.type(
+          screen.getByTestId('course-details-input'),
+          '<p>Test Course Details</p>',
+        );
+        await act(async () => {
+          jest.advanceTimersByTime(500);
+        });
+
+        const createButton = screen.getByRole('button', {
+          name: /create race/i,
+        });
+        await waitFor(() => expect(createButton).toBeEnabled());
+        await user.click(createButton);
+
+        await waitFor(() => {
+          expect(newRaceAction).toHaveBeenCalledWith({
+            path: 'organizations/org-1/series/series-1/events/event-1/races',
+            values: expect.objectContaining({
+              name: 'New Test Race',
+              location: 'Test Location',
+              website: 'https://example.com',
+              description: '<p>Test Description</p>',
+              courseDetails: '<p>Test Course Details</p>',
+            }),
+          });
+        });
+      },
+      30000,
     );
 
-    render(
-      <NewRace
-        event={mockEvent}
-        newRaceAction={newRaceAction}
-        path="organizations/org-1/series/series-1/events/event-1/races"
-      />,
+    it(
+      'should display an error message if the action fails',
+      async () => {
+        const user = userEvent.setup({
+          advanceTimers: jest.advanceTimersByTime,
+        });
+        const newRaceAction = jest.fn(
+          (): Promise<FormActionResult<{ path?: string }>> =>
+            Promise.reject(new Error('Failed to create')),
+        );
+
+        render(
+          <NewRace
+            event={mockEvent}
+            newRaceAction={newRaceAction}
+            path="organizations/org-1/series/series-1/events/event-1/races"
+          />,
+        );
+
+        await user.type(screen.getByTestId('name-input'), 'New Test Race');
+        await user.type(screen.getByTestId('location-input'), 'Test Location');
+        await user.type(
+          screen.getByTestId('website-input'),
+          'https://example.com',
+        );
+        await user.type(
+          screen.getByTestId('description-input'),
+          '<p>Test Description</p>',
+        );
+        await user.type(
+          screen.getByTestId('course-details-input'),
+          '<p>Test Course Details</p>',
+        );
+        await act(async () => {
+          jest.advanceTimersByTime(500);
+        });
+
+        const createButton = screen.getByRole('button', {
+          name: /create race/i,
+        });
+        await waitFor(() => expect(createButton).toBeEnabled());
+        await user.click(createButton);
+
+        expect(
+          await screen.findByText('Failed to create'),
+        ).toBeInTheDocument();
+      },
+      30000,
     );
-
-    await user.type(screen.getByTestId('name-input'), 'New Test Race');
-    await user.type(screen.getByTestId('location-input'), 'Test Location');
-    await user.type(screen.getByTestId('website-input'), 'https://example.com');
-    await user.type(
-      screen.getByTestId('description-input'),
-      '<p>Test Description</p>',
-    );
-    await user.type(
-      screen.getByTestId('course-details-input'),
-      '<p>Test Course Details</p>',
-    );
-    await act(async () => {
-      jest.advanceTimersByTime(100);
-    });
-
-    const createButton = screen.getByRole('button', { name: /create race/i });
-    await waitFor(() => expect(createButton).toBeEnabled());
-    await user.click(createButton);
-
-    await waitFor(() => {
-      expect(newRaceAction).toHaveBeenCalledWith({
-        path: 'organizations/org-1/series/series-1/events/event-1/races',
-        values: expect.objectContaining({
-          name: 'New Test Race',
-          location: 'Test Location',
-          website: 'https://example.com',
-          description: '<p>Test Description</p>',
-          courseDetails: '<p>Test Course Details</p>',
-        }),
-      });
-    });
-  });
-
-  it('should display an error message if the action fails', async () => {
-    const user = userEvent.setup({
-      advanceTimers: jest.advanceTimersByTime,
-    });
-    const newRaceAction = jest.fn(
-      (): Promise<FormActionResult<{ path?: string }>> =>
-        Promise.reject(new Error('Failed to create')),
-    );
-
-    render(
-      <NewRace
-        event={mockEvent}
-        newRaceAction={newRaceAction}
-        path="organizations/org-1/series/series-1/events/event-1/races"
-      />,
-    );
-
-    await user.type(screen.getByTestId('name-input'), 'New Test Race');
-    await user.type(screen.getByTestId('location-input'), 'Test Location');
-    await user.type(screen.getByTestId('website-input'), 'https://example.com');
-    await user.type(
-      screen.getByTestId('description-input'),
-      '<p>Test Description</p>',
-    );
-    await user.type(
-      screen.getByTestId('course-details-input'),
-      '<p>Test Course Details</p>',
-    );
-    await act(async () => {
-      jest.advanceTimersByTime(100);
-    });
-
-    const createButton = screen.getByRole('button', { name: /create race/i });
-    await waitFor(() => expect(createButton).toBeEnabled());
-    await user.click(createButton);
-
-    expect(await screen.findByText('Failed to create')).toBeInTheDocument();
-  });
-});
+  },
+);

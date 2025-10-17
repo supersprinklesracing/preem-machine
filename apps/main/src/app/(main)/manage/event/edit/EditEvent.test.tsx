@@ -1,7 +1,7 @@
 import userEvent from '@testing-library/user-event';
 
 import { Event } from '@/datastore/schema';
-import { act, render, screen, waitFor } from '@/test-utils';
+import { act, render, screen, setupTimeMocking,waitFor } from '@/test-utils';
 
 import { EditEvent } from './EditEvent';
 
@@ -28,13 +28,7 @@ const mockEvent: Event = {
 };
 
 describe('EditEvent component', () => {
-  beforeEach(() => {
-    jest.useFakeTimers();
-  });
-
-  afterEach(() => {
-    jest.useRealTimers();
-  });
+  setupTimeMocking();
 
   it('should call editEventAction with the correct data on form submission', async () => {
     const user = userEvent.setup({

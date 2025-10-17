@@ -1,6 +1,6 @@
 import userEvent from '@testing-library/user-event';
 
-import { render, screen } from '@/test-utils';
+import { render, screen, setupTimeMocking } from '@/test-utils';
 
 import { Hub } from './Hub';
 
@@ -47,13 +47,7 @@ const mockData = {
 };
 
 describe('Hub component', () => {
-  beforeEach(() => {
-    jest.useFakeTimers();
-  });
-
-  afterEach(() => {
-    jest.useRealTimers();
-  });
+  setupTimeMocking();
 
   it('should render the organization name', () => {
     render(<Hub {...mockData} />);

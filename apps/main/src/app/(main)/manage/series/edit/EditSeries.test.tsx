@@ -1,7 +1,7 @@
 import userEvent from '@testing-library/user-event';
 
 import { Series } from '@/datastore/schema';
-import { act, render, screen, waitFor } from '@/test-utils';
+import { act, render, screen, setupTimeMocking,waitFor } from '@/test-utils';
 
 import { EditSeries } from './EditSeries';
 
@@ -23,13 +23,7 @@ const mockSeries: Series = {
 };
 
 describe('EditSeries component', () => {
-  beforeEach(() => {
-    jest.useFakeTimers();
-  });
-
-  afterEach(() => {
-    jest.useRealTimers();
-  });
+  setupTimeMocking();
 
   it('should call editSeriesAction with the correct data on form submission', async () => {
     const user = userEvent.setup({
