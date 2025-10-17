@@ -29,7 +29,7 @@ describe('NewUser component', () => {
     await user.type(nameInput, 'New Name');
 
     // Wait for the debounced value to update
-    act(() => {
+    await act(async () => {
       jest.advanceTimersByTime(100);
     });
 

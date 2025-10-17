@@ -1,7 +1,7 @@
 import userEvent from '@testing-library/user-event';
 
 import { Organization } from '@/datastore/schema';
-import { act, render, screen, waitFor } from '@/test-utils';
+import { act, render, screen, setupTimeMocking,waitFor } from '@/test-utils';
 
 import { EditOrganization } from './EditOrganization';
 
@@ -19,13 +19,7 @@ const mockOrganization: Organization = {
 };
 
 describe('EditOrganization component', () => {
-  beforeEach(() => {
-    jest.useFakeTimers();
-  });
-
-  afterEach(() => {
-    jest.useRealTimers();
-  });
+  setupTimeMocking();
 
   it('should call updateOrganizationAction with the correct data on form submission', async () => {
     const user = userEvent.setup({

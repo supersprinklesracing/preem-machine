@@ -1,7 +1,13 @@
 import userEvent from '@testing-library/user-event';
 
 import { Organization, User } from '@/datastore/schema';
-import { act, render, screen, waitFor } from '@/test-utils';
+import {
+  act,
+  render,
+  screen,
+  setupTimeMocking,
+  waitFor,
+} from '@/test-utils';
 
 import * as actions from './assign-org-action';
 import { AssignOrgModal } from './AssignOrgModal';
@@ -26,13 +32,10 @@ const mockOrgs: Organization[] = [
 const mockOnClose = jest.fn();
 
 describe('AssignOrgModal', () => {
-  beforeEach(() => {
-    jest.useFakeTimers();
-    jest.clearAllMocks();
-  });
+  setupTimeMocking();
 
-  afterEach(() => {
-    jest.useRealTimers();
+  beforeEach(() => {
+    jest.clearAllMocks();
   });
 
   it('renders the modal with the user name', () => {

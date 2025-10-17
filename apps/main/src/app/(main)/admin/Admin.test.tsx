@@ -1,7 +1,7 @@
 import userEvent from '@testing-library/user-event';
 
 import { Organization, User } from '@/datastore/schema';
-import { act, render, screen } from '@/test-utils';
+import { act, render, screen, setupTimeMocking } from '@/test-utils';
 
 import { Admin } from './Admin';
 
@@ -20,13 +20,7 @@ const mockOrgs: Organization[] = [
 ];
 
 describe('Admin', () => {
-  beforeEach(() => {
-    jest.useFakeTimers();
-  });
-
-  afterEach(() => {
-    jest.useRealTimers();
-  });
+  setupTimeMocking();
 
   it('renders a table of users', () => {
     render(<Admin users={mockUsers} organizations={mockOrgs} />);

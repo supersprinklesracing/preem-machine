@@ -1,17 +1,11 @@
 import userEvent from '@testing-library/user-event';
 
-import { act, render, screen, waitFor } from '@/test-utils';
+import { act, render, screen, setupTimeMocking,waitFor } from '@/test-utils';
 
 import { NewOrganization } from './NewOrganization';
 
 describe('NewOrganization component', () => {
-  beforeEach(() => {
-    jest.useFakeTimers();
-  });
-
-  afterEach(() => {
-    jest.useRealTimers();
-  });
+  setupTimeMocking();
 
   it('should call newOrganizationAction with the correct data on form submission', async () => {
     const user = userEvent.setup({

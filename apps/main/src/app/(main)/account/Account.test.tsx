@@ -4,7 +4,7 @@ import userEvent from '@testing-library/user-event';
 import { act } from 'react';
 
 import { User } from '@/datastore/schema';
-import { render, screen, waitFor } from '@/test-utils';
+import { render, screen, setupTimeMocking, waitFor } from '@/test-utils';
 
 import { Account } from './Account';
 
@@ -24,13 +24,7 @@ const mockUser: User = {
 const mockEditUserAction = jest.fn();
 
 describe('Account', () => {
-  beforeEach(() => {
-    jest.useFakeTimers();
-  });
-
-  afterEach(() => {
-    jest.useRealTimers();
-  });
+  setupTimeMocking();
 
   it('should disable the save button while typing and enable it after debouncing', async () => {
     const user = userEvent.setup({
@@ -51,7 +45,7 @@ describe('Account', () => {
     expect(saveButton).toBeDisabled();
 
     // Wait for the debounce timeout
-    act(() => {
+    await act(async () => {
       jest.advanceTimersByTime(100);
     });
 
