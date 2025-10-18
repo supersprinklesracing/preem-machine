@@ -76,9 +76,3 @@ export function useE2eTestingAdminBeforeEach() {
     });
   });
 }
-
-export function useMockedDateBeforeEach() {
-  test.beforeEach(async ({ page }) => {
-    await page.clock.setFixedTime(new Date('2025-07-13T00:00:00-07:00'));
-  });
-}
