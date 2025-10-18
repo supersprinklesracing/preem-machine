@@ -1,12 +1,6 @@
-import { expect, test } from '@playwright/test';
-
-import {
-  useE2eTestingUserBeforeEach,
-  useMockedDateBeforeEach,
-} from './util/e2e-test-utils';
+import { expect, test } from './util/fixtures';
 
 test.describe('reset-password', () => {
-  useMockedDateBeforeEach();
   test.describe('unauthed', () => {
     test('basic', async ({ page }) => {
       await page.goto('/reset-password');
@@ -17,7 +11,6 @@ test.describe('reset-password', () => {
     });
   });
   test.describe('authed', () => {
-    useE2eTestingUserBeforeEach();
     test('basic', async ({ page }) => {
       await page.goto('/reset-password');
       await expect(
