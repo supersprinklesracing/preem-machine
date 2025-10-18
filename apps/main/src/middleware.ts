@@ -98,6 +98,7 @@ export const config = {
     '/api/login',
     '/api/logout',
     '/api/refresh-token',
+    '/account',
     // App-specific; Hitting these URLs unauthenticated will trigger the redirect.
     // '/api/stripe',
     // '/(api/debug/.*)',
