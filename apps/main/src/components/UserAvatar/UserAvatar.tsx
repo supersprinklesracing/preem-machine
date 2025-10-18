@@ -18,7 +18,7 @@ export function UserAvatar({ user, size = 'md' }: UserAvatarProps) {
 
   const content = (
     <Group>
-      <Avatar src={user?.avatarUrl} alt={name} radius="50%" size={size} />
+      <Avatar src={user?.avatarUrl} alt={name} radius="xl" size={size} />
       <Text fw={500} style={{ textDecoration: 'none', color: 'inherit' }}>
         {name}
       </Text>
@@ -44,7 +44,7 @@ export function UserAvatarIcon({ user, size = 'md' }: UserAvatarProps) {
   const linkHref = user?.path ? `/view/${toUrlPath(user.path)}` : '#';
 
   const content = (
-    <Avatar src={user?.avatarUrl} alt={name} radius="50%" size={size} />
+    <Avatar src={user?.avatarUrl} alt={name} radius="xl" size={size} />
   );
 
   if (user?.path) {
@@ -68,7 +68,7 @@ export function LoggedOutAvatarIcon({ size = 'md' }: UserAvatarProps) {
       href={`/login?redirect=${pathname}`}
       style={{ textDecoration: 'none', color: 'inherit' }}
     >
-      <Avatar radius="50%" size={size} />
+      <Avatar radius="xl" size={size} />
     </Link>
   );
 }
