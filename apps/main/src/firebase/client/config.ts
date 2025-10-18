@@ -4,7 +4,6 @@ export const clientConfig = {
   projectId: orThrow(process.env.NEXT_PUBLIC_PROJECT_ID),
   apiKey: orThrow(process.env.NEXT_PUBLIC_FIREBASE_API_KEY),
   authDomain: orThrow(process.env.NEXT_PUBLIC_FIREBASE_AUTH_DOMAIN),
-  storageBucket: orThrow(process.env.NEXT_PUBLIC_FIREBASE_STORAGE_BUCKET),
   messagingSenderId: orThrow(
     process.env.NEXT_PUBLIC_FIREBASE_MESSAGING_SENDER_ID,
   ),
