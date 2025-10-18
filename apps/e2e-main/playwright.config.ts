@@ -49,7 +49,7 @@ export default defineConfig({
   /* Run your local dev server before starting the tests */
   webServer: {
     command:
-      './tools/nx/nx run @preem-machine/main:start | tee e2e-server.log 2>&1 ',
+      './tools/nx run @preem-machine/main:start | tee e2e-server.log 2>&1 ',
 
     url: 'http://localhost:3000',
     reuseExistingServer: !process.env.CI,
