@@ -4,7 +4,12 @@ import { act, render, screen, waitFor, within } from '@/test-utils';
 
 import { NewSeries } from './NewSeries';
 
+import { setupMockDb, setupUserContext } from '@/test-utils';
+
 describe('NewSeries component', () => {
+  setupMockDb();
+  setupUserContext();
+
   const mockDate = new Date('2025-08-15T12:00:00Z');
   beforeEach(() => {
     jest.useFakeTimers();
@@ -56,6 +61,10 @@ describe('NewSeries component', () => {
     const popover = await screen.findByRole('table');
     await user.click(within(popover).getByText('3'));
     await user.click(within(popover).getByText('15'));
+
+    await act(async () => {
+      await jest.runAllTimersAsync(); // Let popover close
+    });
 
     const createButton = screen.getByRole('button', { name: /create series/i });
     await waitFor(() => expect(createButton).toBeEnabled());
@@ -114,6 +123,7 @@ describe('NewSeries component', () => {
     await user.click(datePicker);
 
     const popover = await screen.findByRole('table');
+    await user.click(within(popover).getByText('10'));
     await user.click(within(popover).getByText('15'));
     await act(async () => {
       await jest.runAllTimersAsync(); // Let popover close
