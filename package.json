@@ -56,7 +56,6 @@
     "@nx/node": "21.6.5",
     "@nx/playwright": "21.6.5",
     "@nx/workspace": "21.6.5",
-    "@opentelemetry/winston-transport": "^0.17.0",
     "@playwright/test": "^1.36.0",
     "@swc-node/register": "~1.11.0",
     "@swc/cli": "~0.7.0",
