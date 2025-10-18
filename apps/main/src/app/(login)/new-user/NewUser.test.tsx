@@ -1,17 +1,18 @@
 import userEvent from '@testing-library/user-event';
 
-import { act, MOCK_AUTH_USER, render, screen, waitFor } from '@/test-utils';
+import {
+  act,
+  MOCK_AUTH_USER,
+  render,
+  screen,
+  setupTimeMocking,
+  waitFor,
+} from '@/test-utils';
 
 import { NewUser } from './NewUser';
 
 describe('NewUser component', () => {
-  beforeEach(() => {
-    jest.useFakeTimers();
-  });
-
-  afterEach(() => {
-    jest.useRealTimers();
-  });
+  setupTimeMocking();
 
   it('should call newUserAction with the correct data on form submission', async () => {
     const user = userEvent.setup({
@@ -28,7 +29,7 @@ describe('NewUser component', () => {
     await user.type(nameInput, 'New Name');
 
     // Wait for the debounced value to update
-    act(() => {
+    await act(async () => {
       jest.advanceTimersByTime(100);
     });
 

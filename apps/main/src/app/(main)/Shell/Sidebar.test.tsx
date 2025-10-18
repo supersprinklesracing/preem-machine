@@ -1,7 +1,7 @@
 import userEvent from '@testing-library/user-event';
 
 import { User } from '@/datastore/schema';
-import { render, screen } from '@/test-utils';
+import { render, screen, setupTimeMocking } from '@/test-utils';
 
 import { MainAppShellContext } from './MainAppShellContext';
 import { Sidebar, SidebarProps } from './Sidebar';
@@ -30,13 +30,7 @@ const mockData: SidebarProps = {
 };
 
 describe('Sidebar component', () => {
-  beforeEach(() => {
-    jest.useFakeTimers();
-  });
-
-  afterEach(() => {
-    jest.useRealTimers();
-  });
+  setupTimeMocking();
 
   it('should render event links', () => {
     render(

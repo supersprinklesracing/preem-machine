@@ -132,5 +132,6 @@ export const setupMockDb = () => {
   });
 };
 
+export * from './test-utils/time';
 export * from '@testing-library/react';
 export { customRender as render };

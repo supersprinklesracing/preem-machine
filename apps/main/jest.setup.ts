@@ -1,3 +1,4 @@
+global.IS_REACT_ACT_ENVIRONMENT = true;
 import '@testing-library/jest-dom';
 import './src/matchMedia.mock';
 
@@ -72,4 +73,3 @@ jest.mock('react-timezone-select', () => ({
   }),
 }));
 
-jest.useFakeTimers().setSystemTime(new Date('2025-07-13T00:00:00-07:00'));

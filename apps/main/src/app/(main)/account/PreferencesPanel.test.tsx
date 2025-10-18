@@ -1,7 +1,7 @@
 import { useMantineColorScheme } from '@mantine/core';
 import userEvent from '@testing-library/user-event';
 
-import { render, screen } from '@/test-utils';
+import { render, screen, setupTimeMocking } from '@/test-utils';
 
 import { PreferencesPanel } from './PreferencesPanel';
 
@@ -14,17 +14,14 @@ jest.mock('@mantine/core', () => ({
 const mockSetColorScheme = jest.fn();
 
 describe('PreferencesPanel component', () => {
+  setupTimeMocking();
+
   beforeEach(() => {
-    jest.useFakeTimers();
     (useMantineColorScheme as jest.Mock).mockReturnValue({
       colorScheme: 'auto',
       setColorScheme: mockSetColorScheme,
     });
     mockSetColorScheme.mockClear();
-  });
-
-  afterEach(() => {
-    jest.useRealTimers();
   });
 
   it('should render the preferences panel', () => {

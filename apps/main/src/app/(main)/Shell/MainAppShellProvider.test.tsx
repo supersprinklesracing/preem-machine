@@ -3,7 +3,7 @@
 import userEvent from '@testing-library/user-event';
 import React from 'react';
 
-import { render, screen } from '@/test-utils';
+import { render, screen, setupTimeMocking } from '@/test-utils';
 
 import { useMainAppShell } from './MainAppShellContext';
 import { MainAppShellProvider } from './MainAppShellProvider';
@@ -34,8 +34,9 @@ jest.mock('./MainAppShell', () => {
 });
 
 describe('MainAppShellProvider', () => {
+  setupTimeMocking();
+
   beforeEach(() => {
-    jest.useFakeTimers();
     Object.defineProperty(window, 'matchMedia', {
       writable: true,
       value: jest.fn().mockImplementation((query) => ({
@@ -49,10 +50,6 @@ describe('MainAppShellProvider', () => {
         dispatchEvent: jest.fn(),
       })),
     });
-  });
-
-  afterEach(() => {
-    jest.useRealTimers();
   });
 
   it('provides the correct initial context values', () => {

@@ -1,7 +1,7 @@
 import userEvent from '@testing-library/user-event';
 
 import { Preem } from '@/datastore/schema';
-import { act, render, screen, waitFor } from '@/test-utils';
+import { act, render, screen, setupTimeMocking,waitFor } from '@/test-utils';
 
 import { EditPreem } from './EditPreem';
 
@@ -50,13 +50,10 @@ const mockPreem: Preem = {
 };
 
 describe('EditPreem component', () => {
-  beforeEach(() => {
-    jest.useFakeTimers();
-    mockRouterPush.mockClear();
-  });
+  setupTimeMocking();
 
-  afterEach(() => {
-    jest.useRealTimers();
+  beforeEach(() => {
+    mockRouterPush.mockClear();
   });
 
   it('should call editPreemAction with the correct data on form submission and refresh the router', async () => {

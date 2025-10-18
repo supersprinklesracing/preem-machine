@@ -2,7 +2,7 @@ import userEvent from '@testing-library/user-event';
 
 import { FormActionResult } from '@/components/forms/forms';
 import { Race } from '@/datastore/schema';
-import { act, render, screen, waitFor } from '@/test-utils';
+import { act, render, screen, setupTimeMocking,waitFor } from '@/test-utils';
 
 import { NewPreem } from './NewPreem';
 
@@ -15,13 +15,9 @@ jest.mock('next/navigation', () => ({
 }));
 
 describe('NewPreem component', () => {
-  beforeEach(() => {
-    jest.useFakeTimers();
-    jest.setSystemTime(new Date('2025-08-05T12:00:00'));
-  });
+  setupTimeMocking(new Date('2025-08-05T12:00:00'));
 
   afterEach(() => {
-    jest.useRealTimers();
     jest.restoreAllMocks();
   });
 

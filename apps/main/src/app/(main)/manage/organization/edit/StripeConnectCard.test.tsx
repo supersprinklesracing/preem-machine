@@ -1,7 +1,7 @@
 import userEvent from '@testing-library/user-event';
 
 import { Organization } from '@/datastore/schema';
-import { render, screen } from '@/test-utils';
+import { render, screen, setupTimeMocking } from '@/test-utils';
 
 import { StripeConnectCard } from './StripeConnectCard';
 import { useStripeConnect } from './useStripeConnect';
@@ -20,6 +20,7 @@ const mockEnv = require('@/env/env');
 const mockUseStripeConnect = useStripeConnect as jest.Mock;
 
 describe('StripeConnectCard component', () => {
+  setupTimeMocking();
   const handleCreateAccount = jest.fn();
   const handleDashboardLink = jest.fn();
   const handleOnboardingLink = jest.fn();
