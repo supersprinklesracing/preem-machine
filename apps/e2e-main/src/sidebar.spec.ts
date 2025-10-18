@@ -1,4 +1,4 @@
-import { expect, test } from '@playwright/test';
+import { expect, test } from './util/fixtures';
 
 test.describe('Sidebar Toggle', () => {
   // This test is only relevant for mobile viewports.

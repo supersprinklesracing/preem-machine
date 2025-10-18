@@ -18,6 +18,7 @@ export const metadata = {
     template: '%s | Preem Machine',
     default: 'Preem Machine',
   },
+  icons: '/logo.png',
 };
 
 export default async function RootLayout({
