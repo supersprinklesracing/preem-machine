@@ -9,6 +9,7 @@ import type { Auth } from 'next-firebase-auth-edge/auth';
 import { ENV_FIREBASE_AUTH_EMULATOR_HOST } from '@/env/env';
 import { isServiceAccount } from '@/secrets/service-account-secret';
 
+import { clientConfig } from '../client/config';
 import { serverConfigFn } from './config';
 
 const initializeApp = async () => {
@@ -23,6 +24,7 @@ const initializeApp = async () => {
     }
     return admin.initializeApp({
       projectId: serverConfig.serviceAccount.projectId,
+      storageBucket: clientConfig.storageBucket,
     });
   }
 
@@ -32,6 +34,7 @@ const initializeApp = async () => {
 
   return admin.initializeApp({
     credential: admin.credential.cert(serverConfig.serviceAccount),
+    storageBucket: clientConfig.storageBucket,
   });
 };
 
