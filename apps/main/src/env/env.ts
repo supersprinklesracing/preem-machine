@@ -10,8 +10,8 @@ const isTrue = (value: string | undefined): boolean => {
   return value?.toLowerCase() === 'true';
 };
 
-export const ENV_MAX_IMAGE_SIZE_BYTES =
-  Number(process.env.NEXT_PUBLIC_MAX_IMAGE_SIZE_BYTES) || 2 * 1024 * 1024;
+// See also: firebase/storage.rules
+export const ENV_MAX_IMAGE_SIZE_BYTES = 5 * 1024 * 1024;
 
 export const ENV_STRIPE_ENABLED = isTrue(
   process.env.NEXT_PUBLIC_STRIPE_ENABLED,
