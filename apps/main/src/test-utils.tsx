@@ -89,6 +89,30 @@ export function setupUserContext() {
   };
 }
 
+export function setupValidUserContext() {
+  const mockedGetUserContext = userServer.getUserContext as jest.Mock;
+  const mockedVerifyUserContext = userServer.verifyUserContext as jest.Mock;
+  const mockedValidUserContext = userServer.validUserContext as jest.Mock;
+
+  beforeEach(() => {
+    mockedGetUserContext.mockResolvedValue(MOCK_USER_CONTEXT);
+    mockedVerifyUserContext.mockResolvedValue(MOCK_USER_CONTEXT);
+    mockedValidUserContext.mockResolvedValue(MOCK_USER_CONTEXT);
+  });
+
+  afterEach(() => {
+    mockedGetUserContext.mockClear();
+    mockedVerifyUserContext.mockClear();
+    mockedValidUserContext.mockClear();
+  });
+
+  return {
+    mockedGetUserContext,
+    mockedVerifyUserContext,
+    mockedValidUserContext,
+  };
+}
+
 const AllTheProviders = function AllTheProviders({
   children,
   userContext,

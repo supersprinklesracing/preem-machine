@@ -2,7 +2,7 @@ import { User } from '@/datastore/schema';
 import { getDoc } from '@/datastore/server/query/query';
 import { updateUser } from '@/datastore/server/update/update';
 import { getFirebaseStorage } from '@/firebase/server/firebase-admin';
-import { MOCK_AUTH_USER } from '@/test-utils';
+import { MOCK_AUTH_USER, setupValidUserContext } from '@/test-utils';
 import { verifyUserContext } from '@/user/server/user';
 
 import { editUserAction } from './edit-user-action';
@@ -16,7 +16,8 @@ jest.mock('@/firebase/server/firebase-admin', () => ({
 }));
 
 describe('editUserAction', () => {
-  const mockedVerifyUserContext = jest.mocked(verifyUserContext);
+  setupValidUserContext();
+
   const mockedGetFirebaseStorage = jest.mocked(getFirebaseStorage);
   const mockedGetDoc = jest.mocked(getDoc);
   const mockedUpdateUser = jest.mocked(updateUser);
@@ -39,10 +40,6 @@ describe('editUserAction', () => {
 
   beforeEach(() => {
     jest.clearAllMocks();
-    mockedVerifyUserContext.mockResolvedValue({
-      authUser: MOCK_AUTH_USER,
-      user: null,
-    });
     mockedGetDoc.mockResolvedValue({
       name: 'Old Name',
       avatarUrl: 'https://old.com/avatar.png',
@@ -105,7 +102,9 @@ describe('editUserAction', () => {
   });
 
   it('should throw a FormActionError on failure', async () => {
-    mockedVerifyUserContext.mockRejectedValue(new Error('Not authenticated'));
+    jest
+      .mocked(verifyUserContext)
+      .mockRejectedValue(new Error('Not authenticated'));
 
     await expect(editUserAction({ edits })).rejects.toThrow(
       'Failed to save profile: Not authenticated',

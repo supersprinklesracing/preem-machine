@@ -4,7 +4,11 @@ import { z } from 'zod';
 
 import { FormActionError } from '@/components/forms/forms';
 import { createInvite } from '@/datastore/server/create/create';
-import { MOCK_ADMIN_AUTH_USER, MOCK_AUTH_USER } from '@/test-utils';
+import {
+  MOCK_ADMIN_AUTH_USER,
+  MOCK_AUTH_USER,
+  setupValidUserContext,
+} from '@/test-utils';
 import { hasUserRole, verifyUserContext } from '@/user/server/user';
 
 import { inviteSchema } from './invite-schema';
@@ -42,16 +46,16 @@ describe('inviteUser action', () => {
     );
   });
 
-  it('should throw a FormActionError if user is not an admin', async () => {
-    mockedVerifyUserContext.mockResolvedValue({
-      authUser: MOCK_AUTH_USER,
-      user: null,
-    });
-    mockedHasUserRole.mockResolvedValue(false);
+  describe('when user is not an admin', () => {
+    setupValidUserContext();
 
-    await expect(inviteUser({ edits: validInvite })).rejects.toThrow(
-      new FormActionError('Failed to send invitation: Unauthorized'),
-    );
+    it('should throw a FormActionError', async () => {
+      mockedHasUserRole.mockResolvedValue(false);
+
+      await expect(inviteUser({ edits: validInvite })).rejects.toThrow(
+        new FormActionError('Failed to send invitation: Unauthorized'),
+      );
+    });
   });
 
   it('should throw a FormActionError on createInvite failure', async () => {
