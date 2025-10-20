@@ -4,7 +4,6 @@ import {
   Box,
   Button,
   Card,
-  Grid,
   Stack,
   Text,
   Textarea,
@@ -56,94 +55,91 @@ export function Account({ user, editUserAction }: AccountProps) {
 
   const [debouncedValues] = useDebouncedValue(form.values, 100);
 
+  const topLeft = (
+    <Stack>
+      <UpdateUserProfileCard
+        name={debouncedValues.name}
+        email={debouncedValues.email}
+        avatarUrl={debouncedValues.avatarUrl}
+        uploading={uploading}
+        error={error}
+        onFileChange={handleFileChange}
+        onRemovePhoto={handleRemovePhoto}
+      />
+      <Button
+        type="submit"
+        loading={isLoading}
+        disabled={!form.isDirty() || !isEqual(form.values, debouncedValues)}
+      >
+        Save Changes
+      </Button>
+      {submissionError && <Text c="red">{submissionError}</Text>}
+      {user && (
+        <Button
+          variant="outline"
+          onClick={() => router.push(`/view/${toUrlPath(user.path)}`)}
+        >
+          View Public Profile
+        </Button>
+      )}
+      <Button variant="outline" onClick={logout}>
+        Logout
+      </Button>
+    </Stack>
+  );
+
+  const topRight = (
+    <Card withBorder p="lg" radius="md">
+      <Stack>
+        <Title order={2}>Account Details</Title>
+        <Stack gap={0}>
+          <TextInput
+            id="name"
+            label="Full Name"
+            placeholder="Your full name"
+            required
+            {...form.getInputProps('name')}
+          />
+          <Box h={22} pt={2}>
+            {form.errors.name && (
+              <Text c="red" size="sm">
+                {form.errors.name}
+              </Text>
+            )}
+          </Box>
+        </Stack>
+        <TextInput
+          id="email"
+          label="Email"
+          placeholder="Your email address"
+          readOnly
+          {...form.getInputProps('email')}
+        />
+        <TextInput
+          id="affiliation"
+          label="Affiliation"
+          placeholder="Your club or team"
+          {...form.getInputProps('affiliation')}
+        />
+        <TextInput
+          id="raceLicenseId"
+          label="Race License ID"
+          placeholder="e.g., 123456"
+          {...form.getInputProps('raceLicenseId')}
+        />
+        <Textarea
+          id="address"
+          label="Address"
+          placeholder="123 Main St, Anytown, USA"
+          {...form.getInputProps('address')}
+        />
+      </Stack>
+    </Card>
+  );
+
   return (
-    <MultiPanelLayout>
-      <form onSubmit={form.onSubmit(handleSubmit)}>
-        <Grid>
-          <Grid.Col span={{ base: 12, md: 4 }}>
-            <Stack>
-              <UpdateUserProfileCard
-                name={debouncedValues.name}
-                email={debouncedValues.email}
-                avatarUrl={debouncedValues.avatarUrl}
-                uploading={uploading}
-                error={error}
-                onFileChange={handleFileChange}
-                onRemovePhoto={handleRemovePhoto}
-              />
-              <Button
-                type="submit"
-                loading={isLoading}
-                disabled={
-                  !form.isDirty() || !isEqual(form.values, debouncedValues)
-                }
-              >
-                Save Changes
-              </Button>
-              {submissionError && <Text c="red">{submissionError}</Text>}
-              {user && (
-                <Button
-                  variant="outline"
-                  onClick={() => router.push(`/view/${toUrlPath(user.path)}`)}
-                >
-                  View Public Profile
-                </Button>
-              )}
-              <Button variant="outline" onClick={logout}>
-                Logout
-              </Button>
-            </Stack>
-          </Grid.Col>
-          <Grid.Col span={{ base: 12, md: 8 }}>
-            <Card withBorder p="lg" radius="md">
-              <Stack>
-                <Title order={2}>Account Details</Title>
-                <Stack gap={0}>
-                  <TextInput
-                    id="name"
-                    label="Full Name"
-                    placeholder="Your full name"
-                    required
-                    {...form.getInputProps('name')}
-                  />
-                  <Box h={22} pt={2}>
-                    {form.errors.name && (
-                      <Text c="red" size="sm">
-                        {form.errors.name}
-                      </Text>
-                    )}
-                  </Box>
-                </Stack>
-                <TextInput
-                  id="email"
-                  label="Email"
-                  placeholder="Your email address"
-                  readOnly
-                  {...form.getInputProps('email')}
-                />
-                <TextInput
-                  id="affiliation"
-                  label="Affiliation"
-                  placeholder="Your club or team"
-                  {...form.getInputProps('affiliation')}
-                />
-                <TextInput
-                  id="raceLicenseId"
-                  label="Race License ID"
-                  placeholder="e.g., 123456"
-                  {...form.getInputProps('raceLicenseId')}
-                />
-                <Textarea
-                  id="address"
-                  label="Address"
-                  placeholder="123 Main St, Anytown, USA"
-                  {...form.getInputProps('address')}
-                />
-              </Stack>
-            </Card>
-          </Grid.Col>
-        </Grid>
-      </form>
-    </MultiPanelLayout>
+    <form onSubmit={form.onSubmit(handleSubmit)}>
+      <MultiPanelLayout topLeft={topLeft} topRight={topRight} />
+    </form>
   );
 }
