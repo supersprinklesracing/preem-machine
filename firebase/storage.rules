@@ -7,10 +7,13 @@ service firebase.storage {
       allow get;
 
       // Allow write and delete only by the authenticated user
-      // MAX_IMAGE_SIZE_BYTES should be replaced with an environment variable during the build process
       allow write: if request.auth != null && request.auth.uid == userId &&
-        request.resource.size < 2 * 1024 * 1024 &&
-        request.resource.contentType.matches('image/.*');
+        request.resource.contentType.matches('image/.*') &&
+
+        // See also: apps/main/src/env/env.ts:ENV_MAX_IMAGE_SIZE_BYTES
+        // (storage.rules must be hardcoded)
+        request.resource.size < 5 * 1024 * 1024;
+
       allow delete: if request.auth != null && request.auth.uid == userId;
     }
   }
