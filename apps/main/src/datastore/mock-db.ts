@@ -35,16 +35,18 @@ const createMetadata = (dateString: string): Metadata => {
   };
 };
 
+export const MOCK_USER_1 = {
+  ...createIdAndPath(`users/test-user-1`),
+  name: 'Test User 1',
+  email: 'test-user-1@example.com',
+  avatarUrl: 'https://placehold.co/100x100.png',
+  organizationRefs: [createDocRef('organizations/super-sprinkles')],
+  metadata: createMetadata('2024-07-01T10:00:00Z'),
+};
+
 export const mockDbData: DatabaseCollections = {
   users: [
-    {
-      ...createIdAndPath(`users/test-user-1`),
-      name: 'Test User 1',
-      email: 'test-user-1@example.com',
-      avatarUrl: 'https://placehold.co/100x100.png',
-      organizationRefs: [createDocRef('organizations/super-sprinkles')],
-      metadata: createMetadata('2024-07-01T10:00:00Z'),
-    },
+    MOCK_USER_1,
     {
       ...createIdAndPath('users/user-test-admin'),
       name: 'Test Admin',
