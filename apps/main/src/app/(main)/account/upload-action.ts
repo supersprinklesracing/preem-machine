@@ -34,7 +34,9 @@ export async function generateSignedUploadUrl({
     contentType,
   });
 
-  const publicUrl = `https://storage.googleapis.com/${bucket.name}/${filePath}`;
+  const encodedFilePath = encodeURIComponent(filePath);
+
+  const publicUrl = `https://firebasestorage.googleapis.com/v0/b/${bucket.name}/o/${encodedFilePath}?alt=media`;
 
   return { signedUrl, publicUrl };
 }
