@@ -9,7 +9,8 @@
         "passWithNoTests": true,
         "color": false,
         "colors": false,
-        "forceExit": true
+        "forceExit": true,
+        "detectOpenHandles": true
       },
       "configurations": {
         "node": {
