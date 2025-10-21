@@ -1,6 +1,13 @@
 import userEvent from '@testing-library/user-event';
 
-import { act, MOCK_AUTH_USER, render, screen, waitFor } from '@/test-utils';
+import {
+  act,
+  MOCK_USER_CONTEXT,
+  render,
+  screen,
+  waitFor,
+  withLoggedInUserContext,
+} from '@/test-utils';
 
 import { NewUser } from './NewUser';
 
@@ -17,9 +24,9 @@ describe('NewUser component', () => {
     const user = userEvent.setup({
       advanceTimers: jest.advanceTimersByTime,
     });
-    const mockNewUserAction = jest.fn(() => Promise.resolve({}));
+    const mockNewUserAction = jest.fn(() => Promise.resolve({path: `/users/${MOCK_USER_CONTEXT.user.id}`}));
     render(<NewUser newUserAction={mockNewUserAction} />, {
-      userContext: { authUser: MOCK_AUTH_USER, user: null },
+      ...withLoggedInUserContext(),
     });
 
     // Change the name in the form
@@ -53,9 +60,9 @@ describe('NewUser component', () => {
   });
 
   it('should allow editing the avatar URL', () => {
-    const mockNewUserAction = jest.fn(() => Promise.resolve({}));
+    const mockNewUserAction = jest.fn(() => Promise.resolve({path: `/users/${MOCK_USER_CONTEXT.user.id}`}));
     render(<NewUser newUserAction={mockNewUserAction} />, {
-      userContext: { authUser: MOCK_AUTH_USER, user: null },
+      ...withLoggedInUserContext(),
     });
 
     const avatarUrlInput = screen.getByLabelText('Avatar URL');
