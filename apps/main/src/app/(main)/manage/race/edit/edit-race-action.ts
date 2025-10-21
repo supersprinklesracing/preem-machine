@@ -5,7 +5,7 @@ import { z } from 'zod';
 import { FormActionError, FormActionResult } from '@/components/forms/forms';
 import { DocPath } from '@/datastore/paths';
 import { updateRace } from '@/datastore/server/update/update';
-import { verifyUserContext } from '@/user/server/user';
+import { requireLoggedInUserContext } from '@/user/server/user';
 
 import { raceSchema } from '../race-schema';
 
@@ -19,7 +19,7 @@ export async function editRaceAction({
   edits,
 }: EditRaceOptions): Promise<FormActionResult> {
   try {
-    const { authUser } = await verifyUserContext();
+    const { authUser } = await requireLoggedInUserContext();
     const parsedEdits = raceSchema.parse(edits);
     await updateRace(path, parsedEdits, authUser);
 

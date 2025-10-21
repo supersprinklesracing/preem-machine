@@ -7,7 +7,7 @@ import { NotFoundError } from '@/datastore/errors';
 import { User } from '@/datastore/schema';
 import { getUserById } from '@/datastore/server/query/query';
 
-import { getUserContext, verifyUserContext } from './user';
+import { getUserContext, requireLoggedInUserContext } from './user';
 
 jest.mock('@/auth/server/auth');
 jest.mock('@/datastore/server/query/query');
@@ -71,11 +71,13 @@ describe('user', () => {
     });
   });
 
-  describe('verifyUserContext', () => {
+  describe('requireLoggedInUserContext', () => {
     it('should redirect to /login if no auth user is found', async () => {
       mockGetAuthUser.mockResolvedValue(null);
       // We expect a redirect, which is an exception, so we catch it.
-      await expect(verifyUserContext()).rejects.toThrow('NEXT_REDIRECT');
+      await expect(requireLoggedInUserContext()).rejects.toThrow(
+        'NEXT_REDIRECT',
+      );
       expect(mockRedirect).toHaveBeenCalledWith('/login');
       expect(mockGetUserById).not.toHaveBeenCalled();
     });
@@ -83,14 +85,16 @@ describe('user', () => {
     it('should redirect to /new-user if user is not found in datastore', async () => {
       mockGetAuthUser.mockResolvedValue(MOCK_AUTH_USER);
       mockGetUserById.mockRejectedValue(new NotFoundError('User not found'));
-      await expect(verifyUserContext()).rejects.toThrow('NEXT_REDIRECT');
+      await expect(requireLoggedInUserContext()).rejects.toThrow(
+        'NEXT_REDIRECT',
+      );
       expect(mockRedirect).toHaveBeenCalledWith('/new-user');
     });
 
     it('should return the user if found', async () => {
       mockGetAuthUser.mockResolvedValue(MOCK_AUTH_USER);
       mockGetUserById.mockResolvedValue(MOCK_USER);
-      const { authUser, user } = await verifyUserContext();
+      const { authUser, user } = await requireLoggedInUserContext();
       expect(user).toEqual(MOCK_USER);
       expect(authUser).toEqual(MOCK_AUTH_USER);
       expect(mockRedirect).not.toHaveBeenCalled();
@@ -100,7 +104,9 @@ describe('user', () => {
       const someError = new Error('Something went wrong');
       mockGetAuthUser.mockResolvedValue(MOCK_AUTH_USER);
       mockGetUserById.mockRejectedValue(someError);
-      await expect(verifyUserContext()).rejects.toThrow('Something went wrong');
+      await expect(requireLoggedInUserContext()).rejects.toThrow(
+        'Something went wrong',
+      );
       expect(mockRedirect).not.toHaveBeenCalled();
     });
   });
