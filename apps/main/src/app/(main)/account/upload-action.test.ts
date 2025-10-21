@@ -6,8 +6,10 @@ import {
   getFirebaseAdminApp,
   getFirebaseStorage,
 } from '@/firebase/server/firebase-admin';
-import { MOCK_AUTH_USER, setupValidUserContext } from '@/test-utils';
-import { verifyUserContext } from '@/user/server/user';
+import {
+  setupLoggedInUserContext,
+  setupLoggedOutUserContext,
+} from '@/test-utils';
 
 import { generateSignedUploadUrl } from './upload-action';
 
@@ -16,8 +18,6 @@ jest.mock('@/firebase/server/firebase-admin');
 jest.mock('crypto');
 
 describe('generateSignedUploadUrl', () => {
-  setupValidUserContext();
-
   const mockedGetFirebaseAdminApp = jest.mocked(getFirebaseAdminApp);
   const mockedGetFirebaseStorage = jest.mocked(getFirebaseStorage);
   const mockedRandomUUID = jest.mocked(randomUUID);
@@ -33,43 +33,56 @@ describe('generateSignedUploadUrl', () => {
 
   beforeEach(() => {
     jest.clearAllMocks();
-    mockedGetFirebaseAdminApp.mockResolvedValue({} as App);
-    mockedGetFirebaseStorage.mockResolvedValue({
-      bucket: () => mockBucket,
-    } as unknown as Storage);
-    mockedRandomUUID.mockReturnValue('test-photo-id');
-    mockGetSignedUrl.mockResolvedValue(['https://fake-signed-url.com']);
   });
 
-  it('should return a signed URL and public URL on success', async () => {
-    const result = await generateSignedUploadUrl({ contentType: 'image/png' });
+  describe('when authenticated', () => {
+    setupLoggedInUserContext();
 
-    expect(mockedGetFirebaseAdminApp).toHaveBeenCalled();
-    expect(mockedGetFirebaseStorage).toHaveBeenCalled();
-    expect(mockedRandomUUID).toHaveBeenCalled();
-    expect(mockFile).toHaveBeenCalledWith(
-      'users/photos/test-user-id/test-photo-id',
-    );
-    expect(mockGetSignedUrl).toHaveBeenCalledWith({
-      version: 'v4',
-      action: 'write',
-      expires: expect.any(Number),
-      contentType: 'image/png',
+    beforeEach(() => {
+      mockedGetFirebaseAdminApp.mockResolvedValue({} as App);
+      mockedGetFirebaseStorage.mockResolvedValue({
+        bucket: () => mockBucket,
+      } as unknown as Storage);
+      mockedRandomUUID.mockReturnValue('test-photo-id');
+      mockGetSignedUrl.mockResolvedValue(['https://fake-signed-url.com']);
     });
-    expect(result).toEqual({
-      signedUrl: 'https://fake-signed-url.com',
-      publicUrl:
-        'https://storage.googleapis.com/test-bucket/users/photos/test-user-id/test-photo-id',
+
+    it('should return a signed URL and public URL on success', async () => {
+      const result = await generateSignedUploadUrl({
+        contentType: 'image/png',
+      });
+
+      expect(mockedGetFirebaseAdminApp).toHaveBeenCalled();
+      expect(mockedGetFirebaseStorage).toHaveBeenCalled();
+      expect(mockedRandomUUID).toHaveBeenCalled();
+      expect(mockFile).toHaveBeenCalledWith(
+        'users/photos/test-user-id/test-photo-id',
+      );
+      expect(mockGetSignedUrl).toHaveBeenCalledWith({
+        version: 'v4',
+        action: 'write',
+        expires: expect.any(Number),
+        contentType: 'image/png',
+      });
+      expect(result).toEqual({
+        signedUrl: 'https://fake-signed-url.com',
+        publicUrl:
+          'https://storage.googleapis.com/test-bucket/users/photos/test-user-id/test-photo-id',
+      });
     });
   });
 
-  it('should throw an error if user is not authenticated', async () => {
-    jest
-      .mocked(verifyUserContext)
-      .mockRejectedValue(new Error('Not authenticated'));
+  describe('when not authenticated', () => {
+    const { mockedVerifyUserContext } = setupLoggedOutUserContext();
 
-    await expect(
-      generateSignedUploadUrl({ contentType: 'image/png' }),
-    ).rejects.toThrow('Not authenticated');
+    beforeEach(() => {
+      mockedVerifyUserContext.mockRejectedValue(new Error('Not authenticated'));
+    });
+
+    it('should throw an error if user is not authenticated', async () => {
+      await expect(
+        generateSignedUploadUrl({ contentType: 'image/png' }),
+      ).rejects.toThrow('Not authenticated');
+    });
   });
 });

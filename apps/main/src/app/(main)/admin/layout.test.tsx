@@ -1,31 +1,37 @@
-import { render, screen, setupUserContext } from '@/test-utils';
+import {
+  render,
+  screen,
+  setupLoggedInUserContext,
+  setupLoggedOutUserContext,
+} from '@/test-utils';
 
 import AdminLayout from './layout';
 
 describe('AdminLayout', () => {
-  const { mockedVerifyUserContext } = setupUserContext();
+  describe('when user is not logged in', () => {
+    const { mockedVerifyUserContext } = setupLoggedOutUserContext();
 
-  it('should redirect unauthenticated users', async () => {
-    mockedVerifyUserContext.mockImplementation(() => {
-      throw new Error('unauthorized');
+    it('should redirect unauthenticated users', async () => {
+      mockedVerifyUserContext.mockImplementation(() => {
+        throw new Error('unauthorized');
+      });
+
+      await expect(AdminLayout({ children: <div>Test</div> })).rejects.toThrow(
+        'unauthorized',
+      );
     });
-
-    await expect(AdminLayout({ children: <div>Test</div> })).rejects.toThrow(
-      'unauthorized',
-    );
   });
 
-  it('should render children for authenticated users', async () => {
-    mockedVerifyUserContext.mockResolvedValue({
-      authUser: { uid: 'test-uid' },
-      user: { id: 'test-uid' },
-    });
+  describe('when user is logged in', () => {
+    setupLoggedInUserContext();
 
-    const PageComponent = await AdminLayout({
-      children: <div>Test Children</div>,
-    });
-    render(PageComponent);
+    it('should render children for authenticated users', async () => {
+      const PageComponent = await AdminLayout({
+        children: <div>Test Children</div>,
+      });
+      render(PageComponent);
 
-    expect(screen.getByText('Test Children')).toBeInTheDocument();
+      expect(screen.getByText('Test Children')).toBeInTheDocument();
+    });
   });
 });

@@ -1,4 +1,10 @@
-import { MOCK_AUTH_USER, MOCK_USER, render, screen } from '@/test-utils';
+import {
+  MOCK_AUTH_USER,
+  MOCK_USER,
+  render,
+  screen,
+  withLoggedInUserContext,
+} from '@/test-utils';
 
 import { User } from './User';
 
@@ -59,10 +65,7 @@ describe('User component', () => {
 
   it('shows "Go to My Account" button for own profile', () => {
     render(<User {...mockUserData} />, {
-      userContext: {
-        user: MOCK_USER,
-        authUser: MOCK_AUTH_USER,
-      },
+      ...withLoggedInUserContext(),
     });
     expect(screen.getByText('Go to My Account')).toBeInTheDocument();
   });

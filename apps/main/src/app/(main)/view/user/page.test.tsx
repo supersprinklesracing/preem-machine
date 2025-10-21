@@ -2,7 +2,13 @@ import { redirect } from 'next/navigation';
 import React from 'react';
 
 import { NotFoundError } from '@/datastore/errors';
-import { render, screen, setupMockDb, setupUserContext } from '@/test-utils';
+import {
+  render,
+  screen,
+  setupLoggedInUserContext,
+  setupLoggedOutUserContext,
+  setupMockDb,
+} from '@/test-utils';
 
 import UserPage from './page';
 import { User } from './User';
@@ -21,8 +27,6 @@ jest.mock('next/navigation', () => ({
 setupMockDb();
 
 describe('UserPage component', () => {
-  const { mockedGetUserContext } = setupUserContext();
-
   beforeEach(() => {
     (redirect as unknown as jest.Mock).mockClear();
   });
@@ -43,25 +47,25 @@ describe('UserPage component', () => {
     expect(UserPage({ searchParams })).rejects.toThrow(NotFoundError);
   });
 
-  it('should redirect to user page when no id is provided and user is logged in', async () => {
-    mockedGetUserContext.mockResolvedValue({
-      authUser: { uid: 'test-uid' },
-      user: { id: 'test-uid' },
+  describe('when user is logged in', () => {
+    setupLoggedInUserContext();
+
+    it('should redirect to user page when no id is provided and user is logged in', async () => {
+      const searchParams = Promise.resolve({ path: undefined });
+      await expect(UserPage({ searchParams })).rejects.toThrow(
+        'mock redirect(/view/user/test-user-id)',
+      );
     });
-    const searchParams = Promise.resolve({ path: undefined });
-    await expect(UserPage({ searchParams })).rejects.toThrow(
-      'mock redirect(/user/test-uid)',
-    );
   });
 
-  it('should redirect to login page when no id is provided and user is not logged in', async () => {
-    mockedGetUserContext.mockResolvedValue({
-      authUser: null,
-      user: null,
+  describe('when user is not logged in', () => {
+    setupLoggedOutUserContext();
+
+    it('should redirect to login page when no id is provided and user is not logged in', async () => {
+      const searchParams = Promise.resolve({ path: undefined });
+      await expect(UserPage({ searchParams })).rejects.toThrow(
+        'mock redirect(/login?redirect=/view/user)',
+      );
     });
-    const searchParams = Promise.resolve({ path: undefined });
-    await expect(UserPage({ searchParams })).rejects.toThrow(
-      'mock redirect(/login?redirect=/user)',
-    );
   });
 });

@@ -70,34 +70,53 @@ export const MOCK_ADMIN_USER: User = {
 };
 
 export const MOCK_USER_CONTEXT = { authUser: MOCK_AUTH_USER, user: MOCK_USER };
+export const MOCK_ADMIN_USER_CONTEXT = {
+  authUser: MOCK_ADMIN_AUTH_USER,
+  user: MOCK_ADMIN_USER,
+};
+export const MOCK_LOGGED_OUT_USER_CONTEXT: UserContextValue = {
+  authUser: null,
+  user: null,
+};
 
-export function setupUserContext() {
-  const mockedGetUserContext = userServer.getUserContext as jest.Mock;
-  const mockedVerifyUserContext = userServer.verifyUserContext as jest.Mock;
-  const mockedValidUserContext = userServer.validUserContext as jest.Mock;
-
-  beforeEach(() => {
-    mockedGetUserContext.mockResolvedValue({ authUser: null, user: null });
-    mockedVerifyUserContext.mockResolvedValue({ authUser: null, user: null });
-    mockedValidUserContext.mockResolvedValue({ authUser: null, user: null });
-  });
-
+export function withLoggedInUserContext() {
   return {
-    mockedGetUserContext,
-    mockedVerifyUserContext,
-    mockedValidUserContext,
+    userContext: MOCK_USER_CONTEXT,
   };
 }
 
-export function setupValidUserContext() {
+export function withLoggedInAdminContext() {
+  return {
+    userContext: MOCK_ADMIN_USER_CONTEXT,
+  };
+}
+
+export function withLoggedOutUserContext() {
+  return {
+    userContext: MOCK_LOGGED_OUT_USER_CONTEXT,
+  };
+}
+
+export function setupLoggedInAdminContext() {
+  return setupUserContext(MOCK_ADMIN_USER_CONTEXT);
+}
+
+export function withAdminUserContext() {
+  return {
+    userContext: MOCK_ADMIN_USER_CONTEXT,
+  };
+}
+
+/** Used to set up server-side user state checking. */
+export function setupUserContext(userContext: UserContextValue) {
   const mockedGetUserContext = userServer.getUserContext as jest.Mock;
   const mockedVerifyUserContext = userServer.verifyUserContext as jest.Mock;
   const mockedValidUserContext = userServer.validUserContext as jest.Mock;
 
   beforeEach(() => {
-    mockedGetUserContext.mockResolvedValue(MOCK_USER_CONTEXT);
-    mockedVerifyUserContext.mockResolvedValue(MOCK_USER_CONTEXT);
-    mockedValidUserContext.mockResolvedValue(MOCK_USER_CONTEXT);
+    mockedGetUserContext.mockResolvedValue(userContext);
+    mockedVerifyUserContext.mockResolvedValue(userContext);
+    mockedValidUserContext.mockResolvedValue(userContext);
   });
 
   afterEach(() => {
@@ -111,6 +130,21 @@ export function setupValidUserContext() {
     mockedVerifyUserContext,
     mockedValidUserContext,
   };
+}
+
+/** Sets up a "logged-out user" by wrapping the user server module. */
+export function setupLoggedOutUserContext() {
+  return setupUserContext(MOCK_LOGGED_OUT_USER_CONTEXT);
+}
+
+/** Sets up a "logged-in user" by wrapping the user server module. */
+export function setupLoggedInUserContext() {
+  return setupUserContext(MOCK_USER_CONTEXT);
+}
+
+/** Sets up a "admin user" by wrapping the user server module. */
+export function setupAdminUserContext() {
+  return setupUserContext(MOCK_ADMIN_USER_CONTEXT);
 }
 
 const AllTheProviders = function AllTheProviders({
@@ -131,7 +165,7 @@ const customRender = (
   ui: React.ReactElement,
   options: Omit<RenderOptions, 'wrapper'> & {
     userContext: UserContextValue;
-  } = { userContext: { authUser: null, user: null } },
+  } = { userContext: MOCK_LOGGED_OUT_USER_CONTEXT },
 ) => {
   const { userContext, ...renderOptions } = options;
   return render(ui, {
