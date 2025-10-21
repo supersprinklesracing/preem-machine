@@ -74,10 +74,12 @@ describe('inviteUser action', () => {
   });
 
   describe('when user is not logged in', () => {
-    const { mockedVerifyUserContext } = setupLoggedOutUserContext();
+    const { mockedRequireLoggedInUserContext } = setupLoggedOutUserContext();
 
     beforeEach(() => {
-      mockedVerifyUserContext.mockRejectedValue(new Error('Not authenticated'));
+      mockedRequireLoggedInUserContext.mockRejectedValue(
+        new Error('Not authenticated'),
+      );
     });
 
     it('should throw an error', async () => {

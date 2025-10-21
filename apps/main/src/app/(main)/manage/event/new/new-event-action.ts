@@ -5,7 +5,7 @@ import { z } from 'zod';
 import { FormActionError, FormActionResult } from '@/components/forms/forms';
 import { CollectionPath, DocPath } from '@/datastore/paths';
 import { createEvent } from '@/datastore/server/create/create';
-import { verifyUserContext } from '@/user/server/user';
+import { requireLoggedInUserContext } from '@/user/server/user';
 
 import { eventSchema } from '../event-schema';
 
@@ -19,7 +19,7 @@ export async function newEventAction({
   values,
 }: NewEventOptions): Promise<FormActionResult<{ path: DocPath }>> {
   try {
-    const { authUser } = await verifyUserContext();
+    const { authUser } = await requireLoggedInUserContext();
 
     const parsedValues = eventSchema.parse(values);
     const snap = await createEvent(path, parsedValues, authUser);

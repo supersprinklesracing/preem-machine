@@ -9,7 +9,7 @@ import {
 import { cookies } from 'next/headers';
 
 import { UserProvider } from '@/user/client/UserProvider';
-import { getUserContext } from '@/user/server/user';
+import { requireAnyUserContext } from '@/user/server/user';
 
 import { theme } from './theme';
 
@@ -26,7 +26,7 @@ export default async function RootLayout({
 }: {
   children: React.ReactNode;
 }) {
-  const userContext = await getUserContext();
+  const userContext = await requireAnyUserContext();
 
   const colorScheme = ((await cookies()).get('mantine-color-scheme')?.value ||
     'dark') as MantineColorScheme;

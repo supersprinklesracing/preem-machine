@@ -110,25 +110,27 @@ export function withAdminUserContext() {
 /** Used to set up server-side user state checking. */
 export function setupUserContext(userContext: UserContextValue) {
   const mockedGetUserContext = userServer.getUserContext as jest.Mock;
-  const mockedVerifyUserContext = userServer.verifyUserContext as jest.Mock;
-  const mockedValidUserContext = userServer.validUserContext as jest.Mock;
+  const mockedRequireLoggedInUserContext =
+    userServer.requireLoggedInUserContext as jest.Mock;
+  const mockedRequireAnyUserContext =
+    userServer.requireAnyUserContext as jest.Mock;
 
   beforeEach(() => {
     mockedGetUserContext.mockResolvedValue(userContext);
-    mockedVerifyUserContext.mockResolvedValue(userContext);
-    mockedValidUserContext.mockResolvedValue(userContext);
+    mockedRequireLoggedInUserContext.mockResolvedValue(userContext);
+    mockedRequireAnyUserContext.mockResolvedValue(userContext);
   });
 
   afterEach(() => {
     mockedGetUserContext.mockClear();
-    mockedVerifyUserContext.mockClear();
-    mockedValidUserContext.mockClear();
+    mockedRequireLoggedInUserContext.mockClear();
+    mockedRequireAnyUserContext.mockClear();
   });
 
   return {
     mockedGetUserContext,
-    mockedVerifyUserContext,
-    mockedValidUserContext,
+    mockedRequireLoggedInUserContext,
+    mockedRequireAnyUserContext,
   };
 }
 

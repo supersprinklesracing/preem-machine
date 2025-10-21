@@ -6,7 +6,7 @@ import {
   getFirebaseAdminApp,
   getFirebaseStorage,
 } from '@/firebase/server/firebase-admin';
-import { verifyUserContext } from '@/user/server/user';
+import { requireLoggedInUserContext } from '@/user/server/user';
 
 interface SignedUrlOptions {
   contentType: string;
@@ -20,7 +20,7 @@ interface SignedUrlResult {
 export async function generateSignedUploadUrl({
   contentType,
 }: SignedUrlOptions): Promise<SignedUrlResult> {
-  const uid = (await verifyUserContext()).authUser.uid;
+  const uid = (await requireLoggedInUserContext()).authUser.uid;
 
   await getFirebaseAdminApp();
   const bucket = (await getFirebaseStorage()).bucket();

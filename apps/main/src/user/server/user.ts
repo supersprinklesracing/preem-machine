@@ -34,7 +34,7 @@ export const getUserContext = async (): Promise<UserContextValue> => {
   return { authUser, user };
 };
 
-export const verifyUserContext = async (): Promise<{
+export const requireLoggedInUserContext = async (): Promise<{
   uid: string;
   authUser: AuthUser;
   user: User;
@@ -50,7 +50,7 @@ export const verifyUserContext = async (): Promise<{
   return { uid: authUser.uid, authUser, user };
 };
 
-export const validUserContext = async () => {
+export const requireAnyUserContext = async () => {
   // A user may either be authorized and have a user profile; or they must be
   // unauthorized.
   const authUser = await getAuthUser();

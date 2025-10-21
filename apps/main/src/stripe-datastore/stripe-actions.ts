@@ -7,7 +7,7 @@ import { isUserAuthorized } from '@/datastore/server/access';
 import { updateOrganizationStripeConnectAccount } from '@/datastore/server/update/update';
 import { ENV_URL_PREFIX } from '@/env/env';
 import { getStripeServer } from '@/stripe/server';
-import { verifyUserContext } from '@/user/server/user';
+import { requireLoggedInUserContext } from '@/user/server/user';
 
 export async function createStripeConnectAccount(
   organizationId: string,
@@ -16,7 +16,7 @@ export async function createStripeConnectAccount(
   error?: string;
   accountId?: string;
 }> {
-  const { authUser } = await verifyUserContext();
+  const { authUser } = await requireLoggedInUserContext();
 
   // Although the mutation also checks for authorization, we check it here first
   // to prevent creating a Stripe account unnecessarily if the user is not authorized.
@@ -69,7 +69,7 @@ export async function createDashboardLink(
   accountId: string,
   organizationId: string,
 ): Promise<{ success: boolean; error?: string; url?: string }> {
-  const { authUser } = await verifyUserContext();
+  const { authUser } = await requireLoggedInUserContext();
 
   const authorized = await isUserAuthorized(
     authUser,
@@ -97,7 +97,7 @@ export async function createOnboardingLink(
   accountId: string,
   organizationId: string,
 ): Promise<{ success: boolean; error?: string; url?: string }> {
-  const { authUser } = await verifyUserContext();
+  const { authUser } = await requireLoggedInUserContext();
 
   const authorized = await isUserAuthorized(
     authUser,

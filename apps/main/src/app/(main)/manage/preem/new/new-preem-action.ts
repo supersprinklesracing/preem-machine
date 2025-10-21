@@ -6,7 +6,7 @@ import { z } from 'zod';
 import { FormActionError, FormActionResult } from '@/components/forms/forms';
 import { DocPath } from '@/datastore/paths';
 import { createPreem } from '@/datastore/server/create/create';
-import { verifyUserContext } from '@/user/server/user';
+import { requireLoggedInUserContext } from '@/user/server/user';
 
 import { preemSchema } from '../preem-schema';
 
@@ -20,7 +20,7 @@ export async function newPreemAction({
   values,
 }: NewPreemOptions): Promise<FormActionResult<{ path: DocPath }>> {
   try {
-    const { authUser } = await verifyUserContext();
+    const { authUser } = await requireLoggedInUserContext();
 
     const parsedValues = preemSchema.parse(values);
     const newPreemSnapshot = await createPreem(path, parsedValues, authUser);

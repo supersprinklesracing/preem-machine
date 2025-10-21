@@ -7,10 +7,10 @@ import {
   getOrganizationWithSeries,
   getUserById,
 } from '@/datastore/server/query/query';
-import { verifyUserContext } from '@/user/server/user';
+import { requireLoggedInUserContext } from '@/user/server/user';
 
 export const getHubPageData = cache(async () => {
-  const { authUser } = await verifyUserContext();
+  const { authUser } = await requireLoggedInUserContext();
 
   const result = {
     organizations: [] as OrganizationWithSeries[],

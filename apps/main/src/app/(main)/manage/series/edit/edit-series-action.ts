@@ -5,7 +5,7 @@ import { z } from 'zod';
 import { FormActionError, FormActionResult } from '@/components/forms/forms';
 import { DocPath } from '@/datastore/paths';
 import { updateSeries } from '@/datastore/server/update/update';
-import { verifyUserContext } from '@/user/server/user';
+import { requireLoggedInUserContext } from '@/user/server/user';
 
 import { seriesSchema } from '../series-schema';
 
@@ -19,7 +19,7 @@ export async function editSeriesAction({
   edits,
 }: EditSeriesOptions): Promise<FormActionResult> {
   try {
-    const { authUser } = await verifyUserContext();
+    const { authUser } = await requireLoggedInUserContext();
     const parsedEdits = seriesSchema.parse(edits);
     await updateSeries(path, parsedEdits, authUser);
 

@@ -5,7 +5,7 @@ import { z } from 'zod';
 import { FormActionError, FormActionResult } from '@/components/forms/forms';
 import { DocPath } from '@/datastore/paths';
 import { updateEvent } from '@/datastore/server/update/update';
-import { verifyUserContext } from '@/user/server/user';
+import { requireLoggedInUserContext } from '@/user/server/user';
 
 import { eventSchema } from '../event-schema';
 
@@ -19,7 +19,7 @@ export async function editEventAction({
   edits,
 }: EditEventOptions): Promise<FormActionResult> {
   try {
-    const { authUser } = await verifyUserContext();
+    const { authUser } = await requireLoggedInUserContext();
     const parsedEdits = eventSchema.parse(edits);
     await updateEvent(path, parsedEdits, authUser);
 

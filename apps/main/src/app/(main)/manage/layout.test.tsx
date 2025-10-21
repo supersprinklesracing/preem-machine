@@ -9,10 +9,10 @@ import ManageLayout from './layout';
 
 describe('ManageLayout', () => {
   describe('when user is not logged in', () => {
-    const { mockedVerifyUserContext } = setupLoggedOutUserContext();
+    const { mockedRequireLoggedInUserContext } = setupLoggedOutUserContext();
 
     it('should redirect unauthenticated users', async () => {
-      mockedVerifyUserContext.mockImplementation(() => {
+      mockedRequireLoggedInUserContext.mockImplementation(() => {
         throw new Error('unauthorized');
       });
 

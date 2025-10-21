@@ -4,7 +4,7 @@ import { z } from 'zod';
 
 import { FormActionError, FormActionResult } from '@/components/forms/forms';
 import { createInvite } from '@/datastore/server/create/create';
-import { hasUserRole, verifyUserContext } from '@/user/server/user';
+import { hasUserRole, requireLoggedInUserContext } from '@/user/server/user';
 
 import { inviteSchema } from './invite-schema';
 
@@ -13,10 +13,10 @@ export interface InviteUserOptions {
 }
 
 export async function inviteUser({
-  edits
+  edits,
 }: InviteUserOptions): Promise<FormActionResult> {
   try {
-    const { authUser } = await verifyUserContext();
+    const { authUser } = await requireLoggedInUserContext();
     const isAdmin = await hasUserRole('admin', authUser);
     if (!isAdmin) {
       throw new Error('Unauthorized');

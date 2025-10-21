@@ -5,7 +5,7 @@ import { z } from 'zod';
 import { FormActionError, FormActionResult } from '@/components/forms/forms';
 import { DocPath } from '@/datastore/paths';
 import { updatePreem } from '@/datastore/server/update/update';
-import { verifyUserContext } from '@/user/server/user';
+import { requireLoggedInUserContext } from '@/user/server/user';
 
 import { preemSchema } from '../preem-schema';
 
@@ -19,7 +19,7 @@ export async function editPreemAction({
   edits,
 }: EditPreemOptions): Promise<FormActionResult> {
   try {
-    const { authUser } = await verifyUserContext();
+    const { authUser } = await requireLoggedInUserContext();
     const parsedEdits = preemSchema.parse(edits);
     await updatePreem(path, parsedEdits, authUser);
 
