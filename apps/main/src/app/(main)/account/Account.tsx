@@ -82,7 +82,13 @@ export function Account({ user, editUserAction }: AccountProps) {
           View Public Profile
         </Button>
       )}
-      <Button variant="outline" onClick={logout}>
+      <Button
+        variant="outline"
+        onClick={async () => {
+          await logout();
+          router.push('/');
+        }}
+      >
         Logout
       </Button>
     </Stack>
