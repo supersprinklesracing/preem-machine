@@ -15,11 +15,11 @@ describe('NewRace component', () => {
       id: 'series-1',
       path: 'organizations/org-1/series/series-1',
       name: 'Test Series',
-    },
-    organizationBrief: {
-      id: 'org-1',
-      path: 'organizations/org-1',
-      name: 'Test Organization',
+      organizationBrief: {
+        id: 'org-1',
+        path: 'organizations/org-1',
+        name: 'Test Organization',
+      },
     },
   };
 
