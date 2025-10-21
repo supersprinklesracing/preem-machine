@@ -67,7 +67,7 @@ describe('generateSignedUploadUrl', () => {
       expect(result).toEqual({
         signedUrl: 'https://fake-signed-url.com',
         publicUrl:
-          'https://storage.googleapis.com/test-bucket/users/photos/test-user-id/test-photo-id',
+          'https://firebasestorage.googleapis.com/v0/b/test-bucket/o/users%2Fphotos%2Ftest-user-id%2Ftest-photo-id?alt=media',
       });
     });
   });
