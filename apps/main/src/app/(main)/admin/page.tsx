@@ -3,7 +3,7 @@ import { redirect } from 'next/navigation';
 
 import { CommonLayout } from '@/components/layout/CommonLayout';
 import { getOrganizations, getUsers } from '@/datastore/server/query/query';
-import { hasUserRole, verifyUserContext } from '@/user/server/user';
+import { hasUserRole, requireLoggedInUserContext } from '@/user/server/user';
 
 import { Admin } from './Admin';
 
@@ -14,7 +14,7 @@ export async function generateMetadata(): Promise<Metadata> {
 }
 
 async function AdminPage() {
-  const { authUser } = await verifyUserContext();
+  const { authUser } = await requireLoggedInUserContext();
   const isAdmin = await hasUserRole('admin', authUser);
 
   if (!isAdmin) {

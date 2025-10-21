@@ -122,10 +122,10 @@ describe('editUserAction', () => {
   });
 
   describe('when not authenticated', () => {
-    const { mockedVerifyUserContext } = setupLoggedOutUserContext();
+    const { mockedRequireLoggedInUserContext } = setupLoggedOutUserContext();
 
     beforeEach(() => {
-      mockedVerifyUserContext.mockRejectedValue(new Error('Not authenticated'));
+      mockedRequireLoggedInUserContext.mockRejectedValue(new Error('Not authenticated'));
     });
 
     it('should throw a FormActionError on failure', async () => {

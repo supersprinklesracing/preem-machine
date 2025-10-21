@@ -5,7 +5,7 @@ import { z } from 'zod';
 import { FormActionError, FormActionResult } from '@/components/forms/forms';
 import { DocPath } from '@/datastore/paths';
 import { updateOrganization } from '@/datastore/server/update/update';
-import { verifyUserContext } from '@/user/server/user';
+import { requireLoggedInUserContext } from '@/user/server/user';
 
 import { organizationSchema } from '../organization-schema';
 
@@ -19,7 +19,7 @@ export async function editOrganizationAction({
   edits: organization,
 }: EditOrganizationOptions): Promise<FormActionResult> {
   try {
-    const { authUser } = await verifyUserContext();
+    const { authUser } = await requireLoggedInUserContext();
     const parsedOrganization = organizationSchema.parse(organization);
     await updateOrganization(path, parsedOrganization, authUser);
 

@@ -6,7 +6,7 @@ import { z } from 'zod';
 import { FormActionError, FormActionResult } from '@/components/forms/forms';
 import { CollectionPath, DocPath } from '@/datastore/paths';
 import { createRace } from '@/datastore/server/create/create';
-import { verifyUserContext } from '@/user/server/user';
+import { requireLoggedInUserContext } from '@/user/server/user';
 
 import { raceSchema } from '../race-schema';
 
@@ -20,7 +20,7 @@ export async function newRaceAction({
   values,
 }: NewRaceOptions): Promise<FormActionResult<{ path: DocPath }>> {
   try {
-    const { authUser } = await verifyUserContext();
+    const { authUser } = await requireLoggedInUserContext();
 
     const parsedValues = raceSchema.parse(values);
     const newRaceSnapshot = await createRace(path, parsedValues, authUser);

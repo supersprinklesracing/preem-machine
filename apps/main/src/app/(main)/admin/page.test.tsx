@@ -21,7 +21,7 @@ jest.mock('./Admin', () => ({
 setupMockDb();
 
 describe('AdminPage component', () => {
-  const { mockedVerifyUserContext } = setupAdminUserContext();
+  const { mockedRequireLoggedInUserContext } = setupAdminUserContext();
 
   it('should fetch admin data and render the Admin component', async () => {
     const PageComponent = await AdminPage();
@@ -32,6 +32,6 @@ describe('AdminPage component', () => {
     // Assert that Admin was called with the users from the mock DB
     const adminCalls = (Admin as jest.Mock).mock.calls;
     expect(adminCalls[0][0].users.length).toBe(7); // The mock DB has 7 users
-    expect(mockedVerifyUserContext).toHaveBeenCalled();
+    expect(mockedRequireLoggedInUserContext).toHaveBeenCalled();
   });
 });

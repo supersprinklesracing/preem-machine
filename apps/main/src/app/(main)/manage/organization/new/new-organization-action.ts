@@ -6,7 +6,7 @@ import { z } from 'zod';
 import { FormActionError, FormActionResult } from '@/components/forms/forms';
 import { DocPath } from '@/datastore/paths';
 import { createOrganization } from '@/datastore/server/create/create';
-import { verifyUserContext } from '@/user/server/user';
+import { requireLoggedInUserContext } from '@/user/server/user';
 
 import { organizationSchema } from '../organization-schema';
 
@@ -18,7 +18,7 @@ export async function newOrganizationAction({
   values,
 }: NewOrganizationOptions): Promise<FormActionResult<{ path: DocPath }>> {
   try {
-    const { authUser } = await verifyUserContext();
+    const { authUser } = await requireLoggedInUserContext();
 
     const validation = organizationSchema.safeParse(values);
 
