@@ -73,10 +73,12 @@ describe('generateSignedUploadUrl', () => {
   });
 
   describe('when not authenticated', () => {
-    const { mockedVerifyUserContext } = setupLoggedOutUserContext();
+    const { mockedRequireLoggedInUserContext } = setupLoggedOutUserContext();
 
     beforeEach(() => {
-      mockedVerifyUserContext.mockRejectedValue(new Error('Not authenticated'));
+      mockedRequireLoggedInUserContext.mockRejectedValue(
+        new Error('Not authenticated'),
+      );
     });
 
     it('should throw an error if user is not authenticated', async () => {

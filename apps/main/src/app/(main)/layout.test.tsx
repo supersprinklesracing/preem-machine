@@ -1,6 +1,6 @@
 import { getEventsForUser } from '@/datastore/server/query/query';
 import { render } from '@/test-utils';
-import { validUserContext } from '@/user/server/user';
+import { requireAnyUserContext } from '@/user/server/user';
 
 import Layout from './layout';
 
@@ -12,12 +12,12 @@ jest.mock('./Shell/SidebarProvider', () => ({
 }));
 
 const mockedGetEventsForUser = jest.mocked(getEventsForUser);
-const mockedValidUserContext = jest.mocked(validUserContext);
+const mockedRequireAnyUserContext = jest.mocked(requireAnyUserContext);
 
 describe('Main Layout', () => {
   it('should not fetch user and events data directly', async () => {
     render(await Layout({ children: <div>Test Children</div> }));
-    expect(mockedValidUserContext).not.toHaveBeenCalled();
+    expect(mockedRequireAnyUserContext).not.toHaveBeenCalled();
     expect(mockedGetEventsForUser).not.toHaveBeenCalled();
   });
 });

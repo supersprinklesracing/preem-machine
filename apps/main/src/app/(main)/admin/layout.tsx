@@ -1,12 +1,12 @@
 'use server';
 
-import { verifyUserContext } from '@/user/server/user';
+import { requireLoggedInUserContext } from '@/user/server/user';
 
 export default async function AdminLayout({
   children,
 }: {
   children: React.ReactNode;
 }) {
-  await verifyUserContext();
+  await requireLoggedInUserContext();
   return <>{children}</>;
 }

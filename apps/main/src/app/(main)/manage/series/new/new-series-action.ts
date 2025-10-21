@@ -6,7 +6,7 @@ import { z } from 'zod';
 import { FormActionError, FormActionResult } from '@/components/forms/forms';
 import { CollectionPath, DocPath } from '@/datastore/paths';
 import { createSeries } from '@/datastore/server/create/create';
-import { verifyUserContext } from '@/user/server/user';
+import { requireLoggedInUserContext } from '@/user/server/user';
 
 import { seriesSchema } from '../series-schema';
 
@@ -20,7 +20,7 @@ export async function newSeriesAction({
   values,
 }: NewSeriesOptions): Promise<FormActionResult<{ path: DocPath }>> {
   try {
-    const { authUser } = await verifyUserContext();
+    const { authUser } = await requireLoggedInUserContext();
 
     const parsedValues = seriesSchema.parse(values);
     const newSeriesSnapshot = await createSeries(path, parsedValues, authUser);

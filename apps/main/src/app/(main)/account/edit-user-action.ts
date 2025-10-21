@@ -6,7 +6,7 @@ import { FormActionError, FormActionResult } from '@/components/forms/forms';
 import { getDoc } from '@/datastore/server/query/query';
 import { updateUser } from '@/datastore/server/update/update';
 import { getFirebaseStorage } from '@/firebase/server/firebase-admin';
-import { verifyUserContext } from '@/user/server/user';
+import { requireLoggedInUserContext } from '@/user/server/user';
 
 import { updateUserSchema } from './user-schema';
 
@@ -18,7 +18,7 @@ export async function editUserAction({
   edits,
 }: EditUserOptions): Promise<FormActionResult> {
   try {
-    const { authUser } = await verifyUserContext();
+    const { authUser } = await requireLoggedInUserContext();
     const parsedEdits = updateUserSchema.parse(edits);
 
     const oldData = await getDoc(updateUserSchema, `users/${authUser.uid}`);
