@@ -90,7 +90,7 @@ export function User({ user, contributions, organizations }: Props) {
                 <Stack>
                   {organizations.map((org) => (
                     <Text key={org.path}>
-                      <Link href={`/view/organization/${org.path}`}>
+                      <Link href={`/view/${org.id}`}>
                         {org.name}
                       </Link>
                     </Text>
