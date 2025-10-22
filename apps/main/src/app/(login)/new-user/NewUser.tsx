@@ -70,7 +70,7 @@ export function NewUser({
   });
 
   const { uploading, error, handleFileChange, handleRemovePhoto } =
-    useAvatarUpload(form, 'avatarUrl');
+    useAvatarUpload(form, 'avatarUrl', {});
 
   const [debouncedValues] = useDebouncedValue(form.values, 100);
 

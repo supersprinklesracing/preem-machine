@@ -1,5 +1,6 @@
 'use client';
 
+import { UseFormReturnType } from '@mantine/form';
 import imageCompression from 'browser-image-compression';
 import { useState } from 'react';
 
@@ -11,10 +12,11 @@ export interface UseAvatarUploadOptions {
   onRemoveComplete?: () => void;
 }
 
-export function useAvatarUpload({
-  onUploadComplete,
-  onRemoveComplete,
-}: UseAvatarUploadOptions) {
+export function useAvatarUpload<T>(
+  form: UseFormReturnType<T>,
+  fieldName: keyof T,
+  options?: UseAvatarUploadOptions,
+) {
   const [uploading, setUploading] = useState(false);
   const [error, setError] = useState<string | null>(null);
 
@@ -57,7 +59,9 @@ export function useAvatarUpload({
         throw new Error('Failed to upload file.');
       }
 
-      onUploadComplete?.(publicUrl);
+      // eslint-disable-next-line @typescript-eslint/no-explicit-any
+      form.setFieldValue(fieldName as any, publicUrl as any);
+      options?.onUploadComplete?.(publicUrl);
     } catch (err) {
       setError(
         err instanceof Error ? err.message : 'An unknown error occurred',
@@ -68,7 +72,9 @@ export function useAvatarUpload({
   };
 
   const handleRemovePhoto = () => {
-    onRemoveComplete?.();
+    // eslint-disable-next-line @typescript-eslint/no-explicit-any
+    form.setFieldValue(fieldName as any, '' as any);
+    options?.onRemoveComplete?.();
   };
 
   return {

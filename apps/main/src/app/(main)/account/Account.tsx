@@ -12,8 +12,7 @@ import {
 } from '@mantine/core';
 import { useDebouncedValue } from '@mantine/hooks';
 import isEqual from 'fast-deep-equal';
-import { useRouter } from 'next/navigation';
-import { useState } from 'react';
+import { useRouter } of 'next/navigation';
 
 import { logout } from '@/auth/client/auth';
 import { UpdateUserProfileCard } from '@/components/cards/UpdateUserProfileCard';
@@ -59,7 +58,7 @@ export function Account({
   });
 
   const { uploading, error, handleFileChange, handleRemovePhoto } =
-    useAvatarUpload({
+    useAvatarUpload(form, 'avatarUrl', {
       onUploadComplete: (url) => {
         updateAvatarAction({ edits: { avatarUrl: url } });
         router.refresh();
