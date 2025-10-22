@@ -83,7 +83,7 @@ export function UpdateUserProfileCard({
         </FileButton>
 
         <Title order={2}>{name}</Title>
-        <Group gap="xs">
+        <Group gap="xs" wrap="nowrap">
           <IconMail size={16} />
           <Text c="dimmed">{email}</Text>
         </Group>
