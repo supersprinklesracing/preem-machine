@@ -161,6 +161,22 @@ export const getUserById = cache(async (id: string): Promise<User> => {
   return docSnap.data()!;
 });
 
+export const getOrganizationsByIds = cache(
+  async (ids: string[]): Promise<Organization[]> => {
+    const uniqueIds = [...new Set(ids)];
+    if (uniqueIds.length === 0) {
+      return [];
+    }
+    const db = await getFirestore();
+    const orgsSnap = await db
+      .collection('organizations')
+      .where('id', 'in', uniqueIds)
+      .withConverter(converter(OrganizationSchema))
+      .get();
+    return orgsSnap.docs.map((doc) => doc.data());
+  },
+);
+
 export const getOrganizationByStripeConnectAccountId = async (
   accountId: string,
 ) => {
@@ -435,9 +451,17 @@ export const getRenderableUserDataForPage = cache(async (path: DocPath) => {
     doc.data(),
   ) as Contribution[];
 
+  const organizationIds =
+    user.organizationRefs?.map((ref) => ref.id).filter((id) => !!id) ?? [];
+  const organizations =
+    organizationIds.length > 0
+      ? await getOrganizationsByIds(organizationIds)
+      : [];
+
   return {
     user,
     contributions,
+    organizations,
   };
 });
 
