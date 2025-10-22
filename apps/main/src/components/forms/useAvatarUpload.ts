@@ -7,9 +7,15 @@ import { useState } from 'react';
 import { generateSignedUploadUrl } from '@/app/(main)/account/upload-action';
 import { ENV_MAX_IMAGE_SIZE_BYTES } from '@/env/env';
 
+export interface UseAvatarUploadOptions {
+  onUploadComplete?: (url: string) => void;
+  onRemoveComplete?: () => void;
+}
+
 export function useAvatarUpload<T>(
   form: UseFormReturnType<T>,
   fieldName: keyof T,
+  options?: UseAvatarUploadOptions,
 ) {
   const [uploading, setUploading] = useState(false);
   const [error, setError] = useState<string | null>(null);
@@ -55,6 +61,7 @@ export function useAvatarUpload<T>(
 
       // eslint-disable-next-line @typescript-eslint/no-explicit-any
       form.setFieldValue(fieldName as any, publicUrl as any);
+      options?.onUploadComplete?.(publicUrl);
     } catch (err) {
       setError(
         err instanceof Error ? err.message : 'An unknown error occurred',
@@ -67,6 +74,7 @@ export function useAvatarUpload<T>(
   const handleRemovePhoto = () => {
     // eslint-disable-next-line @typescript-eslint/no-explicit-any
     form.setFieldValue(fieldName as any, '' as any);
+    options?.onRemoveComplete?.();
   };
 
   return {

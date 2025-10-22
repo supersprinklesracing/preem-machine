@@ -17,4 +17,14 @@ export const newUserSchema = userSchema.extend({
   }),
 });
 
-export const updateUserSchema = userSchema.partial();
+export const updateUserSchema = userSchema
+  .omit({
+    avatarUrl: true,
+  })
+  .partial();
+
+export const updateAvatarSchema = userSchema
+  .pick({
+    avatarUrl: true,
+  })
+  .partial();
