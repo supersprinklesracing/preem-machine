@@ -13,6 +13,7 @@ import {
 import { useDebouncedValue } from '@mantine/hooks';
 import isEqual from 'fast-deep-equal';
 import { useRouter } from 'next/navigation';
+import { useState } from 'react';
 
 import { logout } from '@/auth/client/auth';
 import { UpdateUserProfileCard } from '@/components/cards/UpdateUserProfileCard';
@@ -24,14 +25,22 @@ import { toUrlPath } from '@/datastore/paths';
 import { User } from '@/datastore/schema';
 
 import { EditUserOptions } from './edit-user-action';
+import { UpdateAvatarOptions, updateAvatarAction } from './update-avatar-action';
 import { updateUserSchema } from './user-schema';
 
 export interface AccountProps {
   user: User;
   editUserAction: (options: EditUserOptions) => Promise<FormActionResult>;
+  updateAvatarAction: (
+    options: UpdateAvatarOptions,
+  ) => Promise<FormActionResult>;
 }
 
-export function Account({ user, editUserAction }: AccountProps) {
+export function Account({
+  user,
+  editUserAction,
+  updateAvatarAction,
+}: AccountProps) {
   const router = useRouter();
 
   const { form, handleSubmit, isLoading, submissionError } = useActionForm({
@@ -39,7 +48,6 @@ export function Account({ user, editUserAction }: AccountProps) {
     initialValues: {
       name: user?.name ?? '',
       email: user?.email ?? '',
-      avatarUrl: user?.avatarUrl ?? '',
       affiliation: user?.affiliation ?? '',
       raceLicenseId: user?.raceLicenseId ?? '',
       address: user?.address ?? '',
@@ -51,7 +59,16 @@ export function Account({ user, editUserAction }: AccountProps) {
   });
 
   const { uploading, error, handleFileChange, handleRemovePhoto } =
-    useAvatarUpload(form, 'avatarUrl');
+    useAvatarUpload({
+      onUploadComplete: (url) => {
+        updateAvatarAction({ edits: { avatarUrl: url } });
+        router.refresh();
+      },
+      onRemoveComplete: () => {
+        updateAvatarAction({ edits: { avatarUrl: '' } });
+        router.refresh();
+      },
+    });
 
   const [debouncedValues] = useDebouncedValue(form.values, 100);
 
@@ -60,7 +77,7 @@ export function Account({ user, editUserAction }: AccountProps) {
       <UpdateUserProfileCard
         name={debouncedValues.name}
         email={debouncedValues.email}
-        avatarUrl={debouncedValues.avatarUrl}
+        avatarUrl={user.avatarUrl}
         uploading={uploading}
         error={error}
         onFileChange={handleFileChange}
