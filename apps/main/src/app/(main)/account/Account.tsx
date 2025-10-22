@@ -66,14 +66,6 @@ export function Account({ user, editUserAction }: AccountProps) {
         onFileChange={handleFileChange}
         onRemovePhoto={handleRemovePhoto}
       />
-      <Button
-        type="submit"
-        loading={isLoading}
-        disabled={!form.isDirty() || !isEqual(form.values, debouncedValues)}
-      >
-        Save Changes
-      </Button>
-      {submissionError && <Text c="red">{submissionError}</Text>}
       {user && (
         <Button
           variant="outline"
@@ -139,6 +131,14 @@ export function Account({ user, editUserAction }: AccountProps) {
           placeholder="123 Main St, Anytown, USA"
           {...form.getInputProps('address')}
         />
+        <Button
+          type="submit"
+          loading={isLoading}
+          disabled={!form.isDirty() || !isEqual(form.values, debouncedValues)}
+        >
+          Save Changes
+        </Button>
+        {submissionError && <Text c="red">{submissionError}</Text>}
       </Stack>
     </Card>
   );
