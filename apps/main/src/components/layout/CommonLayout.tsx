@@ -1,4 +1,4 @@
-import { Group, Stack } from '@mantine/core';
+import { Grid, Stack } from '@mantine/core';
 import { ReactNode } from 'react';
 
 export function CommonLayout({
@@ -11,12 +11,14 @@ export function CommonLayout({
   title?: ReactNode;
 }) {
   return (
-    <Group>
-      <Stack>
-        {breadcrumb}
-        {title}
-        {children}
-      </Stack>
-    </Group>
+    <Grid>
+      <Grid.Col span={{ base: 12, md: 9, lg: 9 }}>
+        <Stack>
+          {breadcrumb}
+          {title}
+          {children}
+        </Stack>
+      </Grid.Col>
+    </Grid>
   );
 }
