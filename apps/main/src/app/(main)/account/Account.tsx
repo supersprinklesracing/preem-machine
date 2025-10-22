@@ -12,7 +12,7 @@ import {
 } from '@mantine/core';
 import { useDebouncedValue } from '@mantine/hooks';
 import isEqual from 'fast-deep-equal';
-import { useRouter } of 'next/navigation';
+import { useRouter } from 'next/navigation';
 
 import { logout } from '@/auth/client/auth';
 import { UpdateUserProfileCard } from '@/components/cards/UpdateUserProfileCard';
