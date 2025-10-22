@@ -21,6 +21,7 @@ import type {
   Organization,
   User as UserType,
 } from '@/datastore/schema';
+import { toUrlPath } from '@/datastore/paths';
 import { compareDates, formatDateShort } from '@/dates/dates';
 import { useUserContext } from '@/user/client/UserContext';
 
@@ -90,7 +91,7 @@ export function User({ user, contributions, organizations }: Props) {
                 <Stack>
                   {organizations.map((org) => (
                     <Text key={org.path}>
-                      <Link href={`/view/${org.id}`}>
+                      <Link href={`/view/${toUrlPath(org.path)}`}>
                         {org.name}
                       </Link>
                     </Text>
