@@ -1,6 +1,7 @@
 import { MantineProvider } from '@mantine/core';
 import { render, RenderOptions } from '@testing-library/react';
 import type { Firestore } from 'firebase-admin/firestore';
+import { redirect } from 'next/navigation';
 import React, { ReactNode } from 'react';
 
 import { createMockDb } from '@/datastore/server/mock-db/mock-db-util';
@@ -70,6 +71,10 @@ export const MOCK_ADMIN_USER: User = {
 };
 
 export const MOCK_USER_CONTEXT = { authUser: MOCK_AUTH_USER, user: MOCK_USER };
+export const MOCK_INCOMPLETE_USER_CONTEXT: UserContextValue = {
+  authUser: MOCK_AUTH_USER,
+  user: null,
+};
 export const MOCK_ADMIN_USER_CONTEXT = {
   authUser: MOCK_ADMIN_AUTH_USER,
   user: MOCK_ADMIN_USER,
@@ -85,6 +90,12 @@ export function withLoggedInUserContext() {
   };
 }
 
+export function withIncompleteUserContext() {
+  return {
+    userContext: MOCK_INCOMPLETE_USER_CONTEXT,
+  };
+}
+
 export function withLoggedInAdminContext() {
   return {
     userContext: MOCK_ADMIN_USER_CONTEXT,
@@ -97,18 +108,73 @@ export function withLoggedOutUserContext() {
   };
 }
 
-export function setupLoggedInAdminContext() {
-  return setupUserContext(MOCK_ADMIN_USER_CONTEXT);
-}
-
 export function withAdminUserContext() {
   return {
     userContext: MOCK_ADMIN_USER_CONTEXT,
   };
 }
 
-/** Used to set up server-side user state checking. */
-export function setupUserContext(userContext: UserContextValue) {
+/** Sets up a "logged-in user" by wrapping the user server module. */
+export function setupLoggedInUserContext() {
+  const userContext = MOCK_USER_CONTEXT;
+  const mockedGetUserContext = userServer.getUserContext as jest.Mock;
+  const mockedRequireLoggedInUserContext =
+    userServer.requireLoggedInUserContext as jest.Mock;
+  const mockedRequireAnyUserContext =
+    userServer.requireAnyUserContext as jest.Mock;
+
+  beforeEach(() => {
+    mockedGetUserContext.mockResolvedValue(userContext);
+    mockedRequireLoggedInUserContext.mockResolvedValue(userContext);
+    mockedRequireAnyUserContext.mockResolvedValue(userContext);
+  });
+
+  afterEach(() => {
+    mockedGetUserContext.mockClear();
+    mockedRequireLoggedInUserContext.mockClear();
+    mockedRequireAnyUserContext.mockClear();
+  });
+
+  return {
+    mockedGetUserContext,
+    mockedRequireLoggedInUserContext,
+    mockedRequireAnyUserContext,
+  };
+}
+
+/** Sets up a "logged-in user" by wrapping the user server module. */
+export function setupIncompleteUserContext() {
+  const userContext = MOCK_INCOMPLETE_USER_CONTEXT;
+  const mockedGetUserContext = userServer.getUserContext as jest.Mock;
+  const mockedRequireLoggedInUserContext =
+    userServer.requireLoggedInUserContext as jest.Mock;
+  const mockedRequireAnyUserContext =
+    userServer.requireAnyUserContext as jest.Mock;
+
+  beforeEach(() => {
+    mockedGetUserContext.mockResolvedValue(userContext);
+    mockedRequireLoggedInUserContext.mockRejectedValue(Promise.resolve());
+    mockedRequireAnyUserContext.mockImplementation(async () => {
+      redirect('/new-user');
+    });
+  });
+
+  afterEach(() => {
+    mockedGetUserContext.mockClear();
+    mockedRequireLoggedInUserContext.mockClear();
+    mockedRequireAnyUserContext.mockClear();
+  });
+
+  return {
+    mockedGetUserContext,
+    mockedRequireLoggedInUserContext,
+    mockedRequireAnyUserContext,
+  };
+}
+
+/** Sets up a "admin user" by wrapping the user server module. */
+export function setupAdminUserContext() {
+  const userContext = MOCK_ADMIN_USER_CONTEXT;
   const mockedGetUserContext = userServer.getUserContext as jest.Mock;
   const mockedRequireLoggedInUserContext =
     userServer.requireLoggedInUserContext as jest.Mock;
@@ -136,17 +202,30 @@ export function setupUserContext(userContext: UserContextValue) {
 
 /** Sets up a "logged-out user" by wrapping the user server module. */
 export function setupLoggedOutUserContext() {
-  return setupUserContext(MOCK_LOGGED_OUT_USER_CONTEXT);
-}
+  const userContext = MOCK_LOGGED_OUT_USER_CONTEXT;
+  const mockedGetUserContext = userServer.getUserContext as jest.Mock;
+  const mockedRequireLoggedInUserContext =
+    userServer.requireLoggedInUserContext as jest.Mock;
+  const mockedRequireAnyUserContext =
+    userServer.requireAnyUserContext as jest.Mock;
 
-/** Sets up a "logged-in user" by wrapping the user server module. */
-export function setupLoggedInUserContext() {
-  return setupUserContext(MOCK_USER_CONTEXT);
-}
+  beforeEach(() => {
+    mockedGetUserContext.mockResolvedValue(userContext);
+    mockedRequireLoggedInUserContext.mockResolvedValue(userContext);
+    mockedRequireAnyUserContext.mockResolvedValue(userContext);
+  });
 
-/** Sets up a "admin user" by wrapping the user server module. */
-export function setupAdminUserContext() {
-  return setupUserContext(MOCK_ADMIN_USER_CONTEXT);
+  afterEach(() => {
+    mockedGetUserContext.mockClear();
+    mockedRequireLoggedInUserContext.mockClear();
+    mockedRequireAnyUserContext.mockClear();
+  });
+
+  return {
+    mockedGetUserContext,
+    mockedRequireLoggedInUserContext,
+    mockedRequireAnyUserContext,
+  };
 }
 
 const AllTheProviders = function AllTheProviders({
