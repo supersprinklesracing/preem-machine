@@ -83,16 +83,10 @@ describe('User component', () => {
     expect(screen.getByText('Test Org 2')).toBeInTheDocument();
 
     const org1Link = screen.getByText('Test Org 1').closest('a');
-    expect(org1Link).toHaveAttribute(
-      'href',
-      '/view/organization/organizations/org-1',
-    );
+    expect(org1Link).toHaveAttribute('href', '/view/org-1');
 
     const org2Link = screen.getByText('Test Org 2').closest('a');
-    expect(org2Link).toHaveAttribute(
-      'href',
-      '/view/organization/organizations/org-2',
-    );
+    expect(org2Link).toHaveAttribute('href', '/view/org-2');
   });
 
   it('shows "Go to My Account" button for own profile', () => {

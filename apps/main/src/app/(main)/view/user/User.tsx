@@ -16,6 +16,7 @@ import React from 'react';
 
 import { MultiPanelLayout } from '@/components/layout/MultiPanelLayout';
 import { UserAvatarIcon } from '@/components/UserAvatar/UserAvatar';
+import { toUrlPath } from '@/datastore/paths';
 import type {
   Contribution,
   Organization,
@@ -90,7 +91,7 @@ export function User({ user, contributions, organizations }: Props) {
                 <Stack>
                   {organizations.map((org) => (
                     <Text key={org.path}>
-                      <Link href={`/view/organization/${org.path}`}>
+                      <Link href={`/view/${toUrlPath(org.path)}`}>
                         {org.name}
                       </Link>
                     </Text>
