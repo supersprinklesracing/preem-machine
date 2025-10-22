@@ -11,20 +11,23 @@ import {
   Title,
 } from '@mantine/core';
 import { useDebouncedValue } from '@mantine/hooks';
+import imageCompression from 'browser-image-compression';
 import isEqual from 'fast-deep-equal';
 import { useRouter } from 'next/navigation';
+import { useState } from 'react';
 
+import { generateSignedUploadUrl } from '@/app/(main)/account/upload-action';
 import { logout } from '@/auth/client/auth';
 import { UpdateUserProfileCard } from '@/components/cards/UpdateUserProfileCard';
 import { FormActionResult } from '@/components/forms/forms';
 import { useActionForm } from '@/components/forms/useActionForm';
-import { useAvatarUpload } from '@/components/forms/useAvatarUpload';
 import { MultiPanelLayout } from '@/components/layout/MultiPanelLayout';
 import { toUrlPath } from '@/datastore/paths';
 import { User } from '@/datastore/schema';
+import { ENV_MAX_IMAGE_SIZE_BYTES } from '@/env/env';
 
 import { EditUserOptions } from './edit-user-action';
-import { UpdateAvatarOptions, updateAvatarAction } from './update-avatar-action';
+import { UpdateAvatarOptions } from './update-avatar-action';
 import { updateUserSchema } from './user-schema';
 
 export interface AccountProps {
@@ -57,17 +60,62 @@ export function Account({
     },
   });
 
-  const { uploading, error, handleFileChange, handleRemovePhoto } =
-    useAvatarUpload(form, 'avatarUrl', {
-      onUploadComplete: (url) => {
-        updateAvatarAction({ edits: { avatarUrl: url } });
-        router.refresh();
-      },
-      onRemoveComplete: () => {
-        updateAvatarAction({ edits: { avatarUrl: '' } });
-        router.refresh();
-      },
-    });
+  const [uploading, setUploading] = useState(false);
+  const [error, setError] = useState<string | null>(null);
+
+  const handleFileChange = async (file: File | null) => {
+    if (!file) return;
+
+    if (file.size > ENV_MAX_IMAGE_SIZE_BYTES) {
+      setError(
+        `File is too large. Maximum size is ${
+          ENV_MAX_IMAGE_SIZE_BYTES / 1024 / 1024
+        }MB.`,
+      );
+      return;
+    }
+
+    setUploading(true);
+    setError(null);
+
+    try {
+      const compressedFile = await imageCompression(file, {
+        maxSizeMB: ENV_MAX_IMAGE_SIZE_BYTES / 1024 / 1024,
+        maxWidthOrHeight: 256,
+        useWebWorker: true,
+      });
+
+      const { signedUrl, publicUrl } = await generateSignedUploadUrl({
+        contentType: compressedFile.type,
+      });
+
+      const response = await fetch(signedUrl, {
+        method: 'PUT',
+        body: compressedFile,
+        headers: {
+          'Content-Type': compressedFile.type,
+        },
+      });
+
+      if (!response.ok) {
+        throw new Error('Failed to upload file.');
+      }
+
+      await updateAvatarAction({ edits: { avatarUrl: publicUrl } });
+      router.refresh();
+    } catch (err) {
+      setError(
+        err instanceof Error ? err.message : 'An unknown error occurred',
+      );
+    } finally {
+      setUploading(false);
+    }
+  };
+
+  const handleRemovePhoto = async () => {
+    await updateAvatarAction({ edits: { avatarUrl: '' } });
+    router.refresh();
+  };
 
   const [debouncedValues] = useDebouncedValue(form.values, 100);
 
