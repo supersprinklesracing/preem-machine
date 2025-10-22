@@ -5,7 +5,6 @@ import { UserSchema as schema } from '@/datastore/schema';
 export const userSchema = schema.pick({
   name: true,
   email: true,
-  avatarUrl: true,
   affiliation: true,
   raceLicenseId: true,
   address: true,
@@ -17,14 +16,4 @@ export const newUserSchema = userSchema.extend({
   }),
 });
 
-export const updateUserSchema = userSchema
-  .omit({
-    avatarUrl: true,
-  })
-  .partial();
-
-export const updateAvatarSchema = userSchema
-  .pick({
-    avatarUrl: true,
-  })
-  .partial();
+export const updateUserSchema = userSchema.partial();

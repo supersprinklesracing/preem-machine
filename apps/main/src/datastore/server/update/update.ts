@@ -60,19 +60,6 @@ export const updateUser = async (
   });
 };
 
-export const updateUserAvatar = async (
-  user: Pick<User, 'avatarUrl'>,
-  authUser: AuthUser,
-) => {
-  const path = `users/${authUser.uid}`;
-
-  const docRef = await getDocRefInternal(UserSchema, path);
-  await docRef.update({
-    ...user,
-    ...getUpdateMetadata(docRef),
-  });
-};
-
 export const updateOrganizationStripeConnectAccount = async (
   organizationId: string,
   account: Stripe.Account,

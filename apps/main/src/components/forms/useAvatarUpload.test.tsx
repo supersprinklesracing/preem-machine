@@ -25,7 +25,7 @@ describe('useAvatarUpload', () => {
       useForm({ initialValues: { avatarUrl: 'http://example.com/old.png' } }),
     );
     const { result } = renderHook(() =>
-      useAvatarUpload(formResult.current, 'avatarUrl'),
+      useAvatarUpload(formResult.current, 'avatarUrl', {}),
     );
 
     act(() => {
@@ -40,7 +40,7 @@ describe('useAvatarUpload', () => {
       useForm({ initialValues: { avatarUrl: '' } }),
     );
     const { result } = renderHook(() =>
-      useAvatarUpload(formResult.current, 'avatarUrl'),
+      useAvatarUpload(formResult.current, 'avatarUrl', {}),
     );
     const largeFile = new File([''], 'test.png', { type: 'image/png' });
     Object.defineProperty(largeFile, 'size', {
@@ -60,7 +60,7 @@ describe('useAvatarUpload', () => {
       useForm({ initialValues: { avatarUrl: '' } }),
     );
     const { result, rerender } = renderHook(() =>
-      useAvatarUpload(formResult.current, 'avatarUrl'),
+      useAvatarUpload(formResult.current, 'avatarUrl', {}),
     );
     const file = new File([''], 'test.png', { type: 'image/png' });
     const compressedFile = new File([''], 'compressed.png', {
@@ -100,7 +100,7 @@ describe('useAvatarUpload', () => {
       useForm({ initialValues: { avatarUrl: '' } }),
     );
     const { result } = renderHook(() =>
-      useAvatarUpload(formResult.current, 'avatarUrl'),
+      useAvatarUpload(formResult.current, 'avatarUrl', {}),
     );
     const file = new File([''], 'test.png', { type: 'image/png' });
     const compressedFile = new File([''], 'compressed.png', {
@@ -121,5 +121,33 @@ describe('useAvatarUpload', () => {
     expect(result.current.error).toBe('Failed to upload file.');
     expect(formResult.current.values.avatarUrl).toBe('');
     expect(result.current.uploading).toBe(false);
+  });
+
+  it('should call onUploadSuccess with the public URL', async () => {
+    const onUploadSuccess = jest.fn();
+    const { result: formResult } = renderHook(() =>
+      useForm({ initialValues: { avatarUrl: '' } }),
+    );
+    const { result } = renderHook(() =>
+      useAvatarUpload(formResult.current, 'avatarUrl', { onUploadSuccess }),
+    );
+    const file = new File([''], 'test.png', { type: 'image/png' });
+    const compressedFile = new File([''], 'compressed.png', {
+      type: 'image/png',
+    });
+    const publicUrl = 'http://example.com/avatar.png';
+
+    mockImageCompression.mockResolvedValue(compressedFile);
+    mockGenerateSignedUploadUrl.mockResolvedValue({
+      signedUrl: 'http://example.com/signed-url',
+      publicUrl,
+    });
+    (global.fetch as jest.Mock).mockResolvedValue({ ok: true });
+
+    await act(async () => {
+      await result.current.handleFileChange(file);
+    });
+
+    expect(onUploadSuccess).toHaveBeenCalledWith(publicUrl);
   });
 });

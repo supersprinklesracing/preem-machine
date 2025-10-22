@@ -7,7 +7,6 @@ import { requireLoggedInUserContext } from '@/user/server/user';
 
 import { Account } from './Account';
 import { editUserAction } from './edit-user-action';
-import { updateAvatarAction } from './update-avatar-action';
 
 export async function generateMetadata(): Promise<Metadata> {
   return {
@@ -19,11 +18,7 @@ export default async function AccountPage() {
   const { user } = await requireLoggedInUserContext();
   return (
     <CommonLayout>
-      <Account
-        user={user}
-        editUserAction={editUserAction}
-        updateAvatarAction={updateAvatarAction}
-      />
+      <Account user={user} editUserAction={editUserAction} />
     </CommonLayout>
   );
 }
