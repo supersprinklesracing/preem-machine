@@ -10,13 +10,17 @@ import {
   Text,
   Title,
 } from '@mantine/core';
-import { IconEdit, IconMail, IconSettings } from '@tabler/icons-react';
+import { IconMail, IconSettings } from '@tabler/icons-react';
 import Link from 'next/link';
 import React from 'react';
 
 import { MultiPanelLayout } from '@/components/layout/MultiPanelLayout';
 import { UserAvatarIcon } from '@/components/UserAvatar/UserAvatar';
-import type { Contribution, User as UserType } from '@/datastore/schema';
+import type {
+  Contribution,
+  Organization,
+  User as UserType,
+} from '@/datastore/schema';
 import { compareDates, formatDateShort } from '@/dates/dates';
 import { useUserContext } from '@/user/client/UserContext';
 
@@ -35,9 +39,10 @@ interface Props {
     Contribution,
     'id' | 'path' | 'date' | 'amount' | 'preemBrief'
   >[];
+  organizations: Pick<Organization, 'id' | 'path' | 'name'>[];
 }
 
-export function User({ user, contributions }: Props) {
+export function User({ user, contributions, organizations }: Props) {
   const { authUser } = useUserContext();
   const isOwnProfile = authUser?.uid === user.id;
 
@@ -81,7 +86,26 @@ export function User({ user, contributions }: Props) {
               {user.raceLicenseId && (
                 <Text>Race License ID: {user.raceLicenseId}</Text>
               )}
-              {isOwnProfile ? (
+              {organizations && (
+                <Stack>
+                  {organizations.map((org) => (
+                    <Text key={org.path}>
+                      <Link href={`/view/organization/${org.path}`}>
+                        {org.name}
+                      </Link>
+                    </Text>
+                  ))}
+                </Stack>
+              )}
+              <Stack gap={0} mt="md">
+                <Text c="dimmed" size="sm">
+                  Total Contributed
+                </Text>
+                <Title order={3} c="blue">
+                  ${totalContributed.toLocaleString()}
+                </Title>
+              </Stack>
+              {isOwnProfile && (
                 <Button
                   component={Link}
                   href="/account"
@@ -92,24 +116,7 @@ export function User({ user, contributions }: Props) {
                 >
                   Go to My Account
                 </Button>
-              ) : (
-                <Button
-                  variant="outline"
-                  size="sm"
-                  mt="md"
-                  leftSection={<IconEdit size={14} />}
-                >
-                  Edit Profile
-                </Button>
               )}
-              <Stack gap={0} mt="md">
-                <Text c="dimmed" size="sm">
-                  Total Contributed
-                </Text>
-                <Title order={3} c="blue">
-                  ${totalContributed.toLocaleString()}
-                </Title>
-              </Stack>
             </Stack>
           </Card>
         </Grid.Col>
