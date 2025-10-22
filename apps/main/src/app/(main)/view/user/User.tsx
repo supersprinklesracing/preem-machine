@@ -77,7 +77,7 @@ export function User({ user, contributions, organizations }: Props) {
             <Stack align="center" ta="center">
               <UserAvatarIcon user={user} size="xl" />
               <Title order={2}>{user.name}</Title>
-              <Group gap="xs" style={{ whiteSpace: 'nowrap' }}>
+              <Group gap="xs" wrap="nowrap">
                 <IconMail size={16} />
                 <Text c="dimmed">{user.email}</Text>
               </Group>
