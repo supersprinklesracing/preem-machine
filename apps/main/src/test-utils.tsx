@@ -70,16 +70,19 @@ export const MOCK_ADMIN_USER: User = {
   ],
 };
 
-export const MOCK_USER_CONTEXT = { authUser: MOCK_AUTH_USER, user: MOCK_USER };
+export const MOCK_USER_CONTEXT = { uid: MOCK_AUTH_USER.uid, authUser: MOCK_AUTH_USER, user: MOCK_USER };
 export const MOCK_INCOMPLETE_USER_CONTEXT: UserContextValue = {
+  uid: MOCK_AUTH_USER.uid,
   authUser: MOCK_AUTH_USER,
   user: null,
 };
 export const MOCK_ADMIN_USER_CONTEXT = {
+  uid: MOCK_ADMIN_AUTH_USER.uid,
   authUser: MOCK_ADMIN_AUTH_USER,
   user: MOCK_ADMIN_USER,
 };
 export const MOCK_LOGGED_OUT_USER_CONTEXT: UserContextValue = {
+  uid: null,
   authUser: null,
   user: null,
 };
