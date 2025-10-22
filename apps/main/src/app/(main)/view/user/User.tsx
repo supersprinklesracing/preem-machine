@@ -16,12 +16,12 @@ import React from 'react';
 
 import { MultiPanelLayout } from '@/components/layout/MultiPanelLayout';
 import { UserAvatarIcon } from '@/components/UserAvatar/UserAvatar';
+import { toUrlPath } from '@/datastore/paths';
 import type {
   Contribution,
   Organization,
   User as UserType,
 } from '@/datastore/schema';
-import { toUrlPath } from '@/datastore/paths';
 import { compareDates, formatDateShort } from '@/dates/dates';
 import { useUserContext } from '@/user/client/UserContext';
 
