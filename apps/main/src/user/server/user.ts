@@ -4,10 +4,9 @@ import { redirect } from 'next/navigation';
 
 import { AuthUser } from '@/auth/user';
 import { User } from '@/datastore/schema';
-import { getUserById } from '@/datastore/server/query/query';
+import { getUserForAuth } from '@/datastore/server/user/user';
 
 import { getAuthUser } from '../../auth/server/auth';
-import { NotFoundError } from '../../datastore/errors';
 import { UserContextValue } from '../client/UserContext';
 
 const getUser = async (): Promise<User | null> => {
@@ -15,17 +14,7 @@ const getUser = async (): Promise<User | null> => {
   if (!authUser) {
     return null;
   }
-  try {
-    return await getUserById(authUser.uid);
-  } catch (e: unknown) {
-    if (e instanceof NotFoundError) {
-      // The user is auth'd but doesn't have a profile.
-      return null;
-    } else {
-      // Something unexepcted happened.
-      throw e;
-    }
-  }
+  return await getUserForAuth(authUser.uid);
 };
 
 export const getUserContext = async (): Promise<UserContextValue> => {

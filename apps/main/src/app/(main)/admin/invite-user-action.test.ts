@@ -6,7 +6,7 @@ import { FormActionError } from '@/components/forms/forms';
 import { createInvite } from '@/datastore/server/create/create';
 import {
   MOCK_ADMIN_AUTH_USER,
-  setupLoggedInAdminContext,
+  setupAdminUserContext,
   setupLoggedInUserContext,
   setupLoggedOutUserContext,
 } from '@/test-utils';
@@ -32,7 +32,7 @@ describe('inviteUser action', () => {
   });
 
   describe('when user is an admin', () => {
-    setupLoggedInAdminContext();
+    setupAdminUserContext();
     mockedHasUserRole.mockResolvedValue(true);
 
     it('should create an invite on success', async () => {

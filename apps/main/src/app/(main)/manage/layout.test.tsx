@@ -5,10 +5,10 @@ import {
   setupLoggedOutUserContext,
 } from '@/test-utils';
 
-import ManageLayout from './layout';
+import Layout from './layout';
 
 describe('ManageLayout', () => {
-  describe('when user is not logged in', () => {
+  describe('when user is logged out', () => {
     const { mockedRequireLoggedInUserContext } = setupLoggedOutUserContext();
 
     it('should redirect unauthenticated users', async () => {
@@ -16,7 +16,7 @@ describe('ManageLayout', () => {
         throw new Error('unauthorized');
       });
 
-      await expect(ManageLayout({ children: <div>Test</div> })).rejects.toThrow(
+      await expect(Layout({ children: <div>Test</div> })).rejects.toThrow(
         'unauthorized',
       );
     });
@@ -26,7 +26,7 @@ describe('ManageLayout', () => {
     setupLoggedInUserContext();
 
     it('should render children for authenticated users', async () => {
-      const PageComponent = await ManageLayout({
+      const PageComponent = await Layout({
         children: <div>Test Children</div>,
       });
       render(PageComponent);

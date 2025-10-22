@@ -3,14 +3,13 @@
 import { redirect } from 'next/navigation';
 
 import { getAuthUser } from '@/auth/server/auth';
-import { NotFoundError } from '@/datastore/errors';
 import { User } from '@/datastore/schema';
-import { getUserById } from '@/datastore/server/query/query';
+import { getUserForAuth } from '@/datastore/server/user/user';
 
 import { getUserContext, requireLoggedInUserContext } from './user';
 
 jest.mock('@/auth/server/auth');
-jest.mock('@/datastore/server/query/query');
+jest.mock('@/datastore/server/user/user');
 jest.mock('next/navigation', () => ({
   redirect: jest.fn(() => {
     throw new Error('NEXT_REDIRECT');
@@ -18,7 +17,7 @@ jest.mock('next/navigation', () => ({
 }));
 
 const mockGetAuthUser = getAuthUser as jest.Mock;
-const mockGetUserById = getUserById as jest.Mock;
+const mockGetUserForAuth = getUserForAuth as jest.Mock;
 const mockRedirect = redirect as unknown as jest.Mock;
 
 const MOCK_USER: User = {
@@ -44,12 +43,12 @@ describe('user', () => {
       const { authUser, user } = await getUserContext();
       expect(authUser).toBeNull();
       expect(user).toBeNull();
-      expect(mockGetUserById).not.toHaveBeenCalled();
+      expect(mockGetUserForAuth).not.toHaveBeenCalled();
     });
 
     it('should return authUser and null user if user is not found in datastore', async () => {
       mockGetAuthUser.mockResolvedValue(MOCK_AUTH_USER);
-      mockGetUserById.mockRejectedValue(new NotFoundError('User not found'));
+      mockGetUserForAuth.mockResolvedValue(null);
       const { authUser, user } = await getUserContext();
       expect(authUser).toEqual(MOCK_AUTH_USER);
       expect(user).toBeNull();
@@ -57,7 +56,7 @@ describe('user', () => {
 
     it('should return the authUser and user if found', async () => {
       mockGetAuthUser.mockResolvedValue(MOCK_AUTH_USER);
-      mockGetUserById.mockResolvedValue(MOCK_USER);
+      mockGetUserForAuth.mockResolvedValue(MOCK_USER);
       const { authUser, user } = await getUserContext();
       expect(authUser).toEqual(MOCK_AUTH_USER);
       expect(user).toEqual(MOCK_USER);
@@ -66,7 +65,7 @@ describe('user', () => {
     it('should re-throw errors other than NotFoundError', async () => {
       const someError = new Error('Something went wrong');
       mockGetAuthUser.mockResolvedValue(MOCK_AUTH_USER);
-      mockGetUserById.mockRejectedValue(someError);
+      mockGetUserForAuth.mockRejectedValue(someError);
       await expect(getUserContext()).rejects.toThrow('Something went wrong');
     });
   });
@@ -79,12 +78,12 @@ describe('user', () => {
         'NEXT_REDIRECT',
       );
       expect(mockRedirect).toHaveBeenCalledWith('/login');
-      expect(mockGetUserById).not.toHaveBeenCalled();
+      expect(mockGetUserForAuth).not.toHaveBeenCalled();
     });
 
     it('should redirect to /new-user if user is not found in datastore', async () => {
       mockGetAuthUser.mockResolvedValue(MOCK_AUTH_USER);
-      mockGetUserById.mockRejectedValue(new NotFoundError('User not found'));
+      mockGetUserForAuth.mockResolvedValue(null);
       await expect(requireLoggedInUserContext()).rejects.toThrow(
         'NEXT_REDIRECT',
       );
@@ -93,17 +92,17 @@ describe('user', () => {
 
     it('should return the user if found', async () => {
       mockGetAuthUser.mockResolvedValue(MOCK_AUTH_USER);
-      mockGetUserById.mockResolvedValue(MOCK_USER);
+      mockGetUserForAuth.mockResolvedValue(MOCK_USER);
       const { authUser, user } = await requireLoggedInUserContext();
       expect(user).toEqual(MOCK_USER);
       expect(authUser).toEqual(MOCK_AUTH_USER);
       expect(mockRedirect).not.toHaveBeenCalled();
     });
 
-    it('should re-throw errors other than NotFoundError', async () => {
+    it('should re-throw errors', async () => {
       const someError = new Error('Something went wrong');
       mockGetAuthUser.mockResolvedValue(MOCK_AUTH_USER);
-      mockGetUserById.mockRejectedValue(someError);
+      mockGetUserForAuth.mockRejectedValue(someError);
       await expect(requireLoggedInUserContext()).rejects.toThrow(
         'Something went wrong',
       );
