@@ -1,5 +1,6 @@
 import {
   type DocumentData,
+  DocumentReference,
   type FirestoreDataConverter,
   type QueryDocumentSnapshot,
   Timestamp,
@@ -7,24 +8,41 @@ import {
 import { z } from 'zod';
 
 // Recursive helper to convert Firestore Timestamps to JS Dates
-const firestoreToZod = (data: DocumentData): DocumentData => {
+const firestoreToZodRecursive = (
+  data: DocumentData,
+  memo: WeakMap<object, DocumentData>,
+): DocumentData => {
+  if (memo.has(data)) {
+    // memo.has ensures the value.
+    // eslint-disable-next-line @typescript-eslint/no-non-null-assertion
+    return memo.get(data)!;
+  }
+
   const converted: DocumentData = {};
+  memo.set(data, converted);
+
   for (const key in data) {
     const value = data[key];
-    if (value instanceof Timestamp) {
+    if (value instanceof DocumentReference) {
+      converted[key] = { id: value.id, path: value.path };
+    } else if (value instanceof Timestamp) {
       converted[key] = value.toDate();
     } else if (
       typeof value === 'object' &&
       value !== null &&
       !Array.isArray(value)
     ) {
-      // Recursively process nested objects
-      converted[key] = firestoreToZod(value);
+      converted[key] = firestoreToZodRecursive(value, memo);
     } else {
+      // Supported primitive.
       converted[key] = value;
     }
   }
   return converted;
+};
+
+const firestoreToSerializable = (data: DocumentData): DocumentData => {
+  return firestoreToZodRecursive(data, new WeakMap<object, DocumentData>());
 };
 
 /**
@@ -45,8 +63,8 @@ export const converter = <T extends z.ZodObject<any, any>>(
   fromFirestore(snapshot: QueryDocumentSnapshot): z.infer<T> {
     const data = snapshot.data();
 
-    // Convert all Timestamps to JS Dates before parsing
-    const convertedData = firestoreToZod(data);
+    // Convert to compatible client types
+    const convertedData = firestoreToSerializable(data);
 
     const dataWithMetadata = {
       ...convertedData,
@@ -57,8 +75,9 @@ export const converter = <T extends z.ZodObject<any, any>>(
     const result = schema.safeParse(dataWithMetadata);
 
     if (!result.success) {
-      console.error('Zod validation failed:', result.error.format());
-      throw new Error('Data from Firestore failed Zod validation.');
+      throw new Error(
+        `Data from Firestore ${snapshot.ref.path} failed Zod validation: ${z.prettifyError(result.error)}`, 
+      );
     }
 
     return result.data;
