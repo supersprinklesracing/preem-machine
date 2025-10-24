@@ -69,7 +69,14 @@ export function NewUser({
   });
 
   const { uploading, error, handleFileChange, handleRemovePhoto } =
-    useAvatarUpload(form, 'avatarUrl');
+    useAvatarUpload({
+      onUpload: (url) => {
+        form.setFieldValue('avatarUrl', url);
+      },
+      onRemove: () => {
+        form.setFieldValue('avatarUrl', '');
+      },
+    });
 
   const [debouncedValues] = useDebouncedValue(form.values, 100);
 

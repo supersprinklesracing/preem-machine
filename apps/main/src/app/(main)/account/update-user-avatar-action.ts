@@ -4,27 +4,30 @@ import { z } from 'zod';
 
 import { FormActionError, FormActionResult } from '@/components/forms/forms';
 import { getDoc } from '@/datastore/server/query/query';
-import { updateUser } from '@/datastore/server/update/update';
+import { updateUserAvatar } from '@/datastore/server/update/update';
 import { getFirebaseStorage } from '@/firebase/server/firebase-admin';
 import { requireLoggedInUserContext } from '@/user/server/user';
 
-import { updateUserSchema } from './user-schema';
+import { updateUserAvatarSchema } from './user-schema';
 
-export interface EditUserOptions {
-  edits: z.infer<typeof updateUserSchema>;
+export interface UpdateUserAvatarOptions {
+  edits: z.infer<typeof updateUserAvatarSchema>;
 }
 
-export async function editUserAction({
+export async function updateUserAvatarAction({
   edits,
-}: EditUserOptions): Promise<FormActionResult> {
+}: UpdateUserAvatarOptions): Promise<FormActionResult> {
   try {
     const { authUser } = await requireLoggedInUserContext();
-    const parsedEdits = updateUserSchema.parse(edits);
+    const parsedEdits = updateUserAvatarSchema.parse(edits);
 
-    const oldData = await getDoc(updateUserSchema, `users/${authUser.uid}`);
+    const oldData = await getDoc(
+      updateUserAvatarSchema,
+      `users/${authUser.uid}`,
+    );
     const oldAvatarUrl = oldData?.avatarUrl;
 
-    await updateUser(parsedEdits, authUser);
+    await updateUserAvatar(parsedEdits, authUser);
 
     if (oldAvatarUrl && oldAvatarUrl !== parsedEdits.avatarUrl) {
       try {
@@ -33,7 +36,10 @@ export async function editUserAction({
         const filePath = url.pathname.substring(1); // remove leading slash
         await bucket.file(filePath).delete();
       } catch (storageError) {
-        console.error('Failed to delete old avatar:', storageError);
+        console.error(
+          `Failed to delete old avatar for ${authUser.uid}`,
+          storageError,
+        );
         // Don't throw an error back to the user, as the main operation succeeded.
       }
     }
