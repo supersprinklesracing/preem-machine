@@ -9,7 +9,10 @@ import {
 import Stripe from 'stripe';
 
 import { AuthUser } from '@/auth/user';
-import { getFirestore } from '@/firebase/server/firebase-admin';
+import {
+  getFirestore,
+  getFirebaseAuthAdmin,
+} from '@/firebase/server/firebase-admin';
 
 import { NotFoundError, unauthorized } from '../../errors';
 import { asDocPath, getSubCollectionPath } from '../../paths';
@@ -58,6 +61,11 @@ export const updateUser = async (
     ...user,
     ...getUpdateMetadata(docRef),
   });
+
+  const auth = await getFirebaseAuthAdmin();
+  await auth.updateUser(authUser.uid, {
+    displayName: user.name,
+  });
 };
 
 export const updateUserAvatar = async (
@@ -70,6 +78,11 @@ export const updateUserAvatar = async (
   await docRef.update({
     avatarUrl: avatarUrl || FieldValue.delete(),
     ...getUpdateMetadata(docRef),
+  });
+
+  const auth = await getFirebaseAuthAdmin();
+  await auth.updateUser(authUser.uid, {
+    photoURL: avatarUrl || null,
   });
 };
 

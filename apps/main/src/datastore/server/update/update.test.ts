@@ -1,6 +1,6 @@
 import type { Firestore } from 'firebase-admin/firestore';
 
-import { getFirestore } from '@/firebase/server/firebase-admin';
+import { getFirestore, getFirebaseAuthAdmin } from '@/firebase/server/firebase-admin';
 import { setupMockDb } from '@/test-utils';
 
 import {
@@ -22,7 +22,18 @@ import {
   updatePreem,
   updateRace,
   updateSeries,
+  updateUser,
+  updateUserAvatar,
 } from './update';
+
+const mockUpdateUser = jest.fn();
+
+jest.mock('@/firebase/server/firebase-admin', () => ({
+  ...jest.requireActual('@/firebase/server/firebase-admin'),
+  getFirebaseAuthAdmin: jest.fn(() => ({
+    updateUser: mockUpdateUser,
+  })),
+}));
 
 jest.mock('../access', () => ({
   isUserAuthorized: jest.fn().mockResolvedValue(true),
@@ -41,6 +52,8 @@ describe('update mutations', () => {
   beforeEach(async () => {
     (isUserAuthorized as jest.Mock).mockClear();
     (isUserAuthorized as jest.Mock).mockResolvedValue(true);
+    mockUpdateUser.mockClear();
+    (getFirebaseAuthAdmin as jest.Mock).mockClear();
   });
 
   afterEach(() => {
@@ -303,6 +316,34 @@ describe('update mutations', () => {
       const contributionData = contributionDoc.data();
       expect(contributionData?.path).toEqual(contributionDoc.ref.path);
       expect(contributionData?.preemBrief?.name).toEqual('New Preem Name');
+    });
+  });
+
+  describe('updateUser', () => {
+    it('should update the user in firestore and in firebase auth', async () => {
+      await updateUser({ name: 'New User Name' }, authUser);
+      expect(getFirebaseAuthAdmin).toHaveBeenCalled();
+      expect(mockUpdateUser).toHaveBeenCalledWith(authUser.uid, {
+        displayName: 'New User Name',
+      });
+    });
+  });
+
+  describe('updateUserAvatar', () => {
+    it('should update the user in firestore and in firebase auth', async () => {
+      await updateUserAvatar({ avatarUrl: 'https://new-avatar.com' }, authUser);
+      expect(getFirebaseAuthAdmin).toHaveBeenCalled();
+      expect(mockUpdateUser).toHaveBeenCalledWith(authUser.uid, {
+        photoURL: 'https://new-avatar.com',
+      });
+    });
+
+    it('should remove the avatarUrl if it is empty', async () => {
+      await updateUserAvatar({ avatarUrl: '' }, authUser);
+      expect(getFirebaseAuthAdmin).toHaveBeenCalled();
+      expect(mockUpdateUser).toHaveBeenCalledWith(authUser.uid, {
+        photoURL: null,
+      });
     });
   });
 });
