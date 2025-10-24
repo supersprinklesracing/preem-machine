@@ -16,6 +16,7 @@
     "enabled": true,
     "automerge": true
   },
+  "postUpdateOptions": ["npmInstallTwice"],
   "packageRules": [
     {
       "groupName": "all non-major dependencies",
