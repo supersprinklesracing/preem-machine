@@ -21,7 +21,8 @@ const mockUser: User = {
   roles: [],
 };
 
-const mockEditUserAction = jest.fn();
+const mockUpdateUserTextAction = jest.fn();
+const mockUpdateUserAvatarAction = jest.fn();
 
 describe('Account', () => {
   beforeEach(() => {
@@ -33,10 +34,16 @@ describe('Account', () => {
   });
 
   it('should disable the save button while typing and enable it after debouncing', async () => {
-    const user = userEvent.setup({
+    const userEventUser = userEvent.setup({
       advanceTimers: jest.advanceTimersByTime,
     });
-    render(<Account user={mockUser} editUserAction={mockEditUserAction} />);
+    render(
+      <Account
+        user={mockUser}
+        updateUserTextAction={mockUpdateUserTextAction}
+        updateUserAvatarAction={mockUpdateUserAvatarAction}
+      />,
+    );
 
     const nameInput = screen.getByRole('textbox', { name: 'Full Name' });
     const saveButton = screen.getByRole('button', { name: 'Save Changes' });
@@ -45,7 +52,7 @@ describe('Account', () => {
     expect(saveButton).toBeDisabled();
 
     // Type in the name field
-    await user.type(nameInput, 'A');
+    await userEventUser.type(nameInput, 'A');
 
     // The button should be disabled immediately after typing (debouncing)
     expect(saveButton).toBeDisabled();

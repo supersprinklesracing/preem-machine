@@ -48,7 +48,7 @@ const getUpdateMetadata = (userRef: DocumentReference<DocumentData>) => ({
 });
 
 export const updateUser = async (
-  user: Pick<User, 'name' | 'affiliation' | 'raceLicenseId' | 'address'>,
+  user: Partial<Pick<User, 'name' | 'affiliation' | 'raceLicenseId' | 'address'>>,
   authUser: AuthUser,
 ) => {
   const path = `users/${authUser.uid}`;
@@ -56,6 +56,19 @@ export const updateUser = async (
   const docRef = await getDocRefInternal(UserSchema, path);
   await docRef.update({
     ...user,
+    ...getUpdateMetadata(docRef),
+  });
+};
+
+export const updateUserAvatar = async (
+  { avatarUrl }: Pick<User, 'avatarUrl'>,
+  authUser: AuthUser,
+) => {
+  const path = `users/${authUser.uid}`;
+
+  const docRef = await getDocRefInternal(UserSchema, path);
+  await docRef.update({
+    avatarUrl: avatarUrl || FieldValue.delete(),
     ...getUpdateMetadata(docRef),
   });
 };
