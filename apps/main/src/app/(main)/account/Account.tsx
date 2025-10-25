@@ -48,8 +48,6 @@ export function Account({
     schema: updateUserSchema,
     initialValues: {
       name: user?.name ?? '',
-      affiliation: user?.affiliation ?? '',
-      raceLicenseId: user?.raceLicenseId ?? '',
       address: user?.address ?? '',
     },
     action: (values) => updateUserAction({ edits: values }),
@@ -139,18 +137,6 @@ export function Account({
           placeholder="Your email address"
           readOnly
           value={user?.email ?? ''}
-        />
-        <TextInput
-          id="affiliation"
-          label="Affiliation"
-          placeholder="Your club or team"
-          {...form.getInputProps('affiliation')}
-        />
-        <TextInput
-          id="raceLicenseId"
-          label="Race License ID"
-          placeholder="e.g., 123456"
-          {...form.getInputProps('raceLicenseId')}
         />
         <Textarea
           id="address"

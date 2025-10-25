@@ -50,8 +50,6 @@ export function NewUser({
       email: authUser.email ?? '',
       avatarUrl: authUser.photoURL ?? '',
       termsAccepted: true,
-      affiliation: '',
-      raceLicenseId: '',
       address: '',
     },
     action: (values) => {
@@ -148,16 +146,6 @@ export function NewUser({
           {...form.getInputProps('avatarUrl')}
         />
 
-        <TextInput
-          label="Affiliation"
-          placeholder="Your club or team"
-          {...form.getInputProps('affiliation')}
-        />
-        <TextInput
-          label="Race License ID"
-          placeholder="e.g., 123456"
-          {...form.getInputProps('raceLicenseId')}
-        />
         <Textarea
           label="Address"
           placeholder="123 Main St, Anytown, USA"

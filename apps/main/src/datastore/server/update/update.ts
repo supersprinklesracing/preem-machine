@@ -52,7 +52,7 @@ const getUpdateMetadata = (userRef: DocumentReference<DocumentData>) => ({
 
 export const updateUser = async (
   user: Partial<
-    Pick<User, 'name' | 'affiliation' | 'raceLicenseId' | 'address'>
+    Pick<User, 'name' | 'address'>
   >,
   authUser: AuthUser,
 ) => {

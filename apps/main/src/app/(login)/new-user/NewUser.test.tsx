@@ -51,8 +51,6 @@ describe('NewUser component', () => {
           email: 'test-user@example.com',
           avatarUrl: 'https://placehold.co/100x100.png',
           termsAccepted: true,
-          affiliation: '',
-          raceLicenseId: '',
           address: '',
         },
       });
