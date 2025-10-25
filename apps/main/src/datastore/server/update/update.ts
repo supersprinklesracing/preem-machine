@@ -10,8 +10,8 @@ import Stripe from 'stripe';
 
 import { AuthUser } from '@/auth/user';
 import {
-  getFirestore,
   getFirebaseAuthAdmin,
+  getFirestore,
 } from '@/firebase/server/firebase-admin';
 
 import { NotFoundError, unauthorized } from '../../errors';
@@ -51,7 +51,9 @@ const getUpdateMetadata = (userRef: DocumentReference<DocumentData>) => ({
 });
 
 export const updateUser = async (
-  user: Partial<Pick<User, 'name' | 'affiliation' | 'raceLicenseId' | 'address'>>,
+  user: Partial<
+    Pick<User, 'name' | 'affiliation' | 'raceLicenseId' | 'address'>
+  >,
   authUser: AuthUser,
 ) => {
   const path = `users/${authUser.uid}`;
