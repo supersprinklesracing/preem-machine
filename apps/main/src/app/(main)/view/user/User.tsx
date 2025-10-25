@@ -28,13 +28,7 @@ import { useUserContext } from '@/user/client/UserContext';
 interface Props {
   user: Pick<
     UserType,
-    | 'id'
-    | 'path'
-    | 'name'
-    | 'email'
-    | 'avatarUrl'
-    | 'affiliation'
-    | 'raceLicenseId'
+    'id' | 'path' | 'name' | 'email' | 'avatarUrl'
   >;
   contributions: Pick<
     Contribution,
@@ -82,11 +76,6 @@ export function User({ user, contributions, organizations }: Props) {
                 <IconMail size={16} />
                 <Text c="dimmed">{user.email}</Text>
               </Group>
-
-              {user.affiliation && <Text>Affiliation: {user.affiliation}</Text>}
-              {user.raceLicenseId && (
-                <Text>Race License ID: {user.raceLicenseId}</Text>
-              )}
               {organizations && (
                 <Stack>
                   {organizations.map((org) => (

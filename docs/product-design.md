@@ -101,8 +101,6 @@ A User is an individual who has an account on the platform. Their role determine
   - `name`: The user's full name.
   - `email`: The user's email address.
   - `profilePhotoUrl`: URL for their profile photo.
-  - `affiliation`: The user's club or team.
-  - `raceLicenseId`: The user's official race license ID.
   - `address`: The user's physical address.
 
 ## 3. User Roles & Permissions
@@ -138,8 +136,6 @@ The flow leverages third-party sign-in providers for a streamlined user experien
   - **Form Fields:**
     - **Name:** (Pre-filled, but editable)
     - **Profile Photo:** (Pre-filled, with an option to upload a different one)
-    - **Affiliation:** (Required user input)
-    - **Race License ID:** (Required user input)
     - **Address:** (Required user input)
 - **Step 3 (For Organizers): Join or Create an Organization:** If a user wishes to be an organizer, they must be part of an organization.
   - **UI:** A new screen asking "Do you have an invitation code?"
