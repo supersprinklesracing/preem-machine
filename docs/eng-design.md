@@ -348,10 +348,6 @@ This appendix details the structure of the Firestore database. This hierarchical
 
   - `role`: string ('contributor', 'organizer', 'admin')
 
-  - `affiliation`: string
-
-  - `raceLicenseId`: string
-
   - `address`: string
 
   - `organizationRefs`: array of DocumentReferences (`/organizations/{orgId}`)

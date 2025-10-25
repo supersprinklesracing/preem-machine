@@ -14,8 +14,6 @@ const TestComponent = () => {
       email: 'test@example.com',
       avatarUrl: 'https://example.com/avatar.png',
       termsAccepted: true,
-      affiliation: '',
-      raceLicenseId: '',
       address: '',
     },
   });

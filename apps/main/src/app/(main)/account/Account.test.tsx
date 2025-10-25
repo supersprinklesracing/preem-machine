@@ -14,8 +14,6 @@ const mockUser: User = {
   name: 'Test User',
   email: 'test@example.com',
   avatarUrl: '',
-  affiliation: '',
-  raceLicenseId: '',
   address: '',
   termsAccepted: true,
   roles: [],
