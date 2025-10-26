@@ -19,7 +19,7 @@ const dotenvPaths = [
   '.env.ci',
   '.env.local',
   '.env',
-].map((dotEnvFile) => `${workspaceRoot}/apps/main/${dotEnvFile}`);
+].map((dotEnvFile) => `${workspaceRoot}/apps/e2e-main/${dotEnvFile}`);
 dotenv.config({
   path: dotenvPaths,
 });
@@ -55,9 +55,10 @@ export default defineConfig({
     reuseExistingServer: !process.env.CI,
     timeout: 300000,
     cwd: workspaceRoot,
-    // .env files in shell are not respected in VS Code; we read them, above.
     env: {
       E2E_TESTING: 'true',
+      // eslint-disable-next-line @typescript-eslint/no-non-null-assertion
+      E2E_TESTING_USER: process.env.E2E_TESTING_USER!
     },
   },
   expect: {
