@@ -1,6 +1,6 @@
 import { User } from '@/datastore/schema';
 import { getDoc } from '@/datastore/server/query/query';
-import { updateUser } from '@/datastore/server/update/update';
+import { updateUserAvatar } from '@/datastore/server/update/update';
 import { getFirebaseStorage } from '@/firebase/server/firebase-admin';
 import {
   MOCK_USER_CONTEXT,
@@ -8,20 +8,23 @@ import {
   setupLoggedOutUserContext,
 } from '@/test-utils';
 
-import { editUserAction } from './edit-user-action';
-import { updateUserSchema } from './user-schema';
+import { updateUserAvatarAction } from './update-user-avatar-action';
+import { updateUserAvatarSchema } from './user-schema';
 
 jest.mock('@/user/server/user');
 jest.mock('@/datastore/server/query/query');
-jest.mock('@/datastore/server/update/update');
+jest.mock('@/datastore/server/update/update', () => ({
+  ...jest.requireActual('@/datastore/server/update/update'),
+  updateUserAvatar: jest.fn(),
+}));
 jest.mock('@/firebase/server/firebase-admin', () => ({
   getFirebaseStorage: jest.fn(),
 }));
 
-describe('editUserAction', () => {
+describe('updateUserAvatarAction', () => {
   const mockedGetFirebaseStorage = jest.mocked(getFirebaseStorage);
   const mockedGetDoc = jest.mocked(getDoc);
-  const mockedUpdateUser = jest.mocked(updateUser);
+  const mockedUpdateUserAvatar = jest.mocked(updateUserAvatar);
 
   const mockDelete = jest.fn();
   const mockFile = jest.fn(() => ({
@@ -34,8 +37,7 @@ describe('editUserAction', () => {
     bucket: () => mockBucket,
   });
 
-  const edits = updateUserSchema.parse({
-    name: 'New Name',
+  const edits = updateUserAvatarSchema.parse({
     avatarUrl: 'https://new.com/avatar.png',
   });
 
@@ -54,13 +56,13 @@ describe('editUserAction', () => {
     });
 
     it('should update user and delete old avatar on success', async () => {
-      await editUserAction({ edits });
+      await updateUserAvatarAction({ edits });
 
       expect(mockedGetDoc).toHaveBeenCalledWith(
-        updateUserSchema,
+        updateUserAvatarSchema,
         `users/${MOCK_USER_CONTEXT.authUser.uid}`,
       );
-      expect(mockedUpdateUser).toHaveBeenCalledWith(
+      expect(mockedUpdateUserAvatar).toHaveBeenCalledWith(
         edits,
         MOCK_USER_CONTEXT.authUser,
       );
@@ -74,9 +76,9 @@ describe('editUserAction', () => {
         avatarUrl: edits.avatarUrl,
       } as User);
 
-      await editUserAction({ edits });
+      await updateUserAvatarAction({ edits });
 
-      expect(mockedUpdateUser).toHaveBeenCalledWith(
+      expect(mockedUpdateUserAvatar).toHaveBeenCalledWith(
         edits,
         MOCK_USER_CONTEXT.authUser,
       );
@@ -89,9 +91,9 @@ describe('editUserAction', () => {
         avatarUrl: undefined,
       } as User);
 
-      await editUserAction({ edits });
+      await updateUserAvatarAction({ edits });
 
-      expect(mockedUpdateUser).toHaveBeenCalledWith(
+      expect(mockedUpdateUserAvatar).toHaveBeenCalledWith(
         edits,
         MOCK_USER_CONTEXT.authUser,
       );
@@ -106,15 +108,15 @@ describe('editUserAction', () => {
         });
       mockDelete.mockRejectedValue(new Error('Storage failed'));
 
-      await editUserAction({ edits });
+      await updateUserAvatarAction({ edits });
 
-      expect(mockedUpdateUser).toHaveBeenCalledWith(
+      expect(mockedUpdateUserAvatar).toHaveBeenCalledWith(
         edits,
         MOCK_USER_CONTEXT.authUser,
       );
       expect(mockDelete).toHaveBeenCalled();
       expect(consoleErrorSpy).toHaveBeenCalledWith(
-        'Failed to delete old avatar:',
+        `Failed to delete old avatar for ${MOCK_USER_CONTEXT.authUser.uid}`,
         expect.any(Error),
       );
       consoleErrorSpy.mockRestore();
@@ -125,11 +127,13 @@ describe('editUserAction', () => {
     const { mockedRequireLoggedInUserContext } = setupLoggedOutUserContext();
 
     beforeEach(() => {
-      mockedRequireLoggedInUserContext.mockRejectedValue(new Error('Not authenticated'));
+      mockedRequireLoggedInUserContext.mockRejectedValue(
+        new Error('Not authenticated'),
+      );
     });
 
     it('should throw a FormActionError on failure', async () => {
-      await expect(editUserAction({ edits })).rejects.toThrow(
+      await expect(updateUserAvatarAction({ edits })).rejects.toThrow(
         'Failed to save profile: Not authenticated',
       );
     });

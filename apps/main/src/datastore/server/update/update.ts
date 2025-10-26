@@ -9,7 +9,10 @@ import {
 import Stripe from 'stripe';
 
 import { AuthUser } from '@/auth/user';
-import { getFirestore } from '@/firebase/server/firebase-admin';
+import {
+  getFirebaseAuthAdmin,
+  getFirestore,
+} from '@/firebase/server/firebase-admin';
 
 import { NotFoundError, unauthorized } from '../../errors';
 import { asDocPath, getSubCollectionPath } from '../../paths';
@@ -48,7 +51,9 @@ const getUpdateMetadata = (userRef: DocumentReference<DocumentData>) => ({
 });
 
 export const updateUser = async (
-  user: Pick<User, 'name' | 'affiliation' | 'raceLicenseId' | 'address'>,
+  user: Partial<
+    Pick<User, 'name' | 'address'>
+  >,
   authUser: AuthUser,
 ) => {
   const path = `users/${authUser.uid}`;
@@ -57,6 +62,29 @@ export const updateUser = async (
   await docRef.update({
     ...user,
     ...getUpdateMetadata(docRef),
+  });
+
+  const auth = await getFirebaseAuthAdmin();
+  await auth.updateUser(authUser.uid, {
+    displayName: user.name,
+  });
+};
+
+export const updateUserAvatar = async (
+  { avatarUrl }: Pick<User, 'avatarUrl'>,
+  authUser: AuthUser,
+) => {
+  const path = `users/${authUser.uid}`;
+
+  const docRef = await getDocRefInternal(UserSchema, path);
+  await docRef.update({
+    avatarUrl: avatarUrl || FieldValue.delete(),
+    ...getUpdateMetadata(docRef),
+  });
+
+  const auth = await getFirebaseAuthAdmin();
+  await auth.updateUser(authUser.uid, {
+    photoURL: avatarUrl || null,
   });
 };
 

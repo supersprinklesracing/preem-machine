@@ -55,8 +55,6 @@ export const UserSchema = baseDocSchema.extend({
   name: z.string().optional(),
   email: z.string().email().optional(),
   avatarUrl: z.string().url().optional(),
-  affiliation: z.string().optional(),
-  raceLicenseId: z.string().optional(),
   address: z.string().optional(),
   organizationRefs: z.array(docRefSchema).optional(),
 });

@@ -6,8 +6,6 @@ export const userSchema = schema.pick({
   name: true,
   email: true,
   avatarUrl: true,
-  affiliation: true,
-  raceLicenseId: true,
   address: true,
 });
 
@@ -17,4 +15,15 @@ export const newUserSchema = userSchema.extend({
   }),
 });
 
-export const updateUserSchema = userSchema.partial();
+export const updateUserSchema = userSchema
+  .pick({
+    name: true,
+    address: true,
+  })
+  .partial();
+
+export const updateUserAvatarSchema = userSchema
+  .pick({
+    avatarUrl: true,
+  })
+  .partial();

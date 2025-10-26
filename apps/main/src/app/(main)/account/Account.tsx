@@ -13,6 +13,7 @@ import {
 import { useDebouncedValue } from '@mantine/hooks';
 import isEqual from 'fast-deep-equal';
 import { useRouter } from 'next/navigation';
+import { useState } from 'react';
 
 import { logout } from '@/auth/client/auth';
 import { UpdateUserProfileCard } from '@/components/cards/UpdateUserProfileCard';
@@ -23,44 +24,68 @@ import { MultiPanelLayout } from '@/components/layout/MultiPanelLayout';
 import { toUrlPath } from '@/datastore/paths';
 import { User } from '@/datastore/schema';
 
-import { EditUserOptions } from './edit-user-action';
+import { UpdateUserOptions } from './update-user-action';
+import { UpdateUserAvatarOptions } from './update-user-avatar-action';
 import { updateUserSchema } from './user-schema';
 
 export interface AccountProps {
   user: User;
-  editUserAction: (options: EditUserOptions) => Promise<FormActionResult>;
+  updateUserAction: (options: UpdateUserOptions) => Promise<FormActionResult>;
+  updateUserAvatarAction: (
+    options: UpdateUserAvatarOptions,
+  ) => Promise<FormActionResult>;
 }
 
-export function Account({ user, editUserAction }: AccountProps) {
+export function Account({
+  user,
+  updateUserAction,
+  updateUserAvatarAction,
+}: AccountProps) {
   const router = useRouter();
+  const [avatarUrl, setAvatarUrl] = useState(user?.avatarUrl ?? '');
 
   const { form, handleSubmit, isLoading, submissionError } = useActionForm({
     schema: updateUserSchema,
     initialValues: {
       name: user?.name ?? '',
-      email: user?.email ?? '',
-      avatarUrl: user?.avatarUrl ?? '',
-      affiliation: user?.affiliation ?? '',
-      raceLicenseId: user?.raceLicenseId ?? '',
       address: user?.address ?? '',
     },
-    action: (values) => editUserAction({ edits: values }),
+    action: (values) => updateUserAction({ edits: values }),
     onSuccess: () => {
       router.refresh();
     },
   });
 
   const { uploading, error, handleFileChange, handleRemovePhoto } =
-    useAvatarUpload(form, 'avatarUrl');
+    useAvatarUpload({
+      onUpload: async (url) => {
+        try {
+          await updateUserAvatarAction({ edits: { avatarUrl: url } });
+          setAvatarUrl(url);
+          router.refresh();
+        } catch (e) {
+          // TODO: handle error
+        }
+      },
+      onRemove: async () => {
+        try {
+          await updateUserAvatarAction({ edits: { avatarUrl: '' } });
+          setAvatarUrl('');
+          router.refresh();
+        } catch (e) {
+          // TODO: handle error
+        }
+      },
+    });
 
-  const [debouncedValues] = useDebouncedValue(form.values, 100);
+  const [debouncedFormValues] = useDebouncedValue(form.values, 100);
 
   const topLeft = (
     <Stack>
       <UpdateUserProfileCard
-        name={debouncedValues.name}
-        email={debouncedValues.email}
-        avatarUrl={debouncedValues.avatarUrl}
+        name={debouncedFormValues.name}
+        email={user?.email ?? ''}
+        avatarUrl={avatarUrl}
         uploading={uploading}
         error={error}
         onFileChange={handleFileChange}
@@ -111,19 +136,7 @@ export function Account({ user, editUserAction }: AccountProps) {
           label="Email"
           placeholder="Your email address"
           readOnly
-          {...form.getInputProps('email')}
-        />
-        <TextInput
-          id="affiliation"
-          label="Affiliation"
-          placeholder="Your club or team"
-          {...form.getInputProps('affiliation')}
-        />
-        <TextInput
-          id="raceLicenseId"
-          label="Race License ID"
-          placeholder="e.g., 123456"
-          {...form.getInputProps('raceLicenseId')}
+          value={user?.email ?? ''}
         />
         <Textarea
           id="address"
@@ -134,7 +147,9 @@ export function Account({ user, editUserAction }: AccountProps) {
         <Button
           type="submit"
           loading={isLoading}
-          disabled={!form.isDirty() || !isEqual(form.values, debouncedValues)}
+          disabled={
+            !form.isDirty() || !isEqual(form.values, debouncedFormValues)
+          }
         >
           Save Changes
         </Button>
