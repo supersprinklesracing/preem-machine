@@ -84,7 +84,6 @@ export function Account({
     <Stack>
       <UpdateUserProfileCard
         name={debouncedFormValues.name}
-        email={user?.email ?? ''}
         avatarUrl={avatarUrl}
         uploading={uploading}
         error={error}
@@ -131,13 +130,6 @@ export function Account({
             )}
           </Box>
         </Stack>
-        <TextInput
-          id="email"
-          label="Email"
-          placeholder="Your email address"
-          readOnly
-          value={user?.email ?? ''}
-        />
         <Textarea
           id="address"
           label="Address"
