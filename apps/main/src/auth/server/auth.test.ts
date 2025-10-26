@@ -4,7 +4,7 @@ import { headers } from 'next/headers';
 import { AuthUser } from '@/auth/user';
 import { getFirebaseAdminApp } from '@/firebase/server/firebase-admin';
 
-import { getBearerUser } from './bearer';
+import { getBearerUser } from './auth';
 
 jest.mock('next/headers', () => ({
   headers: jest.fn(),
