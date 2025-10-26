@@ -19,7 +19,7 @@ const mockUser: User = {
   roles: [],
 };
 
-const mockUpdateUserTextAction = jest.fn();
+const mockUpdateUserAction = jest.fn();
 const mockUpdateUserAvatarAction = jest.fn();
 
 describe('Account', () => {
@@ -38,7 +38,7 @@ describe('Account', () => {
     render(
       <Account
         user={mockUser}
-        updateUserTextAction={mockUpdateUserTextAction}
+        updateUserAction={mockUpdateUserAction}
         updateUserAvatarAction={mockUpdateUserAvatarAction}
       />,
     );
