@@ -34,9 +34,14 @@ export const getBearerUser = async (): Promise<AuthUser | null> => {
     return null;
   }
 
-  const adminApp = await getFirebaseAdminApp();
-  const userRecord = await adminApp.auth().getUser(decodedToken.uid);
-  return toAuthContextUserFromUserRecord(userRecord);
+  try {
+    const adminApp = await getFirebaseAdminApp();
+    const userRecord = await adminApp.auth().getUser(decodedToken.uid);
+    return toAuthContextUserFromUserRecord(userRecord);
+  } catch (error) {
+    console.error('Error getting user by bearer token:', error);
+    return null;
+  }
 };
 
 const toAuthContextUserFromUserRecord = (
