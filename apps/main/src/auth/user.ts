@@ -31,7 +31,7 @@ export interface AuthUser {
   readonly uid: string;
 
   emailVerified: boolean;
-  token: string;
+  token?: string;
   customToken?: string;
-  customClaims: Claims;
+  customClaims?: Claims;
 }
