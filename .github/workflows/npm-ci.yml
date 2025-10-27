@@ -28,4 +28,4 @@ jobs:
           node-version: 22
 
       - name: NPM CI
-        run: npm ci
+        run: npm ci --quiet --no-fund --no-audit
