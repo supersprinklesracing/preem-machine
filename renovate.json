@@ -14,9 +14,12 @@
   },
   "lockFileMaintenance": {
     "enabled": true,
-    "automerge": true
+    "automerge": true,
+    "schedule": ["after 10pm on sunday"]
   },
-  "postUpdateOptions": ["npmInstallTwice"],
+  "npm": {
+    "version": "10"
+  },
   "packageRules": [
     {
       "groupName": "all non-major dependencies",
