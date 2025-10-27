@@ -27,5 +27,8 @@ jobs:
         with:
           node-version: 22
 
+      - name: Install correct NPM version
+        run: npm install -g npm@11
+
       - name: NPM CI
         run: npm ci --quiet --no-fund --no-audit
