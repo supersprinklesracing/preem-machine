@@ -215,8 +215,7 @@ export const getEventsForOrganizations = cache(
     }
     const db = await getFirestore();
     const oneDayAgo = new Date();
-    // TODO: This should just be one day.
-    oneDayAgo.setDate(oneDayAgo.getDate() - 365);
+    oneDayAgo.setDate(oneDayAgo.getDate() - 1);
 
     const eventsSnap = await db
       .collectionGroup('events')
