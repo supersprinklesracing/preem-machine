@@ -259,6 +259,9 @@ export const getSubCollectionPath = (
   path: DocPath,
   child: string,
 ): CollectionPath => {
+  if (child.includes('/')) {
+    throw new InvalidPathError('Child path cannot contain "/"');
+  }
   return path + (child.startsWith('/') ? '' : '/') + child;
 };
 

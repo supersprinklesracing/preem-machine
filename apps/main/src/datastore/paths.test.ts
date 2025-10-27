@@ -7,6 +7,7 @@ import {
   getCollectionPathFromSearchParams,
   getDocPathFromSearchParams,
   getParentPathAsCollectionPath,
+  getSubCollectionPath,
   isCollectionPath,
   isDocPath,
   isUrlPath,
@@ -239,6 +240,16 @@ describe('paths', () => {
         'organizations/org-super-sprinkles/events/il-giro/races/juniors';
       const expectedCollectionGroup = 'races';
       expect(getCollectionGroup(docPath)).toEqual(expectedCollectionGroup);
+    });
+  });
+
+  describe('getSubCollectionPath', () => {
+    it('should throw an InvalidPathError for a multi-segment child', () => {
+      const docPath = 'organizations/org-1';
+      const child = 'series/series-1';
+      expect(() => getSubCollectionPath(docPath, child)).toThrow(
+        'Child path cannot contain "/"',
+      );
     });
   });
 });
