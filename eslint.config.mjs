@@ -61,12 +61,17 @@ export default [
   },
   // unusedImports: End
 
+  // package.json dependency checks
+  {
+    files: ['package.json'],
+    ...nx.configs['flat/dependency-checks'],
+  },
   {
     files: ['**/*.json'],
+    ignores: ['package.json', 'package-lock.json'],
     plugins: {
       json,
     },
-    ignores: ['package-lock.json'],
     language: 'json/json',
     rules: {},
   },
