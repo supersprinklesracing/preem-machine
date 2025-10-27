@@ -16,9 +16,7 @@
     "enabled": true,
     "automerge": true
   },
-  "npm": {
-    "version": "10"
-  },
+  "postUpdateOptions": ["npmInstallTwice"],
   "packageRules": [
     {
       "groupName": "all non-major dependencies",
