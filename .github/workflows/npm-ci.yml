@@ -28,4 +28,4 @@ jobs:
           node-version: 22
 
       - name: NPM CI
-        run: npm ci --legacy-peer-deps
+        run: npm ci
