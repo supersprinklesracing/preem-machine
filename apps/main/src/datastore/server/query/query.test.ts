@@ -11,7 +11,7 @@ import {
 import { getFirestore } from '@/firebase/server/firebase-admin';
 import { setupMockDb } from '@/test-utils';
 
-import { getRenderableHomeDataForPage } from './query';
+import { getEventsForOrganizations, getRenderableHomeDataForPage } from './query';
 
 describe('query', () => {
   let db: Firestore;
@@ -153,6 +153,62 @@ describe('query', () => {
       expect(c2).toBeDefined();
       expect(c1?.preemBrief?.name).toBe('Preem Alpha');
       expect(c2?.preemBrief?.name).toBe('Preem Beta');
+    });
+  });
+
+  describe('getEventsForOrganizations', () => {
+    it('should only return events from the last day', async () => {
+      const today = new Date();
+      const twoDaysAgo = new Date();
+      twoDaysAgo.setDate(twoDaysAgo.getDate() - 2);
+      const fiveDaysAgo = new Date();
+      fiveDaysAgo.setDate(fiveDaysAgo.getDate() - 5);
+
+      const org: Organization = {
+        id: 'org-1',
+        path: 'organizations/org-1',
+        name: 'Test Org 1',
+        stripe: {},
+      };
+      await db.doc(org.path).set(org);
+
+      const series: Series = {
+        id: 'series-1',
+        path: 'organizations/org-1/series/series-1',
+        name: 'Test Series 1',
+        startDate: Timestamp.fromDate(fiveDaysAgo),
+        endDate: Timestamp.fromDate(today),
+        organizationBrief: {
+          id: 'org-1',
+          path: 'organizations/org-1',
+          name: 'Test Org 1',
+        },
+      };
+      await db.doc(series.path).set(series);
+
+      const event1: Event = {
+        id: 'event-1',
+        path: 'organizations/org-1/series/series-1/events/event-1',
+        name: 'Test Event 1',
+        startDate: Timestamp.fromDate(today),
+        endDate: Timestamp.fromDate(today),
+        seriesBrief: series,
+      };
+      await db.doc(event1.path).set(event1);
+
+      const event2: Event = {
+        id: 'event-2',
+        path: 'organizations/org-1/series/series-1/events/event-2',
+        name: 'Test Event 2',
+        startDate: Timestamp.fromDate(twoDaysAgo),
+        endDate: Timestamp.fromDate(twoDaysAgo),
+        seriesBrief: series,
+      };
+      await db.doc(event2.path).set(event2);
+
+      const events = await getEventsForOrganizations(['org-1']);
+      expect(events.length).toBe(1);
+      expect(events[0].id).toBe('event-1');
     });
   });
 });
