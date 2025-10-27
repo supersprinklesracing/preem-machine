@@ -6,6 +6,9 @@
     "prepare": "husky"
   },
   "private": true,
+  "engines": {
+    "npm": "11.x"
+  },
   "dependencies": {
     "@genkit-ai/firebase": "^1.16.1",
     "@genkit-ai/googleai": "^1.16.1",
