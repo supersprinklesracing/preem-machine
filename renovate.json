@@ -14,8 +14,7 @@
   },
   "lockFileMaintenance": {
     "enabled": true,
-    "automerge": true,
-    "schedule": ["after 10pm on sunday"]
+    "automerge": true
   },
   "npm": {
     "version": "10"
