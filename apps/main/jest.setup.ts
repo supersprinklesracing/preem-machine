@@ -5,14 +5,16 @@ import fetchMock from 'jest-fetch-mock';
 fetchMock.enableMocks();
 
 import { mockGoogleCloudFirestore } from 'firestore-jest-mock';
-import { Headers, Request, Response } from 'node-fetch';
-import { TextDecoder, TextEncoder } from 'util';
 import { FakeFirestore } from 'firestore-jest-mock/mocks/firestore';
-import { mockDbData } from './src/datastore/mock-db';
 mockGoogleCloudFirestore(
-  mockDbData,
+  {},
   { includeIdsInData: true, mutable: true, simulateQueryFilters: true },
 );
+
+import { Headers, Request, Response } from 'node-fetch';
+import { TextDecoder, TextEncoder } from 'util';
+
+import { mockDbData } from './src/datastore/mock-db';
 
 jest.mock('@/firebase/server/firebase-admin', () => ({
   getFirestore: jest.fn(() => new FakeFirestore(mockDbData)),
