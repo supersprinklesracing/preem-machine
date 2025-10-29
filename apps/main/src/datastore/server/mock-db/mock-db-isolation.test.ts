@@ -1,6 +1,6 @@
-
 import { getFirestore } from '@/firebase/server/firebase-admin';
 import { setupMockDb } from '@/test-utils';
+
 import { MOCK_USER_1 } from '../../mock-db';
 
 describe('Mock DB Isolation Test', () => {
