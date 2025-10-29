@@ -136,7 +136,10 @@ describe('paths', () => {
       expect(isUrlPath('org-id')).toBe(true);
       expect(isUrlPath('org-id/series-id')).toBe(true);
       expect(isUrlPath('user/user-id')).toBe(true);
-      expect(isUrlPath('view/user/user-id')).toBe(true);
+    });
+
+    it('should return false for view paths', () => {
+      expect(isUrlPath('view/user/user-id')).toBe(false);
     });
 
     it('should return false for invalid url paths', () => {
