@@ -217,6 +217,9 @@ export const isUrlPath = (path: string): path is UrlPath => {
   if (urlSegments.length === 0 || urlSegments.some((s) => !s)) {
     return false;
   }
+  if (urlSegments[0] === 'view') {
+    return false;
+  }
   if (urlSegments[0] === 'user') {
     return urlSegments.length === 2;
   }
