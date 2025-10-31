@@ -25,6 +25,10 @@ export function formatDateRange(
   const start = new Date(startDate);
   const end = endDate ? new Date(endDate) : null;
 
+  if (end && isAfter(start, end)) {
+    throw new Error('End date cannot be before start date');
+  }
+
   const format = (d: Date) => formatDateShort(d, timeZone);
 
   if (end && format(start) === format(end)) {
