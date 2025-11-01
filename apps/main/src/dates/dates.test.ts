@@ -39,4 +39,12 @@ describe('formatDateRange', () => {
       'Dec 25, 2024 - Jan 5, 2025',
     );
   });
+
+  it('should throw an error if the end date is before the start date', () => {
+    const startDate = new Date('2025-01-05T12:00:00Z');
+    const endDate = new Date('2025-01-01T12:00:00Z');
+    expect(() => formatDateRange(startDate, endDate)).toThrow(
+      'End date cannot be before start date',
+    );
+  });
 });
