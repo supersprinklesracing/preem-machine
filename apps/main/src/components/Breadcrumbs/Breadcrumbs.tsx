@@ -1,5 +1,5 @@
 'use client';
-import { Anchor, Breadcrumbs as MantineBreadcrumbs } from '@mantine/core';
+import { Anchor, Breadcrumbs as MantineBreadcrumbs, Text } from '@mantine/core';
 import Link from 'next/link';
 
 import { toUrlPath } from '@/datastore/paths';
@@ -45,9 +45,19 @@ export function Breadcrumbs({ brief }: { brief: Brief | undefined }) {
     }
   }
 
-  const items = breadcrumbs
-    .filter((b): b is NonNullable<Brief> => b !== null)
-    .map((b) => (
+  const filteredBreadcrumbs = breadcrumbs.filter(
+    (b): b is NonNullable<Brief> => b !== null,
+  );
+  const items = filteredBreadcrumbs.map((b, index) => {
+    const isLast = index === filteredBreadcrumbs.length - 1;
+    if (isLast) {
+      return (
+        <Text key={b.path} size="sm">
+          {b.name}
+        </Text>
+      );
+    }
+    return (
       <Anchor
         component={Link}
         href={`/view/${toUrlPath(b.path)}`}
@@ -57,7 +67,8 @@ export function Breadcrumbs({ brief }: { brief: Brief | undefined }) {
       >
         {b.name}
       </Anchor>
-    ));
+    );
+  });
 
   return <MantineBreadcrumbs>{items}</MantineBreadcrumbs>;
 }
