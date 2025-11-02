@@ -78,4 +78,10 @@ describe('Breadcrumbs', () => {
     expect(screen.getByText('Test Race 1')).toBeInTheDocument();
     expect(screen.getByText('Test Preem 1')).toBeInTheDocument();
   });
+
+  it('should not render the last breadcrumb as a link', () => {
+    render(<Breadcrumbs brief={preem1} />);
+    const lastBreadcrumb = screen.getByText('Test Preem 1');
+    expect(lastBreadcrumb.closest('a')).toBeNull();
+  });
 });
