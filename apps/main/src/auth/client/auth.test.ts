@@ -1,5 +1,6 @@
-import { login, loginWithCredential, logout } from './auth';
 import { UserCredential } from 'firebase/auth';
+
+import { login, loginWithCredential, logout } from './auth';
 
 describe('auth/client', () => {
   beforeEach(() => {
