@@ -114,7 +114,7 @@
   "overrides": {
     "chokidar": "4.0.3",
     "readdirp": "4.1.2",
-    "glob": "10.4.5",
+    "glob": "11.0.3",
     "svgo": "3.3.2",
     "domexception": "4.0.0",
     "@opentelemetry/exporter-jaeger": "1.30.1"
