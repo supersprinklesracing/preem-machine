@@ -188,6 +188,16 @@ describe('getAuthUser', () => {
     );
   });
 
+  it('should throw an error for malformed JSON in the E2E user header', async () => {
+    process.env.ENV_E2E_TESTING = 'true';
+    mockedHeaders.mockReturnValue(
+      new Map([['X-e2e-auth-user', 'invalid-json']]),
+    );
+    await expect(getAuthUser()).rejects.toThrow(
+      'Malformed JSON in X-e2e-auth-user header',
+    );
+  });
+
   it('should return null if no tokens are found and not in E2E testing mode', async () => {
     process.env.ENV_E2E_TESTING = 'false';
     mockGetTokens.mockResolvedValue(null);
