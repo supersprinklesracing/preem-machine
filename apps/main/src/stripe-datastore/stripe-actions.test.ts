@@ -17,19 +17,16 @@ jest.mock('next/cache', () => ({
 
 jest.mock('@/datastore/server/access', () => ({
   __esModule: true,
-  ...jest.requireActual('@/datastore/server/access'),
   isUserAuthorized: jest.fn(),
 }));
 
 jest.mock('@/datastore/server/update/update', () => ({
   __esModule: true,
-  ...jest.requireActual('@/datastore/server/update/update'),
   updateOrganizationStripeConnectAccount: jest.fn(),
 }));
 
 jest.mock('@/user/server/user', () => ({
   __esModule: true,
-  ...jest.requireActual('@/user/server/user'),
   requireLoggedInUserContext: jest.fn(),
 }));
 
@@ -38,6 +35,8 @@ jest.mock('@/stripe/server');
 const mockIsUserAuthorized = isUserAuthorized as jest.Mock;
 const mockRequireLoggedInUserContext = requireLoggedInUserContext as jest.Mock;
 const mockGetStripeServer = getStripeServer as jest.Mock;
+const mockUpdateOrganizationStripeConnectAccount =
+  updateOrganizationStripeConnectAccount as jest.Mock;
 
 const mockStripe = {
   accounts: {
@@ -50,15 +49,14 @@ const mockStripe = {
 };
 
 describe('stripe-actions', () => {
-  describe('createStripeConnectAccount', () => {
-    beforeEach(() => {
-      jest.clearAllMocks();
-      mockRequireLoggedInUserContext.mockResolvedValue({
-        authUser: { uid: 'test-user' },
-      });
-      mockGetStripeServer.mockResolvedValue(mockStripe);
+  beforeEach(() => {
+    jest.clearAllMocks();
+    mockRequireLoggedInUserContext.mockResolvedValue({
+      authUser: { uid: 'test-user' },
     });
-
+    mockGetStripeServer.mockResolvedValue(mockStripe);
+  });
+  describe('createStripeConnectAccount', () => {
     it('should return success: false when user is not authorized', async () => {
       mockIsUserAuthorized.mockResolvedValue(false);
       const result = await createStripeConnectAccount('unauthorized-org-id');
@@ -102,7 +100,7 @@ describe('stripe-actions', () => {
       const result = await createStripeConnectAccount('authorized-org-id');
       expect(result.success).toBe(true);
       expect(result.accountId).toBe('test-account-id');
-      expect(updateOrganizationStripeConnectAccount).toHaveBeenCalledWith(
+      expect(mockUpdateOrganizationStripeConnectAccount).toHaveBeenCalledWith(
         'authorized-org-id',
         { id: 'test-account-id' },
         { uid: 'test-user' },
@@ -111,14 +109,6 @@ describe('stripe-actions', () => {
   });
 
   describe('createDashboardLink', () => {
-    beforeEach(() => {
-      jest.clearAllMocks();
-      mockRequireLoggedInUserContext.mockResolvedValue({
-        authUser: { uid: 'test-user' },
-      });
-      mockGetStripeServer.mockResolvedValue(mockStripe);
-    });
-
     it('should return success: false when user is not authorized', async () => {
       mockIsUserAuthorized.mockResolvedValue(false);
       const result = await createDashboardLink(
@@ -168,14 +158,6 @@ describe('stripe-actions', () => {
   });
 
   describe('createOnboardingLink', () => {
-    beforeEach(() => {
-      jest.clearAllMocks();
-      mockRequireLoggedInUserContext.mockResolvedValue({
-        authUser: { uid: 'test-user' },
-      });
-      mockGetStripeServer.mockResolvedValue(mockStripe);
-    });
-
     it('should return success: false when user is not authorized', async () => {
       mockIsUserAuthorized.mockResolvedValue(false);
       const result = await createOnboardingLink(
