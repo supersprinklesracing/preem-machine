@@ -16,10 +16,16 @@ export const getAuthUser = async () => {
   if (ENV_E2E_TESTING) {
     const e2eAuthUser = (await headers()).get('X-e2e-auth-user');
     if (e2eAuthUser) {
-      const authUser = JSON.parse(e2eAuthUser) as AuthUser;
+      let authUser: AuthUser;
+      try {
+        authUser = JSON.parse(e2eAuthUser) as AuthUser;
+      } catch (error) {
+        throw new Error(`Malformed JSON in X-e2e-auth-user header: ${e2eAuthUser}`);
+      }
+
       if (!authUser.uid) {
         throw new Error(
-          `Misconfigured E2E Testing User in header: ${authUser}`,
+          `Misconfigured E2E Testing User in header: ${e2eAuthUser}`,
         );
       }
       return authUser;
