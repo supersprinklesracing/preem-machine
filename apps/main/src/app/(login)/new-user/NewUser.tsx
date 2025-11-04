@@ -81,9 +81,7 @@ export function NewUser({
   const topLeft = (
     <Stack>
       <UpdateUserProfileCard
-        name={
-          debouncedValues.name || authUser.displayName || 'Your full name'
-        }
+        name={debouncedValues.name || authUser.displayName || 'Your full name'}
         email={authUser.email ?? undefined}
         avatarUrl={form.values.avatarUrl ?? undefined}
         uploading={uploading}

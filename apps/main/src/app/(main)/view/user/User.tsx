@@ -14,6 +14,7 @@ import { IconMail, IconSettings } from '@tabler/icons-react';
 import Link from 'next/link';
 import React from 'react';
 
+import { FavoritesCarousel } from '@/components/FavoritesCarousel';
 import { MultiPanelLayout } from '@/components/layout/MultiPanelLayout';
 import { UserAvatarIcon } from '@/components/UserAvatar/UserAvatar';
 import { toUrlPath } from '@/datastore/paths';
@@ -28,7 +29,7 @@ import { useUserContext } from '@/user/client/UserContext';
 interface Props {
   user: Pick<
     UserType,
-    'id' | 'path' | 'name' | 'email' | 'avatarUrl'
+    'id' | 'path' | 'name' | 'email' | 'avatarUrl' | 'favoriteRefs'
   >;
   contributions: Pick<
     Contribution,
@@ -128,6 +129,11 @@ export function User({ user, contributions, organizations }: Props) {
               <Table.Tbody>{contributionRows}</Table.Tbody>
             </Table>
           </Card>
+          {user.favoriteRefs && user.favoriteRefs.length > 0 && (
+            <Stack mt="xl">
+              <FavoritesCarousel favorites={user.favoriteRefs} />
+            </Stack>
+          )}
         </Grid.Col>
       </Grid>
     </MultiPanelLayout>
