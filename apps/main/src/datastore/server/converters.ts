@@ -76,7 +76,7 @@ export const converter = <T extends z.ZodObject<any, any>>(
 
     if (!result.success) {
       throw new Error(
-        `Data from Firestore ${snapshot.ref.path} failed Zod validation: ${z.prettifyError(result.error)}`, 
+        `Data from Firestore ${snapshot.ref.path} failed Zod validation: ${z.prettifyError(result.error)}`,
       );
     }
 

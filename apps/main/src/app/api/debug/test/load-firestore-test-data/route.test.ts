@@ -28,7 +28,9 @@ const mockedHasUserRole = hasUserRole as jest.Mock;
 
 describe('POST /api/debug/test/load-firestore-test-data', () => {
   beforeEach(() => {
-    jest.spyOn(console, 'error').mockImplementation(() => { /* empty */ });
+    jest.spyOn(console, 'error').mockImplementation(() => {
+      /* empty */
+    });
   });
 
   afterEach(() => {

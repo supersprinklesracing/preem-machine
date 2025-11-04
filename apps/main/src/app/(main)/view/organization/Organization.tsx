@@ -14,6 +14,7 @@ import {
 import { IconChevronRight, IconPlus, IconWorldWww } from '@tabler/icons-react';
 import Link from 'next/link';
 
+import { FavoriteButton } from '@/components/FavoriteButton';
 import { SeriesCard } from '@/components/cards/SeriesCard';
 import { MultiPanelLayout } from '@/components/layout/MultiPanelLayout';
 import { UserAvatar } from '@/components/UserAvatar/UserAvatar';
@@ -31,7 +32,7 @@ import {
 interface Props {
   organization: Pick<
     OrganizationType,
-    'id' | 'name' | 'description' | 'website'
+    'id' | 'name' | 'description' | 'website' | 'path'
   >;
   serieses: {
     series: Series;
@@ -50,9 +51,10 @@ interface Props {
     User,
     'id' | 'avatarUrl' | 'name' | 'email' | 'organizationRefs' | 'path'
   >[];
+  user: User | null;
 }
 
-export function Organization({ organization, serieses, members }: Props) {
+export function Organization({ organization, serieses, members, user }: Props) {
   const memberRows = members.map((member) => (
     <Table.Tr key={member.id}>
       <Table.Td>
@@ -73,7 +75,13 @@ export function Organization({ organization, serieses, members }: Props) {
   return (
     <MultiPanelLayout>
       <Stack>
-        <Title>{organization.name}</Title>
+        <Group>
+          <Title>{organization.name}</Title>
+          <FavoriteButton
+            docRef={{ id: organization.id, path: organization.path }}
+            user={user}
+          />
+        </Group>
         {organization.description && <Text>{organization.description}</Text>}
         {organization.website && (
           <Group gap="xs">

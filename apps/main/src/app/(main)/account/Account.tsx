@@ -16,6 +16,7 @@ import { useRouter } from 'next/navigation';
 import { useState } from 'react';
 
 import { logout } from '@/auth/client/auth';
+import { FavoritesCarousel } from '@/components/FavoritesCarousel';
 import { UpdateUserProfileCard } from '@/components/cards/UpdateUserProfileCard';
 import { FormActionResult } from '@/components/forms/forms';
 import { useActionForm } from '@/components/forms/useActionForm';
@@ -152,7 +153,16 @@ export function Account({
 
   return (
     <form onSubmit={form.onSubmit(handleSubmit)}>
-      <MultiPanelLayout topLeft={topLeft} topRight={topRight} />
+      <MultiPanelLayout
+        topLeft={topLeft}
+        topRight={topRight}
+        children={
+          user.favoriteRefs &&
+          user.favoriteRefs.length > 0 && (
+            <FavoritesCarousel favorites={user.favoriteRefs} />
+          )
+        }
+      />
     </form>
   );
 }

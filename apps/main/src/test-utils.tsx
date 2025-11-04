@@ -70,7 +70,11 @@ export const MOCK_ADMIN_USER: User = {
   ],
 };
 
-export const MOCK_USER_CONTEXT = { uid: MOCK_AUTH_USER.uid, authUser: MOCK_AUTH_USER, user: MOCK_USER };
+export const MOCK_USER_CONTEXT = {
+  uid: MOCK_AUTH_USER.uid,
+  authUser: MOCK_AUTH_USER,
+  user: MOCK_USER,
+};
 export const MOCK_INCOMPLETE_USER_CONTEXT: UserContextValue = {
   uid: MOCK_AUTH_USER.uid,
   authUser: MOCK_AUTH_USER,
