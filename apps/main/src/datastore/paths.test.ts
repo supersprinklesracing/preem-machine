@@ -16,7 +16,9 @@ import {
 
 describe('paths', () => {
   beforeEach(() => {
-    jest.spyOn(console, 'debug').mockImplementation(() => { /* empty */ });
+    jest.spyOn(console, 'debug').mockImplementation(() => {
+      /* empty */
+    });
   });
 
   afterEach(() => {

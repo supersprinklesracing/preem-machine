@@ -4,6 +4,7 @@ import { type DocumentSnapshot } from 'firebase-admin/firestore';
 import { cache } from 'react';
 
 import { getFirestore } from '@/firebase/server/firebase-admin';
+import { getUser } from '@/user/server/user';
 
 import { notFound } from '../../errors';
 import { docId, DocPath } from '../../paths';
@@ -254,7 +255,9 @@ export const getRenderableRaceDataForPage = cache(async (path: DocPath) => {
     notFound(`Race not found: ${path}`);
   }
 
-  return await getRaceWithPreems(doc);
+  const raceData = await getRaceWithPreems(doc);
+  const user = await getUser();
+  return { ...raceData, user };
 });
 
 export const getRacePageDataWithUsers = cache(async (path: string) => {
@@ -330,8 +333,9 @@ export const getRenderableOrganizationDataForPage = cache(
         ?.map((ref) => ref.id)
         .filter((id): id is string => !!id) ?? [];
     const members = memberIds.length > 0 ? await getUsersByIds(memberIds) : [];
+    const user = await getUser();
 
-    return { organization, serieses, members };
+    return { organization, serieses, members, user };
   },
 );
 
@@ -342,7 +346,9 @@ export const getRenderableSeriesDataForPage = cache(async (path: DocPath) => {
     notFound(`Series not found: ${path}`);
   }
 
-  return await getEventsForSeries(doc);
+  const seriesData = await getEventsForSeries(doc);
+  const user = await getUser();
+  return { ...seriesData, user };
 });
 
 export const getRenderableEventDataForPage = cache(async (path: DocPath) => {
@@ -351,7 +357,9 @@ export const getRenderableEventDataForPage = cache(async (path: DocPath) => {
   if (!doc.exists) {
     notFound(`Event not found: ${path}`);
   }
-  return await getRacesForEvent(doc);
+  const eventData = await getRacesForEvent(doc);
+  const user = await getUser();
+  return { ...eventData, user };
 });
 
 export const getRenderableHomeDataForPage = cache(async () => {
@@ -426,10 +434,13 @@ export const getRenderableHomeDataForPage = cache(async () => {
     eventsSnap.docs.map(getRacesForEvent),
   );
 
+  const user = await getUser();
+
   return {
     eventsWithRaces,
     contributions,
     preems,
+    user,
   };
 });
 

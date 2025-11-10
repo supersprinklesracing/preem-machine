@@ -90,12 +90,12 @@ jobs:
         with:
           nx: run-many -t lint
 
-      - name: "Test (test:default)"
+      - name: 'Test (test:default)'
         uses: raegen/nx@v0.3.6
         with:
           nx: run-many -t test
 
-      - name: "Test (test:node)"
+      - name: 'Test (test:node)'
         uses: raegen/nx@v0.3.6
         with:
           nx: run-many -t test:node

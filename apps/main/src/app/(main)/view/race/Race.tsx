@@ -16,6 +16,7 @@ import Link from 'next/link';
 import React, { useState } from 'react';
 
 import { AnimatedNumber } from '@/components/AnimatedNumber';
+import { FavoriteButton } from '@/components/FavoriteButton';
 import { PreemCard } from '@/components/cards/PreemCard';
 import { RaceCard } from '@/components/cards/RaceCard';
 import { ContributionModal } from '@/components/ContributionModal';
@@ -25,15 +26,16 @@ import { PreemStatusBadge } from '@/components/PreemStatusBadge/PreemStatusBadge
 import { UserAvatarIcon } from '@/components/UserAvatar/UserAvatar';
 import { toUrlPath } from '@/datastore/paths';
 import { PreemWithContributions } from '@/datastore/query-schema';
-import { Preem, Race as RaceType } from '@/datastore/schema';
+import { Preem, Race as RaceType, User } from '@/datastore/schema';
 import { getSponsorName } from '@/datastore/sponsors';
 
 interface Props {
   race: RaceType;
   children: PreemWithContributions[];
+  user: User | null;
 }
 
-export function Race({ race, children }: Props) {
+export function Race({ race, children, user }: Props) {
   const [selectedPreem, setSelectedPreem] = useState<Preem | null>(null);
 
   const allContributions = children
@@ -190,14 +192,20 @@ export function Race({ race, children }: Props) {
             <Grid.Col span={{ base: 12, lg: 8 }}>
               <Group justify="space-between" mb="md">
                 <Title order={2}>Preems</Title>
-                <Button
-                  component={Link}
-                  href={`/big-screen/${toUrlPath(race.path)}`}
-                  variant="outline"
-                  leftSection={<IconDeviceTv size={16} />}
-                >
-                  Big Screen
-                </Button>
+                <Group>
+                  <FavoriteButton
+                    docRef={{ id: race.id, path: race.path }}
+                    user={user}
+                  />
+                  <Button
+                    component={Link}
+                    href={`/big-screen/${toUrlPath(race.path)}`}
+                    variant="outline"
+                    leftSection={<IconDeviceTv size={16} />}
+                  >
+                    Big Screen
+                  </Button>
+                </Group>
               </Group>
               <Card withBorder padding="md" radius="md">
                 {/* Desktop view */}

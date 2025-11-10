@@ -12,11 +12,12 @@ import { IconChevronRight, IconWorldWww } from '@tabler/icons-react';
 import Link from 'next/link';
 
 import { DateLocationDetail } from '@/components/cards/DateLocationDetail';
+import { FavoriteButton } from '@/components/FavoriteButton';
 import { RaceCard } from '@/components/cards/RaceCard';
 import { MultiPanelLayout } from '@/components/layout/MultiPanelLayout';
 import { organizationPath, seriesPath, toUrlPath } from '@/datastore/paths';
 import { RaceWithPreems } from '@/datastore/query-schema';
-import { Event as EventType } from '@/datastore/schema';
+import { Event as EventType, User } from '@/datastore/schema';
 
 interface Props {
   event: Pick<
@@ -31,16 +32,23 @@ interface Props {
     | 'timezone'
   >;
   children: RaceWithPreems[];
+  user: User | null;
 }
 
-export function Event({ event, children }: Props) {
+export function Event({ event, children, user }: Props) {
   const series = event.seriesBrief;
   const organization = series.organizationBrief;
 
   return (
     <MultiPanelLayout>
       <Stack>
-        <Title>{event.name}</Title>
+        <Group>
+          <Title>{event.name}</Title>
+          <FavoriteButton
+            docRef={{ id: event.path.split('/').pop()!, path: event.path }}
+            user={user}
+          />
+        </Group>
         <Text>
           Part of{' '}
           <Anchor

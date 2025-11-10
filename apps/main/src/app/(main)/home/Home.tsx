@@ -2,9 +2,10 @@ import { Card, Grid, GridCol, Group, Stack, Text, Title } from '@mantine/core';
 import { IconCalendar, IconMapPin } from '@tabler/icons-react';
 import Link from 'next/link';
 
+import { FavoritesCarousel } from '@/components/FavoritesCarousel';
 import { toUrlPath } from '@/datastore/paths';
 import { EventWithRaces } from '@/datastore/query-schema';
-import { Contribution, Preem } from '@/datastore/schema';
+import { Contribution, Preem, User } from '@/datastore/schema';
 import { formatDateLong, formatTime } from '@/dates/dates';
 
 import { LiveContributionFeed } from '../../../components/LiveContributionFeed/LiveContributionFeed';
@@ -14,11 +15,15 @@ interface Props {
   eventsWithRaces: EventWithRaces[];
   contributions: Contribution[];
   preems: Preem[];
+  user: User | null;
 }
 
-export function Home({ eventsWithRaces, contributions, preems }: Props) {
+export function Home({ eventsWithRaces, contributions, preems, user }: Props) {
   return (
     <Stack>
+      {user?.favoriteRefs && user.favoriteRefs.length > 0 && (
+        <FavoritesCarousel favorites={user.favoriteRefs} />
+      )}
       <Title order={1}>Current & Upcoming Preems</Title>
       <PreemSection preems={preems} />
       <Title order={1} mt="xl">
@@ -48,10 +53,7 @@ export function Home({ eventsWithRaces, contributions, preems }: Props) {
                         <Group gap="xs">
                           <IconCalendar size={16} />
                           <Text size="sm" c="dimmed">
-                            {formatDateLong(
-                              event?.startDate,
-                              event?.timezone,
-                            )}
+                            {formatDateLong(event?.startDate, event?.timezone)}
                           </Text>
                         </Group>
                         <Group gap="xs">

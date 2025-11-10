@@ -14,10 +14,11 @@ import Link from 'next/link';
 
 import { DateLocationDetail } from '@/components/cards/DateLocationDetail';
 import { EventCard } from '@/components/cards/EventCard';
+import { FavoriteButton } from '@/components/FavoriteButton';
 import { MultiPanelLayout } from '@/components/layout/MultiPanelLayout';
 import { organizationPath, toUrlPath } from '@/datastore/paths';
 import { EventWithRaces } from '@/datastore/query-schema';
-import { Series as SeriesType } from '@/datastore/schema';
+import { Series as SeriesType, User } from '@/datastore/schema';
 
 interface Props {
   series: Pick<
@@ -33,14 +34,21 @@ interface Props {
     | 'timezone'
   >;
   children: EventWithRaces[];
+  user: User | null;
 }
 
-export function Series({ series, children: eventsWithRaces }: Props) {
+export function Series({ series, children: eventsWithRaces, user }: Props) {
   const organization = series.organizationBrief;
   return (
     <MultiPanelLayout>
       <Stack>
-        <Title>{series.name}</Title>
+        <Group>
+          <Title>{series.name}</Title>
+          <FavoriteButton
+            docRef={{ id: series.path.split('/').pop()!, path: series.path }}
+            user={user}
+          />
+        </Group>
         <Text>
           Hosted by{' '}
           <Anchor

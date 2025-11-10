@@ -11,10 +11,11 @@ export const docPathSchema = z
   });
 export type DocPath = z.infer<typeof docPathSchema>;
 
-const docRefSchema = z.object({
+export const docRefSchema = z.object({
   id: z.string(),
   path: docPathSchema,
 });
+export type DocRef = z.infer<typeof docRefSchema>;
 
 // Metadata
 const MetadataSchema = z.object({
@@ -57,6 +58,7 @@ export const UserSchema = baseDocSchema.extend({
   avatarUrl: z.string().url().optional(),
   address: z.string().optional(),
   organizationRefs: z.array(docRefSchema).optional(),
+  favoriteRefs: z.array(docRefSchema).optional(),
 });
 export type User = z.infer<typeof UserSchema>;
 

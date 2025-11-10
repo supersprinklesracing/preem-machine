@@ -1,6 +1,7 @@
 'use server';
 
 import { redirect } from 'next/navigation';
+import { cache } from 'react';
 
 import { AuthUser } from '@/auth/user';
 import { User } from '@/datastore/schema';
@@ -53,6 +54,26 @@ export const requireAnyUserContext = async (): Promise<{
     return { uid, authUser, user };
   }
 };
+
+export const _getUser = async () => {
+  const { user } = await getUserContext();
+  return user;
+};
+
+export const getUser = cache(_getUser);
+
+export const _verifyUserContext = async () => {
+  const { authUser, user } = await getUserContext();
+  if (!authUser) {
+    redirect('/login');
+  }
+  if (!user) {
+    redirect('/new-user');
+  }
+  return { authUser, user };
+};
+
+export const verifyUserContext = cache(_verifyUserContext);
 
 export const hasUserRole = async (
   requiredRole: string,
