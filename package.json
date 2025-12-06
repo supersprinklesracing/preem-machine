@@ -71,7 +71,7 @@
     "@testing-library/user-event": "^14.6.1",
     "@types/jest": "^30.0.0",
     "@types/libsodium-wrappers": "^0.7.14",
-    "@types/node": "22.19.1",
+    "@types/node": "24.10.1",
     "@types/react": "19.2.7",
     "@types/react-dom": "19.2.3",
     "babel-jest": "^30.0.2",
