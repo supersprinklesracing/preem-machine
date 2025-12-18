@@ -107,7 +107,6 @@ const getEventsForSeries = async (
   return result;
 };
 
-// Optimized by Bolt
 export const getSeriesForOrganization = async (
   organizationDoc: DocumentSnapshot<Organization>,
 ): Promise<SeriesWithEvents[]> => {
