@@ -99,7 +99,7 @@ export function LiveContributionFeed({
       <Text size="sm" c="dimmed">
         Real-time contributions as they happen.
       </Text>
-      <Stack mt="md" style={stackStyle}>
+      <Stack mt="md" style={stackStyle} aria-live="polite" role="log">
         {contributions.length === 0 ? (
           <Text c="dimmed" ta="center" py="xl">
             Waiting for contributions...
