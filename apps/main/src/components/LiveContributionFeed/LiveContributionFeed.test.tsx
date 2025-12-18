@@ -44,4 +44,10 @@ describe('LiveContributionFeed component', () => {
       screen.getByText('Waiting for contributions...'),
     ).toBeInTheDocument();
   });
+
+  it('should have accessibility attributes for live updates', () => {
+    render(<LiveContributionFeed {...mockData} />);
+    const region = screen.getByRole('log');
+    expect(region).toHaveAttribute('aria-live', 'polite');
+  });
 });
