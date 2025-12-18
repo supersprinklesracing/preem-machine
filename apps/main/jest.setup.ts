@@ -1,6 +1,38 @@
 import '@testing-library/jest-dom';
 import './src/matchMedia.mock';
 
+// Mock lodash/merge for firestore-jest-mock which requires it but doesn't declare it as dependency
+jest.mock(
+  'lodash/merge',
+  () =>
+    (target: any, ...sources: any[]) => {
+      const isObject = (item: any) =>
+        item && typeof item === 'object' && !Array.isArray(item);
+
+      const mergeDeep = (target: any, source: any) => {
+        if (typeof target !== 'object' || target === null) return source;
+        if (typeof source !== 'object' || source === null) return source;
+
+        for (const key in source) {
+          if (Object.prototype.hasOwnProperty.call(source, key)) {
+            if (isObject(source[key]) && isObject(target[key])) {
+              mergeDeep(target[key], source[key]);
+            } else {
+              target[key] = source[key];
+            }
+          }
+        }
+        return target;
+      };
+
+      for (const source of sources) {
+        mergeDeep(target, source);
+      }
+      return target;
+    },
+  { virtual: true },
+);
+
 import fetchMock from 'jest-fetch-mock';
 fetchMock.enableMocks();
 

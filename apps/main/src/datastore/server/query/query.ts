@@ -65,9 +65,9 @@ const getRaceWithPreems = async (
     .collection('preems')
     .withConverter(converter(PreemSchema))
     .get();
-  for (const doc of snap.docs) {
-    result.children.push(await getPreemWithContributions(doc));
-  }
+  result.children = await Promise.all(
+    snap.docs.map((doc) => getPreemWithContributions(doc)),
+  );
   return result;
 };
 
@@ -83,9 +83,9 @@ const getRacesForEvent = async (
     .collection('races')
     .withConverter(converter(RaceSchema))
     .get();
-  for (const doc of snap.docs) {
-    result.children.push(await getRaceWithPreems(doc));
-  }
+  result.children = await Promise.all(
+    snap.docs.map((doc) => getRaceWithPreems(doc)),
+  );
   return result;
 };
 
@@ -101,12 +101,13 @@ const getEventsForSeries = async (
     .collection('events')
     .withConverter(converter(EventSchema))
     .get();
-  for (const doc of snap.docs) {
-    result.children.push(await getRacesForEvent(doc));
-  }
+  result.children = await Promise.all(
+    snap.docs.map((doc) => getRacesForEvent(doc)),
+  );
   return result;
 };
 
+// Optimized by Bolt
 export const getSeriesForOrganization = async (
   organizationDoc: DocumentSnapshot<Organization>,
 ): Promise<SeriesWithEvents[]> => {
