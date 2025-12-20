@@ -7,6 +7,36 @@ fetchMock.enableMocks();
 import { mockGoogleCloudFirestore } from 'firestore-jest-mock';
 import { Headers, Request, Response } from 'node-fetch';
 import { TextDecoder, TextEncoder } from 'util';
+
+// Mock lodash/merge for firestore-jest-mock
+jest.mock(
+  'lodash/merge',
+  () => {
+    const isObject = (item: any) =>
+      item && typeof item === 'object' && !Array.isArray(item);
+
+    const deepMerge = (target: any, source: any) => {
+      const output = Object.assign({}, target);
+      if (isObject(target) && isObject(source)) {
+        Object.keys(source).forEach((key) => {
+          if (isObject(source[key])) {
+            if (!(key in target)) {
+              Object.assign(output, { [key]: source[key] });
+            } else {
+              output[key] = deepMerge(target[key], source[key]);
+            }
+          } else {
+            Object.assign(output, { [key]: source[key] });
+          }
+        });
+      }
+      return output;
+    };
+    return deepMerge;
+  },
+  { virtual: true },
+);
+
 mockGoogleCloudFirestore(
   {},
   { includeIdsInData: true, mutable: true, simulateQueryFilters: true },
