@@ -4,6 +4,37 @@ import './src/matchMedia.mock';
 import fetchMock from 'jest-fetch-mock';
 fetchMock.enableMocks();
 
+// Mock lodash/merge for firestore-jest-mock
+jest.mock(
+  'lodash/merge',
+  () => {
+    function isObject(item: any) {
+      return item && typeof item === 'object' && !Array.isArray(item);
+    }
+
+    function mergeDeep(target: any, ...sources: any[]) {
+      if (!sources.length) return target;
+      const source = sources.shift();
+
+      if (isObject(target) && isObject(source)) {
+        for (const key in source) {
+          if (isObject(source[key])) {
+            if (!target[key]) Object.assign(target, { [key]: {} });
+            mergeDeep(target[key], source[key]);
+          } else {
+            Object.assign(target, { [key]: source[key] });
+          }
+        }
+      }
+
+      return mergeDeep(target, ...sources);
+    }
+
+    return mergeDeep;
+  },
+  { virtual: true },
+);
+
 import { mockGoogleCloudFirestore } from 'firestore-jest-mock';
 import { Headers, Request, Response } from 'node-fetch';
 import { TextDecoder, TextEncoder } from 'util';
