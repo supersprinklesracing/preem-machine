@@ -65,9 +65,7 @@ const getRaceWithPreems = async (
     .collection('preems')
     .withConverter(converter(PreemSchema))
     .get();
-  for (const doc of snap.docs) {
-    result.children.push(await getPreemWithContributions(doc));
-  }
+  result.children = await Promise.all(snap.docs.map(getPreemWithContributions));
   return result;
 };
 
@@ -83,9 +81,7 @@ const getRacesForEvent = async (
     .collection('races')
     .withConverter(converter(RaceSchema))
     .get();
-  for (const doc of snap.docs) {
-    result.children.push(await getRaceWithPreems(doc));
-  }
+  result.children = await Promise.all(snap.docs.map(getRaceWithPreems));
   return result;
 };
 
@@ -101,9 +97,7 @@ const getEventsForSeries = async (
     .collection('events')
     .withConverter(converter(EventSchema))
     .get();
-  for (const doc of snap.docs) {
-    result.children.push(await getRacesForEvent(doc));
-  }
+  result.children = await Promise.all(snap.docs.map(getRacesForEvent));
   return result;
 };
 
