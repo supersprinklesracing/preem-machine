@@ -202,6 +202,7 @@ export function Login({
                   name="email"
                   type="email"
                   placeholder="Email address"
+                  aria-label="Email address"
                 />
                 <PasswordInput
                   required
@@ -210,6 +211,7 @@ export function Login({
                   onChange={(e) => setPassword(e.target.value)}
                   placeholder="Password"
                   minLength={8}
+                  aria-label="Password"
                 />
                 <Switch
                   checked={shouldLoginWithAction}

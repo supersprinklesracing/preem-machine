@@ -80,6 +80,7 @@ export function Register() {
                 name="email"
                 type="email"
                 placeholder="Email address"
+                aria-label="Email address"
               />
               <PasswordInput
                 required
@@ -88,6 +89,7 @@ export function Register() {
                 onChange={(e) => setPassword(e.target.value)}
                 placeholder="Password"
                 minLength={8}
+                aria-label="Password"
               />
               {error && <Text c="red">{error.message}</Text>}
               <Button
