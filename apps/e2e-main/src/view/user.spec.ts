@@ -1,7 +1,5 @@
 import { ENV_E2E_TESTING_USER } from '../util/e2e-env';
-import {
-  useE2eTestingUserBeforeEach,
-} from '../util/e2e-test-utils';
+import { useE2eTestingUserBeforeEach } from '../util/e2e-test-utils';
 import { expect, test } from '../util/fixtures';
 
 test.describe('view', () => {

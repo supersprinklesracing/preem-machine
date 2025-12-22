@@ -56,52 +56,54 @@ export const createUser = async (
   const path = `users/${authUser.uid}`;
   const newUserRef = await getDocRefInternal(UserSchema, path);
 
-  const newUserDetails = await newUserRef.firestore.runTransaction(async (transaction) => {
-    // Check for invites for the user's email address or UID
-    const invitesByEmailSnapshot = await (
-      await getCollectionRefInternal(InviteSchema, 'invites')
-    )
-      .where('email', '==', authUser.email)
-      .where('status', '==', 'pending')
-      .get();
-    const invitesByUidSnapshot = await (
-      await getCollectionRefInternal(InviteSchema, 'invites')
-    )
-      .where('uid', '==', authUser.uid)
-      .where('status', '==', 'pending')
-      .get();
+  const newUserDetails = await newUserRef.firestore.runTransaction(
+    async (transaction) => {
+      // Check for invites for the user's email address or UID
+      const invitesByEmailSnapshot = await (
+        await getCollectionRefInternal(InviteSchema, 'invites')
+      )
+        .where('email', '==', authUser.email)
+        .where('status', '==', 'pending')
+        .get();
+      const invitesByUidSnapshot = await (
+        await getCollectionRefInternal(InviteSchema, 'invites')
+      )
+        .where('uid', '==', authUser.uid)
+        .where('status', '==', 'pending')
+        .get();
 
-    const allInvites = [
-      ...invitesByEmailSnapshot.docs,
-      ...invitesByUidSnapshot.docs,
-    ];
+      const allInvites = [
+        ...invitesByEmailSnapshot.docs,
+        ...invitesByUidSnapshot.docs,
+      ];
 
-    const organizationRefsMap = new Map<
-      string,
-      {id: string, path: string}
-    >();
+      const organizationRefsMap = new Map<
+        string,
+        { id: string; path: string }
+      >();
 
-    allInvites.forEach((doc) => {
-      (doc.data().organizationRefs ?? []).forEach((orgRef) => {
-        organizationRefsMap.set(orgRef.path, orgRef);
+      allInvites.forEach((doc) => {
+        (doc.data().organizationRefs ?? []).forEach((orgRef) => {
+          organizationRefsMap.set(orgRef.path, orgRef);
+        });
+        transaction.update(doc.ref, { status: 'accepted' });
       });
-      transaction.update(doc.ref, { status: 'accepted' });
-    });
 
-    const newUser: User = {
-      ...newUserEdits,
-      id: newUserRef.id,
-      path: asDocPath(newUserRef.path),
-      organizationRefs: Array.from(organizationRefsMap.values()),
-      ...getCreateMetadata(newUserRef),
-    };
+      const newUser: User = {
+        ...newUserEdits,
+        id: newUserRef.id,
+        path: asDocPath(newUserRef.path),
+        organizationRefs: Array.from(organizationRefsMap.values()),
+        ...getCreateMetadata(newUserRef),
+      };
 
-    transaction.set(newUserRef, newUser);
-    return newUser;
-  });
+      transaction.set(newUserRef, newUser);
+      return newUser;
+    },
+  );
   // This is a hack to satisfy tests (which have issues with reading a record
   // after a transaction)
-  return {newUserDetails, newUser: await newUserRef.get()}
+  return { newUserDetails, newUser: await newUserRef.get() };
 };
 
 export const createOrganization = async (

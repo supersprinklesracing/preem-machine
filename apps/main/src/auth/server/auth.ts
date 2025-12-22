@@ -10,7 +10,10 @@ import { getFirebaseAdminApp } from '@/firebase/server/firebase-admin';
 
 import { ENV_E2E_TESTING } from '../../env/env';
 import { AuthUser } from '../user';
-import { toAuthContextUserFromTokens, toAuthContextUserFromUserRecord } from './auth-context-user';
+import {
+  toAuthContextUserFromTokens,
+  toAuthContextUserFromUserRecord,
+} from './auth-context-user';
 
 export const getAuthUser = async () => {
   if (ENV_E2E_TESTING) {
@@ -20,7 +23,9 @@ export const getAuthUser = async () => {
       try {
         authUser = JSON.parse(e2eAuthUser) as AuthUser;
       } catch (error) {
-        throw new Error(`Malformed JSON in X-e2e-auth-user header: ${e2eAuthUser}`);
+        throw new Error(
+          `Malformed JSON in X-e2e-auth-user header: ${e2eAuthUser}`,
+        );
       }
 
       if (!authUser.uid) {
@@ -101,4 +106,3 @@ export const getBearerUser = async (): Promise<AuthUser | null> => {
     return null;
   }
 };
-

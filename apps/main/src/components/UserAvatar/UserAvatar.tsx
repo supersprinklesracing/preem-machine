@@ -52,6 +52,7 @@ export function UserAvatarIcon({ user, size = 'md' }: UserAvatarProps) {
       <Link
         href={linkHref}
         style={{ textDecoration: 'none', color: 'inherit' }}
+        aria-label={name}
       >
         {content}
       </Link>
@@ -67,6 +68,7 @@ export function LoggedOutAvatarIcon({ size = 'md' }: UserAvatarProps) {
     <Link
       href={`/login?redirect=${pathname}`}
       style={{ textDecoration: 'none', color: 'inherit' }}
+      aria-label="Log in"
     >
       <Avatar radius="50%" size={size} />
     </Link>
