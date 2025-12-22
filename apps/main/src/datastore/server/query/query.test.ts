@@ -11,7 +11,10 @@ import {
 import { getFirestore } from '@/firebase/server/firebase-admin';
 import { setupMockDb } from '@/test-utils';
 
-import { getEventsForOrganizations, getRenderableHomeDataForPage } from './query';
+import {
+  getEventsForOrganizations,
+  getRenderableHomeDataForPage,
+} from './query';
 
 describe('query', () => {
   let db: Firestore;
