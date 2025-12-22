@@ -1,20 +1,12 @@
 'use client';
 
-import {
-  Card,
-  Group,
-  Stack,
-  Text,
-  Title,
-  useMantineTheme,
-} from '@mantine/core';
+import { Card, Stack, Text, Title, useMantineTheme } from '@mantine/core';
 import { useMediaQuery } from '@mantine/hooks';
-import Link from 'next/link';
 import { CSSProperties } from 'react';
 
-import { UserAvatarIcon } from '@/components/UserAvatar/UserAvatar';
-import { toUrlPath } from '@/datastore/paths';
 import { Contribution } from '@/datastore/schema';
+
+import { ContributionFeedItem } from './ContributionFeedItem';
 
 interface LiveContributionFeedProps {
   contributions: Pick<
@@ -41,57 +33,9 @@ export function LiveContributionFeed({
     ? { flexGrow: 1, overflowY: 'auto', height: '100%' }
     : {};
 
-  const contributionFeed = contributions.map((c) => {
-    const contributor = c.contributor;
-    return (
-      <Group key={c.path} wrap="nowrap">
-        <UserAvatarIcon user={contributor} />
-        <div>
-          <Text size="sm">
-            <Text
-              component={Link}
-              href={
-                contributor?.path ? `/view/${toUrlPath(contributor.path)}` : '#'
-              }
-              fw={600}
-              style={{ textDecoration: 'none', color: 'inherit' }}
-            >
-              {contributor?.name}
-            </Text>{' '}
-            -{' '}
-            <Text span c="green" fw={600}>
-              ${c.amount}
-            </Text>{' '}
-            to{' '}
-            <Text
-              component={Link}
-              href={`/view/${toUrlPath(c.preemBrief.path)}`}
-              style={{ textDecoration: 'none', color: 'inherit' }}
-            >
-              &quot;{c.preemBrief.name}&quot;
-            </Text>{' '}
-            in the{' '}
-            <Text
-              component={Link}
-              href={`/view/${toUrlPath(c.preemBrief.raceBrief.path)}`}
-              fw={600}
-              style={{ textDecoration: 'none', color: 'inherit' }}
-            >
-              &quot;{c.preemBrief.raceBrief.name}&quot;
-            </Text>{' '}
-            race!
-          </Text>
-          {c.message && (
-            <Card withBorder padding="xs" mt="xs">
-              <Text size="xs" fs="italic">
-                &quot;{c.message}&quot;
-              </Text>
-            </Card>
-          )}
-        </div>
-      </Group>
-    );
-  });
+  const contributionFeed = contributions.map((c) => (
+    <ContributionFeedItem key={c.path} contribution={c} />
+  ));
 
   return (
     <Card withBorder padding="lg" radius="md" style={cardStyle}>
