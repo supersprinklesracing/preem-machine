@@ -71,7 +71,7 @@ jobs:
 
       - name: Restore NPM CI Cache
         id: node_modules-cache
-        uses: actions/cache/restore@v4
+        uses: actions/cache/restore@v5
         with:
           path: node_modules
           key: node-${{ runner.os }}-node-${{ hashFiles('**/package-lock.json') }}
@@ -109,7 +109,7 @@ jobs:
 
       - name: Restore E2E Playwright Cache Deps
         id: playwright-cache
-        uses: actions/cache/restore@v4
+        uses: actions/cache/restore@v5
         with:
           path: |
             ~/.cache/ms-playwright
@@ -140,14 +140,14 @@ jobs:
 
       - name: Save NPM CI Cache
         if: always()
-        uses: actions/cache/save@v4
+        uses: actions/cache/save@v5
         with:
           path: node_modules
           key: node-${{ runner.os }}-node-${{ hashFiles('**/package-lock.json') }}
 
       - name: Save E2E Playwright Cache Deps
         if: always()
-        uses: actions/cache/save@v4
+        uses: actions/cache/save@v5
         with:
           path: |
             ~/.cache/ms-playwright
