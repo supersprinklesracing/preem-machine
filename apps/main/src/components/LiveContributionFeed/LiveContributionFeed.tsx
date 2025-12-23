@@ -10,41 +10,26 @@ import {
 } from '@mantine/core';
 import { useMediaQuery } from '@mantine/hooks';
 import Link from 'next/link';
-import { CSSProperties } from 'react';
+import { CSSProperties, memo } from 'react';
 
 import { UserAvatarIcon } from '@/components/UserAvatar/UserAvatar';
 import { toUrlPath } from '@/datastore/paths';
 import { Contribution } from '@/datastore/schema';
 
+type FeedContribution = Pick<
+  Contribution,
+  'id' | 'path' | 'contributor' | 'amount' | 'preemBrief' | 'message'
+>;
+
 interface LiveContributionFeedProps {
-  contributions: Pick<
-    Contribution,
-    'id' | 'path' | 'contributor' | 'amount' | 'preemBrief' | 'message'
-  >[];
+  contributions: FeedContribution[];
 }
 
-export function LiveContributionFeed({
-  contributions,
-}: LiveContributionFeedProps) {
-  const theme = useMantineTheme();
-  const isLargeScreen = useMediaQuery(`(min-width: ${theme.breakpoints.lg})`);
-
-  const cardStyle: CSSProperties = isLargeScreen
-    ? {
-        position: 'sticky',
-        top: '80px',
-        height: 'calc(100vh - 180px)',
-      }
-    : {};
-
-  const stackStyle: CSSProperties = isLargeScreen
-    ? { flexGrow: 1, overflowY: 'auto', height: '100%' }
-    : {};
-
-  const contributionFeed = contributions.map((c) => {
+const ContributionItem = memo(
+  ({ contribution: c }: { contribution: FeedContribution }) => {
     const contributor = c.contributor;
     return (
-      <Group key={c.path} wrap="nowrap">
+      <Group wrap="nowrap">
         <UserAvatarIcon user={contributor} />
         <div>
           <Text size="sm">
@@ -91,7 +76,32 @@ export function LiveContributionFeed({
         </div>
       </Group>
     );
-  });
+  },
+);
+
+ContributionItem.displayName = 'ContributionItem';
+
+export function LiveContributionFeed({
+  contributions,
+}: LiveContributionFeedProps) {
+  const theme = useMantineTheme();
+  // Using false for getInitialValueInEffect to prevent hydration mismatch
+  const isLargeScreen = useMediaQuery(
+    `(min-width: ${theme.breakpoints.lg})`,
+    false,
+  );
+
+  const cardStyle: CSSProperties = isLargeScreen
+    ? {
+        position: 'sticky',
+        top: '80px',
+        height: 'calc(100vh - 180px)',
+      }
+    : {};
+
+  const stackStyle: CSSProperties = isLargeScreen
+    ? { flexGrow: 1, overflowY: 'auto', height: '100%' }
+    : {};
 
   return (
     <Card withBorder padding="lg" radius="md" style={cardStyle}>
@@ -105,7 +115,9 @@ export function LiveContributionFeed({
             Waiting for contributions...
           </Text>
         ) : (
-          contributionFeed
+          contributions.map((c) => (
+            <ContributionItem key={c.path} contribution={c} />
+          ))
         )}
       </Stack>
     </Card>
