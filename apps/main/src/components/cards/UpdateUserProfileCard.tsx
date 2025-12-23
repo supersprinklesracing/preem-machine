@@ -2,7 +2,6 @@
 
 import {
   Avatar,
-  Box,
   Button,
   Card,
   FileButton,
@@ -11,6 +10,7 @@ import {
   Stack,
   Text,
   Title,
+  UnstyledButton,
 } from '@mantine/core';
 import { IconMail, IconUpload } from '@tabler/icons-react';
 import { useState } from 'react';
@@ -35,17 +35,21 @@ export function UpdateUserProfileCard({
   onRemovePhoto,
 }: UserProfileCardProps) {
   const [hovered, setHovered] = useState(false);
+  const [focused, setFocused] = useState(false);
 
   return (
     <Card withBorder padding="lg" radius="md">
       <Stack align="center" ta="center">
         <FileButton onChange={onFileChange} accept="image/png,image/jpeg">
           {(props) => (
-            <Box
+            <UnstyledButton
               {...props}
               data-testid="avatar-container"
               onMouseEnter={() => setHovered(true)}
               onMouseLeave={() => setHovered(false)}
+              onFocus={() => setFocused(true)}
+              onBlur={() => setFocused(false)}
+              aria-label="Upload profile photo"
               style={{
                 position: 'relative',
                 cursor: 'pointer',
@@ -58,7 +62,7 @@ export function UpdateUserProfileCard({
                 size={120}
                 radius="50%"
               />
-              {(hovered || uploading) && (
+              {(hovered || focused || uploading) && (
                 <Overlay
                   color="#000"
                   backgroundOpacity={0.5}
@@ -78,7 +82,7 @@ export function UpdateUserProfileCard({
                   </Stack>
                 </Overlay>
               )}
-            </Box>
+            </UnstyledButton>
           )}
         </FileButton>
 
