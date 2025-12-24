@@ -10,18 +10,76 @@ import {
 } from '@mantine/core';
 import { useMediaQuery } from '@mantine/hooks';
 import Link from 'next/link';
-import { CSSProperties } from 'react';
+import { CSSProperties, memo } from 'react';
 
 import { UserAvatarIcon } from '@/components/UserAvatar/UserAvatar';
 import { toUrlPath } from '@/datastore/paths';
 import { Contribution } from '@/datastore/schema';
 
+type ContributionFeedItem = Pick<
+  Contribution,
+  'id' | 'path' | 'contributor' | 'amount' | 'preemBrief' | 'message'
+>;
+
 interface LiveContributionFeedProps {
-  contributions: Pick<
-    Contribution,
-    'id' | 'path' | 'contributor' | 'amount' | 'preemBrief' | 'message'
-  >[];
+  contributions: ContributionFeedItem[];
 }
+
+const ContributionItem = memo(function ContributionItem({
+  c,
+}: {
+  c: ContributionFeedItem;
+}) {
+  const contributor = c.contributor;
+  return (
+    <Group wrap="nowrap">
+      <UserAvatarIcon user={contributor} />
+      <div>
+        <Text size="sm">
+          <Text
+            component={Link}
+            href={
+              contributor?.path ? `/view/${toUrlPath(contributor.path)}` : '#'
+            }
+            fw={600}
+            style={{ textDecoration: 'none', color: 'inherit' }}
+          >
+            {contributor?.name}
+          </Text>{' '}
+          -{' '}
+          <Text span c="green" fw={600}>
+            ${c.amount}
+          </Text>{' '}
+          to{' '}
+          <Text
+            component={Link}
+            href={`/view/${toUrlPath(c.preemBrief.path)}`}
+            style={{ textDecoration: 'none', color: 'inherit' }}
+          >
+            &quot;{c.preemBrief.name}&quot;
+          </Text>{' '}
+          in the{' '}
+          <Text
+            component={Link}
+            href={`/view/${toUrlPath(c.preemBrief.raceBrief.path)}`}
+            fw={600}
+            style={{ textDecoration: 'none', color: 'inherit' }}
+          >
+            &quot;{c.preemBrief.raceBrief.name}&quot;
+          </Text>{' '}
+          race!
+        </Text>
+        {c.message && (
+          <Card withBorder padding="xs" mt="xs">
+            <Text size="xs" fs="italic">
+              &quot;{c.message}&quot;
+            </Text>
+          </Card>
+        )}
+      </div>
+    </Group>
+  );
+});
 
 export function LiveContributionFeed({
   contributions,
@@ -41,58 +99,6 @@ export function LiveContributionFeed({
     ? { flexGrow: 1, overflowY: 'auto', height: '100%' }
     : {};
 
-  const contributionFeed = contributions.map((c) => {
-    const contributor = c.contributor;
-    return (
-      <Group key={c.path} wrap="nowrap">
-        <UserAvatarIcon user={contributor} />
-        <div>
-          <Text size="sm">
-            <Text
-              component={Link}
-              href={
-                contributor?.path ? `/view/${toUrlPath(contributor.path)}` : '#'
-              }
-              fw={600}
-              style={{ textDecoration: 'none', color: 'inherit' }}
-            >
-              {contributor?.name}
-            </Text>{' '}
-            -{' '}
-            <Text span c="green" fw={600}>
-              ${c.amount}
-            </Text>{' '}
-            to{' '}
-            <Text
-              component={Link}
-              href={`/view/${toUrlPath(c.preemBrief.path)}`}
-              style={{ textDecoration: 'none', color: 'inherit' }}
-            >
-              &quot;{c.preemBrief.name}&quot;
-            </Text>{' '}
-            in the{' '}
-            <Text
-              component={Link}
-              href={`/view/${toUrlPath(c.preemBrief.raceBrief.path)}`}
-              fw={600}
-              style={{ textDecoration: 'none', color: 'inherit' }}
-            >
-              &quot;{c.preemBrief.raceBrief.name}&quot;
-            </Text>{' '}
-            race!
-          </Text>
-          {c.message && (
-            <Card withBorder padding="xs" mt="xs">
-              <Text size="xs" fs="italic">
-                &quot;{c.message}&quot;
-              </Text>
-            </Card>
-          )}
-        </div>
-      </Group>
-    );
-  });
-
   return (
     <Card withBorder padding="lg" radius="md" style={cardStyle}>
       <Title order={3}>Live Contribution Feed</Title>
@@ -105,7 +111,7 @@ export function LiveContributionFeed({
             Waiting for contributions...
           </Text>
         ) : (
-          contributionFeed
+          contributions.map((c) => <ContributionItem key={c.path} c={c} />)
         )}
       </Stack>
     </Card>
