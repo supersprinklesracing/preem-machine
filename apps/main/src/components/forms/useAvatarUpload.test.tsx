@@ -1,5 +1,4 @@
 import { act, renderHook } from '@testing-library/react';
-import imageCompression from 'browser-image-compression';
 import fetchMock from 'jest-fetch-mock';
 
 import { generateSignedUploadUrl } from '@/app/(main)/account/upload-action';
@@ -7,12 +6,10 @@ import { useAvatarUpload } from '@/components/forms/useAvatarUpload';
 import { ENV_MAX_IMAGE_SIZE_BYTES } from '@/env/env';
 
 // Mocks
-jest.mock('browser-image-compression');
 jest.mock('@/app/(main)/account/upload-action', () => ({
   generateSignedUploadUrl: jest.fn(),
 }));
 
-const mockImageCompression = jest.mocked(imageCompression);
 const mockGenerateSignedUploadUrl = jest.mocked(generateSignedUploadUrl);
 
 const mockFile = (size: number) => {
@@ -41,7 +38,6 @@ describe('useAvatarUpload', () => {
     await act(async () => {
       await result.current.handleFileChange(null);
     });
-    expect(mockImageCompression).not.toHaveBeenCalled();
     expect(onUpload).not.toHaveBeenCalled();
   });
 
@@ -54,18 +50,15 @@ describe('useAvatarUpload', () => {
     });
 
     expect(result.current.error).toMatch(/File is too large/);
-    expect(mockImageCompression).not.toHaveBeenCalled();
     expect(onUpload).not.toHaveBeenCalled();
   });
 
   it('should handle successful file upload', async () => {
     const { result } = renderTestHook();
     const file = mockFile(1024);
-    const compressedFile = mockFile(512);
     const signedUrl = 'https://signed.url/upload';
     const publicUrl = 'https://public.url/image.png';
 
-    mockImageCompression.mockResolvedValue(compressedFile);
     mockGenerateSignedUploadUrl.mockResolvedValue({ signedUrl, publicUrl });
     fetchMock.mockResponseOnce(JSON.stringify({}), { status: 200 });
 
@@ -75,14 +68,13 @@ describe('useAvatarUpload', () => {
 
     expect(result.current.uploading).toBe(false);
     expect(result.current.error).toBe(null);
-    expect(mockImageCompression).toHaveBeenCalledWith(file, expect.any(Object));
     expect(mockGenerateSignedUploadUrl).toHaveBeenCalledWith({
-      contentType: compressedFile.type,
+      contentType: file.type,
     });
     expect(fetchMock).toHaveBeenCalledWith(signedUrl, {
       method: 'PUT',
-      body: compressedFile,
-      headers: { 'Content-Type': compressedFile.type },
+      body: file,
+      headers: { 'Content-Type': file.type },
     });
     expect(onUpload).toHaveBeenCalledWith(publicUrl);
   });
@@ -90,10 +82,8 @@ describe('useAvatarUpload', () => {
   it('should handle upload failure from generateSignedUploadUrl', async () => {
     const { result } = renderTestHook();
     const file = mockFile(1024);
-    const compressedFile = mockFile(512);
     const errorMessage = 'Failed to get signed URL';
 
-    mockImageCompression.mockResolvedValue(compressedFile);
     mockGenerateSignedUploadUrl.mockRejectedValue(new Error(errorMessage));
 
     await act(async () => {
@@ -109,11 +99,9 @@ describe('useAvatarUpload', () => {
   it('should handle upload failure from fetch', async () => {
     const { result } = renderTestHook();
     const file = mockFile(1024);
-    const compressedFile = mockFile(512);
     const signedUrl = 'https://signed.url/upload';
     const publicUrl = 'https://public.url/image.png';
 
-    mockImageCompression.mockResolvedValue(compressedFile);
     mockGenerateSignedUploadUrl.mockResolvedValue({ signedUrl, publicUrl });
     fetchMock.mockResponseOnce('Upload failed', { status: 500 });
 
