@@ -197,6 +197,7 @@ export function Login({
               <Stack>
                 <TextInput
                   required
+                  label="Email address"
                   value={email}
                   onChange={(e) => setEmail(e.target.value)}
                   name="email"
@@ -205,6 +206,7 @@ export function Login({
                 />
                 <PasswordInput
                   required
+                  label="Password"
                   name="password"
                   value={password}
                   onChange={(e) => setPassword(e.target.value)}
