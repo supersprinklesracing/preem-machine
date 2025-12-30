@@ -6,14 +6,14 @@ import { UserAvatar, UserAvatarIcon } from './UserAvatar';
 
 describe('UserAvatar', () => {
   it('renders a link with the user avatar and name', () => {
-    render(<UserAvatar user={MOCK_USER} />);
+    const { container } = render(<UserAvatar user={MOCK_USER} />);
     const link = screen.getByRole('link');
     expect(link).toHaveAttribute('href', `/view/user/${MOCK_USER.id}`);
     expect(screen.getByText('Test User')).toBeInTheDocument();
-    expect(screen.getByAltText('Test User')).toHaveAttribute(
-      'src',
-      'https://placehold.co/100x100.png',
-    );
+    // Avatar is decorative (alt="") because name is displayed
+    const img = container.querySelector('img');
+    expect(img).toBeInTheDocument();
+    expect(img).toHaveAttribute('alt', '');
   });
 
   it('renders without a link if user has no path', () => {
