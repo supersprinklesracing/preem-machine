@@ -56,55 +56,61 @@ const getPreemWithContributions = async (
 const getRaceWithPreems = async (
   raceDoc: DocumentSnapshot<Race>,
 ): Promise<RaceWithPreems> => {
-  const result: RaceWithPreems = {
-    // eslint-disable-next-line @typescript-eslint/no-non-null-assertion
-    race: raceDoc.data()!,
-    children: [],
-  };
   const snap = await raceDoc.ref
     .collection('preems')
     .withConverter(converter(PreemSchema))
     .get();
-  for (const doc of snap.docs) {
-    result.children.push(await getPreemWithContributions(doc));
-  }
-  return result;
+
+  // Bolt Optimization: Parallelize fetching of preems to avoid N+1 waterfall
+  const children = await Promise.all(
+    snap.docs.map((doc) => getPreemWithContributions(doc)),
+  );
+
+  return {
+    // eslint-disable-next-line @typescript-eslint/no-non-null-assertion
+    race: raceDoc.data()!,
+    children,
+  };
 };
 
 const getRacesForEvent = async (
   eventDoc: DocumentSnapshot<Event>,
 ): Promise<EventWithRaces> => {
-  const result: EventWithRaces = {
-    // eslint-disable-next-line @typescript-eslint/no-non-null-assertion
-    event: eventDoc.data()!,
-    children: [],
-  };
   const snap = await eventDoc.ref
     .collection('races')
     .withConverter(converter(RaceSchema))
     .get();
-  for (const doc of snap.docs) {
-    result.children.push(await getRaceWithPreems(doc));
-  }
-  return result;
+
+  // Bolt Optimization: Parallelize fetching of races to avoid N+1 waterfall
+  const children = await Promise.all(
+    snap.docs.map((doc) => getRaceWithPreems(doc)),
+  );
+
+  return {
+    // eslint-disable-next-line @typescript-eslint/no-non-null-assertion
+    event: eventDoc.data()!,
+    children,
+  };
 };
 
 const getEventsForSeries = async (
   seriesDoc: DocumentSnapshot<Series>,
 ): Promise<SeriesWithEvents> => {
-  const result: SeriesWithEvents = {
-    // eslint-disable-next-line @typescript-eslint/no-non-null-assertion
-    series: seriesDoc.data()!,
-    children: [],
-  };
   const snap = await seriesDoc.ref
     .collection('events')
     .withConverter(converter(EventSchema))
     .get();
-  for (const doc of snap.docs) {
-    result.children.push(await getRacesForEvent(doc));
-  }
-  return result;
+
+  // Bolt Optimization: Parallelize fetching of events to avoid N+1 waterfall
+  const children = await Promise.all(
+    snap.docs.map((doc) => getRacesForEvent(doc)),
+  );
+
+  return {
+    // eslint-disable-next-line @typescript-eslint/no-non-null-assertion
+    series: seriesDoc.data()!,
+    children,
+  };
 };
 
 export const getSeriesForOrganization = async (
