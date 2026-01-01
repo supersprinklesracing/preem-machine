@@ -1,0 +1,3 @@
+## 2024-05-24 - Accessible Labels for Form Inputs
+**Learning:** Mantine `TextInput` and `PasswordInput` components do not render an accessible `<label>` element if only the `placeholder` prop is provided. They require the `label` prop to be explicitly set to ensure screen readers can announce the input's purpose.
+**Action:** Always provide a `label` prop for Mantine input components, even if a `placeholder` is also used. If a visible label is not desired design-wise (though it should be for accessibility), use a screen-reader-only class or ensuring the `label` prop is present but visually hidden, or use `aria-label` directly if supported, but `label` prop is the standard Mantine way.
