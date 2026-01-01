@@ -313,11 +313,110 @@ export const getRenderableOrganizationDataForPage = cache(
       notFound(`Org not found: ${path}`);
     }
 
-    const seriesSnap = await doc.ref
-      .collection('series')
-      .withConverter(converter(SeriesSchema))
-      .get();
-    const serieses = await Promise.all(seriesSnap.docs.map(getEventsForSeries));
+    const db = await getFirestore();
+    const orgId = organization.id;
+
+    // Bolt Performance: Parallelize deep fetching to avoid N+1 waterfall
+    // Fetch all levels simultaneously using collectionGroup queries
+    const [seriesSnap, eventsSnap, racesSnap, preemsSnap, contributionsSnap] =
+      await Promise.all([
+        doc.ref.collection('series').withConverter(converter(SeriesSchema)).get(),
+        db
+          .collectionGroup('events')
+          .where('seriesBrief.organizationBrief.id', '==', orgId)
+          .withConverter(converter(EventSchema))
+          .get(),
+        db
+          .collectionGroup('races')
+          .where('eventBrief.seriesBrief.organizationBrief.id', '==', orgId)
+          .withConverter(converter(RaceSchema))
+          .get(),
+        db
+          .collectionGroup('preems')
+          .where(
+            'raceBrief.eventBrief.seriesBrief.organizationBrief.id',
+            '==',
+            orgId,
+          )
+          .withConverter(converter(PreemSchema))
+          .get(),
+        db
+          .collectionGroup('contributions')
+          .where(
+            'preemBrief.raceBrief.eventBrief.seriesBrief.organizationBrief.id',
+            '==',
+            orgId,
+          )
+          .withConverter(converter(ContributionSchema))
+          .get(),
+      ]);
+
+    const seriesDocs = seriesSnap.docs.map((d) => d.data());
+    const eventDocs = eventsSnap.docs.map((d) => d.data());
+    const raceDocs = racesSnap.docs.map((d) => d.data());
+    const preemDocs = preemsSnap.docs.map((d) => d.data());
+    const contributionDocs = contributionsSnap.docs.map((d) => d.data());
+
+    // Reconstruct hierarchy in memory
+
+    // Group Contributions by Preem ID
+    const contributionsByPreemId = contributionDocs.reduce(
+      (acc, c) => {
+        const pid = c.preemBrief.id;
+        if (!acc[pid]) acc[pid] = [];
+        acc[pid].push(c);
+        return acc;
+      },
+      {} as Record<string, Contribution[]>,
+    );
+
+    // Build PreemWithContributions and group by Race ID
+    const preemsByRaceId = preemDocs.reduce(
+      (acc, p) => {
+        const rid = p.raceBrief.id;
+        if (!acc[rid]) acc[rid] = [];
+        acc[rid].push({
+          preem: p,
+          children: contributionsByPreemId[p.id] || [],
+        });
+        return acc;
+      },
+      {} as Record<string, PreemWithContributions[]>,
+    );
+
+    // Build RaceWithPreems and group by Event ID
+    const racesByEventId = raceDocs.reduce(
+      (acc, r) => {
+        const eid = r.eventBrief.id;
+        if (!acc[eid]) acc[eid] = [];
+        acc[eid].push({
+          race: r,
+          children: preemsByRaceId[r.id] || [],
+        });
+        return acc;
+      },
+      {} as Record<string, RaceWithPreems[]>,
+    );
+
+    // Build EventWithRaces and group by Series ID
+    const eventsBySeriesId = eventDocs.reduce(
+      (acc, e) => {
+        const sid = e.seriesBrief.id;
+        if (!acc[sid]) acc[sid] = [];
+        acc[sid].push({
+          event: e,
+          children: racesByEventId[e.id] || [],
+        });
+        return acc;
+      },
+      {} as Record<string, EventWithRaces[]>,
+    );
+
+    // Build SeriesWithEvents
+    const serieses: SeriesWithEvents[] = seriesDocs.map((s) => ({
+      series: s,
+      children: eventsBySeriesId[s.id] || [],
+    }));
 
     const memberIds =
       organization.memberRefs
