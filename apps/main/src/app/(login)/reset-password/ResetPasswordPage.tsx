@@ -36,6 +36,7 @@ export function ResetPasswordPage() {
           <Stack>
             <TextInput
               required
+              label="Email address"
               value={email}
               onChange={(e) => setEmail(e.target.value)}
               name="email"
