@@ -313,11 +313,99 @@ export const getRenderableOrganizationDataForPage = cache(
       notFound(`Org not found: ${path}`);
     }
 
-    const seriesSnap = await doc.ref
-      .collection('series')
-      .withConverter(converter(SeriesSchema))
-      .get();
-    const serieses = await Promise.all(seriesSnap.docs.map(getEventsForSeries));
+    const db = await getFirestore();
+    const orgId = organization.id;
+
+    // Optimization: Use collectionGroup queries to fetch all related data in parallel
+    // This avoids the N+1 problem of recursive fetching (Organization -> Series -> Event -> Race -> Preem -> Contribution)
+
+    const [seriesSnap, eventsSnap, racesSnap, preemsSnap, contributionsSnap] =
+      await Promise.all([
+        doc.ref.collection('series').withConverter(converter(SeriesSchema)).get(),
+        db
+          .collectionGroup('events')
+          .where('seriesBrief.organizationBrief.id', '==', orgId)
+          .withConverter(converter(EventSchema))
+          .get(),
+        db
+          .collectionGroup('races')
+          .where('eventBrief.seriesBrief.organizationBrief.id', '==', orgId)
+          .withConverter(converter(RaceSchema))
+          .get(),
+        db
+          .collectionGroup('preems')
+          .where('raceBrief.eventBrief.seriesBrief.organizationBrief.id', '==', orgId)
+          .withConverter(converter(PreemSchema))
+          .get(),
+        db
+          .collectionGroup('contributions')
+          .where(
+            'preemBrief.raceBrief.eventBrief.seriesBrief.organizationBrief.id',
+            '==',
+            orgId,
+          )
+          .withConverter(converter(ContributionSchema))
+          .get(),
+      ]);
+
+    const seriesList = seriesSnap.docs.map((d) => d.data());
+    const eventsList = eventsSnap.docs.map((d) => d.data());
+    const racesList = racesSnap.docs.map((d) => d.data());
+    const preemsList = preemsSnap.docs.map((d) => d.data());
+    const contributionsList = contributionsSnap.docs.map((d) => d.data());
+
+    // Reconstruct the tree
+
+    // Group Contributions by Preem
+    const contributionsByPreem = new Map<string, Contribution[]>();
+    for (const c of contributionsList) {
+      const preemId = c.preemBrief.id;
+      const list = contributionsByPreem.get(preemId) || [];
+      list.push(c);
+      contributionsByPreem.set(preemId, list);
+    }
+
+    // Group Preems by Race
+    const preemsByRace = new Map<string, PreemWithContributions[]>();
+    for (const p of preemsList) {
+      const raceId = p.raceBrief.id;
+      const list = preemsByRace.get(raceId) || [];
+      list.push({
+        preem: p,
+        children: contributionsByPreem.get(p.id) || [],
+      });
+      preemsByRace.set(raceId, list);
+    }
+
+    // Group Races by Event
+    const racesByEvent = new Map<string, RaceWithPreems[]>();
+    for (const r of racesList) {
+      const eventId = r.eventBrief.id;
+      const list = racesByEvent.get(eventId) || [];
+      list.push({
+        race: r,
+        children: preemsByRace.get(r.id) || [],
+      });
+      racesByEvent.set(eventId, list);
+    }
+
+    // Group Events by Series
+    const eventsBySeries = new Map<string, EventWithRaces[]>();
+    for (const e of eventsList) {
+      const seriesId = e.seriesBrief.id;
+      const list = eventsBySeries.get(seriesId) || [];
+      list.push({
+        event: e,
+        children: racesByEvent.get(e.id) || [],
+      });
+      eventsBySeries.set(seriesId, list);
+    }
+
+    // Build Series result
+    const serieses: SeriesWithEvents[] = seriesList.map((s) => ({
+      series: s,
+      children: eventsBySeries.get(s.id) || [],
+    }));
 
     const memberIds =
       organization.memberRefs
