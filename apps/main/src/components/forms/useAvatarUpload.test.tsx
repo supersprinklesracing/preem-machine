@@ -126,13 +126,48 @@ describe('useAvatarUpload', () => {
     expect(onUpload).not.toHaveBeenCalled();
   });
 
-  it('should call onRemove when handleRemovePhoto is called', () => {
+  it('should catch error from onUpload and set error state', async () => {
+    const { result } = renderTestHook();
+    const file = mockFile(1024);
+    const compressedFile = mockFile(512);
+    const signedUrl = 'https://signed.url/upload';
+    const publicUrl = 'https://public.url/image.png';
+    const errorMessage = 'Failed to update user avatar';
+
+    mockImageCompression.mockResolvedValue(compressedFile);
+    mockGenerateSignedUploadUrl.mockResolvedValue({ signedUrl, publicUrl });
+    fetchMock.mockResponseOnce(JSON.stringify({}), { status: 200 });
+    onUpload.mockRejectedValue(new Error(errorMessage));
+
+    await act(async () => {
+      await result.current.handleFileChange(file);
+    });
+
+    expect(result.current.uploading).toBe(false);
+    expect(result.current.error).toBe(errorMessage);
+    expect(onUpload).toHaveBeenCalledWith(publicUrl);
+  });
+
+  it('should call onRemove when handleRemovePhoto is called', async () => {
     const { result } = renderTestHook();
 
-    act(() => {
-      result.current.handleRemovePhoto();
+    await act(async () => {
+      await result.current.handleRemovePhoto();
     });
 
     expect(onRemove).toHaveBeenCalledTimes(1);
+  });
+
+  it('should catch error from onRemove and set error state', async () => {
+    const { result } = renderTestHook();
+    const errorMessage = 'Failed to remove avatar';
+    onRemove.mockRejectedValue(new Error(errorMessage));
+
+    await act(async () => {
+      await result.current.handleRemovePhoto();
+    });
+
+    expect(onRemove).toHaveBeenCalledTimes(1);
+    expect(result.current.error).toBe(errorMessage);
   });
 });
