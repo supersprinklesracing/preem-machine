@@ -463,46 +463,7 @@ export const getRenderableHomeDataForPage = cache(async () => {
     .orderBy('date', 'desc')
     .limit(20)
     .get();
-  const recentContributionsRaw = contributionsSnap.docs.map((doc) =>
-    doc.data(),
-  );
-
-  const recentPreemIds = [
-    ...new Set(
-      recentContributionsRaw
-        .map((c) => c.preemBrief?.id)
-        .filter((id): id is string => !!id),
-    ),
-  ];
-
-  const recentPreems =
-    recentPreemIds.length > 0
-      ? (
-          await db
-            .collectionGroup('preems')
-            .where('id', 'in', recentPreemIds)
-            .withConverter(converter(PreemSchema))
-            .get()
-        ).docs.map((d) => d.data())
-      : [];
-
-  const preemsMap = recentPreems.reduce(
-    (acc, preem) => {
-      acc[preem.path] = preem;
-      return acc;
-    },
-    {} as Record<DocPath, Preem>,
-  );
-
-  const contributions = recentContributionsRaw.map((c) => {
-    const fullPreem = c.preemBrief?.path
-      ? preemsMap[c.preemBrief.path]
-      : undefined;
-    return {
-      ...c,
-      preemBrief: fullPreem,
-    } as Contribution;
-  });
+  const contributions = contributionsSnap.docs.map((doc) => doc.data());
 
   const eventsWithRaces = await Promise.all(
     eventsSnap.docs.map(getRacesForEvent),
