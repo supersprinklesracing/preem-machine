@@ -1,0 +1,3 @@
+## 2024-05-24 - N+1 Query Optimization in Firestore
+**Learning:** Hierarchical data fetching (Org->Series->Event...) using recursive `collection().get()` calls causes severe N+1 performance issues (O(N) queries).
+**Action:** Use "Batch Fetch by IDs" strategy: 1. Fetch parent level. 2. Collect IDs. 3. Fetch children using `collectionGroup` with `where('parentBrief.id', 'in', chunks)`. This reduces query complexity to O(Depth). Note: "Deep Filtering" (fetching all descendants by root Org ID) can lead to data over-fetching (e.g., historical/archived data) and should be used with caution compared to the safer, scoped batch-fetch approach.
