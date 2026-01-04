@@ -17,11 +17,7 @@
   "packageRules": [
     {
       "enabled": false,
-      "matchPackageNames": [
-        "domexception",
-        "lodash.isequal",
-        "request"
-      ]
+      "matchPackageNames": ["domexception", "lodash.isequal", "request"]
     },
     {
       "groupName": "all non-major dependencies",

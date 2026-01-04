@@ -2,7 +2,11 @@ import React from 'react';
 
 import { MOCK_USER, render, screen } from '@/test-utils';
 
-import { UserAvatar, UserAvatarIcon } from './UserAvatar';
+import { LoggedOutAvatarIcon, UserAvatar, UserAvatarIcon } from './UserAvatar';
+
+jest.mock('next/navigation', () => ({
+  usePathname: jest.fn(() => '/current/path'),
+}));
 
 describe('UserAvatar', () => {
   it('renders a link with the user avatar and name', () => {
@@ -58,5 +62,20 @@ describe('UserAvatarIcon', () => {
   it('accepts a size prop', () => {
     render(<UserAvatarIcon user={MOCK_USER} size="lg" />);
     expect(screen.getByAltText('Test User')).toBeInTheDocument();
+  });
+
+  it('has an accessible name when image is missing', () => {
+    const userNoImage = { ...MOCK_USER, avatarUrl: undefined };
+    render(<UserAvatarIcon user={userNoImage} />);
+    const link = screen.getByRole('link');
+    expect(link).toHaveAccessibleName(MOCK_USER.name);
+  });
+});
+
+describe('LoggedOutAvatarIcon', () => {
+  it('has an accessible name', () => {
+    render(<LoggedOutAvatarIcon />);
+    const link = screen.getByRole('link');
+    expect(link).toHaveAccessibleName('Log in');
   });
 });

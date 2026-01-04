@@ -58,7 +58,7 @@ export default defineConfig({
     env: {
       E2E_TESTING: 'true',
       // eslint-disable-next-line @typescript-eslint/no-non-null-assertion
-      E2E_TESTING_USER: process.env.E2E_TESTING_USER!
+      E2E_TESTING_USER: process.env.E2E_TESTING_USER!,
     },
   },
   expect: {
