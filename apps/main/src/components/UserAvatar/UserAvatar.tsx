@@ -18,7 +18,11 @@ export function UserAvatar({ user, size = 'md' }: UserAvatarProps) {
 
   const content = (
     <Group>
-      <Avatar src={user?.avatarUrl} alt={name} radius="50%" size={size} />
+      {/*
+        Palette: Removed alt text because the name is displayed right next to the avatar.
+        This prevents screen readers from reading the name twice.
+      */}
+      <Avatar src={user?.avatarUrl} alt="" radius="50%" size={size} />
       <Text fw={500} style={{ textDecoration: 'none', color: 'inherit' }}>
         {name}
       </Text>
@@ -30,6 +34,7 @@ export function UserAvatar({ user, size = 'md' }: UserAvatarProps) {
       <Link
         href={linkHref}
         style={{ textDecoration: 'none', color: 'inherit' }}
+        aria-label={name}
       >
         {content}
       </Link>
@@ -67,6 +72,7 @@ export function LoggedOutAvatarIcon({ size = 'md' }: UserAvatarProps) {
     <Link
       href={`/login?redirect=${pathname}`}
       style={{ textDecoration: 'none', color: 'inherit' }}
+      aria-label="Log in"
     >
       <Avatar radius="50%" size={size} />
     </Link>
