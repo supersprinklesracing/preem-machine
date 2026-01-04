@@ -59,22 +59,14 @@ export function Account({
   const { uploading, error, handleFileChange, handleRemovePhoto } =
     useAvatarUpload({
       onUpload: async (url) => {
-        try {
-          await updateUserAvatarAction({ edits: { avatarUrl: url } });
-          setAvatarUrl(url);
-          router.refresh();
-        } catch (e) {
-          // TODO: handle error
-        }
+        await updateUserAvatarAction({ edits: { avatarUrl: url } });
+        setAvatarUrl(url);
+        router.refresh();
       },
       onRemove: async () => {
-        try {
-          await updateUserAvatarAction({ edits: { avatarUrl: '' } });
-          setAvatarUrl('');
-          router.refresh();
-        } catch (e) {
-          // TODO: handle error
-        }
+        await updateUserAvatarAction({ edits: { avatarUrl: '' } });
+        setAvatarUrl('');
+        router.refresh();
       },
     });
 
