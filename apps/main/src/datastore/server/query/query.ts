@@ -313,11 +313,129 @@ export const getRenderableOrganizationDataForPage = cache(
       notFound(`Org not found: ${path}`);
     }
 
+    const db = await getFirestore();
+
+    // 1. Fetch all series for this organization
     const seriesSnap = await doc.ref
       .collection('series')
       .withConverter(converter(SeriesSchema))
       .get();
-    const serieses = await Promise.all(seriesSnap.docs.map(getEventsForSeries));
+    const serieses = seriesSnap.docs.map((d) => d.data());
+    const seriesIds = serieses.map((s) => s.id);
+
+    // 2. Fetch all events for these series
+    let events: Event[] = [];
+    if (seriesIds.length > 0) {
+      // Chunk IDs into batches of 30 for 'in' query
+      for (let i = 0; i < seriesIds.length; i += 30) {
+        const chunk = seriesIds.slice(i, i + 30);
+        const eventsSnap = await db
+          .collectionGroup('events')
+          .where('seriesBrief.id', 'in', chunk)
+          .withConverter(converter(EventSchema))
+          .get();
+        events = [...events, ...eventsSnap.docs.map((d) => d.data())];
+      }
+    }
+    const eventIds = events.map((e) => e.id);
+
+    // 3. Fetch all races for these events
+    let races: Race[] = [];
+    if (eventIds.length > 0) {
+      for (let i = 0; i < eventIds.length; i += 30) {
+        const chunk = eventIds.slice(i, i + 30);
+        const racesSnap = await db
+          .collectionGroup('races')
+          .where('eventBrief.id', 'in', chunk)
+          .withConverter(converter(RaceSchema))
+          .get();
+        races = [...races, ...racesSnap.docs.map((d) => d.data())];
+      }
+    }
+    const raceIds = races.map((r) => r.id);
+
+    // 4. Fetch all preems for these races
+    let preems: Preem[] = [];
+    if (raceIds.length > 0) {
+      for (let i = 0; i < raceIds.length; i += 30) {
+        const chunk = raceIds.slice(i, i + 30);
+        const preemsSnap = await db
+          .collectionGroup('preems')
+          .where('raceBrief.id', 'in', chunk)
+          .withConverter(converter(PreemSchema))
+          .get();
+        preems = [...preems, ...preemsSnap.docs.map((d) => d.data())];
+      }
+    }
+    const preemIds = preems.map((p) => p.id);
+
+    // 5. Fetch all contributions for these preems
+    let contributions: Contribution[] = [];
+    if (preemIds.length > 0) {
+      for (let i = 0; i < preemIds.length; i += 30) {
+        const chunk = preemIds.slice(i, i + 30);
+        const contributionsSnap = await db
+          .collectionGroup('contributions')
+          .where('preemBrief.id', 'in', chunk)
+          .withConverter(converter(ContributionSchema))
+          .get();
+        contributions = [
+          ...contributions,
+          ...contributionsSnap.docs.map((d) => d.data()),
+        ];
+      }
+    }
+
+    // reconstruct tree
+    const contributionsByPreemId = new Map<string, Contribution[]>();
+    contributions.forEach((c) => {
+      const pid = c.preemBrief.id;
+      if (!contributionsByPreemId.has(pid)) {
+        contributionsByPreemId.set(pid, []);
+      }
+      contributionsByPreemId.get(pid)?.push(c);
+    });
+
+    const preemsByRaceId = new Map<string, PreemWithContributions[]>();
+    preems.forEach((p) => {
+      const rid = p.raceBrief.id;
+      if (!preemsByRaceId.has(rid)) {
+        preemsByRaceId.set(rid, []);
+      }
+      preemsByRaceId.get(rid)?.push({
+        preem: p,
+        children: contributionsByPreemId.get(p.id) ?? [],
+      });
+    });
+
+    const racesByEventId = new Map<string, RaceWithPreems[]>();
+    races.forEach((r) => {
+      const eid = r.eventBrief.id;
+      if (!racesByEventId.has(eid)) {
+        racesByEventId.set(eid, []);
+      }
+      racesByEventId.get(eid)?.push({
+        race: r,
+        children: preemsByRaceId.get(r.id) ?? [],
+      });
+    });
+
+    const eventsBySeriesId = new Map<string, EventWithRaces[]>();
+    events.forEach((e) => {
+      const sid = e.seriesBrief.id;
+      if (!eventsBySeriesId.has(sid)) {
+        eventsBySeriesId.set(sid, []);
+      }
+      eventsBySeriesId.get(sid)?.push({
+        event: e,
+        children: racesByEventId.get(e.id) ?? [],
+      });
+    });
+
+    const seriesWithEvents: SeriesWithEvents[] = serieses.map((s) => ({
+      series: s,
+      children: eventsBySeriesId.get(s.id) ?? [],
+    }));
 
     const memberIds =
       organization.memberRefs
@@ -325,7 +443,7 @@ export const getRenderableOrganizationDataForPage = cache(
         .filter((id): id is string => !!id) ?? [];
     const members = memberIds.length > 0 ? await getUsersByIds(memberIds) : [];
 
-    return { organization, serieses, members };
+    return { organization, serieses: seriesWithEvents, members };
   },
 );
 
