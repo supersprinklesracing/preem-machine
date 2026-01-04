@@ -39,11 +39,18 @@ const initializeApp = async () => {
 };
 
 export const getFirebaseAdminApp = async () => {
-  if (admin.apps.length > 0) {
+  if (admin.apps.length > 0 && admin.apps[0]) {
     return admin.apps[0] as admin.app.App;
   }
 
-  return initializeApp();
+  try {
+    return await initializeApp();
+  } catch (error: any) {
+    if (error.code === 'app/duplicate-app' || error.message?.includes('already exists')) {
+      return admin.app() as admin.app.App;
+    }
+    throw error;
+  }
 };
 
 export const getFirestore = async () => {
