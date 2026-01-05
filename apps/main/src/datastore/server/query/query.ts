@@ -38,11 +38,17 @@ export const getDocSnap = cache(getDocSnapInternal);
 
 const getPreemWithContributions = async (
   preemDoc: DocumentSnapshot<Preem>,
+  includeContributions = true,
 ): Promise<PreemWithContributions> => {
   const preem = preemDoc.data();
   if (!preem) {
     notFound(`Preem not found: ${preemDoc.ref.path}`);
   }
+
+  if (!includeContributions) {
+    return { preem, children: [] };
+  }
+
   const contributionsSnap = await preemDoc.ref
     .collection('contributions')
     .withConverter(converter(ContributionSchema))
@@ -55,22 +61,33 @@ const getPreemWithContributions = async (
 
 const getRaceWithPreems = async (
   raceDoc: DocumentSnapshot<Race>,
+  includePreems = true,
+  includeContributions = true,
 ): Promise<RaceWithPreems> => {
   const result: RaceWithPreems = {
     // eslint-disable-next-line @typescript-eslint/no-non-null-assertion
     race: raceDoc.data()!,
     children: [],
   };
+
+  if (!includePreems) {
+    return result;
+  }
+
   const snap = await raceDoc.ref
     .collection('preems')
     .withConverter(converter(PreemSchema))
     .get();
-  result.children = await Promise.all(snap.docs.map(getPreemWithContributions));
+  result.children = await Promise.all(
+    snap.docs.map((doc) => getPreemWithContributions(doc, includeContributions)),
+  );
   return result;
 };
 
 const getRacesForEvent = async (
   eventDoc: DocumentSnapshot<Event>,
+  includePreems = true,
+  includeContributions = true,
 ): Promise<EventWithRaces> => {
   const result: EventWithRaces = {
     // eslint-disable-next-line @typescript-eslint/no-non-null-assertion
@@ -81,7 +98,11 @@ const getRacesForEvent = async (
     .collection('races')
     .withConverter(converter(RaceSchema))
     .get();
-  result.children = await Promise.all(snap.docs.map(getRaceWithPreems));
+  result.children = await Promise.all(
+    snap.docs.map((doc) =>
+      getRaceWithPreems(doc, includePreems, includeContributions),
+    ),
+  );
   return result;
 };
 
@@ -97,7 +118,9 @@ const getEventsForSeries = async (
     .collection('events')
     .withConverter(converter(EventSchema))
     .get();
-  result.children = await Promise.all(snap.docs.map(getRacesForEvent));
+  result.children = await Promise.all(
+    snap.docs.map((doc) => getRacesForEvent(doc)),
+  );
   return result;
 };
 
@@ -108,7 +131,7 @@ export const getSeriesForOrganization = async (
     .collection('series')
     .withConverter(converter(SeriesSchema))
     .get();
-  return Promise.all(snap.docs.map(getEventsForSeries));
+  return Promise.all(snap.docs.map((doc) => getEventsForSeries(doc)));
 };
 
 export const getOrganizationWithSeries = async (
@@ -345,7 +368,12 @@ export const getRenderableEventDataForPage = cache(async (path: DocPath) => {
   if (!doc.exists) {
     notFound(`Event not found: ${path}`);
   }
-  return await getRacesForEvent(doc);
+  // Bolt Optimization: Don't need contributions for event page, just preems for prize pools
+  return await getRacesForEvent(
+    doc,
+    true /* includePreems */,
+    false /* includeContributions */,
+  );
 });
 
 export const getRenderableHomeDataForPage = cache(async () => {
@@ -378,7 +406,10 @@ export const getRenderableHomeDataForPage = cache(async () => {
   const contributions = contributionsSnap.docs.map((doc) => doc.data());
 
   const eventsWithRaces = await Promise.all(
-    eventsSnap.docs.map(getRacesForEvent),
+    // Bolt Optimization: Shallow fetch for home page (don't need preems or contributions nested in events)
+    eventsSnap.docs.map((doc) =>
+      getRacesForEvent(doc, false /* includePreems */),
+    ),
   );
 
   return {
