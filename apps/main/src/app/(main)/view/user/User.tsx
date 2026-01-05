@@ -12,7 +12,7 @@ import {
 } from '@mantine/core';
 import { IconMail, IconSettings } from '@tabler/icons-react';
 import Link from 'next/link';
-import React from 'react';
+import React, { useMemo } from 'react';
 
 import { MultiPanelLayout } from '@/components/layout/MultiPanelLayout';
 import { UserAvatarIcon } from '@/components/UserAvatar/UserAvatar';
@@ -41,28 +41,35 @@ export function User({ user, contributions, organizations }: Props) {
   const { authUser } = useUserContext();
   const isOwnProfile = authUser?.uid === user.id;
 
-  const totalContributed = contributions.reduce(
-    (sum, c) => sum + (c.amount ?? 0),
-    0,
+  // Memoize total calculation to prevent unnecessary re-calculation on every render
+  const totalContributed = useMemo(
+    () => contributions.reduce((sum, c) => sum + (c.amount ?? 0), 0),
+    [contributions],
   );
 
-  const contributionRows = contributions
-    // eslint-disable-next-line @typescript-eslint/no-non-null-assertion
-    .sort((a, b) => compareDates(a.date!, b.date!))
-    .map((c) => (
-      <Table.Tr key={c.path}>
-        <Table.Td>
-          {formatDateShort(c.date, c.preemBrief?.raceBrief?.timezone)}
-        </Table.Td>
-        <Table.Td>{c.preemBrief?.raceBrief?.name}</Table.Td>
-        <Table.Td>{c.preemBrief?.name}</Table.Td>
-        <Table.Td>
-          <Text ta="right" c="green" fw={600}>
-            ${(c.amount ?? 0).toLocaleString()}
-          </Text>
-        </Table.Td>
-      </Table.Tr>
-    ));
+  // Memoize rows to avoid expensive sorting and mapping on every render
+  // Also ensures we don't mutate the original contributions prop
+  const contributionRows = useMemo(
+    () =>
+      [...contributions]
+        // eslint-disable-next-line @typescript-eslint/no-non-null-assertion
+        .sort((a, b) => compareDates(a.date!, b.date!))
+        .map((c) => (
+          <Table.Tr key={c.path}>
+            <Table.Td>
+              {formatDateShort(c.date, c.preemBrief?.raceBrief?.timezone)}
+            </Table.Td>
+            <Table.Td>{c.preemBrief?.raceBrief?.name}</Table.Td>
+            <Table.Td>{c.preemBrief?.name}</Table.Td>
+            <Table.Td>
+              <Text ta="right" c="green" fw={600}>
+                ${(c.amount ?? 0).toLocaleString()}
+              </Text>
+            </Table.Td>
+          </Table.Tr>
+        )),
+    [contributions],
+  );
 
   return (
     <MultiPanelLayout>
