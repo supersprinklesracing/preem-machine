@@ -85,6 +85,29 @@ const getRacesForEvent = async (
   return result;
 };
 
+const getRacesForEventShallow = async (
+  eventDoc: DocumentSnapshot<Event>,
+): Promise<EventWithRaces> => {
+  const result: EventWithRaces = {
+    // eslint-disable-next-line @typescript-eslint/no-non-null-assertion
+    event: eventDoc.data()!,
+    children: [],
+  };
+  const snap = await eventDoc.ref
+    .collection('races')
+    .withConverter(converter(RaceSchema))
+    .get();
+
+  // Optimization: Do NOT fetch preems (and their contributions) for these races.
+  // The home page only displays the list of races for an event, not the preems within them.
+  result.children = snap.docs.map((doc) => ({
+    race: doc.data(),
+    children: [],
+  }));
+
+  return result;
+};
+
 const getEventsForSeries = async (
   seriesDoc: DocumentSnapshot<Series>,
 ): Promise<SeriesWithEvents> => {
@@ -377,8 +400,10 @@ export const getRenderableHomeDataForPage = cache(async () => {
     .get();
   const contributions = contributionsSnap.docs.map((doc) => doc.data());
 
+  // Optimization: Use shallow fetch to avoid N+1 waterfall of preems/contributions
+  // which are not displayed in the event list.
   const eventsWithRaces = await Promise.all(
-    eventsSnap.docs.map(getRacesForEvent),
+    eventsSnap.docs.map(getRacesForEventShallow),
   );
 
   return {
