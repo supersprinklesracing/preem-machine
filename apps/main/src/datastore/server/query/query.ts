@@ -1,6 +1,6 @@
 import 'server-only';
 
-import { type DocumentSnapshot } from 'firebase-admin/firestore';
+import { type DocumentSnapshot, type QueryDocumentSnapshot } from 'firebase-admin/firestore';
 import { cache } from 'react';
 
 import { getFirestore } from '@/firebase/server/firebase-admin';
@@ -360,6 +360,44 @@ export const getRenderableHomeDataForPage = cache(async () => {
     .withConverter(converter(EventSchema))
     .get();
 
+  const eventDocs = eventsSnap.docs;
+  const eventIds = eventDocs.map((doc) => doc.id);
+
+  // Fetch all races for these events in batches
+  // Bolt Optimization: Replace N+1 subcollection queries with 1 (or few) collectionGroup queries
+  // This significantly reduces the number of round trips to Firestore when there are multiple upcoming events.
+  const racesByEventId: Record<string, QueryDocumentSnapshot<Race>[]> = {};
+
+  if (eventIds.length > 0) {
+    // Firestore 'in' query supports max 30 items
+    const chunkSize = 30;
+    const chunks = [];
+    for (let i = 0; i < eventIds.length; i += chunkSize) {
+      chunks.push(eventIds.slice(i, i + chunkSize));
+    }
+
+    const raceSnaps = await Promise.all(
+      chunks.map((chunkIds) =>
+        db
+          .collectionGroup('races')
+          .where('eventBrief.id', 'in', chunkIds)
+          .withConverter(converter(RaceSchema))
+          .get()
+      )
+    );
+
+    const allRaceDocs = raceSnaps.flatMap((snap) => snap.docs);
+
+    // Group races by event ID
+    for (const raceDoc of allRaceDocs) {
+      const eventId = raceDoc.data().eventBrief.id;
+      if (!racesByEventId[eventId]) {
+        racesByEventId[eventId] = [];
+      }
+      racesByEventId[eventId].push(raceDoc);
+    }
+  }
+
   // Fetch upcoming preems
   const preemsSnap = await db
     .collectionGroup('preems')
@@ -378,7 +416,18 @@ export const getRenderableHomeDataForPage = cache(async () => {
   const contributions = contributionsSnap.docs.map((doc) => doc.data());
 
   const eventsWithRaces = await Promise.all(
-    eventsSnap.docs.map(getRacesForEvent),
+    eventDocs.map(async (eventDoc) => {
+      const eventId = eventDoc.id;
+      const races = racesByEventId[eventId] || [];
+
+      const children = await Promise.all(races.map(getRaceWithPreems));
+
+      return {
+        // eslint-disable-next-line @typescript-eslint/no-non-null-assertion
+        event: eventDoc.data()!,
+        children,
+      };
+    })
   );
 
   return {

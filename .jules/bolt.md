@@ -1,0 +1,3 @@
+## 2026-01-07 - Test Environment Date Discrepancy
+**Learning:** The test environment's system clock is set to the future (e.g., 2026). When writing tests that rely on `new Date()` (like `where('startDate', '>=', now)`), using dates like "2025" will result in them being treated as "past" dates and filtered out, leading to confusing test failures (e.g., empty results).
+**Action:** Always check the system date in the test environment if time-sensitive queries fail unexpectedly. Use dates significantly in the future (e.g., 2030) for test data to ensure they are considered "upcoming" regardless of the current year (within reason).
