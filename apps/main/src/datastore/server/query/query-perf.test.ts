@@ -32,7 +32,7 @@ describe('query performance', () => {
   });
 
   describe('getRenderableHomeDataForPage', () => {
-    it('should correctly return preem data without extra fetching', async () => {
+    it('should correctly return preem data with batched fetching', async () => {
       // Setup data
       const org1: Organization = {
         id: 'org-perf',
@@ -42,12 +42,13 @@ describe('query performance', () => {
       };
       await db.doc(org1.path).set(org1);
 
+      // Use 2030 to be safe
       const series1: Series = {
         id: 'series-perf',
         path: 'organizations/org-perf/series/series-perf',
         name: 'Perf Series',
-        startDate: Timestamp.fromDate(new Date('2025-01-01')),
-        endDate: Timestamp.fromDate(new Date('2025-01-31')),
+        startDate: Timestamp.fromDate(new Date('2030-01-01')),
+        endDate: Timestamp.fromDate(new Date('2030-01-31')),
         organizationBrief: {
           id: 'org-perf',
           path: 'organizations/org-perf',
@@ -60,8 +61,8 @@ describe('query performance', () => {
         id: 'event-perf',
         path: 'organizations/org-perf/series/series-perf/events/event-perf',
         name: 'Perf Event',
-        startDate: Timestamp.fromDate(new Date('2025-01-10')),
-        endDate: Timestamp.fromDate(new Date('2025-01-20')),
+        startDate: Timestamp.fromDate(new Date('2030-01-10')),
+        endDate: Timestamp.fromDate(new Date('2030-01-20')),
         seriesBrief: series1,
       };
       await db.doc(event1.path).set(event1);
@@ -70,8 +71,8 @@ describe('query performance', () => {
         id: 'race-perf',
         path: 'organizations/org-perf/series/series-perf/events/event-perf/races/race-perf',
         name: 'Perf Race',
-        startDate: Timestamp.fromDate(new Date('2025-01-12')),
-        endDate: Timestamp.fromDate(new Date('2025-01-18')),
+        startDate: Timestamp.fromDate(new Date('2030-01-12')),
+        endDate: Timestamp.fromDate(new Date('2030-01-18')),
         eventBrief: event1,
       };
       await db.doc(race1.path).set(race1);
@@ -88,7 +89,7 @@ describe('query performance', () => {
         id: 'contribution-perf',
         path: `${preem1.path}/contributions/contribution-perf`,
         amount: 100,
-        date: Timestamp.now(),
+        date: Timestamp.now(), // contributions are ordered by date desc, so now is fine
         preemBrief: preem1,
       };
       await db.doc(contribution1.path).set(contribution1);
@@ -97,13 +98,13 @@ describe('query performance', () => {
       // Note: We are spying on the db instance that is already created.
       const collectionGroupSpy = jest.spyOn(db, 'collectionGroup');
 
-      const { contributions } = await getRenderableHomeDataForPage();
+      const { contributions, eventsWithRaces } = await getRenderableHomeDataForPage();
 
       const perfContribution = contributions.find(
         (c) => c.id === 'contribution-perf',
       );
 
-      // Verify data correctness
+      // Verify flat contributions list
       expect(perfContribution).toBeDefined();
       expect(perfContribution?.preemBrief.name).toBe('Perf Preem');
       expect(perfContribution?.preemBrief.raceBrief.name).toBe('Perf Race');
@@ -111,16 +112,33 @@ describe('query performance', () => {
         'Perf Event',
       );
 
+      // Verify nested structure (events -> races -> preems -> contributions)
+      expect(eventsWithRaces.length).toBeGreaterThan(0);
+      const event = eventsWithRaces.find(e => e.event.id === 'event-perf');
+      expect(event).toBeDefined();
+      expect(event?.children.length).toBe(1);
+
+      const race = event?.children.find(r => r.race.id === 'race-perf');
+      expect(race).toBeDefined();
+      expect(race?.children.length).toBe(1);
+
+      const preem = race?.children.find(p => p.preem.id === 'preem-perf');
+      expect(preem).toBeDefined();
+      expect(preem?.children.length).toBe(1);
+
+      const contrib = preem?.children.find(c => c.id === 'contribution-perf');
+      expect(contrib).toBeDefined();
+
       // Verify calls
       const calls = collectionGroupSpy.mock.calls;
       const preemsCalls = calls.filter((call) => call[0] === 'preems');
 
       console.log('Preems calls:', preemsCalls.length);
 
-      // We expect 1 call now:
-      // 1. Fetch upcoming preems
-      // The second call (fetch preems for recent contributions) has been optimized away.
-      expect(preemsCalls.length).toBe(1);
+      // Expect 2 calls:
+      // 1. Fetch upcoming preems (original logic)
+      // 2. Batch fetch preems for races (new logic)
+      expect(preemsCalls.length).toBe(2);
     });
   });
 });
