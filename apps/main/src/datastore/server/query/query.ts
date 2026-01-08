@@ -1,6 +1,6 @@
 import 'server-only';
 
-import { type DocumentSnapshot } from 'firebase-admin/firestore';
+import { type DocumentSnapshot, type Firestore } from 'firebase-admin/firestore';
 import { cache } from 'react';
 
 import { getFirestore } from '@/firebase/server/firebase-admin';
@@ -35,6 +35,48 @@ import { getDocInternal, getDocRefInternal, getDocSnapInternal } from '../util';
 
 export const getDoc = cache(getDocInternal);
 export const getDocSnap = cache(getDocSnapInternal);
+
+// Helper to batch fetch children using collectionGroup
+async function fetchByParents<T>(
+  db: Firestore,
+  collectionName: string,
+  field: string,
+  parentIds: string[],
+  // eslint-disable-next-line @typescript-eslint/no-explicit-any
+  schema: any,
+): Promise<T[]> {
+  if (parentIds.length === 0) return [];
+  const chunks = [];
+  const uniqueIds = [...new Set(parentIds)];
+  for (let i = 0; i < uniqueIds.length; i += 30) {
+    chunks.push(uniqueIds.slice(i, i + 30));
+  }
+
+  const snaps = await Promise.all(
+    chunks.map((chunk) =>
+      db
+        .collectionGroup(collectionName)
+        .where(field, 'in', chunk)
+        .withConverter(converter(schema))
+        .get(),
+    ),
+  );
+
+  // eslint-disable-next-line @typescript-eslint/no-explicit-any
+  return snaps.flatMap((s) => s.docs.map((d) => d.data())) as any as T[];
+}
+
+function groupBy<T>(
+  array: T[],
+  keyFn: (item: T) => string,
+): Record<string, T[]> {
+  return array.reduce((acc, item) => {
+    const key = keyFn(item);
+    if (!acc[key]) acc[key] = [];
+    acc[key].push(item);
+    return acc;
+  }, {} as Record<string, T[]>);
+}
 
 const getPreemWithContributions = async (
   preemDoc: DocumentSnapshot<Preem>,
@@ -359,7 +401,78 @@ export const getRenderableHomeDataForPage = cache(async () => {
     .orderBy('startDate', 'asc')
     .withConverter(converter(EventSchema))
     .get();
+  const events = eventsSnap.docs.map((d) => d.data());
+  const eventIds = events.map((e) => e.id);
 
+  // Optimized Fetching: Fetch all descendants in batch using collectionGroup 'in' queries
+  // instead of N+1 recursive fetching.
+
+  // 1. Fetch Races for events
+  const races = await fetchByParents<Race>(
+    db,
+    'races',
+    'eventBrief.id',
+    eventIds,
+    RaceSchema,
+  );
+  const raceIds = races.map((r) => r.id);
+
+  // 2. Fetch Preems for races
+  const preemsForRaces = await fetchByParents<Preem>(
+    db,
+    'preems',
+    'raceBrief.id',
+    raceIds,
+    PreemSchema,
+  );
+  const preemIds = preemsForRaces.map((p) => p.id);
+
+  // 3. Fetch Contributions for preems
+  const contributionsForPreems = await fetchByParents<Contribution>(
+    db,
+    'contributions',
+    'preemBrief.id',
+    preemIds,
+    ContributionSchema,
+  );
+
+  // Stitch the tree back together in memory
+
+  // Group contributions by preem ID
+  const contribsByPreem = groupBy(
+    contributionsForPreems,
+    (c) => c.preemBrief.id,
+  );
+
+  // Map preems to PreemWithContributions
+  const preemsByRace: Record<string, PreemWithContributions[]> = {};
+  preemsForRaces.forEach((p) => {
+    const rid = p.raceBrief.id;
+    if (!preemsByRace[rid]) preemsByRace[rid] = [];
+    preemsByRace[rid].push({
+      preem: p,
+      children: contribsByPreem[p.id] || [],
+    });
+  });
+
+  // Map races to RaceWithPreems
+  const racesByEvent: Record<string, RaceWithPreems[]> = {};
+  races.forEach((r) => {
+    const eid = r.eventBrief.id;
+    if (!racesByEvent[eid]) racesByEvent[eid] = [];
+    racesByEvent[eid].push({
+      race: r,
+      children: preemsByRace[r.id] || [],
+    });
+  });
+
+  // Map events to EventWithRaces
+  const eventsWithRaces: EventWithRaces[] = events.map((e) => ({
+    event: e,
+    children: racesByEvent[e.id] || [],
+  }));
+
+  // Original queries for side-lists (preserved)
   // Fetch upcoming preems
   const preemsSnap = await db
     .collectionGroup('preems')
@@ -376,10 +489,6 @@ export const getRenderableHomeDataForPage = cache(async () => {
     .limit(20)
     .get();
   const contributions = contributionsSnap.docs.map((doc) => doc.data());
-
-  const eventsWithRaces = await Promise.all(
-    eventsSnap.docs.map(getRacesForEvent),
-  );
 
   return {
     eventsWithRaces,
