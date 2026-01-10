@@ -36,6 +36,11 @@ import { getDocInternal, getDocRefInternal, getDocSnapInternal } from '../util';
 export const getDoc = cache(getDocInternal);
 export const getDocSnap = cache(getDocSnapInternal);
 
+const chunk = <T>(arr: T[], size: number): T[][] =>
+  Array.from({ length: Math.ceil(arr.length / size) }, (_, i) =>
+    arr.slice(i * size, i * size + size),
+  );
+
 const getPreemWithContributions = async (
   preemDoc: DocumentSnapshot<Preem>,
 ): Promise<PreemWithContributions> => {
@@ -81,7 +86,86 @@ const getRacesForEvent = async (
     .collection('races')
     .withConverter(converter(RaceSchema))
     .get();
-  result.children = await Promise.all(snap.docs.map(getRaceWithPreems));
+
+  if (snap.empty) {
+    return result;
+  }
+
+  const races = snap.docs.map((doc) => doc.data());
+  const raceIds = races.map((r) => r.id);
+
+  // Optimized Fetching: Use collectionGroup with 'in' queries
+  const db = await getFirestore();
+  const preemBatches = chunk(raceIds, 30);
+
+  const preemSnaps = await Promise.all(
+    preemBatches.map((batchIds) =>
+      db
+        .collectionGroup('preems')
+        .where('raceBrief.id', 'in', batchIds)
+        .withConverter(converter(PreemSchema))
+        .get(),
+    ),
+  );
+
+  const allPreems = preemSnaps.flatMap((s) => s.docs.map((d) => d.data()));
+  const preemIds = allPreems.map((p) => p.id);
+
+  let allContributions: Contribution[] = [];
+  if (preemIds.length > 0) {
+    const contributionBatches = chunk(preemIds, 30);
+    const contributionSnaps = await Promise.all(
+      contributionBatches.map((batchIds) =>
+        db
+          .collectionGroup('contributions')
+          .where('preemBrief.id', 'in', batchIds)
+          .withConverter(converter(ContributionSchema))
+          .get(),
+      ),
+    );
+    allContributions = contributionSnaps.flatMap((s) =>
+      s.docs.map((d) => d.data()),
+    );
+  }
+
+  // Reconstruction
+  const contributionsByPreemId = new Map<string, Contribution[]>();
+  allContributions.forEach((c) => {
+    const pid = c.preemBrief.id;
+    if (!contributionsByPreemId.has(pid)) {
+      contributionsByPreemId.set(pid, []);
+    }
+    contributionsByPreemId.get(pid)!.push(c);
+  });
+
+  const preemsByRaceId = new Map<string, PreemWithContributions[]>();
+  allPreems.forEach((p) => {
+    const rid = p.raceBrief.id;
+    if (!preemsByRaceId.has(rid)) {
+      preemsByRaceId.set(rid, []);
+    }
+    const children = contributionsByPreemId.get(p.id) || [];
+    // Sort contributions by date descending (to match likely expectation, though original code had no explicit sort)
+    // Actually, original code using .collection('contributions').get() returns by ID.
+    // If we want to be safe, we can sort by ID.
+    children.sort((a, b) => a.id.localeCompare(b.id));
+
+    preemsByRaceId.get(rid)!.push({
+      preem: p,
+      children: children,
+    });
+  });
+
+  result.children = races.map((race) => {
+    const children = preemsByRaceId.get(race.id) || [];
+    // Sort preems by ID to ensure deterministic order
+    children.sort((a, b) => a.preem.id.localeCompare(b.preem.id));
+    return {
+      race,
+      children,
+    };
+  });
+
   return result;
 };
 
