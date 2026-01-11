@@ -33,6 +33,15 @@ import {
 import { converter } from '../converters';
 import { getDocInternal, getDocRefInternal, getDocSnapInternal } from '../util';
 
+// Helper to chunk arrays without external dependency
+function chunk<T>(array: T[], size: number): T[][] {
+  const chunks: T[][] = [];
+  for (let i = 0; i < array.length; i += size) {
+    chunks.push(array.slice(i, i + size));
+  }
+  return chunks;
+}
+
 export const getDoc = cache(getDocInternal);
 export const getDocSnap = cache(getDocSnapInternal);
 
@@ -69,36 +78,199 @@ const getRaceWithPreems = async (
   return result;
 };
 
-const getRacesForEvent = async (
-  eventDoc: DocumentSnapshot<Event>,
-): Promise<EventWithRaces> => {
-  const result: EventWithRaces = {
-    // eslint-disable-next-line @typescript-eslint/no-non-null-assertion
-    event: eventDoc.data()!,
-    children: [],
-  };
-  const snap = await eventDoc.ref
-    .collection('races')
-    .withConverter(converter(RaceSchema))
-    .get();
-  result.children = await Promise.all(snap.docs.map(getRaceWithPreems));
-  return result;
+/**
+ * Batched version of getEventsForSeries to avoid N+1 queries.
+ * Fetches all events for a list of series in chunks.
+ *
+ * NOTE: This relies on 'seriesBrief.id' being present and indexed on Event documents.
+ * Firestore automatically indexes single fields, so this should work out of the box
+ * as long as the denormalized data is present.
+ */
+const getEventsForSeriesBatched = async (
+  seriesDocs: DocumentSnapshot<Series>[],
+): Promise<SeriesWithEvents[]> => {
+  if (seriesDocs.length === 0) {
+    return [];
+  }
+
+  const seriesIds = seriesDocs.map((doc) => doc.id);
+  const db = await getFirestore();
+
+  // Firestore 'in' query supports max 30 items
+  const seriesIdChunks = chunk(seriesIds, 30);
+  const allEvents: Event[] = [];
+
+  await Promise.all(
+    seriesIdChunks.map(async (chunkIds) => {
+      const snap = await db
+        .collectionGroup('events')
+        .where('seriesBrief.id', 'in', chunkIds)
+        .withConverter(converter(EventSchema))
+        .get();
+      allEvents.push(...snap.docs.map((d) => d.data()));
+    }),
+  );
+
+  // Group events by series ID
+  const eventsBySeriesId: Record<string, Event[]> = {};
+  allEvents.forEach((event) => {
+    const seriesId = event.seriesBrief.id;
+    if (!eventsBySeriesId[seriesId]) {
+      eventsBySeriesId[seriesId] = [];
+    }
+    eventsBySeriesId[seriesId].push(event);
+  });
+
+  // Map back to result structure
+  return Promise.all(
+    seriesDocs.map(async (seriesDoc) => {
+      const seriesId = seriesDoc.id;
+      const events = eventsBySeriesId[seriesId] || [];
+
+      // Sort events if needed (e.g. by startDate) - mimic original behavior if implicit
+      events.sort((a, b) => {
+        const dateA = a.startDate?.getTime() ?? 0;
+        const dateB = b.startDate?.getTime() ?? 0;
+        return dateA - dateB;
+      });
+
+      return {
+        // eslint-disable-next-line @typescript-eslint/no-non-null-assertion
+        series: seriesDoc.data()!,
+        children: await getRacesForEventsBatched(events, db),
+      };
+    }),
+  );
 };
 
-const getEventsForSeries = async (
-  seriesDoc: DocumentSnapshot<Series>,
-): Promise<SeriesWithEvents> => {
-  const result: SeriesWithEvents = {
-    // eslint-disable-next-line @typescript-eslint/no-non-null-assertion
-    series: seriesDoc.data()!,
-    children: [],
-  };
-  const snap = await seriesDoc.ref
-    .collection('events')
-    .withConverter(converter(EventSchema))
-    .get();
-  result.children = await Promise.all(snap.docs.map(getRacesForEvent));
-  return result;
+// Helper to batch fetch races for events
+const getRacesForEventsBatched = async (
+  events: Event[],
+  db: FirebaseFirestore.Firestore,
+): Promise<EventWithRaces[]> => {
+  if (events.length === 0) return [];
+
+  const eventIds = events.map((e) => e.id);
+  const eventIdChunks = chunk(eventIds, 30);
+  const allRaces: Race[] = [];
+
+  await Promise.all(
+    eventIdChunks.map(async (chunkIds) => {
+      const snap = await db
+        .collectionGroup('races')
+        .where('eventBrief.id', 'in', chunkIds)
+        .withConverter(converter(RaceSchema))
+        .get();
+      allRaces.push(...snap.docs.map((d) => d.data()));
+    }),
+  );
+
+  const racesByEventId: Record<string, Race[]> = {};
+  allRaces.forEach((race) => {
+    const eventId = race.eventBrief.id;
+    if (!racesByEventId[eventId]) {
+      racesByEventId[eventId] = [];
+    }
+    racesByEventId[eventId].push(race);
+  });
+
+  return Promise.all(
+    events.map(async (event) => {
+      const races = racesByEventId[event.id] || [];
+      // Sort races
+      races.sort((a, b) => {
+        const dateA = a.startDate?.getTime() ?? 0;
+        const dateB = b.startDate?.getTime() ?? 0;
+        return dateA - dateB;
+      });
+
+      return {
+        event,
+        children: await getPreemsForRacesBatched(races, db),
+      };
+    }),
+  );
+};
+
+const getPreemsForRacesBatched = async (
+  races: Race[],
+  db: FirebaseFirestore.Firestore,
+): Promise<RaceWithPreems[]> => {
+  if (races.length === 0) return [];
+
+  const raceIds = races.map((r) => r.id);
+  const raceIdChunks = chunk(raceIds, 30);
+  const allPreems: Preem[] = [];
+
+  await Promise.all(
+    raceIdChunks.map(async (chunkIds) => {
+      const snap = await db
+        .collectionGroup('preems')
+        .where('raceBrief.id', 'in', chunkIds)
+        .withConverter(converter(PreemSchema))
+        .get();
+      allPreems.push(...snap.docs.map((d) => d.data()));
+    }),
+  );
+
+  const preemsByRaceId: Record<string, Preem[]> = {};
+  allPreems.forEach((preem) => {
+    const raceId = preem.raceBrief.id;
+    if (!preemsByRaceId[raceId]) {
+      preemsByRaceId[raceId] = [];
+    }
+    preemsByRaceId[raceId].push(preem);
+  });
+
+  return Promise.all(
+    races.map(async (race) => {
+      const preems = preemsByRaceId[race.id] || [];
+      // Next level: Contributions.
+      return {
+        race,
+        children: await getContributionsForPreemsBatched(preems, db),
+      };
+    }),
+  );
+};
+
+const getContributionsForPreemsBatched = async (
+  preems: Preem[],
+  db: FirebaseFirestore.Firestore,
+): Promise<PreemWithContributions[]> => {
+  if (preems.length === 0) return [];
+
+  const preemIds = preems.map((p) => p.id);
+  const preemIdChunks = chunk(preemIds, 30);
+  const allContributions: Contribution[] = [];
+
+  await Promise.all(
+    preemIdChunks.map(async (chunkIds) => {
+      const snap = await db
+        .collectionGroup('contributions')
+        .where('preemBrief.id', 'in', chunkIds)
+        .withConverter(converter(ContributionSchema))
+        .get();
+      allContributions.push(...snap.docs.map((d) => d.data()));
+    }),
+  );
+
+  const contributionsByPreemId: Record<string, Contribution[]> = {};
+  allContributions.forEach((contribution) => {
+    const preemId = contribution.preemBrief.id;
+    if (!contributionsByPreemId[preemId]) {
+      contributionsByPreemId[preemId] = [];
+    }
+    contributionsByPreemId[preemId].push(contribution);
+  });
+
+  return preems.map((preem) => {
+    const contributions = contributionsByPreemId[preem.id] || [];
+    return {
+      preem,
+      children: contributions,
+    };
+  });
 };
 
 export const getSeriesForOrganization = async (
@@ -108,7 +280,8 @@ export const getSeriesForOrganization = async (
     .collection('series')
     .withConverter(converter(SeriesSchema))
     .get();
-  return Promise.all(snap.docs.map(getEventsForSeries));
+  // Use batched fetcher here
+  return getEventsForSeriesBatched(snap.docs);
 };
 
 export const getOrganizationWithSeries = async (
@@ -317,7 +490,9 @@ export const getRenderableOrganizationDataForPage = cache(
       .collection('series')
       .withConverter(converter(SeriesSchema))
       .get();
-    const serieses = await Promise.all(seriesSnap.docs.map(getEventsForSeries));
+
+    // Optimized with batched fetching
+    const serieses = await getEventsForSeriesBatched(seriesSnap.docs);
 
     const memberIds =
       organization.memberRefs
@@ -336,7 +511,10 @@ export const getRenderableSeriesDataForPage = cache(async (path: DocPath) => {
     notFound(`Series not found: ${path}`);
   }
 
-  return await getEventsForSeries(doc);
+  // Optimize this too if possible, but getEventsForSeries is for ONE series.
+  // We can't really batch one item unless we change the implementation to use batching logic internally.
+  // But our batching logic is capable of handling one item array.
+  return (await getEventsForSeriesBatched([doc]))[0];
 });
 
 export const getRenderableEventDataForPage = cache(async (path: DocPath) => {
@@ -345,7 +523,10 @@ export const getRenderableEventDataForPage = cache(async (path: DocPath) => {
   if (!doc.exists) {
     notFound(`Event not found: ${path}`);
   }
-  return await getRacesForEvent(doc);
+  // Use our new batch helper for consistency and speed (Race->Preem->Contrib)
+  // eslint-disable-next-line @typescript-eslint/no-non-null-assertion
+  const result = await getRacesForEventsBatched([doc.data()!], await getFirestore());
+  return result[0];
 });
 
 export const getRenderableHomeDataForPage = cache(async () => {
@@ -377,8 +558,10 @@ export const getRenderableHomeDataForPage = cache(async () => {
     .get();
   const contributions = contributionsSnap.docs.map((doc) => doc.data());
 
-  const eventsWithRaces = await Promise.all(
-    eventsSnap.docs.map(getRacesForEvent),
+  // Optimize fetching races for these events
+  const eventsWithRaces = await getRacesForEventsBatched(
+    eventsSnap.docs.map(d => d.data()),
+    db
   );
 
   return {

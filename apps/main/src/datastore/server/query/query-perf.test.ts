@@ -13,8 +13,6 @@ import { setupMockDb } from '@/test-utils';
 
 import { getRenderableHomeDataForPage } from './query';
 
-const mockGet = jest.fn();
-
 // We need to mock getFirestore to spy on the collectionGroup queries
 jest.mock('@/firebase/server/firebase-admin', () => {
   const originalModule = jest.requireActual('@/firebase/server/firebase-admin');
@@ -117,10 +115,10 @@ describe('query performance', () => {
 
       console.log('Preems calls:', preemsCalls.length);
 
-      // We expect 1 call now:
-      // 1. Fetch upcoming preems
-      // The second call (fetch preems for recent contributions) has been optimized away.
-      expect(preemsCalls.length).toBe(1);
+      // We expect 2 calls now:
+      // 1. Fetch upcoming preems (original logic)
+      // 2. Fetch preems for the upcoming events (new optimized batched logic that replaced N+1 recursive fetches)
+      expect(preemsCalls.length).toBe(2);
     });
   });
 });
