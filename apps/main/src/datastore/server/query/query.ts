@@ -317,7 +317,14 @@ export const getRenderableOrganizationDataForPage = cache(
       .collection('series')
       .withConverter(converter(SeriesSchema))
       .get();
-    const serieses = await Promise.all(seriesSnap.docs.map(getEventsForSeries));
+
+    // Bolt Optimization: We only need the series list for the organization page.
+    // Deep fetching events, races, preems, and contributions is unnecessary and causes massive N+1 queries.
+    // We return empty children to satisfy the type, as they are unused by the Organization component.
+    const serieses: SeriesWithEvents[] = seriesSnap.docs.map((doc) => ({
+      series: doc.data(),
+      children: [],
+    }));
 
     const memberIds =
       organization.memberRefs

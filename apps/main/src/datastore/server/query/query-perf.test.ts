@@ -11,9 +11,10 @@ import {
 import { getFirestore } from '@/firebase/server/firebase-admin';
 import { setupMockDb } from '@/test-utils';
 
-import { getRenderableHomeDataForPage } from './query';
-
-const mockGet = jest.fn();
+import {
+  getRenderableHomeDataForPage,
+  getRenderableOrganizationDataForPage,
+} from './query';
 
 // We need to mock getFirestore to spy on the collectionGroup queries
 jest.mock('@/firebase/server/firebase-admin', () => {
@@ -121,6 +122,44 @@ describe('query performance', () => {
       // 1. Fetch upcoming preems
       // The second call (fetch preems for recent contributions) has been optimized away.
       expect(preemsCalls.length).toBe(1);
+    });
+  });
+
+  describe('getRenderableOrganizationDataForPage', () => {
+    it('should avoid recursive fetching of races and preems', async () => {
+      const orgPath = 'organizations/org-nplus1';
+      const seriesPath = `${orgPath}/series/series-1`;
+      const eventPath = `${seriesPath}/events/event-1`;
+
+      const org = { id: 'org-nplus1', path: orgPath, name: 'N+1 Org' };
+      const series = {
+        id: 'series-1',
+        path: seriesPath,
+        name: 'Series 1',
+        organizationBrief: { id: org.id, path: org.path, name: org.name },
+      };
+      const event = {
+        id: 'event-1',
+        path: eventPath,
+        name: 'Event 1',
+        seriesBrief: series,
+      };
+
+      await db.doc(orgPath).set(org);
+      await db.doc(seriesPath).set(series);
+      await db.doc(eventPath).set(event);
+
+      // Spy on the query prototype to count .get() calls
+      const queryProto = Object.getPrototypeOf(db.collection('test'));
+      const getSpy = jest.spyOn(queryProto, 'get');
+
+      await getRenderableOrganizationDataForPage(orgPath);
+
+      // Expected query count:
+      // 1. Get Series -> 1 query.
+      // The recursive fetching of Events, Races, and Preems has been removed.
+
+      expect(getSpy.mock.calls.length).toBe(1);
     });
   });
 });
