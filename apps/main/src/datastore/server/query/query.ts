@@ -317,7 +317,12 @@ export const getRenderableOrganizationDataForPage = cache(
       .collection('series')
       .withConverter(converter(SeriesSchema))
       .get();
-    const serieses = await Promise.all(seriesSnap.docs.map(getEventsForSeries));
+    // Bolt Optimization: Don't fetch nested events/races/preems for organization page
+    const serieses: SeriesWithEvents[] = seriesSnap.docs.map((doc) => ({
+      // eslint-disable-next-line @typescript-eslint/no-non-null-assertion
+      series: doc.data()!,
+      children: [],
+    }));
 
     const memberIds =
       organization.memberRefs
