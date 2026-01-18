@@ -48,10 +48,7 @@ export function Home({ eventsWithRaces, contributions, preems }: Props) {
                         <Group gap="xs">
                           <IconCalendar size={16} />
                           <Text size="sm" c="dimmed">
-                            {formatDateLong(
-                              event?.startDate,
-                              event?.timezone,
-                            )}
+                            {formatDateLong(event?.startDate, event?.timezone)}
                           </Text>
                         </Group>
                         <Group gap="xs">

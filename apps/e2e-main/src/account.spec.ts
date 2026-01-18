@@ -1,6 +1,4 @@
-import {
-  useE2eTestingUserBeforeEach,
-} from './util/e2e-test-utils';
+import { useE2eTestingUserBeforeEach } from './util/e2e-test-utils';
 import { expect, test } from './util/fixtures';
 
 test.describe('account', () => {
