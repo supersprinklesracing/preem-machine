@@ -437,6 +437,37 @@ export const getRenderableEventDataForPage = cache(async (path: DocPath) => {
   return await getRacesForEvent(doc);
 });
 
+// Helper to chunk queries in parallel
+const fetchByParentIds = async <T>(
+  collectionName: string,
+  parentField: string,
+  parentIds: string[],
+  schema: any,
+): Promise<T[]> => {
+  if (parentIds.length === 0) return [];
+
+  const db = await getFirestore();
+  const chunks: string[][] = [];
+  const chunkSize = 30; // Firestore 'in' query limit
+
+  for (let i = 0; i < parentIds.length; i += chunkSize) {
+    chunks.push(parentIds.slice(i, i + chunkSize));
+  }
+
+  const results = await Promise.all(
+    chunks.map(async (chunk) => {
+      const snap = await db
+        .collectionGroup(collectionName)
+        .where(parentField, 'in', chunk)
+        .withConverter(converter(schema))
+        .get();
+      return snap.docs.map((d) => d.data());
+    }),
+  );
+
+  return results.flat() as T[];
+};
+
 export const getRenderableHomeDataForPage = cache(async () => {
   const db = await getFirestore();
   const now = new Date();
@@ -466,9 +497,104 @@ export const getRenderableHomeDataForPage = cache(async () => {
     .get();
   const contributions = contributionsSnap.docs.map((doc) => doc.data());
 
-  const eventsWithRaces = await Promise.all(
-    eventsSnap.docs.map(getRacesForEvent),
+  // Optimization: Fetch all races, preems, and contributions in batch to avoid N+1 queries.
+  // Instead of traversing down the tree (Event -> Race -> Preem -> Contribution) which causes
+  // N events * M races * P preems queries, we fetch all relevant child documents in single batch queries.
+
+  // 1. Get all event IDs
+  const eventIds = eventsSnap.docs.map((doc) => doc.id);
+
+  // 2. Fetch all races for these events
+  const races = await fetchByParentIds<Race>(
+    'races',
+    'eventBrief.id',
+    eventIds,
+    RaceSchema,
   );
+
+  // 3. Fetch all preems for these races
+  const raceIds = races.map((r) => r.id);
+  const fetchedPreems = await fetchByParentIds<Preem>(
+    'preems',
+    'raceBrief.id',
+    raceIds,
+    PreemSchema,
+  );
+
+  // 4. Fetch all contributions for these preems
+  const preemIds = fetchedPreems.map((p) => p.id);
+  const fetchedContributions = await fetchByParentIds<Contribution>(
+    'contributions',
+    'preemBrief.id',
+    preemIds,
+    ContributionSchema,
+  );
+
+  // 5. Reconstruct the tree
+  // Group contributions by preem
+  const contributionsByPreem = new Map<string, Contribution[]>();
+  fetchedContributions.forEach((c) => {
+    const pid = c.preemBrief.id;
+    if (!contributionsByPreem.has(pid)) {
+      contributionsByPreem.set(pid, []);
+    }
+    contributionsByPreem.get(pid)?.push(c);
+  });
+
+  // Group preems by race
+  const preemsByRace = new Map<string, PreemWithContributions[]>();
+  fetchedPreems.forEach((p) => {
+    const rid = p.raceBrief.id;
+    if (!preemsByRace.has(rid)) {
+      preemsByRace.set(rid, []);
+    }
+    const children = contributionsByPreem.get(p.id) || [];
+    // Sort contributions by date descending (newest first)
+    children.sort((a, b) => {
+      const dateA = a.date instanceof Date ? a.date.getTime() : 0;
+      const dateB = b.date instanceof Date ? b.date.getTime() : 0;
+      return dateB - dateA;
+    });
+
+    preemsByRace.get(rid)?.push({
+      preem: p,
+      children,
+    });
+  });
+
+  // Group races by event
+  const racesByEvent = new Map<string, RaceWithPreems[]>();
+  races.forEach((r) => {
+    const eid = r.eventBrief.id;
+    if (!racesByEvent.has(eid)) {
+      racesByEvent.set(eid, []);
+    }
+
+    const children = preemsByRace.get(r.id) || [];
+    // Sort preems by name
+    children.sort((a, b) => (a.preem.name || '').localeCompare(b.preem.name || ''));
+
+    racesByEvent.get(eid)?.push({
+      race: r,
+      children,
+    });
+  });
+
+  const eventsWithRaces: EventWithRaces[] = eventsSnap.docs.map((doc) => {
+    const event = doc.data();
+    const children = racesByEvent.get(event.id) || [];
+    // Sort races by start date
+    children.sort((a, b) => {
+      const dateA = a.race.startDate instanceof Date ? a.race.startDate.getTime() : 0;
+      const dateB = b.race.startDate instanceof Date ? b.race.startDate.getTime() : 0;
+      return dateA - dateB;
+    });
+
+    return {
+      event,
+      children,
+    };
+  });
 
   return {
     eventsWithRaces,
