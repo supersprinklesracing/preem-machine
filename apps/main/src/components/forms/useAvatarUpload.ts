@@ -7,8 +7,8 @@ import { generateSignedUploadUrl } from '@/app/(main)/account/upload-action';
 import { ENV_MAX_IMAGE_SIZE_BYTES } from '@/env/env';
 
 export interface UseAvatarUploadOptions {
-  onUpload: (url: string) => void;
-  onRemove: () => void;
+  onUpload: (url: string) => Promise<void> | void;
+  onRemove: () => Promise<void> | void;
 }
 
 export function useAvatarUpload({
@@ -57,7 +57,7 @@ export function useAvatarUpload({
         throw new Error('Failed to upload file.');
       }
 
-      onUpload(publicUrl);
+      await onUpload(publicUrl);
     } catch (err) {
       setError(
         err instanceof Error ? err.message : 'An unknown error occurred',
@@ -67,8 +67,15 @@ export function useAvatarUpload({
     }
   };
 
-  const handleRemovePhoto = () => {
-    onRemove();
+  const handleRemovePhoto = async () => {
+    setError(null);
+    try {
+      await onRemove();
+    } catch (err) {
+      setError(
+        err instanceof Error ? err.message : 'An unknown error occurred',
+      );
+    }
   };
 
   return {
