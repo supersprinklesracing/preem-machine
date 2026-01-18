@@ -2,7 +2,6 @@
 
 import {
   Avatar,
-  Box,
   Button,
   Card,
   FileButton,
@@ -11,6 +10,7 @@ import {
   Stack,
   Text,
   Title,
+  UnstyledButton,
 } from '@mantine/core';
 import { IconMail, IconUpload } from '@tabler/icons-react';
 import { useState } from 'react';
@@ -41,7 +41,7 @@ export function UpdateUserProfileCard({
       <Stack align="center" ta="center">
         <FileButton onChange={onFileChange} accept="image/png,image/jpeg">
           {(props) => (
-            <Box
+            <UnstyledButton
               {...props}
               data-testid="avatar-container"
               onMouseEnter={() => setHovered(true)}
@@ -51,6 +51,7 @@ export function UpdateUserProfileCard({
                 cursor: 'pointer',
                 borderRadius: '50%',
               }}
+              aria-label="Upload profile photo"
             >
               <Avatar
                 src={avatarUrl}
@@ -78,13 +79,13 @@ export function UpdateUserProfileCard({
                   </Stack>
                 </Overlay>
               )}
-            </Box>
+            </UnstyledButton>
           )}
         </FileButton>
 
         <Title order={2}>{name}</Title>
         <Group gap="xs" wrap="nowrap">
-          <IconMail size={16} />
+          <IconMail size={16} aria-hidden="true" />
           <Text c="dimmed">{email}</Text>
         </Group>
         <Stack>

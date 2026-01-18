@@ -40,6 +40,13 @@ describe('UpdateUserProfileCard', () => {
     );
   });
 
+  it('renders accessible upload button', () => {
+    render(<TestComponent />);
+    expect(
+      screen.getByRole('button', { name: 'Upload profile photo' }),
+    ).toBeInTheDocument();
+  });
+
   it('renders remove photo button', () => {
     render(<TestComponent />);
     expect(
