@@ -46,4 +46,12 @@ describe('UpdateUserProfileCard', () => {
       screen.getByRole('button', { name: 'Remove Photo' }),
     ).toBeInTheDocument();
   });
+
+  it('renders accessible avatar upload button', () => {
+    render(<TestComponent />);
+    const uploadButton = screen.getByRole('button', {
+      name: /upload profile photo/i,
+    });
+    expect(uploadButton).toBeInTheDocument();
+  });
 });
