@@ -21,4 +21,11 @@ describe('Login component', () => {
     render(<Login loginAction={loginAction} />);
     expect(screen.getByRole('heading', { name: 'Login' })).toBeInTheDocument();
   });
+
+  it('should have accessible labels for inputs', () => {
+    const loginAction = jest.fn();
+    render(<Login loginAction={loginAction} />);
+    expect(screen.getByLabelText(/Email address/i)).toBeInTheDocument();
+    expect(screen.getByLabelText(/Password/i)).toBeInTheDocument();
+  });
 });
