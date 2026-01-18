@@ -1,6 +1,5 @@
 'use client';
 
-import imageCompression from 'browser-image-compression';
 import { useState } from 'react';
 
 import { generateSignedUploadUrl } from '@/app/(main)/account/upload-action';
@@ -34,22 +33,15 @@ export function useAvatarUpload({
     setError(null);
 
     try {
-      // TODO: Replace with server-side resizing via Firebase Extension. See issue #173.
-      const compressedFile = await imageCompression(file, {
-        maxSizeMB: ENV_MAX_IMAGE_SIZE_BYTES / 1024 / 1024,
-        maxWidthOrHeight: 256,
-        useWebWorker: true,
-      });
-
       const { signedUrl, publicUrl } = await generateSignedUploadUrl({
-        contentType: compressedFile.type,
+        contentType: file.type,
       });
 
       const response = await fetch(signedUrl, {
         method: 'PUT',
-        body: compressedFile,
+        body: file,
         headers: {
-          'Content-Type': compressedFile.type,
+          'Content-Type': file.type,
         },
       });
 
