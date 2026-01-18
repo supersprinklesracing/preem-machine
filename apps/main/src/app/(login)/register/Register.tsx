@@ -75,6 +75,7 @@ export function Register() {
             <Stack>
               <TextInput
                 required
+                label="Email"
                 value={email}
                 onChange={(e) => setEmail(e.target.value)}
                 name="email"
@@ -83,6 +84,7 @@ export function Register() {
               />
               <PasswordInput
                 required
+                label="Password"
                 name="password"
                 value={password}
                 onChange={(e) => setPassword(e.target.value)}
