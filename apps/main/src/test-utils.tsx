@@ -268,7 +268,7 @@ export const setupMockDb = () => {
   // 'use server';
 
   let firestore: MockFirestore;
-  beforeAll(async () => {
+  beforeEach(async () => {
     firestore = (await getFirestore()) as MockFirestore;
     firestore.database = createMockDb(firestore);
   });
