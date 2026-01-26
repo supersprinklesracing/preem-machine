@@ -105,7 +105,7 @@
     "prettier": "^3.0.0",
     "react-loading-hook": "^1.1.2",
     "source-map": "^0.7.6",
-    "stylelint": "^16.23.1",
+    "stylelint": "^17.0.0",
     "stylelint-config-standard": "^39.0.0",
     "ts-jest": "^29.4.0",
     "ts-node": "10.9.2",
