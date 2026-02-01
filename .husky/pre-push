@@ -2,3 +2,4 @@ npx lint-staged --relative
 ./tools/nx run-many -t build
 ./tools/nx run-many --targets test,test:node --forceExit
 ./tools/nx run e2e-main:e2e
+git lfs pre-push "$@"
