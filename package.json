@@ -43,7 +43,7 @@
     "yargs": "^18.0.0"
   },
   "devDependencies": {
-    "@eslint-react/eslint-plugin": "^2.0.0",
+    "@eslint-react/eslint-plugin": "^4.0.0",
     "@eslint/compat": "^2.0.0",
     "@eslint/eslintrc": "^3.3.1",
     "@eslint/js": "^9.34.0",
