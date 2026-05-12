@@ -117,7 +117,7 @@
     "chokidar": "5.0.0",
     "readdirp": "5.0.0",
     "glob": "13.0.0",
-    "svgo": "4.0.0",
+    "svgo": "4.0.1",
     "domexception": "4.0.0",
     "@opentelemetry/exporter-jaeger": "2.2.0"
   },
