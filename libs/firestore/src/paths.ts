@@ -74,7 +74,9 @@ export const isDocPath = (path: string): path is DocPath => {
     const isValid = segments.length === 2;
     if (!isValid) {
       console.debug(
-        `isDocPath: (${path}): invalid users path segment length: ${segments.length}`,
+        'isDocPath: (%s): invalid users path segment length: %d',
+        path,
+        segments.length,
       );
     }
     return isValid;
@@ -84,21 +86,27 @@ export const isDocPath = (path: string): path is DocPath => {
     const isValid = segments.length === 2;
     if (!isValid) {
       console.debug(
-        `isDocPath: (${path}): invalid invites path segment length: ${segments.length}`,
+        'isDocPath: (%s): invalid invites path segment length: %d',
+        path,
+        segments.length,
       );
     }
     return isValid;
   }
 
   if (segments[0] !== 'organizations') {
-    console.debug(
-      `isDocPath: (${path}): must start with "organizations" or "users": ${segments[0]}`,
-    );
+      console.debug(
+        'isDocPath: (%s): must start with "organizations" or "users": %s',
+        path,
+        segments[0],
+      );
     return false;
   }
   if (segments.length % 2 !== 0) {
     console.debug(
-      `isDocPath: (${path}): invalid segment length for organization-prefixed: ${segments.length}`,
+      'isDocPath: (%s): invalid segment length for organization-prefixed: %d',
+      path,
+      segments.length,
     );
     return false;
   }
@@ -108,9 +116,10 @@ export const isDocPath = (path: string): path is DocPath => {
     const expectedCollectionId = COLLECTION_IDS[i / 2];
     if (collectionSegment !== expectedCollectionId) {
       console.debug(
-        `isDocPath: (${path}): collection segment mismatch`,
-        `found: ${collectionSegment}`,
-        `expected: ${expectedCollectionId}`,
+        'isDocPath: (%s): collection segment mismatch, found: %s, expected: %s',
+        path,
+        collectionSegment,
+        expectedCollectionId,
       );
       return false;
     }
