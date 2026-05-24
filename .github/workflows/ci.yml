@@ -80,10 +80,10 @@ jobs:
       - name: Lint
         run: ./tools/nx run-many -t lint
 
-      - name: "Test (test:default)"
+      - name: 'Test (test:default)'
         run: ./tools/nx run-many -t test
 
-      - name: "Test (test:node)"
+      - name: 'Test (test:node)'
         run: ./tools/nx run-many -t test:node
 
       # https://github.com/microsoft/playwright/issues/7249

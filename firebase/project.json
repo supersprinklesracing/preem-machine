@@ -1,0 +1,74 @@
+{
+  "name": "firebase",
+  "$schema": "../node_modules/nx/schemas/project-schema.json",
+  "projectType": "application",
+  "tags": ["firebase:app", "firebase:name:firebase"],
+  "targets": {
+    "build": {
+      "executor": "nx:run-commands",
+      "options": {
+        "command": "echo Build succeeded."
+      }
+    },
+    "firebase": {
+      "executor": "nx:run-commands",
+      "options": {
+        "command": "pnpm exec firebase --project=${PROJECT_ID} --config=firebase.json"
+      },
+      "configurations": {
+        "production": {
+          "command": "pnpm exec firebase --project=${PROJECT_ID} --config=firebase.json"
+        }
+      }
+    },
+    "killports": {
+      "executor": "nx:run-commands",
+      "options": {
+        "command": "kill-port --port 4000,5002,8080,9099,9199"
+      }
+    },
+    "emulate": {
+      "executor": "nx:run-commands",
+      "options": {},
+      "defaultConfiguration": "only",
+      "configurations": {
+        "all": {
+          "commands": [
+            "nx run firebase:killports",
+            "pnpm exec firebase emulators:start"
+          ]
+        },
+        "only": {
+          "command": "pnpm exec firebase emulators:start --only firestore --project=demo-no-project",
+          "readyWhen": "Firestore Emulator UI websocket is running on 8080",
+          "continuous": true
+        },
+        "dev": {
+          "commands": [
+            "nx run firebase:killports",
+            "pnpm exec firebase emulators:start --only firestore,auth,storage --import=firebase/.emulators --export-on-exit"
+          ]
+        },
+        "reset": {
+          "commands": [
+            "nx run firebase:emulate-clean",
+            "nx run firebase:killports"
+          ]
+        }
+      }
+    },
+    "emulate-clean": {
+      "executor": "nx:run-commands",
+      "options": {
+        "command": "rm -rf firebase/.emulators"
+      }
+    },
+    "deploy": {
+      "executor": "nx:run-commands",
+      "dependsOn": ["build"],
+      "options": {
+        "command": "nx run firebase:firebase deploy"
+      }
+    }
+  }
+}
