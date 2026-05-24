@@ -27,11 +27,15 @@ export const required = (key: keyof EnvVars): string => {
   if (value === undefined) {
     if (
       process.env.NEXT_PHASE === 'phase-production-build' ||
-      process.env.NODE_ENV === 'test'
+      process.env.NODE_ENV === 'test' ||
+      process.env.E2E_TESTING === 'true'
     ) {
       console.warn(
         `⚠️ [fallback] process.env.${key as string} not defined. Returning placeholder.`,
       );
+      if (key === 'SERVICE_ACCOUNT_PRIVATE_KEY') {
+        return '-----BEGIN RSA PRIVATE KEY-----\nMIIBOgIBAAJBAKj34GkxFhD90vcNLYLInFEX6Ppy1tPf9Cnzj4p4WGeKLs1Pt8Qu\nKUpRKfFLfRYC9AIKjbJTWit+CqvjWYzvQwECAwEAAQJAIJLixBy2qpFoS4DSmoEm\no3qGy0t6z09AIJtH+5OeRV1be+N4cDYJKffGzDa88vQENZiRm0GRq6a+HPGQMd2k\nTQIhAKMSvzIBnni7ot/OSie2TmJLY4SwTQAevXysE2RbFDYdAiEBCUEaRQnMnbp7\n9mxDXDf6AU0cN/RPBjb9qSHDcWZHGzUCIG2Es59z8ugGrDY+pxLQnwfotadxd+Uy\nv/Ow5T0q5gIJAiEAyS4RaI9YG8EWx/2w0T67ZUVAw8eOMB6BIUg0Xcu+3okCIBOs\n/5OiPgoTdSy7bcF9IGpSE8ZgGKzgYQVZeN97YE00\n-----END RSA PRIVATE KEY-----\n';
+      }
       return `placeholder-for-${key as string}`;
     }
     throw new Error(`process.env.${key as string} not defined`);

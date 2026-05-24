@@ -1,8 +1,6 @@
 import { ENV_E2E_TESTING } from '@preem-machine/env';
-import type { NextMiddleware, NextRequest } from 'next/server';
+import type { NextRequest } from 'next/server';
 import { NextResponse } from 'next/server';
-
-import { auth } from '@/auth';
 
 // prettier-ignore
 const LOGGED_OUT_ONLY = [
@@ -20,29 +18,14 @@ function isProtectedRoute(pathname: string): boolean {
   return PROTECTED_PATHS.some((path) => path.test(pathname));
 }
 
-const middleware: NextMiddleware = auth((request) => {
-  const e2eTestingUser = getE2eTestingUser(request);
-  if (e2eTestingUser) {
-    return e2eTestingUser;
-  }
-
-  const isLoggedIn = !!request.auth;
-  const { pathname } = request.nextUrl;
-
-  if (isLoggedIn && LOGGED_OUT_ONLY.includes(pathname)) {
-    return NextResponse.redirect(new URL('/', request.nextUrl.origin));
-  }
-
-  if (!isLoggedIn && isProtectedRoute(pathname)) {
-    const redirectUrl = new URL('/login', request.nextUrl.origin);
-    redirectUrl.searchParams.set('redirect', pathname);
-    return NextResponse.redirect(redirectUrl);
-  }
-
-  return NextResponse.next();
-}) as unknown as NextMiddleware;
-
-export default middleware;
+function hasSessionCookie(request: NextRequest): boolean {
+  return (
+    request.cookies.has('authjs.session-token') ||
+    request.cookies.has('__Secure-authjs.session-token') ||
+    request.cookies.has('next-auth.session-token') ||
+    request.cookies.has('__Secure-next-auth.session-token')
+  );
+}
 
 function getE2eTestingUser(request: NextRequest) {
   if (ENV_E2E_TESTING) {
@@ -58,6 +41,28 @@ function getE2eTestingUser(request: NextRequest) {
     }
   }
   return undefined;
+}
+
+export default function middleware(request: NextRequest) {
+  const e2eTestingUser = getE2eTestingUser(request);
+  if (e2eTestingUser) {
+    return e2eTestingUser;
+  }
+
+  const { pathname } = request.nextUrl;
+  const isLoggedIn = hasSessionCookie(request);
+
+  if (isLoggedIn && LOGGED_OUT_ONLY.includes(pathname)) {
+    return NextResponse.redirect(new URL('/', request.nextUrl.origin));
+  }
+
+  if (!isLoggedIn && isProtectedRoute(pathname)) {
+    const redirectUrl = new URL('/login', request.nextUrl.origin);
+    redirectUrl.searchParams.set('redirect', pathname);
+    return NextResponse.redirect(redirectUrl);
+  }
+
+  return NextResponse.next();
 }
 
 export const config = {

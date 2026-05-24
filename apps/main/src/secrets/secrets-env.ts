@@ -1,9 +1,10 @@
 'use server';
 
-import { ENV_STRIPE_ENABLED, getNextPublicProjectId } from '@preem-machine/env';
+import { ENV_STRIPE_ENABLED } from '@preem-machine/env';
 import {
   getAuthCookieSignatureKeyCurrent,
   getAuthCookieSignatureKeyPrevious,
+  getProjectId,
   getServiceAccountClientEmail,
   getServiceAccountPrivateKey,
   getStripeApiKey,
@@ -14,7 +15,7 @@ import type { ServiceAccountSecret } from './service-account-secret';
 
 export async function getServiceAccountSecret(): Promise<ServiceAccountSecret> {
   return {
-    project_id: getNextPublicProjectId(),
+    project_id: getProjectId(),
     private_key: getServiceAccountPrivateKey().replace(/\\n/g, '\n'),
     client_email: getServiceAccountClientEmail(),
   } as unknown as ServiceAccountSecret;
