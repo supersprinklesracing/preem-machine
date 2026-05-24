@@ -1,6 +1,7 @@
 {
   "extends": "../../tsconfig.base.json",
   "compilerOptions": {
+    "baseUrl": ".",
     "jsx": "preserve",
     "noEmit": true,
     "emitDeclarationOnly": false,
@@ -17,11 +18,19 @@
       }
     ],
     "paths": {
-      "@/*": ["./src/*"]
+      "@/*": ["./src/*"],
+      "@preem-machine/env": ["../../libs/env-vars/src/index.ts"],
+      "@preem-machine/env/*": ["../../libs/env-vars/src/*"],
+      "@preem-machine/firestore": ["../../libs/firestore/src/index.ts"],
+      "@preem-machine/firestore/*": ["../../libs/firestore/src/*"],
+      "@preem-machine/firestore/server": [
+        "../../libs/firestore/src/server/index.ts"
+      ],
+      "@preem-machine/stripe": ["../../libs/stripe/src/index.ts"],
+      "@preem-machine/stripe/*": ["../../libs/stripe/src/*"]
     },
     "types": ["jest", "node"],
     "outDir": "dist",
-    "rootDir": "src",
     "tsBuildInfoFile": "dist/tsconfig.tsbuildinfo"
   },
   "include": [
@@ -51,5 +60,16 @@
     "eslint.config.js",
     "eslint.config.cjs",
     "eslint.config.mjs"
+  ],
+  "references": [
+    {
+      "path": "../../libs/stripe"
+    },
+    {
+      "path": "../../libs/firestore"
+    },
+    {
+      "path": "../../libs/env-vars"
+    }
   ]
 }

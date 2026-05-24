@@ -1,27 +1,15 @@
 import { UserCredential } from 'firebase/auth';
+import { signIn, signOut } from 'next-auth/react';
 
 export async function login(token: string) {
-  const headers: Record<string, string> = {
-    Authorization: `Bearer ${token}`,
-  };
-
-  await fetch('/api/login', {
-    method: 'GET',
-    headers,
-  });
+  await signIn('credentials', { token, redirect: false });
 }
 
 export async function loginWithCredential(credential: UserCredential) {
   const idToken = await credential.user.getIdToken();
-
   await login(idToken);
 }
 
 export async function logout() {
-  const headers: Record<string, string> = {};
-
-  await fetch('/api/logout', {
-    method: 'GET',
-    headers,
-  });
+  await signOut({ redirect: true, callbackUrl: '/login' });
 }

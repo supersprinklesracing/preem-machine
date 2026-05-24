@@ -1,13 +1,18 @@
-import { orThrow } from '@/env/env';
+import {
+  ENV_NEXT_PUBLIC_FIREBASE_API_KEY,
+  ENV_NEXT_PUBLIC_FIREBASE_APP_ID,
+  ENV_NEXT_PUBLIC_FIREBASE_AUTH_DOMAIN,
+  ENV_NEXT_PUBLIC_FIREBASE_MESSAGING_SENDER_ID,
+  ENV_NEXT_PUBLIC_FIREBASE_STORAGE_BUCKET,
+  ENV_NEXT_PUBLIC_PROJECT_ID,
+} from '@/env/env';
 
 export const clientConfig = {
-  projectId: orThrow(process.env.NEXT_PUBLIC_PROJECT_ID),
-  apiKey: orThrow(process.env.NEXT_PUBLIC_FIREBASE_API_KEY),
-  authDomain: orThrow(process.env.NEXT_PUBLIC_FIREBASE_AUTH_DOMAIN),
-  storageBucket: orThrow(process.env.NEXT_PUBLIC_FIREBASE_STORAGE_BUCKET),
-  messagingSenderId: orThrow(
-    process.env.NEXT_PUBLIC_FIREBASE_MESSAGING_SENDER_ID,
-  ),
+  projectId: ENV_NEXT_PUBLIC_PROJECT_ID,
+  apiKey: ENV_NEXT_PUBLIC_FIREBASE_API_KEY,
+  authDomain: ENV_NEXT_PUBLIC_FIREBASE_AUTH_DOMAIN,
+  storageBucket: ENV_NEXT_PUBLIC_FIREBASE_STORAGE_BUCKET,
+  messagingSenderId: ENV_NEXT_PUBLIC_FIREBASE_MESSAGING_SENDER_ID,
   // Optional – required if your app uses AppCheck – https://firebase.google.com/docs/app-check
-  appId: process.env.NEXT_PUBLIC_FIREBASE_APP_ID,
+  appId: ENV_NEXT_PUBLIC_FIREBASE_APP_ID,
 };

@@ -1,46 +1,55 @@
 /* Base level authentication. Should only be called from the @/user module. */
 'use server';
 
+import { ENV_E2E_TESTING } from '@preem-machine/env';
+import { ENV_E2E_TESTING_USER } from '@preem-machine/env/server';
 import type { DecodedIdToken } from 'firebase-admin/auth';
-import { cookies, headers } from 'next/headers';
-import { getTokens } from 'next-firebase-auth-edge';
+import { headers } from 'next/headers';
 
-import { serverConfigFn } from '@/firebase/server/config';
+import { auth } from '@/auth';
 import { getFirebaseAdminApp } from '@/firebase/server/firebase-admin';
 
-import { ENV_E2E_TESTING } from '../../env/env';
 import { AuthUser } from '../user';
-import { toAuthContextUserFromTokens, toAuthContextUserFromUserRecord } from './auth-context-user';
+import { toAuthContextUserFromUserRecord } from './auth-context-user';
 
-export const getAuthUser = async () => {
-  if (ENV_E2E_TESTING) {
-    const e2eAuthUser = (await headers()).get('X-e2e-auth-user');
-    if (e2eAuthUser) {
-      let authUser: AuthUser;
-      try {
-        authUser = JSON.parse(e2eAuthUser) as AuthUser;
-      } catch (error) {
-        throw new Error(`Malformed JSON in X-e2e-auth-user header: ${e2eAuthUser}`);
-      }
-
-      if (!authUser.uid) {
-        throw new Error(
-          `Misconfigured E2E Testing User in header: ${e2eAuthUser}`,
-        );
-      }
-      return authUser;
-    }
+export const getAuthUser = async (): Promise<AuthUser | null> => {
+  const e2eUser = await getE2eUser();
+  if (e2eUser) {
+    return e2eUser;
   }
-  const serverConfig = await serverConfigFn();
-  const tokens = await getTokens(await cookies(), {
-    ...serverConfig,
-  });
 
-  if (!tokens) {
+  if (
+    ENV_E2E_TESTING &&
+    ENV_E2E_TESTING_USER &&
+    ENV_E2E_TESTING_USER !== 'test-user-id-not-specified'
+  ) {
+    return {
+      uid: ENV_E2E_TESTING_USER,
+      email: `${ENV_E2E_TESTING_USER}@example.com`,
+      displayName: 'E2E Testing User',
+      phoneNumber: null,
+      photoURL: null,
+      providerId: 'next-auth',
+      emailVerified: true,
+    } as AuthUser;
+  }
+
+  const session = await auth();
+  if (!session?.user) {
     return null;
   }
 
-  return toAuthContextUserFromTokens(tokens);
+  return {
+    uid: session.user.id as string,
+    email: session.user.email ?? null,
+    displayName: session.user.name ?? null,
+    photoURL: session.user.image ?? null,
+    phoneNumber: null,
+    providerId: 'next-auth',
+    emailVerified: !!session.user.email,
+    token: session.token,
+    customClaims: session.customClaims ?? {},
+  };
 };
 
 const getE2eUser = async (): Promise<AuthUser | null> => {
@@ -53,12 +62,17 @@ const getE2eUser = async (): Promise<AuthUser | null> => {
     return null;
   }
 
+  let authUser: AuthUser;
   try {
-    return JSON.parse(e2eAuthUser);
-  } catch (error) {
-    console.error('Error parsing X-e2e-auth-user header:', error);
-    return null;
+    authUser = JSON.parse(e2eAuthUser) as AuthUser;
+  } catch {
+    throw new Error(`Malformed JSON in X-e2e-auth-user header: ${e2eAuthUser}`);
   }
+
+  if (!authUser.uid) {
+    throw new Error(`Misconfigured E2E Testing User in header: ${e2eAuthUser}`);
+  }
+  return authUser;
 };
 
 const getBearerToken = async (): Promise<DecodedIdToken | null> => {
@@ -101,4 +115,3 @@ export const getBearerUser = async (): Promise<AuthUser | null> => {
     return null;
   }
 };
-

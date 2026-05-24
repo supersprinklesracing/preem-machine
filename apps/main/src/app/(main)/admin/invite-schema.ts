@@ -1,4 +1,4 @@
-import { InviteSchema as schema } from '@/datastore/schema';
+import { BaseInviteSchema as schema } from '@/datastore/schema';
 
 export const inviteSchema = schema.omit({
   id: true,

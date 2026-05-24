@@ -2,6 +2,11 @@ import { render, screen } from '@/test-utils';
 
 import { CourseLink } from './CourseLink';
 
+jest.mock('next/script', () => ({
+  __esModule: true,
+  default: () => null,
+}));
+
 describe('CourseLink', () => {
   it('renders nothing when no course link is provided', () => {
     render(<CourseLink />);

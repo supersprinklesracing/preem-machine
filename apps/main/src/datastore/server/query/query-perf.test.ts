@@ -13,8 +13,6 @@ import { setupMockDb } from '@/test-utils';
 
 import { getRenderableHomeDataForPage } from './query';
 
-const mockGet = jest.fn();
-
 // We need to mock getFirestore to spy on the collectionGroup queries
 jest.mock('@/firebase/server/firebase-admin', () => {
   const originalModule = jest.requireActual('@/firebase/server/firebase-admin');
@@ -22,13 +20,16 @@ jest.mock('@/firebase/server/firebase-admin', () => {
     ...originalModule,
   };
 });
-
 describe('query performance', () => {
   let db: Firestore;
   setupMockDb();
 
-  beforeAll(async () => {
+  beforeEach(async () => {
     db = await getFirestore();
+    (db as any).database = {
+      organizations: [],
+      users: [],
+    };
   });
 
   describe('getRenderableHomeDataForPage', () => {
@@ -100,7 +101,7 @@ describe('query performance', () => {
       const { contributions } = await getRenderableHomeDataForPage();
 
       const perfContribution = contributions.find(
-        (c) => c.id === 'contribution-perf',
+        (c: any) => c.id === 'contribution-perf',
       );
 
       // Verify data correctness
@@ -113,9 +114,7 @@ describe('query performance', () => {
 
       // Verify calls
       const calls = collectionGroupSpy.mock.calls;
-      const preemsCalls = calls.filter((call) => call[0] === 'preems');
-
-      console.log('Preems calls:', preemsCalls.length);
+      const preemsCalls = calls.filter((call: any) => call[0] === 'preems');
 
       // We expect 1 call now:
       // 1. Fetch upcoming preems

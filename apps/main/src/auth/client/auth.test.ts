@@ -1,32 +1,35 @@
 import { UserCredential } from 'firebase/auth';
+import { signIn, signOut } from 'next-auth/react';
 
 import { login, loginWithCredential, logout } from './auth';
 
+jest.mock('next-auth/react', () => ({
+  signIn: jest.fn(),
+  signOut: jest.fn(),
+}));
+
+const mockSignIn = signIn as jest.Mock;
+const mockSignOut = signOut as jest.Mock;
+
 describe('auth/client', () => {
   beforeEach(() => {
-    global.fetch = jest.fn();
-  });
-
-  afterEach(() => {
-    jest.restoreAllMocks();
+    jest.clearAllMocks();
   });
 
   describe('login', () => {
-    it('should call fetch with the correct arguments', async () => {
+    it('should call signIn with credentials and token', async () => {
       const token = 'test-token';
       await login(token);
 
-      expect(global.fetch).toHaveBeenCalledWith('/api/login', {
-        method: 'GET',
-        headers: {
-          Authorization: `Bearer ${token}`,
-        },
+      expect(mockSignIn).toHaveBeenCalledWith('credentials', {
+        token,
+        redirect: false,
       });
     });
   });
 
   describe('loginWithCredential', () => {
-    it('should extract the id token and call fetch correctly', async () => {
+    it('should extract the id token and call signIn correctly', async () => {
       const mockToken = 'mock-id-token';
       const mockCredential = {
         user: {
@@ -37,22 +40,20 @@ describe('auth/client', () => {
       await loginWithCredential(mockCredential);
 
       expect(mockCredential.user.getIdToken).toHaveBeenCalled();
-      expect(global.fetch).toHaveBeenCalledWith('/api/login', {
-        method: 'GET',
-        headers: {
-          Authorization: `Bearer ${mockToken}`,
-        },
+      expect(mockSignIn).toHaveBeenCalledWith('credentials', {
+        token: mockToken,
+        redirect: false,
       });
     });
   });
 
   describe('logout', () => {
-    it('should call fetch with the correct arguments', async () => {
+    it('should call signOut with redirect options', async () => {
       await logout();
 
-      expect(global.fetch).toHaveBeenCalledWith('/api/logout', {
-        method: 'GET',
-        headers: {},
+      expect(mockSignOut).toHaveBeenCalledWith({
+        redirect: true,
+        callbackUrl: '/login',
       });
     });
   });

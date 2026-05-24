@@ -1,5 +1,7 @@
+'use client';
+
 import { Badge, BadgeVariant } from '@mantine/core';
-import React from 'react';
+import React, { useEffect, useState } from 'react';
 
 export type DateStatus = 'Upcoming' | 'Live' | 'Finished';
 
@@ -15,25 +17,33 @@ const statusColors: Record<DateStatus, string> = {
 };
 
 export function DateStatusBadge({ startDate, endDate }: DateStatusBadgeProps) {
-  let status: DateStatus | undefined = undefined;
+  const [isMounted, setIsMounted] = useState(false);
+
+  useEffect(() => {
+    const handle = requestAnimationFrame(() => {
+      setIsMounted(true);
+    });
+    return () => cancelAnimationFrame(handle);
+  }, []);
+
+  if (!isMounted || !startDate || !endDate) {
+    return null;
+  }
+
+  const now = new Date();
+  let status: DateStatus;
   let variant: BadgeVariant = 'light';
 
-  if (startDate && endDate) {
-    const now = new Date();
+  if (now < startDate) {
+    status = 'Upcoming';
+    variant = 'filled';
+  } else if (now >= startDate && now <= endDate) {
+    status = 'Live';
+    variant = 'gradient';
+  } else {
+    status = 'Finished';
+  }
 
-    if (now < startDate) {
-      status = 'Upcoming';
-      variant = 'filled';
-    } else if (now >= startDate && now <= endDate) {
-      status = 'Live';
-      variant = 'gradient';
-    } else if (now > endDate) {
-      status = 'Finished';
-    }
-  }
-  if (!status) {
-    return <></>;
-  }
   return (
     <Badge color={statusColors[status]} variant={variant}>
       {status}

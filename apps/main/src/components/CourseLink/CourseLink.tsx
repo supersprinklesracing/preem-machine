@@ -1,7 +1,8 @@
 'use client';
 
 import { Anchor, Card, Stack, Title } from '@mantine/core';
-import { useEffect } from 'react';
+import Script from 'next/script';
+import React from 'react';
 
 function isStravaRoute(url: string | undefined): boolean {
   if (!url) {
@@ -48,50 +49,35 @@ function getRideWithGpsRouteId(url: string): string | undefined {
  * Garmin Connect links are not supported as they do not offer an embeddable widget.
  */
 export function CourseLink({ courseLink }: { courseLink?: string }) {
-  useEffect(() => {
-    if (isStravaRoute(courseLink)) {
-      const script = document.createElement('script');
-      script.src = 'https://strava-embeds.com/embed.js';
-      script.async = true;
-      document.body.appendChild(script);
-
-      return () => {
-        document.body.removeChild(script);
-      };
-    }
-    return;
-  }, [courseLink]);
-
   if (!courseLink) {
     return null;
   }
 
-  if (isRideWithGpsRoute(courseLink)) {
-    const routeId = getRideWithGpsRouteId(courseLink);
-    return (
-      <Card withBorder>
-        <Stack>
-          <Title order={2}>Course</Title>
+  const isStrava = isStravaRoute(courseLink);
+  const isRwgps = isRideWithGpsRoute(courseLink);
+
+  return (
+    <Card withBorder>
+      {isStrava && (
+        <Script
+          src="https://strava-embeds.com/embed.js"
+          strategy="afterInteractive"
+        />
+      )}
+      <Stack>
+        <Title order={2}>Course</Title>
+        {isRwgps ? (
           <iframe
             title="Ride with GPS course"
             data-testid="ride-with-gps-embed"
-            src={`https://rwgps-embeds.com/embeds?type=route&id=${routeId}&sampleGraph=true`}
+            src={`https://rwgps-embeds.com/embeds?type=route&id=${getRideWithGpsRouteId(courseLink)}&sampleGraph=true`}
             style={{
               width: '100%',
               height: '500px',
               border: 'none',
             }}
           ></iframe>
-        </Stack>
-      </Card>
-    );
-  }
-
-  return (
-    <Card withBorder>
-      <Stack>
-        <Title order={2}>Course</Title>
-        {isStravaRoute(courseLink) ? (
+        ) : isStrava ? (
           <div
             data-testid="strava-embed"
             className="strava-embed-placeholder"

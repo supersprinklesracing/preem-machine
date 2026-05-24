@@ -46,8 +46,7 @@ Thumbs.db
 firebase-debug.log
 
 # NX
-.nx/cache
-.nx/workspace-data
+.nx/
 .cursor/rules/nx-rules.mdc
 .github/instructions/nx.instructions.md
 
@@ -58,6 +57,7 @@ out
 # Playwright / E2E Testing
 e2e-server.log
 test-output
+test-results
 
 # Playwright
 server.log
@@ -66,16 +66,46 @@ e2e-server.log
 # Env (may have secrets).
 .env
 .env.*
+.env.local
+.env.*.local
 !.env.test
 
 .gemini/*
+!.gemini/hooks
 !.gemini/settings.json
 !.gemini/config.yaml
 
+# Credentials
 gha-creds-*.json
+.default-application-service-account.json
 
 # Jules
 jules-scratch
 dev_server.log
 serve_static.log
 firestore-debug.log
+
+# Antigravity
+build_log*.txt
+.antigravitycli/
+
+# Nx-Firebase
+.runtimeconfig.json
+**/.emulators/*
+**/.firebase/*
+database-debug.log
+pubsub-debug.log
+ui-debug.log
+firebase-export*
+.secret.local
+
+# Local Go installation
+.go
+
+*.tsbuildinfo
+
+.clasp.json
+
+.claude/worktrees
+.claude/settings.local.json
+.bashrc_local

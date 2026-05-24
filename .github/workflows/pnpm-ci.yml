@@ -1,4 +1,4 @@
-name: NPM CI
+name: PNPM CI
 
 on:
   pull_request:
@@ -8,8 +8,8 @@ permissions:
   contents: read
 
 jobs:
-  npm-ci:
-    name: NPM CI
+  pnpm-ci:
+    name: PNPM CI
     runs-on: ubuntu-latest
 
     steps:
@@ -26,18 +26,19 @@ jobs:
           filters: |
             packages:
               - 'package.json'
-              - 'package-lock.json'
+              - 'pnpm-lock.yaml'
+
+      - name: Install pnpm
+        if: steps.filter.outputs.packages == 'true'
+        uses: pnpm/action-setup@v4
 
       - name: Setup Node
         if: steps.filter.outputs.packages == 'true'
         uses: actions/setup-node@v6
         with:
           node-version: 24
+          cache: 'pnpm'
 
-      - name: Install correct NPM version
+      - name: PNPM CI
         if: steps.filter.outputs.packages == 'true'
-        run: npm install -g npm@11
-
-      - name: NPM CI
-        if: steps.filter.outputs.packages == 'true'
-        run: npm ci --quiet --no-fund --no-audit
+        run: pnpm install --frozen-lockfile

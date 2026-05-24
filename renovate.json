@@ -1,14 +1,16 @@
 {
   "$schema": "https://docs.renovatebot.com/renovate-schema.json",
   "extends": ["config:recommended"],
-  "platformAutomerge": true,
+  "platformAutomerge": false,
+  "minimumReleaseAge": "24 hours",
   "semanticCommits": "enabled",
   "semanticCommitType": "chore",
   "labels": ["dependencies"],
   "schedule": ["every 2 weeks on monday"],
   "vulnerabilityAlerts": {
     "enabled": true,
-    "automerge": true
+    "automerge": true,
+    "schedule": ["at any time"]
   },
   "lockFileMaintenance": {
     "enabled": true,
@@ -16,45 +18,37 @@
   },
   "packageRules": [
     {
+      "description": "Disable specific packages",
       "enabled": false,
-      "matchPackageNames": [
-        "domexception",
-        "lodash.isequal",
-        "request"
-      ]
+      "matchPackageNames": ["domexception", "lodash.isequal", "request"]
     },
     {
-      "groupName": "all non-major dependencies",
-      "matchUpdateTypes": ["minor", "patch", "pin", "digest"],
+      "description": "Group all patch, pin, digest dependencies and automerge",
+      "groupName": "all patch dependencies",
+      "matchUpdateTypes": ["patch", "pin", "digest"],
       "automerge": true
     },
     {
+      "description": "Group all minor dependencies and automerge on Tuesdays",
+      "groupName": "all minor dependencies",
+      "matchUpdateTypes": ["minor"],
+      "schedule": ["on tuesday"],
+      "automerge": true
+    },
+    {
+      "description": "Automerge dev tools. Changed 'lint' to a pattern to correctly match eslint, stylelint, etc.",
       "matchDepTypes": ["devDependencies"],
-      "matchPackageNames": ["lint", "prettier"],
+      "matchPackagePatterns": ["lint", "prettier"],
       "automerge": true
     },
     {
-      "matchUpdateTypes": ["minor", "patch"],
-      "matchCurrentVersion": "!/^0/",
-      "automerge": true
-    },
-    {
-      "extends": ["monorepo:nx"],
-      "matchUpdateTypes": ["patch", "minor"],
-      "automerge": true
-    },
-    {
-      "extends": ["monorepo:nextjs"],
-      "matchUpdateTypes": ["patch", "minor"],
-      "automerge": true
-    },
-    {
-      "extends": ["monorepo:google-api-dotnet-client"],
-      "matchUpdateTypes": ["patch", "minor"],
-      "automerge": true
-    },
-    {
-      "extends": ["monorepo:react"],
+      "description": "Pull known monorepos out of the giant group into their own dedicated groups, and automerge them",
+      "extends": [
+        "monorepo:nx",
+        "monorepo:nextjs",
+        "monorepo:google-api-dotnet-client",
+        "monorepo:react"
+      ],
       "matchUpdateTypes": ["patch", "minor"],
       "automerge": true
     }

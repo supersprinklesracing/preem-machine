@@ -14,7 +14,7 @@ describe('secrets-env', () => {
     it('should return stripe secrets if stripe is enabled', async () => {
       process.env.STRIPE_API_KEY = 'sk_test_123';
       process.env.STRIPE_WEBHOOK_SECRET = 'whsec_123';
-      jest.mock('../env/env', () => ({
+      jest.mock('@preem-machine/env', () => ({
         ENV_STRIPE_ENABLED: true,
       }));
       const { getStripeSecrets } = require('./secrets-env');
@@ -26,7 +26,7 @@ describe('secrets-env', () => {
     });
 
     it('should return undefined if stripe is disabled', async () => {
-      jest.mock('../env/env', () => ({
+      jest.mock('@preem-machine/env', () => ({
         ENV_STRIPE_ENABLED: false,
       }));
       const { getStripeSecrets } = require('./secrets-env');

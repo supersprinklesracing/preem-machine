@@ -1,3 +1,4 @@
+import { act } from '@testing-library/react';
 import React from 'react';
 
 import { render, screen } from '@/test-utils';
@@ -5,6 +6,21 @@ import { render, screen } from '@/test-utils';
 import { DateStatusBadge } from './DateStatusBadge';
 
 describe('DateStatusBadge', () => {
+  beforeEach(() => {
+    jest.useFakeTimers();
+    jest.spyOn(window, 'requestAnimationFrame').mockImplementation((cb) => {
+      return setTimeout(() => cb(jest.now()), 0) as unknown as number;
+    });
+    jest.spyOn(window, 'cancelAnimationFrame').mockImplementation((id) => {
+      clearTimeout(id as unknown as NodeJS.Timeout);
+    });
+  });
+
+  afterEach(() => {
+    jest.useRealTimers();
+    jest.restoreAllMocks();
+  });
+
   it('should render "Upcoming" for a future event', () => {
     const futureDate = new Date();
     futureDate.setDate(futureDate.getDate() + 1);
@@ -18,6 +34,11 @@ describe('DateStatusBadge', () => {
         endDate={futureDatePlusOneHour}
       />,
     );
+
+    act(() => {
+      jest.runAllTimers();
+    });
+
     expect(screen.getByText('Upcoming')).toBeInTheDocument();
   });
 
@@ -27,6 +48,11 @@ describe('DateStatusBadge', () => {
     const inAnHour = new Date(now.getTime() + 60 * 60 * 1000);
 
     render(<DateStatusBadge startDate={anHourAgo} endDate={inAnHour} />);
+
+    act(() => {
+      jest.runAllTimers();
+    });
+
     expect(screen.getByText('Live')).toBeInTheDocument();
   });
 
@@ -38,11 +64,21 @@ describe('DateStatusBadge', () => {
     render(
       <DateStatusBadge startDate={pastDateMinusOneHour} endDate={pastDate} />,
     );
+
+    act(() => {
+      jest.runAllTimers();
+    });
+
     expect(screen.getByText('Finished')).toBeInTheDocument();
   });
 
   it('should render nothing if dates are not provided', () => {
     render(<DateStatusBadge />);
+
+    act(() => {
+      jest.runAllTimers();
+    });
+
     expect(screen.queryByRole('status')).not.toBeInTheDocument();
   });
 });

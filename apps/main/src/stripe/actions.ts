@@ -1,10 +1,10 @@
 'use server';
 
+import { StripeService } from '@preem-machine/stripe';
+
 import { getOrganizationFromPath } from '@/datastore/server/query/query';
 import { processContribution } from '@/stripe-datastore/contributions';
 import { requireLoggedInUserContext } from '@/user/server/user';
-
-import { getStripeServer } from './server';
 
 export async function createPaymentIntent(
   amount: number,
@@ -20,25 +20,12 @@ export async function createPaymentIntent(
 
   const connectAccountId = organization.stripe.connectAccountId;
 
-  // Create a PaymentIntent with the order amount and currency
-  const stripe = await getStripeServer();
-  if (!stripe) {
-    throw new Error('Stripe not configured');
-  }
-  const paymentIntent = await stripe.paymentIntents.create({
-    amount: amount * 100, // amount in cents
-    currency: 'usd',
-    automatic_payment_methods: {
-      enabled: true,
-    },
-    transfer_data: {
-      destination: connectAccountId,
-    },
-    metadata: {
-      preemPath,
-      userId: authUser.uid,
-      isAnonymous: String(isAnonymous),
-    },
+  const paymentIntent = await StripeService.createPaymentIntent({
+    amount,
+    preemPath,
+    isAnonymous,
+    userId: authUser.uid,
+    connectAccountId,
   });
 
   return {
@@ -50,11 +37,8 @@ export async function confirmContributionOptimistically(
   paymentIntentId: string,
 ) {
   try {
-    const stripe = await getStripeServer();
-    if (!stripe) {
-      throw new Error('Stripe not configured');
-    }
-    const paymentIntent = await stripe.paymentIntents.retrieve(paymentIntentId);
+    const paymentIntent =
+      await StripeService.retrievePaymentIntent(paymentIntentId);
     if (paymentIntent.status === 'succeeded') {
       // No need to await this, let it run in the background
       processContribution(paymentIntent);

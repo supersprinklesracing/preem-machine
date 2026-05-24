@@ -29,20 +29,13 @@ export function Breadcrumbs({ brief }: { brief: Brief | undefined }) {
 
   while (currentBrief) {
     breadcrumbs.unshift(currentBrief);
-    if ('raceBrief' in currentBrief && currentBrief.raceBrief) {
-      currentBrief = currentBrief.raceBrief;
-    } else if ('eventBrief' in currentBrief && currentBrief.eventBrief) {
-      currentBrief = currentBrief.eventBrief;
-    } else if ('seriesBrief' in currentBrief && currentBrief.seriesBrief) {
-      currentBrief = currentBrief.seriesBrief;
-    } else if (
-      'organizationBrief' in currentBrief &&
-      currentBrief.organizationBrief
-    ) {
-      currentBrief = currentBrief.organizationBrief;
-    } else {
-      currentBrief = undefined;
-    }
+    currentBrief =
+      ('raceBrief' in currentBrief ? currentBrief.raceBrief : undefined) ??
+      ('eventBrief' in currentBrief ? currentBrief.eventBrief : undefined) ??
+      ('seriesBrief' in currentBrief ? currentBrief.seriesBrief : undefined) ??
+      ('organizationBrief' in currentBrief
+        ? currentBrief.organizationBrief
+        : undefined);
   }
 
   const filteredBreadcrumbs = breadcrumbs.filter(

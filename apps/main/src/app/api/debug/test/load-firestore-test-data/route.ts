@@ -1,8 +1,8 @@
+import { isE2eTesting } from '@preem-machine/env/server';
 import { NextResponse } from 'next/server';
 
 import { getBearerUser } from '@/auth/server/auth';
 import { seedFirestore } from '@/datastore/server/mock-db/seed-firestore';
-import { ENV_E2E_TESTING } from '@/env/env';
 import { hasUserRole } from '@/user/server/user';
 
 export async function POST(_request: Request) {
@@ -10,7 +10,7 @@ export async function POST(_request: Request) {
     const authUser = await getBearerUser();
     const isAdmin = await hasUserRole('admin', authUser);
 
-    if (!(ENV_E2E_TESTING || isAdmin)) {
+    if (!(isE2eTesting() || isAdmin)) {
       return NextResponse.json(
         { success: false, error: 'Forbidden' },
         { status: 403 },

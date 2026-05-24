@@ -1,5 +1,3 @@
-import { Claims } from 'next-firebase-auth-edge/lib/auth/claims';
-
 export interface AuthUser {
   /**
    * The display name of the user.
@@ -33,5 +31,5 @@ export interface AuthUser {
   emailVerified: boolean;
   token?: string;
   customToken?: string;
-  customClaims?: Claims;
+  customClaims?: Record<string, unknown>;
 }

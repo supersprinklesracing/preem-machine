@@ -3,3 +3,9 @@
 /coverage
 /.nx/cache
 /.nx/workspace-data
+
+# Documentation and Agent directories
+conductor/
+.agent/
+.gemini/
+.jules/

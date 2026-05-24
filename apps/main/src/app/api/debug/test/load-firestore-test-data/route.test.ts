@@ -17,9 +17,9 @@ jest.mock('next/server', () => ({
 jest.mock('@/datastore/server/mock-db/seed-firestore');
 jest.mock('@/auth/server/auth');
 jest.mock('@/user/server/user');
-jest.mock('@/env/env', () => ({
-  ...jest.requireActual('@/env/env'),
-  ENV_E2E_TESTING: false,
+jest.mock('@preem-machine/env/server', () => ({
+  ...jest.requireActual('@preem-machine/env/server'),
+  isE2eTesting: jest.fn(() => false),
 }));
 
 const mockedGetBearerUser = getBearerUser as jest.Mock;
