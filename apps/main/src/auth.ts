@@ -1,6 +1,12 @@
-import { getStravaClientId, getStravaClientSecret } from '@preem-machine/env/server';
+import {
+  getGoogleClientId,
+  getGoogleClientSecret,
+  getStravaClientId,
+  getStravaClientSecret,
+} from '@preem-machine/env/server';
 import NextAuth from 'next-auth';
 import CredentialsProvider from 'next-auth/providers/credentials';
+import GoogleProvider from 'next-auth/providers/google';
 import StravaProvider from 'next-auth/providers/strava';
 
 import { clientConfig } from '@/firebase/client/config';
@@ -70,6 +76,10 @@ const nextAuth = NextAuth({
     StravaProvider({
       clientId: getStravaClientId(),
       clientSecret: getStravaClientSecret(),
+    }),
+    GoogleProvider({
+      clientId: getGoogleClientId(),
+      clientSecret: getGoogleClientSecret(),
     }),
   ],
   session: {

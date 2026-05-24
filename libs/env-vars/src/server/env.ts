@@ -27,6 +27,8 @@ const serverEnvSchema = z.object({
   E2E_TESTING_USER: z.string().optional(),
   STRAVA_CLIENT_ID: z.string().optional(),
   STRAVA_CLIENT_SECRET: z.string().optional(),
+  GOOGLE_CLIENT_ID: z.string().optional(),
+  GOOGLE_CLIENT_SECRET: z.string().optional(),
 });
 
 export const validateServerEnv = () => {
@@ -60,6 +62,8 @@ export const validateServerEnv = () => {
       E2E_TESTING_USER: optional('E2E_TESTING_USER'),
       STRAVA_CLIENT_ID: optional('STRAVA_CLIENT_ID'),
       STRAVA_CLIENT_SECRET: optional('STRAVA_CLIENT_SECRET'),
+      GOOGLE_CLIENT_ID: optional('GOOGLE_CLIENT_ID'),
+      GOOGLE_CLIENT_SECRET: optional('GOOGLE_CLIENT_SECRET'),
     });
 
     if (stripeEnabled) {
@@ -129,4 +133,9 @@ export const ENV_DOTENV_SECRETS = isDotEnvSecrets();
 export const ENV_E2E_TESTING_USER = getE2eTestingUser();
 
 export const getStravaClientId = () => optional('STRAVA_CLIENT_ID') || '250047';
-export const getStravaClientSecret = () => optional('STRAVA_CLIENT_SECRET') || 'c3c840e0f5f0d8870b13f2729ad784b6f81fc343';
+export const getStravaClientSecret = () =>
+  optional('STRAVA_CLIENT_SECRET') ||
+  'c3c840e0f5f0d8870b13f2729ad784b6f81fc343';
+
+export const getGoogleClientId = () => optional('GOOGLE_CLIENT_ID');
+export const getGoogleClientSecret = () => optional('GOOGLE_CLIENT_SECRET');

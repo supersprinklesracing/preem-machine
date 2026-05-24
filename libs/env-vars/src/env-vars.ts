@@ -36,6 +36,8 @@ export interface EnvVars {
   E2E_TESTING_USER?: string;
   STRAVA_CLIENT_ID?: string;
   STRAVA_CLIENT_SECRET?: string;
+  GOOGLE_CLIENT_ID?: string;
+  GOOGLE_CLIENT_SECRET?: string;
 
   // Standard/System variables
   NODE_ENV?: 'development' | 'production' | 'test';
