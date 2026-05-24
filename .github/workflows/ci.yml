@@ -106,6 +106,8 @@ jobs:
         run: pnpm exec playwright install --with-deps chromium
 
       - name: E2E
+        env:
+          AUTH_SECRET: "e2e-testing-secret-that-is-at-least-32-chars-long"
         run: ./tools/nx run e2e-main:e2e -- --ignore-snapshots
 
       - name: E2E Artifacts
