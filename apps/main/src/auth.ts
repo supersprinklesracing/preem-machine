@@ -1,5 +1,7 @@
+import { getStravaClientId, getStravaClientSecret } from '@preem-machine/env/server';
 import NextAuth from 'next-auth';
 import CredentialsProvider from 'next-auth/providers/credentials';
+import StravaProvider from 'next-auth/providers/strava';
 
 import { clientConfig } from '@/firebase/client/config';
 import { getFirebaseAdminApp } from '@/firebase/server/firebase-admin';
@@ -64,6 +66,10 @@ const nextAuth = NextAuth({
 
         throw new Error(data.error?.message || 'Authentication failed');
       },
+    }),
+    StravaProvider({
+      clientId: getStravaClientId(),
+      clientSecret: getStravaClientSecret(),
     }),
   ],
   session: {

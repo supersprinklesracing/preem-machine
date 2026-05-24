@@ -34,6 +34,8 @@ export interface EnvVars {
   DEBUG_DATASTORE?: string;
   E2E_TESTING?: string;
   E2E_TESTING_USER?: string;
+  STRAVA_CLIENT_ID?: string;
+  STRAVA_CLIENT_SECRET?: string;
 
   // Standard/System variables
   NODE_ENV?: 'development' | 'production' | 'test';
