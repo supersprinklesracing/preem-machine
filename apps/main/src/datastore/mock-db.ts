@@ -1,7 +1,7 @@
 /* Changes to this file should only happen from explict requests by the user; or explict confirmation. */
 'use server-only';
 
-import { ENV_E2E_TESTING_USER } from '@/env/env';
+import { ENV_E2E_TESTING_USER } from '@preem-machine/env/server';
 
 import { Metadata } from './schema';
 

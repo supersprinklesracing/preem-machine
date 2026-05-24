@@ -11,6 +11,15 @@
     },
     {
       "path": "./apps/cli"
+    },
+    {
+      "path": "./libs/firestore"
+    },
+    {
+      "path": "./libs/env-vars"
+    },
+    {
+      "path": "./libs/stripe"
     }
   ]
 }

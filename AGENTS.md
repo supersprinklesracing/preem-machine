@@ -117,7 +117,7 @@ This project uses `@mantine/form` for state management and validation, and `@man
 
 ## 9. Accessing Environment Variables
 
-Do not use `process.env.XYZ` directly. Instead, access all environment variables through `src/env.ts` (or other `*-env.ts` files) to ensure they are documented and validated.
+Do not use `process.env.XYZ` directly. Access environment variables via the helper functions in `@preem-machine/env/server` (for server-side) or `@preem-machine/env` (for client-side/browser-safe variables) to ensure they are properly documented, type-safe, and validated.
 
 ## 10. React Guidelines
 

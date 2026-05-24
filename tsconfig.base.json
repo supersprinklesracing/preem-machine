@@ -15,6 +15,16 @@
     "skipLibCheck": true,
     "strict": true,
     "target": "es2022",
-    "customConditions": ["development"]
+    "customConditions": ["@preem-machine/source"],
+    "baseUrl": ".",
+    "paths": {
+      "@preem-machine/env": ["libs/env-vars/src/index.ts"],
+      "@preem-machine/env/*": ["libs/env-vars/src/*"],
+      "@preem-machine/firestore": ["libs/firestore/src/index.ts"],
+      "@preem-machine/firestore/*": ["libs/firestore/src/*"],
+      "@preem-machine/firestore/server": ["libs/firestore/src/server/index.ts"],
+      "@preem-machine/stripe": ["libs/stripe/src/index.ts"],
+      "@preem-machine/stripe/*": ["libs/stripe/src/*"]
+    }
   }
 }

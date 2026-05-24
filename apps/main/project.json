@@ -1,6 +1,22 @@
 {
   "name": "@preem-machine/main",
   "targets": {
+    "bundle": {
+      "executor": "nx:run-commands",
+      "dependsOn": ["build"],
+      "options": {
+        "commands": [
+          "mkdir -p dist/apps/main/.next",
+          "cp -r apps/main/.next/standalone dist/apps/main/.next/",
+          "cp -r apps/main/.next/static dist/apps/main/.next/",
+          "cp -r apps/main/public dist/apps/main/ || true",
+          "mkdir -p dist/apps/main/.next/standalone/apps/main/.next",
+          "cp -r apps/main/public dist/apps/main/.next/standalone/apps/main/ || true",
+          "cp -r apps/main/.next/static dist/apps/main/.next/standalone/apps/main/.next/"
+        ],
+        "parallel": false
+      }
+    },
     "test": {
       "executor": "@nx/jest:jest",
       "outputs": ["{workspaceRoot}/coverage/{projectRoot}"],

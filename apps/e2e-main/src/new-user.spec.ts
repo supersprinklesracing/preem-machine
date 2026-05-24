@@ -3,6 +3,7 @@ import { expect, test } from './util/fixtures';
 
 test.describe('new-user', () => {
   useE2eTestingUserBeforeEach();
+
   test('basic', async ({ page }) => {
     await page.goto('/new-user');
     await expect(page.getByRole('heading', { name: 'E2E User' })).toBeVisible();

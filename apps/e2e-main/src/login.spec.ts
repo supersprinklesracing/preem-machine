@@ -9,8 +9,10 @@ test.describe('login', () => {
       await expect(page).toHaveScreenshot({ fullPage: true });
     });
   });
+
   test.describe('authed', () => {
     useE2eTestingUserBeforeEach();
+
     test('basic', async ({ page }) => {
       await page.goto('/login');
       await expect(page.getByRole('heading', { name: 'Login' })).toBeVisible();

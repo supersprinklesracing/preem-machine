@@ -11,8 +11,10 @@ test.describe('register', () => {
       await expect(page).toHaveScreenshot({ fullPage: true });
     });
   });
+
   test.describe('authed', () => {
     useE2eTestingUserBeforeEach();
+
     test('basic', async ({ page }) => {
       await page.goto('/register');
       await expect(

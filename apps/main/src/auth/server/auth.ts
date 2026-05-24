@@ -1,6 +1,7 @@
 /* Base level authentication. Should only be called from the @/user module. */
 'use server';
 
+import { ENV_E2E_TESTING, ENV_E2E_TESTING_USER } from '@preem-machine/env';
 import type { DecodedIdToken } from 'firebase-admin/auth';
 import { cookies, headers } from 'next/headers';
 import { getTokens } from 'next-firebase-auth-edge';
@@ -8,9 +9,11 @@ import { getTokens } from 'next-firebase-auth-edge';
 import { serverConfigFn } from '@/firebase/server/config';
 import { getFirebaseAdminApp } from '@/firebase/server/firebase-admin';
 
-import { ENV_E2E_TESTING } from '../../env/env';
 import { AuthUser } from '../user';
-import { toAuthContextUserFromTokens, toAuthContextUserFromUserRecord } from './auth-context-user';
+import {
+  toAuthContextUserFromTokens,
+  toAuthContextUserFromUserRecord,
+} from './auth-context-user';
 
 export const getAuthUser = async () => {
   if (ENV_E2E_TESTING) {
@@ -19,8 +22,10 @@ export const getAuthUser = async () => {
       let authUser: AuthUser;
       try {
         authUser = JSON.parse(e2eAuthUser) as AuthUser;
-      } catch (error) {
-        throw new Error(`Malformed JSON in X-e2e-auth-user header: ${e2eAuthUser}`);
+      } catch {
+        throw new Error(
+          `Malformed JSON in X-e2e-auth-user header: ${e2eAuthUser}`,
+        );
       }
 
       if (!authUser.uid) {
@@ -29,6 +34,22 @@ export const getAuthUser = async () => {
         );
       }
       return authUser;
+    }
+
+    // Automatically impersonate user if default E2E testing user is defined
+    if (
+      ENV_E2E_TESTING_USER &&
+      ENV_E2E_TESTING_USER !== 'test-user-id-not-specified'
+    ) {
+      return {
+        uid: ENV_E2E_TESTING_USER,
+        email: `${ENV_E2E_TESTING_USER}@example.com`,
+        displayName: 'E2E Testing User',
+        phoneNumber: null,
+        photoURL: null,
+        providerId: 'firebase',
+        emailVerified: true,
+      } as AuthUser;
     }
   }
   const serverConfig = await serverConfigFn();
@@ -101,4 +122,3 @@ export const getBearerUser = async (): Promise<AuthUser | null> => {
     return null;
   }
 };
-

@@ -27,7 +27,7 @@ export async function generateMetadata({
 export default async function EditSeriesPage({
   searchParams,
 }: {
-  searchParams: { path: string };
+  searchParams: Promise<{ path: string }>;
 }) {
   const path = getDocPathFromSearchParams(await searchParams);
   const doc = await getDoc(SeriesSchema, path);

@@ -1,3 +1,4 @@
+import { ENV_E2E_TESTING } from '@preem-machine/env';
 import type { NextRequest } from 'next/server';
 import { NextResponse } from 'next/server';
 import {
@@ -6,7 +7,6 @@ import {
   redirectToLogin,
 } from 'next-firebase-auth-edge';
 
-import { ENV_E2E_TESTING } from '@/env/env';
 import { serverConfigFn } from '@/firebase/server/config';
 
 // prettier-ignore

@@ -64,13 +64,25 @@
       }
     }
   ],
+  "tasksRunnerOptions": {
+    "default": {
+      "runner": "nx/tasks-runners/default",
+      "options": {
+        "useDaemonProcess": false
+      }
+    }
+  },
   "targetDefaults": {
+    "build": {
+      "cache": false
+    },
     "@nx/esbuild:esbuild": {
       "cache": true,
       "dependsOn": ["^build"],
       "inputs": ["production", "^production"]
     },
     "@nx/next:build": {
+      "cache": false,
       "configurations": {
         "verify": {},
         "ci": {}

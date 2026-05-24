@@ -1,4 +1,4 @@
-import { DecodedIdToken, UserRecord } from 'firebase-admin/auth';
+import { DecodedIdToken, UserInfo, UserRecord } from 'firebase-admin/auth';
 import { cookies, headers } from 'next/headers';
 import { getTokens } from 'next-firebase-auth-edge';
 
@@ -7,8 +7,8 @@ import { getFirebaseAdminApp } from '@/firebase/server/firebase-admin';
 
 import { getAuthUser, getBearerUser } from './auth';
 
-jest.mock('../../env/env', () => {
-  const originalModule = jest.requireActual('../../env/env');
+jest.mock('@preem-machine/env', () => {
+  const originalModule = jest.requireActual('@preem-machine/env');
   return {
     __esModule: true,
     ...originalModule,
@@ -105,8 +105,8 @@ describe('getBearerUser', () => {
           uid: 'test-uid',
           email: 'test@example.com',
           displayName: 'Test User',
-          photoURL: null,
-        },
+          photoURL: '',
+        } as unknown as UserInfo,
       ],
     };
     const expectedUser: AuthUser = {

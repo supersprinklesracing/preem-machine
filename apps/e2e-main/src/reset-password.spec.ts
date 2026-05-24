@@ -10,6 +10,7 @@ test.describe('reset-password', () => {
       await expect(page).toHaveScreenshot({ fullPage: true });
     });
   });
+
   test.describe('authed', () => {
     test('basic', async ({ page }) => {
       await page.goto('/reset-password');

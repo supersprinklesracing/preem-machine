@@ -5,10 +5,15 @@
     "ignore": [
       "node_modules",
       ".git",
+      ".nx",
+      ".next",
+      "dist",
+      "tmp",
       "firebase-debug.log",
       "firebase-debug.*.log",
       "functions"
-    ]
+    ],
+    "alwaysDeployFromSource": true
   },
   "emulators": {
     "apphosting": {

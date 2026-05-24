@@ -2,37 +2,59 @@
 
 import { useEffect, useRef, useState } from 'react';
 
-export function AnimatedNumber({ value }: { value: number }) {
+/**
+ * A custom hook to animate a numeric value smoothly using easeOutQuad.
+ * Properly handles cancelAnimationFrame on unmount and value transitions to prevent memory leaks.
+ */
+export function useAnimatedValue(targetValue: number, duration = 500) {
   const [currentValue, setCurrentValue] = useState(0);
   const prevValueRef = useRef(0);
+  const animationFrameRef = useRef<number | null>(null);
 
   useEffect(() => {
     const startValue = prevValueRef.current;
-    const endValue = value;
+    const endValue = targetValue;
     let startTime: number | null = null;
-    const duration = 500; // ms
 
     const animate = (timestamp: number) => {
       if (!startTime) startTime = timestamp;
-      const progress = Math.min((timestamp - startTime) / duration, 1);
+      const elapsed = timestamp - startTime;
+      const progress = Math.min(elapsed / duration, 1);
+
+      // Easing function: easeOutQuad
+      const easeProgress = progress * (2 - progress);
+
       const nextValue = Math.floor(
-        startValue + (endValue - startValue) * progress,
+        startValue + (endValue - startValue) * easeProgress,
       );
       setCurrentValue(nextValue);
 
       if (progress < 1) {
-        requestAnimationFrame(animate);
+        animationFrameRef.current = requestAnimationFrame(animate);
       } else {
         prevValueRef.current = endValue;
+        animationFrameRef.current = null;
       }
     };
 
-    requestAnimationFrame(animate);
+    if (animationFrameRef.current !== null) {
+      cancelAnimationFrame(animationFrameRef.current);
+    }
+
+    animationFrameRef.current = requestAnimationFrame(animate);
 
     return () => {
-      prevValueRef.current = value;
+      if (animationFrameRef.current !== null) {
+        cancelAnimationFrame(animationFrameRef.current);
+      }
+      prevValueRef.current = targetValue;
     };
-  }, [value]);
+  }, [targetValue, duration]);
 
-  return <span>{currentValue.toLocaleString()}</span>;
+  return currentValue;
+}
+
+export function AnimatedNumber({ value }: { value: number }) {
+  const animatedValue = useAnimatedValue(value);
+  return <span>{animatedValue.toLocaleString()}</span>;
 }

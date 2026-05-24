@@ -1,8 +1,8 @@
 'use server';
 
 import { SecretManagerServiceClient } from '@google-cloud/secret-manager';
+import { ENV_STRIPE_ENABLED, getNextPublicProjectId } from '@preem-machine/env';
 
-import { ENV_STRIPE_ENABLED } from '../env/env';
 import {
   isServiceAccountSecret,
   ServiceAccountSecret,
@@ -29,7 +29,7 @@ let cachedServiceAccountKey: ServiceAccountSecret | null = null;
 export async function getServiceAccountSecret() {
   if (!cachedServiceAccountKey) {
     const secretValue = await getSecret(
-      `projects/${process.env.NEXT_PUBLIC_PROJECT_ID}/secrets/firebase_admin_private_key_json/versions/latest`,
+      `projects/${getNextPublicProjectId()}/secrets/firebase_admin_private_key_json/versions/latest`,
     );
     const parsedSecretValue = JSON.parse(secretValue);
     if (isServiceAccountSecret(parsedSecretValue)) {
