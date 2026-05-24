@@ -34,12 +34,18 @@ const initializeApp = async () => {
   });
 };
 
+let appPromise: Promise<admin.app.App> | null = null;
+
 export const getFirebaseAdminApp = async () => {
   if (admin.apps.length > 0) {
     return admin.apps[0] as admin.app.App;
   }
 
-  return initializeApp();
+  if (!appPromise) {
+    appPromise = initializeApp();
+  }
+
+  return appPromise;
 };
 
 export const getFirestore = async () => {

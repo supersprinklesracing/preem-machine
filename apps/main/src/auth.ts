@@ -129,7 +129,8 @@ const nextAuth = NextAuth({
   },
   callbacks: {
     async signIn({ user }) {
-      if (user.email?.toLowerCase() !== 'jlapenna@gmail.com') {
+      const isE2eTesting = process.env.E2E_TESTING === 'true';
+      if (user.email?.toLowerCase() !== 'jlapenna@gmail.com' && !isE2eTesting) {
         console.warn(`Denied sign-in attempt for email: ${user.email}`);
         return false;
       }

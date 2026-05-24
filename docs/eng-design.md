@@ -166,6 +166,8 @@ The pipeline will be implemented using **GitHub Actions** and connected to **Nx 
 
 - **Firestore Security Rules** will be the primary method of data authorization, restricting document access based on `request.auth.uid` and the user's role and organization membership.
 
+- **Access Control:** Operational logins are currently restricted strictly to `jlapenna@gmail.com` (except during E2E testing).
+
 - The **Stripe webhook API Route** is public but must verify the request signature.
 
 ### 6.2. Input Validation
