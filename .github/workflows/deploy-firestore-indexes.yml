@@ -19,6 +19,8 @@ jobs:
   deploy:
     name: Deploy Firestore Indexes
     runs-on: ubuntu-latest
+    environment:
+      name: ci
     timeout-minutes: 10
     steps:
       - name: Checkout
