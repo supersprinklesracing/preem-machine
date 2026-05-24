@@ -1,0 +1,25 @@
+name: Renovate Auto Approve
+
+on:
+  pull_request:
+
+jobs:
+  auto-approve:
+    runs-on: ubuntu-latest
+    permissions:
+      pull-requests: write
+    if: github.actor == 'renovate[bot]'
+    steps:
+      - name: Mint identity token
+        id: mint_identity_token
+        if: ${{ vars.APP_ID }}
+        uses: actions/create-github-app-token@v3
+        with:
+          app-id: ${{ vars.APP_ID }}
+          private-key: ${{ secrets.APP_PRIVATE_KEY }}
+
+      - name: Approve PR
+        run: gh pr review --approve "$PR_URL"
+        env:
+          PR_URL: ${{ github.event.pull_request.html_url }}
+          GH_TOKEN: ${{ steps.mint_identity_token.outputs.token || secrets.GITHUB_TOKEN }}

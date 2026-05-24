@@ -10,6 +10,10 @@ permissions:
   actions: read
   contents: read
 
+concurrency:
+  group: ${{ github.workflow }}-${{ github.ref }}
+  cancel-in-progress: true
+
 jobs:
   main:
     name: CI
@@ -56,49 +60,31 @@ jobs:
             SERVICE_ACCOUNT_PRIVATE_KEY:preem-machine-ci/SERVICE_ACCOUNT_PRIVATE_KEY
             STRIPE_API_KEY:preem-machine-ci/STRIPE_API_KEY
 
-      # This enables task distribution via Nx Cloud
-      # Run this command as early as possible, before dependencies are installed
-      # Learn more at https://nx.dev/ci/reference/nx-cloud-cli#npx-nxcloud-startcirun
-      # Uncomment this line to enable task distribution
-      # - run: npx nx start-ci-run --distribute-on="3 linux-medium-js" --stop-agents-after="e2e-ci"
+      - name: Install pnpm
+        uses: pnpm/action-setup@v6
+        with:
+          version: 10
 
-      # Cache node_modules
       - name: Setup Node
         uses: actions/setup-node@v6
         with:
           node-version: 24
-          # cache: 'npm'
+          cache: 'pnpm'
 
-      - name: Restore NPM CI Cache
-        id: node_modules-cache
-        uses: actions/cache/restore@v4
-        with:
-          path: node_modules
-          key: node-${{ runner.os }}-node-${{ hashFiles('**/package-lock.json') }}
-
-      - name: NPM CI
-        if: steps.node_modules-cache.outputs.cache-hit != 'true'
-        run: npm ci --legacy-peer-deps
+      - name: Install dependencies
+        run: pnpm install --frozen-lockfile
 
       - name: Build
-        uses: raegen/nx@v0.3.6
-        with:
-          nx: run-many --target=build
+        run: ./tools/nx run-many --target=build
 
       - name: Lint
-        uses: raegen/nx@v0.3.6
-        with:
-          nx: run-many -t lint
+        run: ./tools/nx run-many -t lint
 
       - name: "Test (test:default)"
-        uses: raegen/nx@v0.3.6
-        with:
-          nx: run-many -t test
+        run: ./tools/nx run-many -t test
 
       - name: "Test (test:node)"
-        uses: raegen/nx@v0.3.6
-        with:
-          nx: run-many -t test:node
+        run: ./tools/nx run-many -t test:node
 
       # https://github.com/microsoft/playwright/issues/7249
       - name: E2E Playwright Deps Version
@@ -113,20 +99,16 @@ jobs:
         with:
           path: |
             ~/.cache/ms-playwright
-          # https://github.com/jbranchaud/til/blob/master/github-actions/cache-playwright-dependencies-across-workflows.md
-          key: playwright-${{ runner.os }}-${{ hashFiles('**/package-lock.json') }}
-          # https://github.com/microsoft/playwright/issues/7249
-          # key: playwright-${{ runner.os }}-${{ env.PLAYWRIGHT_VERSION }}
+          key: playwright-${{ runner.os }}-${{ hashFiles('pnpm-lock.yaml') }}
+          restore-keys: |
+            playwright-${{ runner.os }}-
 
       - name: E2E Deps
-        # https://github.com/microsoft/playwright/issues/7249
         if: steps.playwright-cache.outputs.cache-hit != 'true'
-        run: npx playwright install --with-deps chromium
+        run: pnpm exec playwright install --with-deps chromium
 
       - name: E2E
-        run: npx nx run e2e-main:e2e -- --ignore-snapshots
-        # Use this to make sure thngs get cached.
-        # continue-on-error: true
+        run: ./tools/nx run e2e-main:e2e -- --ignore-snapshots
 
       - name: E2E Artifacts
         uses: actions/upload-artifact@v5
@@ -138,17 +120,10 @@ jobs:
             apps/e2e-main/test-output
           retention-days: 7
 
-      - name: Save NPM CI Cache
-        if: always()
-        uses: actions/cache/save@v4
-        with:
-          path: node_modules
-          key: node-${{ runner.os }}-node-${{ hashFiles('**/package-lock.json') }}
-
       - name: Save E2E Playwright Cache Deps
         if: always()
         uses: actions/cache/save@v4
         with:
           path: |
             ~/.cache/ms-playwright
-          key: playwright-${{ runner.os }}-${{ hashFiles('**/package-lock.json') }}
+          key: playwright-${{ runner.os }}-${{ hashFiles('pnpm-lock.yaml') }}
