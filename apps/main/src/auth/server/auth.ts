@@ -47,7 +47,9 @@ export const getAuthUser = async (): Promise<AuthUser | null> => {
     providerId: 'next-auth',
     emailVerified: true,
     token: (session as { token?: string }).token,
-    customClaims: {},
+    customClaims:
+      (session as { customClaims?: Record<string, unknown> }).customClaims ??
+      {},
   };
 };
 

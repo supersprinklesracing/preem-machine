@@ -9,6 +9,7 @@ import CredentialsProvider from 'next-auth/providers/credentials';
 import GoogleProvider from 'next-auth/providers/google';
 import StravaProvider from 'next-auth/providers/strava';
 
+import { filterStandardClaims } from '@/auth/server/auth-context-user';
 import { clientConfig } from '@/firebase/client/config';
 import { getFirebaseAdminApp } from '@/firebase/server/firebase-admin';
 
@@ -29,12 +30,16 @@ const nextAuth = NextAuth({
             const decodedToken = await adminApp
               .auth()
               .verifyIdToken(credentials.token as string);
+            const customClaims = filterStandardClaims(
+              decodedToken as unknown as Record<string, unknown>,
+            );
             return {
               id: decodedToken.uid,
               email: decodedToken.email || null,
               name: decodedToken.name || null,
               image: decodedToken.picture || null,
               token: credentials.token as string,
+              customClaims,
             };
           } catch (error) {
             console.error('Error verifying credentials token:', error);
@@ -61,12 +66,28 @@ const nextAuth = NextAuth({
 
         const data = await res.json();
         if (res.ok && data.localId) {
+          let customClaims = {};
+          try {
+            const adminApp = await getFirebaseAdminApp();
+            const decodedToken = await adminApp
+              .auth()
+              .verifyIdToken(data.idToken);
+            customClaims = filterStandardClaims(
+              decodedToken as unknown as Record<string, unknown>,
+            );
+          } catch (error) {
+            console.error(
+              'Error verifying email/password token for custom claims:',
+              error,
+            );
+          }
           return {
             id: data.localId,
             email: data.email,
             name: data.displayName || null,
             image: data.photoUrl || null,
             token: data.idToken,
+            customClaims,
           };
         }
 
@@ -92,6 +113,27 @@ const nextAuth = NextAuth({
         (token as { token?: string }).token = (
           user as { token?: string }
         ).token;
+
+        let customClaims = (user as { customClaims?: Record<string, unknown> })
+          .customClaims;
+        if (!customClaims && user.email) {
+          try {
+            const adminApp = await getFirebaseAdminApp();
+            const firebaseUser = await adminApp
+              .auth()
+              .getUserByEmail(user.email);
+            customClaims = filterStandardClaims(
+              firebaseUser.customClaims as Record<string, unknown>,
+            );
+          } catch {
+            console.log(
+              'Firebase user not found by email for custom claims:',
+              user.email,
+            );
+          }
+        }
+        (token as { customClaims?: Record<string, unknown> }).customClaims =
+          customClaims || {};
       }
       return token;
     },
@@ -101,6 +143,9 @@ const nextAuth = NextAuth({
         (session as { token?: string }).token = (
           token as { token?: string }
         ).token;
+        (session as { customClaims?: Record<string, unknown> }).customClaims = (
+          token as { customClaims?: Record<string, unknown> }
+        ).customClaims;
       }
       return session;
     },
