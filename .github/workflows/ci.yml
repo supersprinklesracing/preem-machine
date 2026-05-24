@@ -61,9 +61,7 @@ jobs:
             STRIPE_API_KEY:preem-machine-ci/STRIPE_API_KEY
 
       - name: Install pnpm
-        uses: pnpm/action-setup@v6
-        with:
-          version: 10
+        uses: pnpm/action-setup@v4
 
       - name: Setup Node
         uses: actions/setup-node@v6

@@ -30,9 +30,7 @@ jobs:
 
       - name: Install pnpm
         if: steps.filter.outputs.packages == 'true'
-        uses: pnpm/action-setup@v6
-        with:
-          version: 10
+        uses: pnpm/action-setup@v4
 
       - name: Setup Node
         if: steps.filter.outputs.packages == 'true'

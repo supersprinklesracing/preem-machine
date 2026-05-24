@@ -30,9 +30,7 @@ jobs:
           credentials_json: '${{ secrets.CREDENTIALS_GITHUB_ACTIONS_SERVICE_ACCOUNT }}'
 
       - name: Install pnpm
-        uses: pnpm/action-setup@v6
-        with:
-          version: 10
+        uses: pnpm/action-setup@v4
 
       - name: Set up Node
         uses: actions/setup-node@v6
