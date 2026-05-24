@@ -38,6 +38,7 @@ export interface EnvVars {
   STRAVA_CLIENT_SECRET?: string;
   GOOGLE_CLIENT_ID?: string;
   GOOGLE_CLIENT_SECRET?: string;
+  AUTH_SECRET?: string;
 
   // Standard/System variables
   NODE_ENV?: 'development' | 'production' | 'test';

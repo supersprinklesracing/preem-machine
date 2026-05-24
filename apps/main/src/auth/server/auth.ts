@@ -1,7 +1,8 @@
 /* Base level authentication. Should only be called from the @/user module. */
 'use server';
 
-import { ENV_E2E_TESTING, ENV_E2E_TESTING_USER } from '@preem-machine/env';
+import { ENV_E2E_TESTING } from '@preem-machine/env';
+import { ENV_E2E_TESTING_USER } from '@preem-machine/env/server';
 import type { DecodedIdToken } from 'firebase-admin/auth';
 import { headers } from 'next/headers';
 
@@ -45,11 +46,9 @@ export const getAuthUser = async (): Promise<AuthUser | null> => {
     photoURL: session.user.image ?? null,
     phoneNumber: null,
     providerId: 'next-auth',
-    emailVerified: true,
-    token: (session as { token?: string }).token,
-    customClaims:
-      (session as { customClaims?: Record<string, unknown> }).customClaims ??
-      {},
+    emailVerified: !!session.user.email,
+    token: session.token,
+    customClaims: session.customClaims ?? {},
   };
 };
 

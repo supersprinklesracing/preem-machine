@@ -53,10 +53,12 @@ env:
     value: /workspace/node_modules/.go/go/bin:/usr/local/sbin:/usr/local/bin:/usr/sbin:/usr/bin:/sbin:/bin
     availability:
       - BUILD
-  - variable: AUTH_COOKIE_SIGNATURE_KEY_CURRENT
-    secret: AUTH_COOKIE_SIGNATURE_KEY_CURRENT
-  - variable: AUTH_COOKIE_SIGNATURE_KEY_PREVIOUS
-    secret: AUTH_COOKIE_SIGNATURE_KEY_PREVIOUS
+  - variable: AUTH_SECRET
+    secret: AUTH_SECRET
+  - variable: GOOGLE_CLIENT_ID
+    secret: GOOGLE_CLIENT_ID
+  - variable: GOOGLE_CLIENT_SECRET
+    secret: GOOGLE_CLIENT_SECRET
   - variable: DOTENV_SECRETS
     secret: DOTENV_SECRETS
   - variable: NEXT_PUBLIC_DEBUG_AUTH

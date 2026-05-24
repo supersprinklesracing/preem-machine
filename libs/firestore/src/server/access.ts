@@ -1,28 +1,22 @@
 import type { DocumentReference } from 'firebase-admin/firestore';
 
-import { getFirestore } from '@/firebase/server/firebase-admin';
-
 import { asDocPath } from '../paths';
 import type { Organization, User } from '../schema';
-
-export interface AuthUser {
-  readonly uid: string;
-  [key: string]: any;
-}
+import { getConfiguredFirestore } from './config';
 
 export async function isUserAuthorized(
-  authUser: AuthUser,
+  authUser: { readonly uid: string },
   path: string,
 ): Promise<boolean>;
 export async function isUserAuthorized(
-  authUser: AuthUser,
+  authUser: { readonly uid: string },
   docRef: DocumentReference,
 ): Promise<boolean>;
 export async function isUserAuthorized(
-  authUser: AuthUser,
+  authUser: { readonly uid: string },
   docRefOrPath: DocumentReference | string,
 ): Promise<boolean> {
-  const db = await getFirestore();
+  const db = await getConfiguredFirestore();
   const docRef =
     typeof docRefOrPath === 'string'
       ? db.doc(asDocPath(docRefOrPath))

@@ -7,16 +7,15 @@ import {
 } from 'firebase-admin/firestore';
 import { z } from 'zod';
 
-import { getFirestore } from '@/firebase/server/firebase-admin';
-
 import { notFound } from '../errors';
+import { getConfiguredFirestore } from './config';
 import { converter } from './converters';
 
 export const getDocRefInternal = async <T extends z.ZodObject<any, any>>(
   schema: T,
   path: string,
 ): Promise<DocumentReference<z.infer<T>>> => {
-  const db = await getFirestore();
+  const db = await getConfiguredFirestore();
   if (ENV_DEBUG_DATASTORE) console.debug(`getDocRef: ${path}`);
   return db.doc(path).withConverter(converter(schema));
 };
@@ -25,7 +24,7 @@ export const getCollectionRefInternal = async <T extends z.ZodObject<any, any>>(
   schema: T,
   path: string,
 ): Promise<CollectionReference<z.infer<T>>> => {
-  const db = await getFirestore();
+  const db = await getConfiguredFirestore();
   if (ENV_DEBUG_DATASTORE) console.debug(`getCollectionRef: ${path}`);
   return db.collection(path).withConverter(converter(schema));
 };

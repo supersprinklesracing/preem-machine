@@ -2,7 +2,31 @@ import { ENV_STRIPE_ENABLED } from '@preem-machine/env';
 import { getStripeApiVersion } from '@preem-machine/env/server';
 import Stripe from 'stripe';
 
-import { getSecrets } from '@/secrets';
+type SecretsGetter = () => Promise<{
+  stripeSecrets?: { apiKey: string; webhookSecret: string };
+}>;
+
+let _getSecrets: SecretsGetter | null = null;
+
+/**
+ * Configure the Stripe library with the application's secrets getter.
+ * Must be called before any Stripe operations.
+ */
+export function configureStripeLib(getSecrets: SecretsGetter): void {
+  _getSecrets = getSecrets;
+}
+
+function getConfiguredSecrets(): Promise<{
+  stripeSecrets?: { apiKey: string; webhookSecret: string };
+}> {
+  if (!_getSecrets) {
+    throw new Error(
+      '@preem-machine/stripe: Library not configured. ' +
+        'Call configureStripeLib(getSecrets) before using StripeService.',
+    );
+  }
+  return _getSecrets();
+}
 
 /**
  * StripeService modularizes all Stripe SDK operations, cleanly separating
@@ -25,7 +49,7 @@ export class StripeService {
       return this.stripeInstance;
     }
 
-    const secrets = await getSecrets();
+    const secrets = await getConfiguredSecrets();
     if (!secrets.stripeSecrets?.apiKey) {
       throw new Error(
         'Stripe API Key is not configured in the application secrets.',

@@ -1,20 +1,24 @@
 import {
+  getAuthSecret,
   getGoogleClientId,
   getGoogleClientSecret,
-  getStravaClientId,
-  getStravaClientSecret,
 } from '@preem-machine/env/server';
 import NextAuth from 'next-auth';
 import CredentialsProvider from 'next-auth/providers/credentials';
 import GoogleProvider from 'next-auth/providers/google';
-import StravaProvider from 'next-auth/providers/strava';
 
 import { filterStandardClaims } from '@/auth/server/auth-context-user';
 import { clientConfig } from '@/firebase/client/config';
 import { getFirebaseAdminApp } from '@/firebase/server/firebase-admin';
 
-const nextAuth = NextAuth({
-  providers: [
+/**
+ * Build the list of providers dynamically.
+ * OAuth providers are only registered when their required env vars are present.
+ */
+// eslint-disable-next-line @typescript-eslint/no-explicit-any
+function buildProviders(): any[] {
+  // eslint-disable-next-line @typescript-eslint/no-explicit-any
+  const providers: any[] = [
     CredentialsProvider({
       id: 'credentials',
       name: 'Firebase Credentials',
@@ -94,15 +98,32 @@ const nextAuth = NextAuth({
         throw new Error(data.error?.message || 'Authentication failed');
       },
     }),
-    StravaProvider({
-      clientId: getStravaClientId(),
-      clientSecret: getStravaClientSecret(),
-    }),
-    GoogleProvider({
-      clientId: getGoogleClientId(),
-      clientSecret: getGoogleClientSecret(),
-    }),
-  ],
+  ];
+
+  // Only register Google OAuth if both client ID and secret are configured
+  const googleId = getGoogleClientId();
+  const googleSecret = getGoogleClientSecret();
+  if (googleId && googleSecret) {
+    providers.push(
+      GoogleProvider({
+        clientId: googleId,
+        clientSecret: googleSecret,
+      }),
+    );
+  }
+
+  return providers;
+}
+
+const authSecret = getAuthSecret();
+if (!authSecret && process.env.NODE_ENV === 'production') {
+  console.error(
+    '🚨 AUTH_SECRET is not configured! Session tokens will be insecure.',
+  );
+}
+
+const nextAuth = NextAuth({
+  providers: buildProviders(),
   session: {
     strategy: 'jwt',
   },
@@ -110,12 +131,9 @@ const nextAuth = NextAuth({
     async jwt({ token, user }) {
       if (user) {
         token.uid = user.id;
-        (token as { token?: string }).token = (
-          user as { token?: string }
-        ).token;
+        token.token = user.token;
 
-        let customClaims = (user as { customClaims?: Record<string, unknown> })
-          .customClaims;
+        let customClaims = user.customClaims;
         if (!customClaims && user.email) {
           try {
             const adminApp = await getFirebaseAdminApp();
@@ -132,27 +150,22 @@ const nextAuth = NextAuth({
             );
           }
         }
-        (token as { customClaims?: Record<string, unknown> }).customClaims =
-          customClaims || {};
+        token.customClaims = customClaims || {};
       }
       return token;
     },
     async session({ session, token }) {
       if (session.user) {
         session.user.id = token.uid as string;
-        (session as { token?: string }).token = (
-          token as { token?: string }
-        ).token;
-        (session as { customClaims?: Record<string, unknown> }).customClaims = (
-          token as { customClaims?: Record<string, unknown> }
-        ).customClaims;
+        session.token = token.token as string | undefined;
+        session.customClaims = token.customClaims as
+          | Record<string, unknown>
+          | undefined;
       }
       return session;
     },
   },
-  secret:
-    process.env.AUTH_SECRET ||
-    'fallback-secret-for-development-only-1234567890',
+  secret: authSecret,
   trustHost: true,
 });
 
