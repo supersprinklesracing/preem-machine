@@ -1,7 +1,7 @@
 import { DecodedIdToken, UserInfo, UserRecord } from 'firebase-admin/auth';
-import { cookies, headers } from 'next/headers';
-import { getTokens } from 'next-firebase-auth-edge';
+import { headers } from 'next/headers';
 
+import { auth } from '@/auth';
 import { AuthUser } from '@/auth/user';
 import { getFirebaseAdminApp } from '@/firebase/server/firebase-admin';
 
@@ -20,7 +20,7 @@ jest.mock('@preem-machine/env', () => {
 
 jest.mock('./auth-context-user', () => ({
   ...(jest.requireActual('./auth-context-user') as object),
-  toAuthContextUserFromTokens: jest.fn((user) => user),
+  toAuthContextUserFromDecodedToken: jest.fn((user) => user),
 }));
 
 jest.mock('next/headers', () => ({
@@ -28,8 +28,8 @@ jest.mock('next/headers', () => ({
   cookies: jest.fn(),
 }));
 
-jest.mock('next-firebase-auth-edge', () => ({
-  getTokens: jest.fn(),
+jest.mock('@/auth', () => ({
+  auth: jest.fn(),
 }));
 
 jest.mock('@/firebase/server/firebase-admin', () => ({
@@ -37,8 +37,8 @@ jest.mock('@/firebase/server/firebase-admin', () => ({
 }));
 
 const mockedHeaders = headers as jest.Mock;
-const mockCookies = cookies as jest.Mock;
 const mockedGetFirebaseAdminApp = getFirebaseAdminApp as jest.Mock;
+const mockAuth = auth as jest.Mock;
 
 describe('getBearerUser', () => {
   let mockVerifyIdToken: jest.Mock;
@@ -150,8 +150,6 @@ describe('getBearerUser', () => {
   });
 });
 
-const mockGetTokens = getTokens as jest.Mock;
-
 describe('getAuthUser', () => {
   beforeEach(() => {
     jest.clearAllMocks();
@@ -200,7 +198,7 @@ describe('getAuthUser', () => {
 
   it('should return null if no tokens are found and not in E2E testing mode', async () => {
     process.env.ENV_E2E_TESTING = 'false';
-    mockGetTokens.mockResolvedValue(null);
+    mockAuth.mockResolvedValue(null);
     const user = await getAuthUser();
     expect(user).toBeNull();
   });
@@ -214,10 +212,17 @@ describe('getAuthUser', () => {
       photoURL: null,
       phoneNumber: null,
       emailVerified: true,
-      providerId: 'password',
+      providerId: 'next-auth',
       customClaims: {},
     };
-    mockGetTokens.mockResolvedValue(tokenUser);
+    mockAuth.mockResolvedValue({
+      user: {
+        id: 'token-test-uid',
+        email: 'token@example.com',
+        name: 'Token Test User',
+        image: null,
+      },
+    });
     const user = await getAuthUser();
     expect(user).toEqual(tokenUser);
   });

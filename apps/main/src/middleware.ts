@@ -1,13 +1,8 @@
 import { ENV_E2E_TESTING } from '@preem-machine/env';
-import type { NextRequest } from 'next/server';
+import type { NextMiddleware, NextRequest } from 'next/server';
 import { NextResponse } from 'next/server';
-import {
-  authMiddleware,
-  redirectToHome,
-  redirectToLogin,
-} from 'next-firebase-auth-edge';
 
-import { serverConfigFn } from '@/firebase/server/config';
+import { auth } from '@/auth';
 
 // prettier-ignore
 const LOGGED_OUT_ONLY = [
@@ -25,52 +20,29 @@ function isProtectedRoute(pathname: string): boolean {
   return PROTECTED_PATHS.some((path) => path.test(pathname));
 }
 
-export async function middleware(request: NextRequest) {
-  // TODO: This should probably live inside handle* methods...
+const middleware: NextMiddleware = auth((request) => {
   const e2eTestingUser = getE2eTestingUser(request);
   if (e2eTestingUser) {
     return e2eTestingUser;
   }
-  const serverConfig = await serverConfigFn();
-  return authMiddleware(request, {
-    ...serverConfig,
 
-    handleValidToken: async (_tokens, headers) => {
-      // Authenticated user should not be able to access /login, /register and /reset-password routes
-      if (LOGGED_OUT_ONLY.includes(request.nextUrl.pathname)) {
-        return redirectToHome(request);
-      }
+  const isLoggedIn = !!request.auth;
+  const { pathname } = request.nextUrl;
 
-      return NextResponse.next({
-        request: {
-          headers,
-        },
-      });
-    },
-    handleInvalidToken: async (_reason) => {
-      if (isProtectedRoute(request.nextUrl.pathname)) {
-        return redirectToLogin(request, {
-          path: '/login',
-          publicPaths: LOGGED_OUT_ONLY,
-        });
-      }
+  if (isLoggedIn && LOGGED_OUT_ONLY.includes(pathname)) {
+    return NextResponse.redirect(new URL('/', request.nextUrl.origin));
+  }
 
-      return NextResponse.next();
-    },
-    handleError: async (error) => {
-      console.error('Unhandled authentication error', { error });
+  if (!isLoggedIn && isProtectedRoute(pathname)) {
+    const redirectUrl = new URL('/login', request.nextUrl.origin);
+    redirectUrl.searchParams.set('redirect', pathname);
+    return NextResponse.redirect(redirectUrl);
+  }
 
-      if (isProtectedRoute(request.nextUrl.pathname)) {
-        return redirectToLogin(request, {
-          path: '/login',
-          publicPaths: LOGGED_OUT_ONLY,
-        });
-      }
+  return NextResponse.next();
+}) as unknown as NextMiddleware;
 
-      return NextResponse.next();
-    },
-  });
-}
+export default middleware;
 
 function getE2eTestingUser(request: NextRequest) {
   if (ENV_E2E_TESTING) {
@@ -89,18 +61,9 @@ function getE2eTestingUser(request: NextRequest) {
 }
 
 export const config = {
-  runtime: 'nodejs',
   matcher: [
     '/',
-    // See also: ../next.config.js
     '/((?!_next|\\.well-known|robots.txt|favicon\\.ico|__/auth|__/firebase|api).*)',
-    '/api/login',
-    '/api/logout',
-    '/api/refresh-token',
     '/account',
-    // App-specific; Hitting these URLs unauthenticated will trigger the redirect.
-    // '/api/stripe',
-    // '/(api/debug/.*)',
-    // '/api/debug/test/load-firestore-test-data',
   ],
 };

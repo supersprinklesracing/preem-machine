@@ -1,0 +1,101 @@
+import NextAuth from 'next-auth';
+import CredentialsProvider from 'next-auth/providers/credentials';
+
+import { clientConfig } from '@/firebase/client/config';
+import { getFirebaseAdminApp } from '@/firebase/server/firebase-admin';
+
+const nextAuth = NextAuth({
+  providers: [
+    CredentialsProvider({
+      id: 'credentials',
+      name: 'Firebase Credentials',
+      credentials: {
+        email: { label: 'Email', type: 'text' },
+        password: { label: 'Password', type: 'password' },
+        token: { label: 'Token', type: 'text' },
+      },
+      async authorize(credentials) {
+        if (credentials?.token) {
+          try {
+            const adminApp = await getFirebaseAdminApp();
+            const decodedToken = await adminApp
+              .auth()
+              .verifyIdToken(credentials.token as string);
+            return {
+              id: decodedToken.uid,
+              email: decodedToken.email || null,
+              name: decodedToken.name || null,
+              image: decodedToken.picture || null,
+              token: credentials.token as string,
+            };
+          } catch (error) {
+            console.error('Error verifying credentials token:', error);
+            throw new Error('Token verification failed');
+          }
+        }
+
+        if (!credentials?.email || !credentials?.password) {
+          return null;
+        }
+
+        const res = await fetch(
+          `https://identitytoolkit.googleapis.com/v1/accounts:signInWithPassword?key=${clientConfig.apiKey}`,
+          {
+            method: 'POST',
+            body: JSON.stringify({
+              email: credentials.email,
+              password: credentials.password,
+              returnSecureToken: true,
+            }),
+            headers: { 'Content-Type': 'application/json' },
+          },
+        );
+
+        const data = await res.json();
+        if (res.ok && data.localId) {
+          return {
+            id: data.localId,
+            email: data.email,
+            name: data.displayName || null,
+            image: data.photoUrl || null,
+            token: data.idToken,
+          };
+        }
+
+        throw new Error(data.error?.message || 'Authentication failed');
+      },
+    }),
+  ],
+  session: {
+    strategy: 'jwt',
+  },
+  callbacks: {
+    async jwt({ token, user }) {
+      if (user) {
+        token.uid = user.id;
+        (token as { token?: string }).token = (
+          user as { token?: string }
+        ).token;
+      }
+      return token;
+    },
+    async session({ session, token }) {
+      if (session.user) {
+        session.user.id = token.uid as string;
+        (session as { token?: string }).token = (
+          token as { token?: string }
+        ).token;
+      }
+      return session;
+    },
+  },
+  secret:
+    process.env.AUTH_SECRET ||
+    'fallback-secret-for-development-only-1234567890',
+  trustHost: true,
+});
+
+export const handlers = nextAuth.handlers;
+export const auth: typeof nextAuth.auth = nextAuth.auth;
+export const signIn: typeof nextAuth.signIn = nextAuth.signIn;
+export const signOut: typeof nextAuth.signOut = nextAuth.signOut;
