@@ -128,6 +128,13 @@ const nextAuth = NextAuth({
     strategy: 'jwt',
   },
   callbacks: {
+    async signIn({ user }) {
+      if (user.email?.toLowerCase() !== 'jlapenna@gmail.com') {
+        console.warn(`Denied sign-in attempt for email: ${user.email}`);
+        return false;
+      }
+      return true;
+    },
     async jwt({ token, user }) {
       if (user) {
         token.uid = user.id;

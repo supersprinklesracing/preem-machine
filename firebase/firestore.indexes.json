@@ -99,6 +99,17 @@
     },
     {
       "collectionGroup": "contributions",
+      "fieldPath": "preemBrief.id",
+      "ttl": false,
+      "indexes": [
+        {
+          "order": "ASCENDING",
+          "queryScope": "COLLECTION_GROUP"
+        }
+      ]
+    },
+    {
+      "collectionGroup": "contributions",
       "fieldPath": "id",
       "ttl": false,
       "indexes": [
@@ -196,6 +207,17 @@
     {
       "collectionGroup": "preems",
       "fieldPath": "raceBrief.startDate",
+      "ttl": false,
+      "indexes": [
+        {
+          "order": "ASCENDING",
+          "queryScope": "COLLECTION_GROUP"
+        }
+      ]
+    },
+    {
+      "collectionGroup": "preems",
+      "fieldPath": "raceBrief.id",
       "ttl": false,
       "indexes": [
         {
