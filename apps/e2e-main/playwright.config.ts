@@ -45,6 +45,7 @@ export default defineConfig({
     /** Use a consistent TZ. */
     locale: 'en-US',
     timezoneId: 'America/Los_Angeles',
+    colorScheme: 'light',
   },
   /* Run your local dev server before starting the tests */
   webServer: {
@@ -58,7 +59,7 @@ export default defineConfig({
     env: {
       E2E_TESTING: 'true',
       // eslint-disable-next-line @typescript-eslint/no-non-null-assertion
-      E2E_TESTING_USER: process.env.E2E_TESTING_USER!
+      E2E_TESTING_USER: process.env.E2E_TESTING_USER!,
     },
   },
   expect: {

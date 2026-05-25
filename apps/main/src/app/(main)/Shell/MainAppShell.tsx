@@ -38,7 +38,12 @@ export function MainAppShell({
       padding="md"
     >
       <Notifications />
-      <AppShell.Header>
+      <AppShell.Header
+        style={{
+          borderBottom: '1px solid rgba(0, 0, 0, 0.08)',
+          boxShadow: '0 4px 12px rgba(0, 0, 0, 0.03)',
+        }}
+      >
         <Group px={{ base: 'xs', sm: 'md' }} justify="space-between" h="100%">
           <Group>
             <Burger
@@ -62,6 +67,7 @@ export function MainAppShell({
                     width={48}
                     height={48}
                     priority
+                    style={{ objectFit: 'contain' }}
                   />
                 </Box>
                 <Title order={3}>Preem Machine</Title>

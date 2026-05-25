@@ -29,7 +29,7 @@ export default async function RootLayout({
   const userContext = await getUserContext();
 
   const colorScheme = ((await cookies()).get('mantine-color-scheme')?.value ||
-    'dark') as MantineColorScheme;
+    'light') as MantineColorScheme;
 
   return (
     <html lang="en" {...mantineHtmlProps}>

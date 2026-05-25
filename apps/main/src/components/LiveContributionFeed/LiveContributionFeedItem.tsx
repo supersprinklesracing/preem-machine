@@ -36,7 +36,7 @@ export const LiveContributionFeedItem = memo(function LiveContributionFeedItem({
             {contributor?.name}
           </Text>{' '}
           -{' '}
-          <Text span c="green" fw={600}>
+          <Text span c="giroOrange.6" fw={600}>
             ${contribution.amount}
           </Text>{' '}
           to{' '}
