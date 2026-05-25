@@ -1,15 +1,7 @@
 'use client';
 
-import {
-  AppShell,
-  Box,
-  Burger,
-  Group,
-  Title,
-  useMantineTheme,
-} from '@mantine/core';
+import { AppShell, Burger, Group, Title, useMantineTheme } from '@mantine/core';
 import { Notifications } from '@mantine/notifications';
-import Image from 'next/image';
 import Link from 'next/link';
 import React from 'react';
 
@@ -60,17 +52,16 @@ export function MainAppShell({
               style={{ textDecoration: 'none', color: 'inherit' }}
             >
               <Group>
-                <Box visibleFrom="sm">
-                  <Image
-                    src="/logo.png"
-                    alt="App Logo"
-                    width={48}
-                    height={48}
-                    priority
-                    style={{ objectFit: 'contain' }}
-                  />
-                </Box>
-                <Title order={3}>Preem Machine</Title>
+                <Title
+                  order={2}
+                  style={{
+                    fontFamily: 'Fat Kat, sans-serif',
+                    color: 'var(--mantine-color-primary-6)',
+                    letterSpacing: '1px',
+                  }}
+                >
+                  GIRO SF
+                </Title>
               </Group>
             </Link>
           </Group>
