@@ -42,9 +42,10 @@ export function Home({ eventsWithRaces, contributions, preems }: Props) {
         p="xl"
         style={{
           background:
-            'linear-gradient(135deg, rgba(99, 102, 241, 0.15) 0%, rgba(168, 85, 247, 0.15) 100%)',
-          border: '1px solid rgba(99, 102, 241, 0.2)',
-          borderRadius: '16px',
+            'linear-gradient(135deg, var(--mantine-color-giroOrange-6) 0%, var(--mantine-color-giroYellow-6) 100%)',
+          borderRadius: '12px',
+          boxShadow: '0 8px 32px rgba(249, 99, 53, 0.2)',
+          color: '#ffffff',
         }}
       >
         <Group justify="space-between" align="center">
@@ -59,7 +60,7 @@ export function Home({ eventsWithRaces, contributions, preems }: Props) {
             >
               Welcome to Preem Machine
             </Title>
-            <Text size="lg" c="dimmed">
+            <Text size="lg" style={{ color: 'rgba(255, 255, 255, 0.9)' }}>
               Fund, track, and award prime lap cash payouts in real-time.
             </Text>
           </Stack>
@@ -71,7 +72,7 @@ export function Home({ eventsWithRaces, contributions, preems }: Props) {
         <Group gap="sm">
           <ThemeIcon
             variant="gradient"
-            gradient={{ from: 'indigo', to: 'violet' }}
+            gradient={{ from: 'giroOrange', to: 'giroYellow' }}
             size="md"
             radius="sm"
           >
@@ -120,25 +121,6 @@ export function Home({ eventsWithRaces, contributions, preems }: Props) {
                     padding="lg"
                     radius="lg"
                     withBorder
-                    style={{
-                      transition: 'all 0.2s ease',
-                      border: '1px solid rgba(255, 255, 255, 0.08)',
-                      background: 'rgba(26, 27, 30, 0.65)',
-                      backdropFilter: 'blur(8px)',
-                    }}
-                    onMouseEnter={(e) => {
-                      e.currentTarget.style.transform = 'translateY(-2px)';
-                      e.currentTarget.style.boxShadow =
-                        '0 8px 24px rgba(0, 0, 0, 0.2)';
-                      e.currentTarget.style.borderColor =
-                        'rgba(99, 102, 241, 0.4)';
-                    }}
-                    onMouseLeave={(e) => {
-                      e.currentTarget.style.transform = 'none';
-                      e.currentTarget.style.boxShadow = 'none';
-                      e.currentTarget.style.borderColor =
-                        'rgba(255, 255, 255, 0.08)';
-                    }}
                   >
                     <Stack gap="md">
                       <Link
@@ -162,7 +144,7 @@ export function Home({ eventsWithRaces, contributions, preems }: Props) {
                               <Group gap="xs">
                                 <IconCalendar
                                   size={15}
-                                  color="var(--mantine-color-indigo-4)"
+                                  color="var(--mantine-color-giroOrange-6)"
                                 />
                                 <Text size="sm" c="dimmed">
                                   {formatDateLong(
@@ -174,7 +156,7 @@ export function Home({ eventsWithRaces, contributions, preems }: Props) {
                               <Group gap="xs">
                                 <IconMapPin
                                   size={15}
-                                  color="var(--mantine-color-indigo-4)"
+                                  color="var(--mantine-color-giroOrange-6)"
                                 />
                                 <Text size="sm" c="dimmed">
                                   {event?.location}
@@ -184,7 +166,7 @@ export function Home({ eventsWithRaces, contributions, preems }: Props) {
                           </Stack>
                           <ThemeIcon
                             variant="light"
-                            color="indigo"
+                            color="giroOrange"
                             radius="xl"
                             size="md"
                           >
@@ -246,7 +228,7 @@ export function Home({ eventsWithRaces, contributions, preems }: Props) {
                                   <Group gap="xs">
                                     <Badge
                                       variant="outline"
-                                      color="violet"
+                                      color="giroPurple"
                                       size="sm"
                                     >
                                       {race.category}

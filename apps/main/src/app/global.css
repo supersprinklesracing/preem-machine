@@ -1,2 +1,74 @@
+@import url('https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap');
+@import url('https://fonts.googleapis.com/css2?family=Playfair+Display:ital,wght@0,400..900;1,400..900&display=swap');
+@import url('https://fonts.googleapis.com/css2?family=JetBrains+Mono:wght@400;700&display=swap');
 @import '@mantine/core/styles.css';
 @import '@mantine/dates/styles.css';
+
+@font-face {
+  font-family: 'Morally Serif Regular';
+  src: url('/fonts/MorallySerif-Regular.woff2') format('woff2');
+  font-weight: normal;
+  font-style: normal;
+  font-display: swap;
+}
+
+@font-face {
+  font-family: 'Fat Kat Regular';
+  src: url('/fonts/FatKat-Regular.woff2') format('woff2');
+  font-weight: normal;
+  font-style: normal;
+  font-display: swap;
+}
+
+body {
+  background-color: #fff9eb;
+  color: #111111;
+  -webkit-font-smoothing: antialiased;
+  -moz-osx-font-smoothing: grayscale;
+}
+
+html[data-mantine-color-scheme='dark'] body {
+  background-color: #1a1a1a;
+  color: #fff9eb;
+}
+
+/* Elevated, soft flat styles for common components */
+.mantine-Card-root,
+.mantine-Button-root,
+.mantine-Paper-root {
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.05);
+  border: 1px solid rgba(0, 0, 0, 0.08);
+  transition:
+    transform 0.2s ease,
+    box-shadow 0.2s ease;
+  border-radius: 8px;
+}
+
+html[data-mantine-color-scheme='dark'] .mantine-Card-root,
+html[data-mantine-color-scheme='dark'] .mantine-Button-root,
+html[data-mantine-color-scheme='dark'] .mantine-Paper-root {
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.2);
+  border: 1px solid rgba(255, 255, 255, 0.08);
+}
+
+.mantine-Card-root:hover,
+.mantine-Button-root:hover {
+  transform: translateY(-2px);
+  box-shadow: 0 8px 24px rgba(0, 0, 0, 0.08);
+}
+
+html[data-mantine-color-scheme='dark'] .mantine-Card-root:hover,
+html[data-mantine-color-scheme='dark'] .mantine-Button-root:hover {
+  box-shadow: 0 8px 24px rgba(0, 0, 0, 0.3);
+}
+
+.mantine-Card-root:active,
+.mantine-Button-root:active {
+  transform: translateY(0);
+  box-shadow: 0 2px 4px rgba(0, 0, 0, 0.05);
+}
+
+html[data-mantine-color-scheme='dark'] .mantine-Card-root:active,
+html[data-mantine-color-scheme='dark'] .mantine-Button-root:active {
+  box-shadow: 0 2px 4px rgba(0, 0, 0, 0.2);
+}
