@@ -73,21 +73,25 @@ export function PreemCard({
     subheadings.push(
       <Text c="dimmed" key="brief">
         Part of{' '}
-        {showRace && (
+        {showRace && preem.raceBrief?.path && (
           <Anchor
             component={Link}
             href={`/view/${toUrlPath(preem.raceBrief.path)}`}
           >
-            {preem.raceBrief.name}
+            {preem.raceBrief.name ?? 'Unknown Race'}
           </Anchor>
         )}
-        {showRace && showEvent && ' at '}
-        {showEvent && (
+        {showRace &&
+          preem.raceBrief?.path &&
+          showEvent &&
+          preem.raceBrief?.eventBrief?.path &&
+          ' at '}
+        {showEvent && preem.raceBrief?.eventBrief?.path && (
           <Anchor
             component={Link}
             href={`/view/${toUrlPath(preem.raceBrief.eventBrief.path)}`}
           >
-            {preem.raceBrief.eventBrief.name}
+            {preem.raceBrief.eventBrief.name ?? 'Unknown Event'}
           </Anchor>
         )}
       </Text>,

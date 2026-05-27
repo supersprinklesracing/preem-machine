@@ -42,19 +42,28 @@ export const LiveContributionFeedItem = memo(function LiveContributionFeedItem({
           to{' '}
           <Text
             component={Link}
-            href={`/view/${toUrlPath(contribution.preemBrief.path)}`}
+            href={
+              contribution.preemBrief?.path
+                ? `/view/${toUrlPath(contribution.preemBrief.path)}`
+                : '#'
+            }
             style={{ textDecoration: 'none', color: 'inherit' }}
           >
-            &quot;{contribution.preemBrief.name}&quot;
+            &quot;{contribution.preemBrief?.name ?? 'Unknown Preem'}&quot;
           </Text>{' '}
           in the{' '}
           <Text
             component={Link}
-            href={`/view/${toUrlPath(contribution.preemBrief.raceBrief.path)}`}
+            href={
+              contribution.preemBrief?.raceBrief?.path
+                ? `/view/${toUrlPath(contribution.preemBrief.raceBrief.path)}`
+                : '#'
+            }
             fw={600}
             style={{ textDecoration: 'none', color: 'inherit' }}
           >
-            &quot;{contribution.preemBrief.raceBrief.name}&quot;
+            &quot;{contribution.preemBrief?.raceBrief?.name ?? 'Unknown Race'}
+            &quot;
           </Text>{' '}
           race!
         </Text>
