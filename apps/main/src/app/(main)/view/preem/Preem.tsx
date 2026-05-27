@@ -95,7 +95,7 @@ export function Preem({ preem, children }: Props) {
             {preem.description && <Text mt="md">{preem.description}</Text>}
           </Box>
 
-          <Grid gutter="lg">
+          <Grid gap="lg">
             <Grid.Col span={{ base: 12, md: 8 }}>
               <Card withBorder padding="lg" radius="md">
                 <Title order={4} mb="md">

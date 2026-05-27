@@ -26,10 +26,7 @@ import { compareDates, formatDateShort } from '@/dates/dates';
 import { useUserContext } from '@/user/client/UserContext';
 
 interface Props {
-  user: Pick<
-    UserType,
-    'id' | 'path' | 'name' | 'email' | 'avatarUrl'
-  >;
+  user: Pick<UserType, 'id' | 'path' | 'name' | 'email' | 'avatarUrl'>;
   contributions: Pick<
     Contribution,
     'id' | 'path' | 'date' | 'amount' | 'preemBrief'
@@ -66,7 +63,7 @@ export function User({ user, contributions, organizations }: Props) {
 
   return (
     <MultiPanelLayout>
-      <Grid gutter="xl">
+      <Grid gap="xl">
         <Grid.Col span={{ base: 12, lg: 4 }}>
           <Card withBorder padding="lg" radius="md">
             <Stack align="center" ta="center">

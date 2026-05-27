@@ -186,7 +186,7 @@ export function Race({ race, children }: Props) {
         }
         topRight={<CourseLink courseLink={race.courseLink} />}
         children={
-          <Grid gutter="xl">
+          <Grid gap="xl">
             <Grid.Col span={{ base: 12, lg: 8 }}>
               <Group justify="space-between" mb="md">
                 <Title order={2}>Preems</Title>

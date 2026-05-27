@@ -52,7 +52,7 @@ export function ContentCard({
         ...style,
       }}
     >
-      <Grid gutter="lg" style={{ flexGrow: 1 }}>
+      <Grid gap="lg" style={{ flexGrow: 1 }}>
         <Grid.Col span={{ base: 12, lg: 8 }}>
           <Stack justify="space-between" style={{ height: '100%' }}>
             <div>

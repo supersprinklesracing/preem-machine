@@ -105,7 +105,7 @@ export function LiveRace({ race, children }: LiveRaceProps) {
             Edit Race
           </Button>
         </Group>
-        <Grid gutter="lg">
+        <Grid gap="lg">
           <Grid.Col span={{ base: 12, md: 4 }}>
             <Card withBorder padding="lg" radius="md">
               <Title order={3}>Race Control</Title>
