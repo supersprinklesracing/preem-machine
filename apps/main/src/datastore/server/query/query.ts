@@ -131,18 +131,24 @@ const getRacesForEvent = async (
   // Reconstruction
   const contributionsByPreemId = new Map<string, Contribution[]>();
   allContributions.forEach((c) => {
-    const pid = c.preemBrief.id;
-    if (!contributionsByPreemId.has(pid)) {
-      contributionsByPreemId.set(pid, []);
+    const pid = c.preemBrief?.id;
+    if (!pid) return;
+    let list = contributionsByPreemId.get(pid);
+    if (!list) {
+      list = [];
+      contributionsByPreemId.set(pid, list);
     }
-    contributionsByPreemId.get(pid)!.push(c);
+    list.push(c);
   });
 
   const preemsByRaceId = new Map<string, PreemWithContributions[]>();
   allPreems.forEach((p) => {
-    const rid = p.raceBrief.id;
-    if (!preemsByRaceId.has(rid)) {
-      preemsByRaceId.set(rid, []);
+    const rid = p.raceBrief?.id;
+    if (!rid) return;
+    let list = preemsByRaceId.get(rid);
+    if (!list) {
+      list = [];
+      preemsByRaceId.set(rid, list);
     }
     const children = contributionsByPreemId.get(p.id) || [];
     // Sort contributions by date descending (to match likely expectation, though original code had no explicit sort)
@@ -150,7 +156,7 @@ const getRacesForEvent = async (
     // If we want to be safe, we can sort by ID.
     children.sort((a, b) => a.id.localeCompare(b.id));
 
-    preemsByRaceId.get(rid)!.push({
+    list.push({
       preem: p,
       children: children,
     });
