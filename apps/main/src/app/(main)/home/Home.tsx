@@ -89,7 +89,7 @@ export function Home({ eventsWithRaces, contributions, preems }: Props) {
       </Stack>
 
       {/* Main Grid layout */}
-      <Grid gutter="xl">
+      <Grid gap="xl">
         {/* Events Column */}
         <GridCol span={{ base: 12, lg: 8 }}>
           <Stack gap="lg">

@@ -83,7 +83,7 @@ export function Organization({ organization, serieses, members }: Props) {
             </Anchor>
           </Group>
         )}
-        <Grid gutter="xl">
+        <Grid gap="xl">
           <Grid.Col span={{ base: 12, md: 8 }}>
             <Stack>
               <Title order={2}>Race Series</Title>
