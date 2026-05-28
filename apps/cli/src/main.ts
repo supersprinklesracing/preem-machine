@@ -9,7 +9,7 @@ import yargs from 'yargs';
 import { hideBin } from 'yargs/helpers';
 
 import { claimsCommand } from './claims';
-import { secretsCommand } from './secrets';
+import { dotenvCommand } from './commands/dotenv/dotenv';
 
 async function main() {
   await yargs(hideBin(process.argv))
@@ -27,7 +27,7 @@ async function main() {
       }
     })
     .command(claimsCommand)
-    .command(secretsCommand)
+    .command(dotenvCommand)
     .demandCommand(1, 'You need at least one command before moving on')
     .help()
     .alias('help', 'h').argv;
