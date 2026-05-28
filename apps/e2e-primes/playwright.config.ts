@@ -36,7 +36,7 @@ export default defineConfig({
   /* Run your local dev server before starting the tests */
   webServer: {
     command:
-      'PORT=4200 pnpm exec nx --tuiAutoExit --outputStyle=stream-without-prefixes run @preem-machine/main:start | tee e2e-server.log 2>&1 ',
+      'PORT=4200 pnpm exec nx --tuiAutoExit --outputStyle=stream-without-prefixes run @preem-machine/primes:start | tee e2e-server.log 2>&1 ',
     url: 'http://localhost:4200',
     reuseExistingServer: !process.env.CI,
     timeout: 300000,
