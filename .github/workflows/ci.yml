@@ -107,6 +107,9 @@ jobs:
         if: steps.playwright-cache.outputs.cache-hit != 'true'
         run: pnpm exec playwright install --with-deps chromium
 
+      - name: Deploy Firestore Indexes to CI
+        run: pnpm exec firebase deploy --project preem-machine-ci --only firestore:indexes --non-interactive --force
+
       - name: E2E
         env:
           AUTH_SECRET: "e2e-testing-secret-that-is-at-least-32-chars-long"
