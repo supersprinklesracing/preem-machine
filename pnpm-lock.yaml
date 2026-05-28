@@ -345,9 +345,9 @@ importers:
 
   apps/cli: {}
 
-  apps/e2e-main: {}
+  apps/e2e-primes: {}
 
-  apps/main: {}
+  apps/primes: {}
 
   libs/env-vars: {}
 

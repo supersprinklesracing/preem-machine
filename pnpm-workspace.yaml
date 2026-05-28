@@ -1,3 +1,5 @@
 packages:
   - 'apps/*'
   - 'libs/*'
+  - 'primes'
+  - 'e2e-primes'

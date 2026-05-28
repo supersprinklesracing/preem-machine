@@ -2,8 +2,8 @@
 
 ## 1. Overview
 
-- **Unit Testing:** Jest is used for unit tests. Test files are located in `apps/main/src` and use the `.test.ts` or `.test.tsx` extension.
-- **End-to-End Testing:** Playwright is used for E2E tests, located in `apps/e2e-main/src` and use the `.spec.ts` extension.
+- **Unit Testing:** Jest is used for unit tests. Test files are located in `apps/primes/src` and use the `.test.ts` or `.test.tsx` extension.
+- **End-to-End Testing:** Playwright is used for E2E tests, located in `apps/e2e-primes/src` and use the `.spec.ts` extension.
 
 ## 2. Unit Testing
 
@@ -13,17 +13,17 @@ Before writing a test, always inspect the component's props (its TypeScript inte
 
 #### Client Components (`"use client"`)
 
-- **Reference:** `apps/main/src/components/cards/RaceCard.test.tsx`
+- **Reference:** `apps/primes/src/components/cards/RaceCard.test.tsx`
 - **Procedure:**
   1.  Import `render` and `screen` from `@/test-utils`.
   2.  Import the component to be tested.
-  3.  Create mock data for the component's props (see `apps/main/src/datastore/schema.ts`).
+  3.  Create mock data for the component's props (see `apps/primes/src/datastore/schema.ts`).
   4.  Write a simple "smoke test" to ensure the component renders without errors.
   5.  Assert that a key piece of text or an element is present in the document. Example: `expect(screen.getByText('Some Text')).toBeInTheDocument();`.
 
 #### Server Components (No `"use client"` directive)
 
-- **Reference:** `apps/main/src/datastore/mock-db.test.ts`
+- **Reference:** `apps/primes/src/datastore/mock-db.test.ts`
 - **Procedure:**
   1.  Follow the detailed procedure in the **Mocking `firestore`** section below to set up a mock database.
   2.  Your test function **must** be `async`.
@@ -36,7 +36,7 @@ For server components that interact with Firestore, refer to the **Mocking `fire
 
 #### Mocking `firestore`
 
-- **Reference:** `apps/main/src/datastore/mock-db.test.ts`
+- **Reference:** `apps/primes/src/datastore/mock-db.test.ts`
 - **Concept:** The testing strategy is to mock the entire Firestore database before tests run. This allows components to interact with a realistic, in-memory version of the database.
 - **Procedure:**
   1.  Import `setupMockDb` from `@/test-utils`.
@@ -95,7 +95,7 @@ This project uses Playwright for screenshot testing to catch visual regressions.
 
 ### Page URLs
 
-E2E tests should use the "source" URLs for pages (See `apps/e2e-main/src/next.config.test.js`).
+E2E tests should use the "source" URLs for pages (See `apps/e2e-primes/src/next.config.test.js`).
 
 Good URLs look like:
 
@@ -105,7 +105,7 @@ Good URLs look like:
 
 ### Adding a New Screenshot Test
 
-1.  Create a new test file in `apps/e2e-main/src` with the `.spec.ts` extension.
+1.  Create a new test file in `apps/e2e-primes/src` with the `.spec.ts` extension.
 2.  In the test file, navigate to the page you want to test and use the `toHaveScreenshot` assertion:
 
     ```typescript
@@ -118,15 +118,15 @@ Good URLs look like:
 
 ### Generating and Updating Snapshots
 
-- **First Run:** When you run a new screenshot test for the first time, it will fail because no baseline snapshot exists. This is expected. The test runner will create a new snapshot file in the `apps/e2e-main/src/snapshots` directory.
+- **First Run:** When you run a new screenshot test for the first time, it will fail because no baseline snapshot exists. This is expected. The test runner will create a new snapshot file in the `apps/e2e-primes/src/snapshots` directory.
 - **Updating Snapshots:** If a test fails due to an intentional UI change, you need to update the baseline snapshot. You can do this by running the tests with the `--update-snapshots` flag:
 
   ```shell
-  pnpm exec nx e2e e2e-main --update-snapshots
+  pnpm exec nx e2e e2e-primes --update-snapshots
   ```
 
 After updating the snapshots, you need to commit the new snapshot files to the repository.
 
 ### Debugging tests
 
-Look for output like: `Error Context: test-output/test-results/some-test-chrome-pixel-5/error-context.md` to figure out what was on the page when the test failed. This path will be relative to apps/e2e-main, so the file path will be `apps/e2e-main/test-output/test-results/some-test-chrome-pixel-5/error-context.md`
+Look for output like: `Error Context: test-output/test-results/some-test-chrome-pixel-5/error-context.md` to figure out what was on the page when the test failed. This path will be relative to apps/e2e-primes, so the file path will be `apps/e2e-primes/test-output/test-results/some-test-chrome-pixel-5/error-context.md`
