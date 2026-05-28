@@ -7,7 +7,10 @@ import {
 import NextAuth, { NextAuthConfig } from 'next-auth';
 import GoogleProvider from 'next-auth/providers/google';
 
-import { getFirebaseAdminApp, getFirestore } from '@/firebase/server/firebase-admin';
+import {
+  getFirebaseAdminApp,
+  getFirestore,
+} from '@/firebase/server/firebase-admin';
 
 declare module 'next-auth' {
   interface Session {
@@ -52,9 +55,9 @@ const getConfig = async (): Promise<NextAuthConfig> => {
     providers,
     adapter: firestoreAdapter as NextAuthConfig['adapter'],
     session: {
-      strategy: (process.env.E2E_TESTING === 'true'
-        ? 'jwt'
-        : 'database') as 'jwt' | 'database',
+      strategy: (process.env.E2E_TESTING === 'true' ? 'jwt' : 'database') as
+        | 'jwt'
+        | 'database',
     },
     callbacks: {
       async signIn({ user }) {

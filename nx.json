@@ -16,7 +16,8 @@
     "sharedGlobals": ["{workspaceRoot}/.github/workflows/ci.yml"]
   },
   "tui": {
-    "enabled": false
+    "enabled": false,
+    "autoExit": true
   },
   "defaultProject": "@preem-machine/main",
   "plugins": [
@@ -35,23 +36,6 @@
       }
     },
     {
-      "plugin": "@nx/next/plugin",
-      "options": {
-        "startTargetName": "start",
-        "buildTargetName": "build",
-        "devTargetName": "dev",
-        "serveStaticTargetName": "serve-static",
-        "buildDepsTargetName": "build-deps",
-        "watchDepsTargetName": "watch-deps"
-      }
-    },
-    {
-      "plugin": "@nx/playwright/plugin",
-      "options": {
-        "targetName": "e2e"
-      }
-    },
-    {
       "plugin": "@nx/eslint/plugin",
       "options": {
         "targetName": "lint"
@@ -61,6 +45,18 @@
       "plugin": "@nx/jest/plugin",
       "options": {
         "targetName": "test"
+      }
+    },
+    {
+      "plugin": "@nx/next/plugin",
+      "options": {
+        "devTargetName": "serve"
+      }
+    },
+    {
+      "plugin": "@nx/playwright/plugin",
+      "options": {
+        "targetName": "e2e"
       }
     }
   ],
@@ -74,35 +70,52 @@
   },
   "targetDefaults": {
     "build": {
-      "cache": false
+      "dependsOn": ["^build"],
+      "inputs": ["production", "^production"],
+      "cache": true
+    },
+    "serve": {
+      "options": {}
     },
     "@nx/esbuild:esbuild": {
       "cache": true,
       "dependsOn": ["^build"],
       "inputs": ["production", "^production"]
     },
-    "@nx/next:build": {
-      "cache": false,
-      "configurations": {
-        "verify": {},
-        "ci": {}
+    "test": {
+      "dependsOn": ["^build"],
+      "options": {
+        "silent": true,
+        "forceExit": true,
+        "passWithNoTests": true
       }
     },
-    "@nx/jest:jest": {
-      "configurations": {
-        "ci": {
-          "ci": true
-        }
-      }
+    "e2e": {
+      "dependsOn": ["^build"]
+    },
+    "@nx/js:tsc": {
+      "cache": true,
+      "dependsOn": ["^build"],
+      "inputs": ["production", "^production"]
+    },
+    "@nx/js:swc": {
+      "cache": true,
+      "dependsOn": ["^build"],
+      "inputs": ["production", "^production"]
     }
   },
   "generators": {
     "@nx/next": {
       "application": {
-        "style": "tailwind",
+        "style": "css",
         "linter": "eslint"
+      }
+    },
+    "@nx/react": {
+      "library": {
+        "unitTestRunner": "jest"
       }
     }
   },
-  "analytics": false
+  "analytics": true
 }

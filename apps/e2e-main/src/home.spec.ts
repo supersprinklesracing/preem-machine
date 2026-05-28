@@ -17,7 +17,7 @@ test.describe('home', () => {
     ).toBeVisible();
     await expect(page.getByText('First Lap Leader').first()).toBeVisible();
     // eslint-disable-next-line playwright/no-networkidle
-    await page.waitForLoadState("networkidle");
+    await page.waitForLoadState('networkidle');
     await expect(page).toHaveScreenshot({ fullPage: true });
   });
 });
