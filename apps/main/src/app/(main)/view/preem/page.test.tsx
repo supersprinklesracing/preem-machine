@@ -25,7 +25,7 @@ describe('PreemPage component', () => {
   it('should fetch preem data and render the Preem component', async () => {
     const PageComponent = await PreemPage({
       searchParams: Promise.resolve({
-        path: 'organizations/super-sprinkles/series/sprinkles-2025/events/giro-sf-2025/races/masters-women/preems/first-lap',
+        path: 'preems/first-lap',
       }),
     });
     render(PageComponent);
@@ -42,7 +42,7 @@ describe('PreemPage component', () => {
     await expect(
       PreemPage({
         searchParams: Promise.resolve({
-          path: 'organizations/org-1/series/series-1/events/event-1/races/race-1/preems/non-existent-preem',
+          path: 'preems/non-existent-preem',
         }),
       }),
     ).rejects.toThrow(NotFoundError);

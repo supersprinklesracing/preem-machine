@@ -3,10 +3,7 @@
 import { Metadata } from 'next';
 
 import { CommonLayout } from '@/components/layout/CommonLayout';
-import {
-  getCollectionPathFromSearchParams,
-  getParentPath,
-} from '@/datastore/paths';
+import { getDocPathFromSearchParams } from '@/datastore/paths';
 import { OrganizationSchema } from '@/datastore/schema';
 import { getDoc } from '@/datastore/server/query/query';
 
@@ -24,8 +21,8 @@ export default async function NewSeriesPage({
 }: {
   searchParams: Promise<{ path: string }>;
 }) {
-  const path = getCollectionPathFromSearchParams(await searchParams);
-  const organization = await getDoc(OrganizationSchema, getParentPath(path));
+  const path = getDocPathFromSearchParams(await searchParams);
+  const organization = await getDoc(OrganizationSchema, path);
   return (
     <CommonLayout>
       <NewSeries

@@ -14,16 +14,24 @@ const mockOrganizationData = {
     {
       series: {
         id: 'series-1',
-        path: 'organizations/org-1/series/series-1',
+        path: 'series/series-1',
+        organizationId: 'org-1',
         name: 'Test Series 1',
+        timezone: 'America/Los_Angeles',
+        startDate: new Date(),
+        endDate: new Date(),
       },
       children: [],
     },
     {
       series: {
         id: 'series-2',
-        path: 'organizations/org-1/series/series-2',
+        path: 'series/series-2',
+        organizationId: 'org-1',
         name: 'Test Series 2',
+        timezone: 'America/Los_Angeles',
+        startDate: new Date(),
+        endDate: new Date(),
       },
       children: [],
     },

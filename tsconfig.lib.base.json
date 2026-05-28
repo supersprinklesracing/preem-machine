@@ -1,0 +1,15 @@
+{
+  "extends": "./tsconfig.base.json",
+  "exclude": [
+    "jest.config.ts",
+    "jest.config.cts",
+    "**/*.spec.ts",
+    "**/*.test.ts",
+    "**/*.spec.tsx",
+    "**/*.test.tsx",
+    "**/*.spec.js",
+    "**/*.test.js",
+    "**/*.spec.jsx",
+    "**/*.test.jsx"
+  ]
+}

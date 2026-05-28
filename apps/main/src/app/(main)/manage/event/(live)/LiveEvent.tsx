@@ -16,7 +16,7 @@ import Link from 'next/link';
 
 import { RaceCard } from '@/components/cards/RaceCard';
 import { MultiPanelLayout } from '@/components/layout/MultiPanelLayout';
-import { toUrlPath } from '@/datastore/paths';
+import { getUrlPath } from '@/datastore/paths';
 import { RaceWithPreems } from '@/datastore/query-schema';
 import { Event } from '@/datastore/schema';
 
@@ -30,7 +30,7 @@ interface Props {
 
 export function LiveEvent({ event, children }: Props) {
   const series = event.seriesBrief;
-  const organization = series.organizationBrief;
+  const organization = series?.organizationBrief;
 
   return (
     <MultiPanelLayout>
@@ -43,7 +43,7 @@ export function LiveEvent({ event, children }: Props) {
               leftSection={<IconPencil size={14} />}
               size="xs"
               component={Link}
-              href={`/manage/${toUrlPath(event.path)}/edit`}
+              href={getUrlPath('/manage', event.path, '/edit')}
             >
               Edit Event
             </Button>
@@ -58,18 +58,22 @@ export function LiveEvent({ event, children }: Props) {
           </Group>
         </Group>
         <Text>
-          Part of{' '}
-          <Anchor
-            component={Link}
-            href={`/manage/${toUrlPath(series.path)}/edit`}
-          >
-            {series.name}
-          </Anchor>{' '}
+          {series && (
+            <>
+              Part of{' '}
+              <Anchor
+                component={Link}
+                href={getUrlPath('/manage', series.path, '/edit')}
+              >
+                {series.name}
+              </Anchor>{' '}
+            </>
+          )}
           hosted by{' '}
           {organization && (
             <Anchor
               component={Link}
-              href={`/manage/${toUrlPath(organization.path)}/edit`}
+              href={getUrlPath('/manage', organization.path, '/edit')}
             >
               {organization.name}
             </Anchor>
@@ -96,7 +100,7 @@ export function LiveEvent({ event, children }: Props) {
                   <RaceCard key={race.path} race={race} preems={children}>
                     <Button
                       component={Link}
-                      href={`/manage/${toUrlPath(race.path)}`}
+                      href={getUrlPath('/manage', race.path)}
                       variant="light"
                       size="sm"
                       mt="md"

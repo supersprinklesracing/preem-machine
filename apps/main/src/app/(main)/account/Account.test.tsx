@@ -16,7 +16,6 @@ const mockUser: User = {
   avatarUrl: '',
   address: '',
   termsAccepted: true,
-  roles: [],
 };
 
 const mockUpdateUserAction = jest.fn();

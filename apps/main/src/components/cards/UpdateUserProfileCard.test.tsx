@@ -13,7 +13,6 @@ const TestComponent = () => {
       name: 'Test User',
       email: 'test@example.com',
       avatarUrl: 'https://example.com/avatar.png',
-      termsAccepted: true,
       address: '',
     },
   });

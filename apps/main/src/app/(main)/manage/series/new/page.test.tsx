@@ -18,7 +18,7 @@ describe('NewSeriesPage', () => {
   it('should render the NewSeries component', async () => {
     const PageComponent = await NewSeriesPage({
       searchParams: Promise.resolve({
-        path: 'organizations/super-sprinkles/series',
+        path: 'organizations/super-sprinkles',
       }),
     });
     render(PageComponent);

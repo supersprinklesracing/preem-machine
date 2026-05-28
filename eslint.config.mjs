@@ -1,15 +1,25 @@
-import json from '@eslint/json';
 import markdown from '@eslint/markdown';
 import nx from '@nx/eslint-plugin';
+import jest from 'eslint-plugin-jest';
 import simpleImportSort from 'eslint-plugin-simple-import-sort';
 import unusedImports from 'eslint-plugin-unused-imports';
+import * as jsoncParser from 'jsonc-eslint-parser';
 
 export default [
   ...nx.configs['flat/base'],
   ...nx.configs['flat/typescript'],
   ...nx.configs['flat/javascript'],
   {
-    ignores: ['**/dist', '**/next-env.d.ts'],
+    ignores: [
+      '**/dist',
+      '**/out-tsc',
+      '**/next-env.d.ts',
+      '**/test-output',
+      'conductor/',
+      '.agent/',
+      '.gemini/',
+      '.jules/',
+    ],
   },
   {
     files: ['**/*.ts', '**/*.tsx', '**/*.js', '**/*.jsx'],
@@ -22,10 +32,39 @@ export default [
           allow: ['^.*/eslint(\\.base)?\\.config\\.[cm]?[jt]s$'],
           depConstraints: [
             {
+              sourceTag: 'platform:server',
+              notDependOnLibsWithTags: ['platform:browser'],
+            },
+            {
+              sourceTag: 'platform:browser',
+              notDependOnLibsWithTags: ['platform:server'],
+            },
+            {
+              sourceTag: 'platform:nextjs',
+              notDependOnLibsWithTags: [],
+            },
+            {
+              sourceTag: 'platform:shared',
+              notDependOnLibsWithTags: ['platform:browser'],
+            },
+            {
               sourceTag: '*',
               onlyDependOnLibsWithTags: ['*'],
             },
           ],
+        },
+      ],
+      'no-restricted-syntax': [
+        'error',
+        {
+          selector: "CallExpression[callee.name='require']",
+          message:
+            'Using require() is not allowed. Use ES static imports instead.',
+        },
+        {
+          selector: 'ImportExpression',
+          message:
+            'Dynamic import() is not allowed. Use ES static imports instead.',
         },
       ],
     },
@@ -40,7 +79,7 @@ export default [
       'unused-imports': unusedImports,
     },
     rules: {
-      'simple-import-sort/imports': 'error',
+      'simple-import-sort/imports': 'warn',
       'simple-import-sort/exports': 'error',
       '@typescript-eslint/no-unused-vars': 'off',
       'unused-imports/no-unused-imports': 'warn',
@@ -61,20 +100,36 @@ export default [
   },
   // unusedImports: End
 
+  // Tests
+  {
+    files: ['**/*.spec.ts', '**/*.spec.tsx', '**/*.test.ts', '**/*.test.tsx'],
+    plugins: {
+      jest,
+    },
+    rules: {
+      ...jest.configs.recommended.rules,
+      '@typescript-eslint/no-explicit-any': 'off',
+      '@typescript-eslint/no-non-null-assertion': 'off',
+    },
+  },
+  // Tests: End
+
   // package.json dependency checks
   {
-    files: ['package.json'],
+    files: ['**/package.json'],
     ...nx.configs['flat/dependency-checks'],
+    rules: {
+      '@nx/dependency-checks': 'off',
+    },
   },
+
   {
     files: ['**/*.json'],
-    ignores: ['package.json', 'package-lock.json'],
-    plugins: {
-      json,
+    languageOptions: {
+      parser: jsoncParser,
     },
-    language: 'json/json',
-    rules: {},
   },
+
   {
     files: ['**/*.md'],
     plugins: {
@@ -83,6 +138,8 @@ export default [
     language: 'markdown/commonmark',
     rules: {},
   },
+
+  // Override or add rules here
   {
     files: [
       '**/*.ts',
@@ -94,7 +151,6 @@ export default [
       '**/*.cjs',
       '**/*.mjs',
     ],
-    // Override or add rules here
     rules: {},
   },
 ];

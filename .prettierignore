@@ -3,6 +3,8 @@
 /coverage
 /.nx/cache
 /.nx/workspace-data
+libs/shared/__tests__/data/*.html
+libs/shared/__tests__/data/*.json
 
 # Documentation and Agent directories
 conductor/

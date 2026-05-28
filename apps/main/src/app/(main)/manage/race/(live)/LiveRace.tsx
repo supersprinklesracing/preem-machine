@@ -1,6 +1,6 @@
 'use client';
 
-import { toUrlPath } from '@/datastore/paths';
+import { getUrlPath } from '@/datastore/paths';
 export const dynamic = 'force-dynamic';
 
 import {
@@ -100,7 +100,7 @@ export function LiveRace({ race, children }: LiveRaceProps) {
             leftSection={<IconPencil size={14} />}
             size="xs"
             component={Link}
-            href={`/manage/${toUrlPath(race.path)}/edit`}
+            href={getUrlPath('/manage', race.path, '/edit')}
           >
             Edit Race
           </Button>
@@ -127,7 +127,7 @@ export function LiveRace({ race, children }: LiveRaceProps) {
               </Group>
               <Button
                 component={Link}
-                href={`/big-screen/${toUrlPath(race.path)}`}
+                href={getUrlPath('/big-screen', race.path)}
                 variant="outline"
                 leftSection={<IconDeviceTv size={16} />}
                 mt="md"

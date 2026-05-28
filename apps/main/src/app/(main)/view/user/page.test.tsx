@@ -44,7 +44,7 @@ describe('UserPage component', () => {
 
   it('should throw NotFoundError when the user does not exist', async () => {
     const searchParams = Promise.resolve({ path: 'users/non-existent-user' });
-    expect(UserPage({ searchParams })).rejects.toThrow(NotFoundError);
+    await expect(UserPage({ searchParams })).rejects.toThrow(NotFoundError);
   });
 
   describe('when user is logged in', () => {

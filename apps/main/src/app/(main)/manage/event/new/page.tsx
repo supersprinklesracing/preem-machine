@@ -4,10 +4,7 @@ import { Metadata } from 'next';
 
 import { Breadcrumbs } from '@/components/Breadcrumbs/Breadcrumbs';
 import { CommonLayout } from '@/components/layout/CommonLayout';
-import {
-  getCollectionPathFromSearchParams,
-  getParentPath,
-} from '@/datastore/paths';
+import { getDocPathFromSearchParams } from '@/datastore/paths';
 import { SeriesSchema } from '@/datastore/schema';
 import { getDoc } from '@/datastore/server/query/query';
 
@@ -25,8 +22,8 @@ export default async function NewEventPage({
 }: {
   searchParams: Promise<{ path: string }>;
 }) {
-  const path = getCollectionPathFromSearchParams(await searchParams);
-  const series = await getDoc(SeriesSchema, getParentPath(path));
+  const path = getDocPathFromSearchParams(await searchParams);
+  const series = await getDoc(SeriesSchema, path);
   return (
     <CommonLayout breadcrumb={<Breadcrumbs brief={series} />}>
       <NewEvent series={series} newEventAction={newEventAction} path={path} />

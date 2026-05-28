@@ -54,13 +54,11 @@ export function MainAppShell({
               <Group>
                 <Title
                   order={2}
-                  style={{
-                    fontFamily: 'Fat Kat, sans-serif',
-                    color: 'var(--mantine-color-primary-6)',
-                    letterSpacing: '1px',
-                  }}
+                  c="giroOrange.5"
+                  ff='"Fat Kat Regular", sans-serif'
+                  lts="1px"
                 >
-                  GIRO SF
+                  Prime Machine
                 </Title>
               </Group>
             </Link>

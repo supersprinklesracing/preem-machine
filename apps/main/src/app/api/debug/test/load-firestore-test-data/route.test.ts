@@ -17,10 +17,13 @@ jest.mock('next/server', () => ({
 jest.mock('@/datastore/server/mock-db/seed-firestore');
 jest.mock('@/auth/server/auth');
 jest.mock('@/user/server/user');
-jest.mock('@preem-machine/env/server', () => ({
-  ...jest.requireActual('@preem-machine/env/server'),
-  isE2eTesting: jest.fn(() => false),
-}));
+jest.mock('@preem-machine/env/server', () => {
+  const actual = jest.requireActual('@preem-machine/env/server');
+  return {
+    ...actual,
+    isE2eTesting: jest.fn(() => false),
+  };
+});
 
 const mockedGetBearerUser = getBearerUser as jest.Mock;
 const mockedSeedFirestore = seedFirestore as jest.Mock;
@@ -28,7 +31,9 @@ const mockedHasUserRole = hasUserRole as jest.Mock;
 
 describe('POST /api/debug/test/load-firestore-test-data', () => {
   beforeEach(() => {
-    jest.spyOn(console, 'error').mockImplementation(() => { /* empty */ });
+    jest.spyOn(console, 'error').mockImplementation(() => {
+      /* empty */
+    });
   });
 
   afterEach(() => {

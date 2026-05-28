@@ -18,7 +18,7 @@ describe('EditEventPage component', () => {
   setupMockDb();
   it('should fetch event data and render the EditEvent component', async () => {
     const searchParams = Promise.resolve({
-      path: 'organizations/super-sprinkles/series/sprinkles-2025/events/giro-sf-2025',
+      path: 'events/giro-sf-2025',
     });
     const PageComponent = await EditEventPage({ searchParams });
     render(PageComponent);
@@ -32,7 +32,7 @@ describe('EditEventPage component', () => {
 
   it('should throw NotFoundError when the event does not exist', async () => {
     const searchParams = Promise.resolve({
-      path: 'organizations/super-sprinkles/series/sprinkles-2025/events/non-existent-event',
+      path: 'events/non-existent-event',
     });
     await expect(EditEventPage({ searchParams })).rejects.toThrow(
       NotFoundError,

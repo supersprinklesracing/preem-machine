@@ -8,7 +8,6 @@ import { NewPreem } from './NewPreem';
 
 // Mock dependencies
 jest.mock('next/navigation', () => ({
-  // eslint-disable-next-line @eslint-react/no-unnecessary-use-prefix
   useRouter: () => ({
     push: jest.fn(),
   }),
@@ -26,17 +25,19 @@ describe('NewPreem component', () => {
   });
 
   const mockRace: Race = {
+    organizationId: 'org-1',
+    eventId: 'event-1',
     id: 'race-1',
-    path: 'organizations/org-1/series/series-1/events/event-1/races/race-1',
+    path: 'races/race-1',
     name: 'Test Race',
     startDate: new Date('2025-09-01T12:00:00Z'),
     eventBrief: {
       id: 'event-1',
-      path: 'organizations/org-1/series/series-1/events/event-1',
+      path: 'events/event-1',
       name: 'Test Event',
       seriesBrief: {
         id: 'series-1',
-        path: 'organizations/org-1/series/series-1',
+        path: 'series/series-1',
         name: 'Test Series',
         organizationBrief: {
           id: 'org-1',
@@ -62,7 +63,7 @@ describe('NewPreem component', () => {
       <NewPreem
         race={mockRace}
         newPreemAction={newPreemAction}
-        path="organizations/org-1/series/series-1/events/event-1/races/race-1/preems"
+        path="races/race-1"
       />,
     );
 
@@ -81,7 +82,7 @@ describe('NewPreem component', () => {
 
     await waitFor(() => {
       expect(newPreemAction).toHaveBeenCalledWith({
-        path: 'organizations/org-1/series/series-1/events/event-1/races/race-1/preems',
+        path: 'races/race-1',
         values: expect.objectContaining({
           name: 'New Test Preem',
           description: 'Test Description',
@@ -102,7 +103,7 @@ describe('NewPreem component', () => {
       <NewPreem
         race={mockRace}
         newPreemAction={newPreemAction}
-        path="organizations/org-1/series/series-1/events/event-1/races/race-1/preems"
+        path="races/race-1"
       />,
     );
 

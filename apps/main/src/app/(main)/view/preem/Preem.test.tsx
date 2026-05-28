@@ -10,59 +10,71 @@ jest.mock('@/components/AnimatedNumber', () => ({
 }));
 
 const mockPreemData = {
+  organizationId: 'org-1',
+  raceId: 'race-1',
   preem: {
     id: 'preem-1',
-    path: 'organizations/org-1/series/series-1/events/event-1/races/race-1/preems/preem-1',
+    path: 'preems/preem-1',
     name: 'Test Preem',
     description: 'This is a test preem.',
     raceBrief: {
       id: 'race-1',
-      path: 'organizations/org-1/series/series-1/events/event-1/races/race-1',
+      path: 'races/race-1',
       name: 'Test Race',
       eventBrief: {
         id: 'event-1',
-        path: 'organizations/org-1/series/series-1/events/event-1',
+        path: 'events/event-1',
         seriesBrief: {
           id: 'series-1',
-          path: 'organizations/org-1/series/series-1',
+          path: 'series/series-1',
+          name: 'Test Series',
           organizationBrief: {
             id: 'org-1',
             path: 'organizations/org-1',
+            name: 'Test Organization',
           },
         },
       },
     },
     status: 'Open',
-    type: 'Pooled',
+    type: 'Pooled' as const,
     prizePool: 150,
     minimumThreshold: 100,
     timeLimit: new Date(),
   },
   children: [
     {
-      id: 'contrib-1',
-      path: 'organizations/org-1/series/series-1/events/event-1/races/race-1/preems/preem-1/contributions/contrib-1',
+      contribution: {
+        id: 'contrib-1',
+        path: 'contributions/contrib-1',
+        organizationId: 'org-1',
+        preemId: 'preem-1',
+        amount: 100,
+        date: new Date(),
+        message: 'Go get it!',
+      },
       contributor: {
         id: 'user-1',
         path: 'users/user-1',
         name: 'John Doe',
         avatarUrl: 'https://example.com/avatar.png',
       },
-      amount: 100,
-      date: new Date(),
-      message: 'Go get it!',
     },
     {
-      id: 'contrib-2',
-      path: 'organizations/org-1/series/series-1/events/event-1/races/race-1/preems/preem-1/contributions/contrib-2',
+      contribution: {
+        id: 'contrib-2',
+        path: 'contributions/contrib-2',
+        organizationId: 'org-1',
+        preemId: 'preem-1',
+        amount: 50,
+        date: new Date(),
+        message: 'Good luck!',
+      },
       contributor: {
         id: 'user-2',
         path: 'users/user-2',
         name: 'Jane Doe',
       },
-      amount: 50,
-      date: new Date(),
-      message: 'Good luck!',
     },
   ],
 };

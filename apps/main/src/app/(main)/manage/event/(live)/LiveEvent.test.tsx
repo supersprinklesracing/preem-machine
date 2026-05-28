@@ -6,13 +6,22 @@ import { LiveEvent } from './LiveEvent';
 describe('LiveEvent', () => {
   const mockEvent: Pick<
     Event,
-    'name' | 'path' | 'seriesBrief' | 'location' | 'startDate' | 'timezone'
+    | 'name'
+    | 'path'
+    | 'seriesBrief'
+    | 'location'
+    | 'startDate'
+    | 'timezone'
+    | 'organizationId'
+    | 'seriesId'
   > = {
+    organizationId: 'org-1',
+    seriesId: 'series-1',
     name: 'Test Event',
-    path: 'organizations/org-1/series/series-1/events/event-1',
+    path: 'events/event-1',
     seriesBrief: {
       id: 'series-1',
-      path: 'organizations/org-1/series/series-1',
+      path: 'series/series-1',
       name: 'Test Series',
       organizationBrief: {
         id: 'org-1',

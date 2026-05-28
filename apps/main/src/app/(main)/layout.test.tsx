@@ -54,9 +54,9 @@ describe('Main Layout', () => {
   describe('Incomplete user', () => {
     setupIncompleteUserContext();
     it('redirects', async () => {
-      expect(Layout({ children: <div>Test Children</div> })).rejects.toThrow(
-        'mock redirect(/new-user)',
-      );
+      await expect(
+        Layout({ children: <div>Test Children</div> }),
+      ).rejects.toThrow('mock redirect(/new-user)');
     });
   });
 });

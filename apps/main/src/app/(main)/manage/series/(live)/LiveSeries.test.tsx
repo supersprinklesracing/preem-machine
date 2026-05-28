@@ -14,10 +14,13 @@ describe('LiveSeries', () => {
     | 'endDate'
     | 'timezone'
     | 'description'
+    | 'description'
     | 'website'
+    | 'organizationId'
   > = {
+    organizationId: 'org-1',
     name: 'Test Series',
-    path: 'organizations/org-1/series/series-1',
+    path: 'series/series-1',
     organizationBrief: {
       id: 'org-1',
       path: 'organizations/org-1',

@@ -3,6 +3,7 @@ import {
   unstable_getResponseFromNextConfig,
 } from 'next/experimental/testing/server';
 
+// eslint-disable-next-line no-restricted-syntax
 const nextConfig = require('./next.config.js');
 
 const buildUrl = (path) => {

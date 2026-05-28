@@ -5,7 +5,7 @@ test.describe('manage: series', () => {
   useE2eTestingUserBeforeEach();
 
   test('live', async ({ page }) => {
-    await page.goto('/manage/super-sprinkles/sprinkles-2025');
+    await page.goto('/manage/series?path=series/sprinkles-2025');
     await expect(
       page.getByRole('heading', { name: 'Sprinkles 2025' }),
     ).toBeVisible();
@@ -13,7 +13,7 @@ test.describe('manage: series', () => {
   });
 
   test('new', async ({ page }) => {
-    await page.goto('/manage/super-sprinkles/series/new');
+    await page.goto('/manage/series/new?path=organizations/super-sprinkles');
     await expect(
       page.getByRole('heading', { name: 'Create Series' }),
     ).toBeVisible();
@@ -21,7 +21,7 @@ test.describe('manage: series', () => {
   });
 
   test('edit', async ({ page }) => {
-    await page.goto('/manage/super-sprinkles/sprinkles-2025/edit');
+    await page.goto('/manage/series/edit?path=series/sprinkles-2025');
     await expect(
       page.getByRole('heading', { name: 'Edit Series' }),
     ).toBeVisible();

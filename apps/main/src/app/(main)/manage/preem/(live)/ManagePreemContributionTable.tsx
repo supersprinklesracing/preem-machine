@@ -4,7 +4,7 @@ import { Button, Card, Group, Table, Text, Title } from '@mantine/core';
 import Link from 'next/link';
 
 import { UserAvatar } from '@/components/UserAvatar/UserAvatar';
-import { toUrlPath } from '@/datastore/paths';
+import { getUrlPath } from '@/datastore/paths';
 import type { ContributionWithUser } from '@/datastore/query-schema';
 import { formatDateRelative } from '@/dates/dates';
 
@@ -32,10 +32,10 @@ export function ManagePreemContributionTable({
           <Table.Td>
             <Text
               component={Link}
-              href={`/view/${toUrlPath(contribution.preemBrief.path)}`}
+              href={getUrlPath('/view', `preems/${contribution.preemId}`)}
               style={{ textDecoration: 'none', color: 'inherit' }}
             >
-              {contribution.preemBrief?.name}
+              {'Preem'}
             </Text>
           </Table.Td>
           <Table.Td>

@@ -42,10 +42,27 @@ export function formatDateRange(
   return format(start);
 }
 
+export function toDate(
+  date: Date | string | undefined | any,
+): Date | undefined {
+  if (!date) return undefined;
+  if (
+    typeof date === 'object' &&
+    'toDate' in date &&
+    typeof date.toDate === 'function'
+  ) {
+    return date.toDate();
+  }
+  if (typeof date === 'string') {
+    return new Date(date);
+  }
+  return date as Date;
+}
+
 function withDate(formatString: string) {
-  return (date: Date | string | undefined, timeZone?: string) => {
-    if (!date) return '';
-    const dateObj = typeof date === 'string' ? new Date(date) : date;
+  return (date: Date | string | undefined | any, timeZone?: string) => {
+    const dateObj = toDate(date);
+    if (!dateObj) return '';
     if (timeZone) {
       return formatInTimeZone(dateObj, timeZone, formatString);
     }
@@ -62,20 +79,21 @@ export const formatDateShort = withDate('PP');
 export const formatDateTime = withDate('PP p');
 
 export function formatDateRelative(
-  date: Date | string | undefined,
+  date: Date | string | undefined | any,
   options?: { addSuffix?: boolean },
 ) {
-  if (!date) return '';
-  return formatDistanceToNow(new Date(date), options);
+  const dateObj = toDate(date);
+  if (!dateObj) return '';
+  return formatDistanceToNow(dateObj, options);
 }
 
 export function compareDates(
-  a: Date | string,
-  b: Date | string,
+  a: Date | string | any,
+  b: Date | string | any,
   order: 'asc' | 'desc' = 'desc',
 ) {
-  const dateA = new Date(a).getTime();
-  const dateB = new Date(b).getTime();
+  const dateA = toDate(a)?.getTime() ?? 0;
+  const dateB = toDate(b)?.getTime() ?? 0;
 
   if (order === 'asc') {
     return dateA - dateB;
@@ -84,6 +102,12 @@ export function compareDates(
   return dateB - dateA;
 }
 
-export function isDateAfter(date: Date | string, dateToCompare: Date | string) {
-  return isAfter(new Date(date), new Date(dateToCompare));
+export function isDateAfter(
+  date: Date | string | any,
+  dateToCompare: Date | string | any,
+) {
+  const a = toDate(date);
+  const b = toDate(dateToCompare);
+  if (!a || !b) return false;
+  return isAfter(a, b);
 }

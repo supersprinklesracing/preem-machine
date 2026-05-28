@@ -1,5 +1,5 @@
 import { MantineProvider } from '@mantine/core';
-import { render, RenderOptions } from '@testing-library/react';
+import { render, RenderOptions, RenderResult } from '@testing-library/react';
 import type { Firestore } from 'firebase-admin/firestore';
 import { redirect } from 'next/navigation';
 import React, { ReactNode } from 'react';
@@ -70,7 +70,11 @@ export const MOCK_ADMIN_USER: User = {
   ],
 };
 
-export const MOCK_USER_CONTEXT = { uid: MOCK_AUTH_USER.uid, authUser: MOCK_AUTH_USER, user: MOCK_USER };
+export const MOCK_USER_CONTEXT = {
+  uid: MOCK_AUTH_USER.uid,
+  authUser: MOCK_AUTH_USER,
+  user: MOCK_USER,
+};
 export const MOCK_INCOMPLETE_USER_CONTEXT: UserContextValue = {
   uid: MOCK_AUTH_USER.uid,
   authUser: MOCK_AUTH_USER,
@@ -250,7 +254,7 @@ const customRender = (
   options: Omit<RenderOptions, 'wrapper'> & {
     userContext: UserContextValue;
   } = { userContext: MOCK_LOGGED_OUT_USER_CONTEXT },
-) => {
+): RenderResult => {
   const { userContext, ...renderOptions } = options;
   return render(ui, {
     wrapper: (props) => (

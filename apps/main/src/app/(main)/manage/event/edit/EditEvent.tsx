@@ -22,7 +22,6 @@ import { EventCard } from '@/components/cards/EventCard';
 import { FormActionResult } from '@/components/forms/forms';
 import { useActionForm } from '@/components/forms/useActionForm';
 import { MultiPanelLayout } from '@/components/layout/MultiPanelLayout';
-import { getSubCollectionPath, seriesPath } from '@/datastore/paths';
 import { Event } from '@/datastore/schema';
 
 import { newRaceAction } from '../../race/new/new-race-action';
@@ -50,6 +49,8 @@ export function EditEvent({
     | 'id'
     | 'seriesBrief'
     | 'timezone'
+    | 'organizationId'
+    | 'seriesId'
   >;
 }) {
   const router = useRouter();
@@ -76,7 +77,7 @@ export function EditEvent({
 
   const [debouncedValues] = useDebouncedValue(form.values, 100);
 
-  const racesPath = getSubCollectionPath(seriesPath(event.path), 'races');
+  const racesPath = 'races';
 
   const eventPreview: Event = {
     ...event,
@@ -87,6 +88,8 @@ export function EditEvent({
     startDate: debouncedValues.startDate,
     endDate: debouncedValues.endDate,
     timezone: debouncedValues.timezone,
+    organizationId: event.organizationId,
+    seriesId: event.seriesId,
   };
 
   return (

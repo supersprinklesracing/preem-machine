@@ -23,7 +23,7 @@ import { RaceCard } from '@/components/cards/RaceCard';
 import { FormActionResult } from '@/components/forms/forms';
 import { useActionForm } from '@/components/forms/useActionForm';
 import { MultiPanelLayout } from '@/components/layout/MultiPanelLayout';
-import { toUrlPath } from '@/datastore/paths';
+import { getUrlPath } from '@/datastore/paths';
 import { Event, Race } from '@/datastore/schema';
 
 import { raceSchema } from '../race-schema';
@@ -90,7 +90,7 @@ export function NewRace({
     action: (values) => newRaceAction({ path, values }),
     onSuccess: (result) => {
       if (result.path) {
-        router.push(`/manage/${toUrlPath(result.path)}/edit`);
+        router.push(getUrlPath('/manage', result.path, '/edit'));
       }
     },
   });
@@ -100,7 +100,9 @@ export function NewRace({
   const racePreview: Race = {
     id: 'preview',
     path: 'organizations/org-1/series/series-1/events/event-1/races/preview',
+    organizationId: event.organizationId,
     ...debouncedValues,
+    eventId: event.id,
     eventBrief: event,
   };
 

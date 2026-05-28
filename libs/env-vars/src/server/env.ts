@@ -84,6 +84,7 @@ export const validateServerEnv = () => {
       throw new Error(
         `🚨 Server environment variable validation failed:\n${formattedErrors}\n` +
           `Please check your local .env or system environment configurations.`,
+        { cause: error },
       );
     }
     throw error;

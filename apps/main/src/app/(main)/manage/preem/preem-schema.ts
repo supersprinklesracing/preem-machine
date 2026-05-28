@@ -6,6 +6,8 @@ export const preemSchema = schema
   .omit({
     id: true,
     path: true,
+    organizationId: true,
+    raceId: true,
     metadata: true,
     raceBrief: true,
   })

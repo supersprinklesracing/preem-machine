@@ -15,7 +15,7 @@ setupMockDb();
 describe('LiveSeriesPage component', () => {
   it('should fetch series data and render the LiveSeries component', async () => {
     const searchParams = Promise.resolve({
-      path: 'organizations/super-sprinkles/series/sprinkles-2025',
+      path: 'series/sprinkles-2025',
     });
     const PageComponent = await LiveSeriesPage({ searchParams });
     render(PageComponent);
@@ -28,8 +28,10 @@ describe('LiveSeriesPage component', () => {
 
   it('should throw NotFoundError when the series does not exist', async () => {
     const searchParams = Promise.resolve({
-      path: 'organizations/org-1/series/non-existent-series',
+      path: 'series/non-existent-series',
     });
-    expect(LiveSeriesPage({ searchParams })).rejects.toThrow(NotFoundError);
+    await expect(LiveSeriesPage({ searchParams })).rejects.toThrow(
+      NotFoundError,
+    );
   });
 });

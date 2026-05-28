@@ -6,18 +6,30 @@ import { UserAvatar, UserAvatarIcon } from './UserAvatar';
 
 describe('UserAvatar', () => {
   it('renders a link with the user avatar and name', () => {
-    render(<UserAvatar user={MOCK_USER} />);
+    render(
+      <UserAvatar
+        user={
+          {
+            id: '1',
+            path: 'users/1',
+            name: 'Test User',
+            email: 'test@example.com',
+            avatarUrl: 'https://example.com/avatar.png',
+          } as any
+        }
+      />,
+    );
     const link = screen.getByRole('link');
-    expect(link).toHaveAttribute('href', `/view/user/${MOCK_USER.id}`);
+    expect(link).toHaveAttribute('href', `/view/user?path=users/1`);
     expect(screen.getByText('Test User')).toBeInTheDocument();
     expect(screen.getByAltText('Test User')).toHaveAttribute(
       'src',
-      'https://placehold.co/100x100.png',
+      'https://example.com/avatar.png',
     );
   });
 
   it('renders without a link if user has no path', () => {
-    const userWithoutPath = { ...MOCK_USER, path: undefined };
+    const userWithoutPath = { ...MOCK_USER, path: undefined as any };
     render(<UserAvatar user={userWithoutPath} />);
     expect(screen.queryByRole('link')).not.toBeInTheDocument();
   });
@@ -39,13 +51,13 @@ describe('UserAvatarIcon', () => {
   it('renders a link with the user avatar', () => {
     render(<UserAvatarIcon user={MOCK_USER} />);
     const link = screen.getByRole('link');
-    expect(link).toHaveAttribute('href', `/view/user/${MOCK_USER.id}`);
+    expect(link).toHaveAttribute('href', `/view/user?path=${MOCK_USER.path}`);
     expect(screen.getByAltText('Test User')).toBeInTheDocument();
     expect(screen.queryByText('Test User')).not.toBeInTheDocument();
   });
 
   it('renders without a link if user has no path', () => {
-    const userWithoutPath = { ...MOCK_USER, path: undefined };
+    const userWithoutPath = { ...MOCK_USER, path: undefined as any };
     render(<UserAvatarIcon user={userWithoutPath} />);
     expect(screen.queryByRole('link')).not.toBeInTheDocument();
   });

@@ -34,25 +34,29 @@ jest.mock('@/components/ContributionModal', () => ({
 const mockData = {
   race: {
     id: 'race-1',
-    path: 'organizations/org-1/series/series-1/events/event-1/races/race-1',
+    path: 'races/race-1',
     name: 'Test Race',
     timezone: 'America/Los_Angeles',
     startDate: new Date(),
+    organizationId: 'org-1',
+    eventId: 'event-1',
   },
   children: [
     {
       preem: {
         id: 'preem-1',
-        path: 'organizations/org-1/series/series-1/events/event-1/races/race-1/preems/preem-1',
+        path: 'preems/preem-1',
         name: 'Test Preem 1',
         prizePool: 100,
+        organizationId: 'org-1',
+        raceId: 'race-1',
         raceBrief: {
           id: 'race-1',
-          path: 'organizations/org-1/series/series-1/events/event-1/races/race-1',
+          path: 'races/race-1',
           name: 'Test Race',
           eventBrief: {
             id: 'event-1',
-            path: 'organizations/org-1/series/series-1/events/event-1',
+            path: 'events/event-1',
             name: 'Test Event',
           },
         },

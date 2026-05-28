@@ -27,8 +27,9 @@ import { ContributionModal } from '@/components/ContributionModal';
 import { MultiPanelLayout } from '@/components/layout/MultiPanelLayout';
 import { PreemStatusBadge } from '@/components/PreemStatusBadge/PreemStatusBadge';
 import { UserAvatar } from '@/components/UserAvatar/UserAvatar';
-import { racePath, toUrlPath } from '@/datastore/paths';
-import { Contribution, Preem as PreemType } from '@/datastore/schema';
+import { getUrlPath } from '@/datastore/paths';
+import { ContributionWithUser } from '@/datastore/query-schema';
+import { Preem as PreemType } from '@/datastore/schema';
 import { compareDates, formatDateTime } from '@/dates/dates';
 
 interface Props {
@@ -45,31 +46,31 @@ interface Props {
     | 'prizePool'
     | 'id'
   >;
-  children: Contribution[];
+  children: ContributionWithUser[];
 }
 
 export function Preem({ preem, children }: Props) {
   const [isModalOpen, setIsModalOpen] = useState(false);
 
   const contributionRows = [...(children || [])]
-    .sort((a, b) => compareDates(a.date ?? '', b.date ?? ''))
-    .map((contribution) => {
+    .sort((a, b) =>
+      compareDates(a.contribution.date ?? '', b.contribution.date ?? ''),
+    )
+    .map((item) => {
       return (
-        <Table.Tr key={contribution.path}>
+        <Table.Tr key={item.contribution.path}>
           <Table.Td>
-            <UserAvatar user={contribution.contributor} />
+            <UserAvatar user={item.contributor} />
           </Table.Td>
           <Table.Td>
             <Text c="green" fw={600}>
-              ${contribution.amount?.toLocaleString()}
+              ${item.contribution.amount?.toLocaleString()}
             </Text>
           </Table.Td>
-          <Table.Td>
-            {formatDateTime(contribution.date, preem.raceBrief.timezone)}
-          </Table.Td>
+          <Table.Td>{formatDateTime(item.contribution.date)}</Table.Td>
           <Table.Td>
             <Text c="dimmed" fs="italic">
-              {contribution.message || ''}
+              {item.contribution.message || ''}
             </Text>
           </Table.Td>
         </Table.Tr>
@@ -83,15 +84,15 @@ export function Preem({ preem, children }: Props) {
           <Box>
             <Button
               component={Link}
-              href={`/view/${toUrlPath(racePath(preem.path))}`}
+              href={getUrlPath('/view', preem.raceBrief?.path ?? '#')}
               variant="subtle"
               mb="sm"
               leftSection={<IconArrowLeft size={16} />}
             >
-              Back to {preem.raceBrief.name}
+              Back to {preem.raceBrief?.name || 'Race'}
             </Button>
             <Title order={1}>{preem.name}</Title>
-            <Text c="dimmed">Part of {preem.raceBrief.name}</Text>
+            <Text c="dimmed">Part of {preem.raceBrief?.name || 'Race'}</Text>
             {preem.description && <Text mt="md">{preem.description}</Text>}
           </Box>
 
@@ -119,11 +120,7 @@ export function Preem({ preem, children }: Props) {
                     <Group gap="xs">
                       <IconClock size={18} stroke={1.5} />
                       <Text fw={500}>
-                        Ends:{' '}
-                        {formatDateTime(
-                          preem.timeLimit,
-                          preem.raceBrief.timezone,
-                        )}
+                        Ends: {formatDateTime(preem.timeLimit)}
                       </Text>
                     </Group>
                   )}

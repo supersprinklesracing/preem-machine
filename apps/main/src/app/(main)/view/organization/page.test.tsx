@@ -29,6 +29,8 @@ describe('OrganizationPage component', () => {
     const searchParams = Promise.resolve({
       path: 'organizations/non-existent-org',
     });
-    expect(OrganizationPage({ searchParams })).rejects.toThrow(NotFoundError);
+    await expect(OrganizationPage({ searchParams })).rejects.toThrow(
+      NotFoundError,
+    );
   });
 });

@@ -1,22 +1,12 @@
 import type { Firestore } from 'firebase-admin/firestore';
 
+import { Contribution, ContributionSchema } from '@/datastore/schema';
 import {
   getFirebaseAuthAdmin,
   getFirestore,
 } from '@/firebase/server/firebase-admin';
 import { setupMockDb } from '@/test-utils';
 
-import {
-  Contribution,
-  ContributionSchema,
-  OrganizationSchema,
-  Preem,
-  PreemSchema,
-  Race,
-  RaceSchema,
-  Series,
-  SeriesSchema,
-} from '../../schema';
 import { isUserAuthorized } from '../access';
 import { converter } from '../converters';
 import {
@@ -85,240 +75,88 @@ describe('update mutations', () => {
         authUser,
       );
 
-      expect(updates.length).toBeGreaterThanOrEqual(4);
+      expect(updates.length).toBe(1);
 
-      const org = updates.find((u) => u.ref.path.includes('organizations'));
+      const org = updates[0];
       expect(org?.updates).toEqual({ name: 'New Org Name' });
-
-      const series = updates.find((u) => u.ref.path.includes('series'));
-      expect(series?.updates).toEqual({
-        organizationBrief: {
-          id: 'super-sprinkles',
-          path: 'organizations/super-sprinkles',
-          name: 'New Org Name',
-        },
-      });
-
-      const event = updates.find((u) => u.ref.path.includes('events'));
-      const eventUpdates = event?.updates as Partial<Series>;
-      expect(eventUpdates?.seriesBrief.organizationBrief.name).toEqual(
-        'New Org Name',
-      );
-
-      const race = updates.find((u) => u.ref.path.includes('races'));
-      const raceUpdates = race?.updates as Partial<Race>;
-      expect(
-        raceUpdates?.eventBrief.seriesBrief.organizationBrief.name,
-      ).toEqual('New Org Name');
-    });
-
-    it('should update the organization brief in a series doc', async () => {
-      await updateOrganization(
-        'organizations/super-sprinkles',
-        {
-          name: 'New Org Name',
-        },
-        authUser,
-      );
-
-      const seriesDoc = await firestore
-        .doc('organizations/super-sprinkles/series/sprinkles-2025')
-        .withConverter(converter(SeriesSchema))
-        .get();
-
-      const seriesData = seriesDoc.data();
-      expect(seriesData?.path).toEqual(seriesDoc.ref.path);
-      expect(seriesData?.organizationBrief?.name).toEqual('New Org Name');
     });
   });
 
   describe('updateSeries', () => {
     it('should update a series and all its descendants and return them', async () => {
       const updates = await updateSeries(
-        'organizations/super-sprinkles/series/sprinkles-2025',
+        'series/sprinkles-2025',
         {
           name: 'New Series Name',
         },
         authUser,
       );
 
-      expect(updates.length).toBeGreaterThanOrEqual(3);
+      expect(updates.length).toBe(1);
 
-      const series = updates.find((u) => u.ref.path.includes('series'));
+      const series = updates[0];
       expect(series?.updates).toEqual({ name: 'New Series Name' });
-
-      const event = updates.find((u) => u.ref.path.includes('events'));
-      const eventUpdates = event?.updates as Partial<Series>;
-      expect(eventUpdates?.seriesBrief.name).toEqual('New Series Name');
-
-      const race = updates.find((u) => u.ref.path.includes('races'));
-      const raceUpdates = race?.updates as Partial<Race>;
-      expect(raceUpdates?.eventBrief.seriesBrief.name).toEqual(
-        'New Series Name',
-      );
-    });
-
-    it('should update the series brief in an event doc', async () => {
-      await updateSeries(
-        'organizations/super-sprinkles/series/sprinkles-2025',
-        {
-          name: 'New Series Name',
-        },
-        authUser,
-      );
-
-      const eventDoc = await firestore
-        .doc(
-          'organizations/super-sprinkles/series/sprinkles-2025/events/giro-sf-2025',
-        )
-        .withConverter(converter(OrganizationSchema))
-        .get();
-
-      const eventData = eventDoc.data();
-      expect(eventData?.path).toEqual(eventDoc.ref.path);
-      const orgData = eventData as z.infer<typeof OrganizationSchema>;
-      expect(orgData.seriesBrief?.name).toEqual('New Series Name');
     });
   });
 
   describe('updateEvent', () => {
     it('should update an event and all its descendants and return them', async () => {
       const updates = await updateEvent(
-        'organizations/super-sprinkles/series/sprinkles-2025/events/giro-sf-2025',
+        'events/giro-sf-2025',
         {
           name: 'New Event Name',
         },
         authUser,
       );
 
-      expect(updates.length).toBeGreaterThanOrEqual(2);
+      expect(updates.length).toBe(1);
 
-      const event = updates.find((u) => u.ref.path.includes('events'));
+      const event = updates[0];
       expect(event?.updates).toEqual({ name: 'New Event Name' });
-
-      const race = updates.find((u) => u.ref.path.includes('races'));
-      const raceUpdates = race?.updates as Partial<Race>;
-      expect(raceUpdates?.eventBrief.name).toEqual('New Event Name');
-    });
-
-    it('should update the event brief in a race doc', async () => {
-      await updateEvent(
-        'organizations/super-sprinkles/series/sprinkles-2025/events/giro-sf-2025',
-        {
-          name: 'New Event Name',
-        },
-        authUser,
-      );
-
-      const raceDoc = await firestore
-        .doc(
-          'organizations/super-sprinkles/series/sprinkles-2025/events/giro-sf-2025/races/masters-women',
-        )
-        .withConverter(converter(RaceSchema))
-        .get();
-
-      const raceData = raceDoc.data();
-      expect(raceData?.path).toEqual(raceDoc.ref.path);
-      expect(raceData?.eventBrief?.name).toEqual('New Event Name');
     });
   });
 
   describe('updateRace', () => {
     it('should update a race and all its descendants and return them', async () => {
       const updates = await updateRace(
-        'organizations/super-sprinkles/series/sprinkles-2025/events/giro-sf-2025/races/masters-women',
+        'races/masters-women',
         {
           name: 'New Race Name',
         },
         authUser,
       );
 
-      expect(updates.length).toBeGreaterThanOrEqual(2);
+      expect(updates.length).toBe(1);
 
-      const race = updates.find((u) => u.ref.path.includes('races'));
+      const race = updates[0];
       expect(race?.updates).toEqual({ name: 'New Race Name' });
-
-      const preem = updates.find((u) => u.ref.path.includes('preems'));
-      const preemUpdates = preem?.updates as Partial<Preem>;
-      expect(preemUpdates?.raceBrief.name).toEqual('New Race Name');
-    });
-
-    it('should update the race brief in a preem doc', async () => {
-      await updateRace(
-        'organizations/super-sprinkles/series/sprinkles-2025/events/giro-sf-2025/races/masters-women',
-        {
-          name: 'New Race Name',
-        },
-        authUser,
-      );
-
-      const preemDoc = await firestore
-        .doc(
-          'organizations/super-sprinkles/series/sprinkles-2025/events/giro-sf-2025/races/masters-women/preems/first-lap',
-        )
-        .withConverter(converter(PreemSchema))
-        .get();
-
-      const preemData = preemDoc.data();
-      expect(preemData?.path).toEqual(preemDoc.ref.path);
-      expect(preemData?.raceBrief?.name).toEqual('New Race Name');
     });
   });
 
   describe('updatePreem', () => {
     beforeEach(async () => {
       await firestore
-        .collection(
-          'organizations/super-sprinkles/series/sprinkles-2025/events/giro-sf-2025/races/masters-women/preems/first-lap/contributions',
-        )
+        .collection('contributions')
         .doc('contribution-1')
         .withConverter(converter(ContributionSchema))
         .set({
-          path: 'organizations/super-sprinkles/series/sprinkles-2025/events/giro-sf-2025/races/masters-women/preems/first-lap/contributions/contribution-1',
+          path: 'contributions/contribution-1',
         } as Partial<Contribution>);
     });
 
     it('should update a preem and all its descendants and return them', async () => {
       const updates = await updatePreem(
-        'organizations/super-sprinkles/series/sprinkles-2025/events/giro-sf-2025/races/masters-women/preems/first-lap',
+        'preems/first-lap',
         {
           name: 'New Preem Name',
         },
         authUser,
       );
 
-      expect(updates.length).toBeGreaterThanOrEqual(2);
+      expect(updates.length).toBe(1);
 
-      const preem = updates.find((u) => u.ref.path.includes('preems'));
+      const preem = updates[0];
       expect(preem?.updates).toEqual({ name: 'New Preem Name' });
-
-      const contribution = updates.find((u) =>
-        u.ref.path.includes('contributions'),
-      );
-      const contributionUpdates =
-        contribution?.updates as Partial<Contribution>;
-      expect(contributionUpdates?.preemBrief.name).toEqual('New Preem Name');
-    });
-
-    it('should update the preem brief in a contribution doc', async () => {
-      await updatePreem(
-        'organizations/super-sprinkles/series/sprinkles-2025/events/giro-sf-2025/races/masters-women/preems/first-lap',
-        {
-          name: 'New Preem Name',
-        },
-        authUser,
-      );
-
-      const contributionDoc = await firestore
-        .doc(
-          'organizations/super-sprinkles/series/sprinkles-2025/events/giro-sf-2025/races/masters-women/preems/first-lap/contributions/contribution-1',
-        )
-        .withConverter(converter(ContributionSchema))
-        .get();
-
-      const contributionData = contributionDoc.data();
-      expect(contributionData?.path).toEqual(contributionDoc.ref.path);
-      expect(contributionData?.preemBrief?.name).toEqual('New Preem Name');
     });
   });
 

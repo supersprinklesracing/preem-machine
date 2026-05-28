@@ -6,8 +6,10 @@ import { act, render, screen, waitFor } from '@/test-utils';
 import { EditRace } from './EditRace';
 
 const mockRace: Race = {
+  organizationId: 'org-1',
+  eventId: 'event-1',
   id: 'race-1',
-  path: 'organizations/org-1/series/series-1/events/event-1/races/race-1',
+  path: 'races/race-1',
   name: 'Test Race',
   location: 'Test Location',
   website: 'https://example.com',
@@ -17,11 +19,11 @@ const mockRace: Race = {
   timezone: 'America/New_York',
   eventBrief: {
     id: 'event-1',
-    path: 'organizations/org-1/series/series-1/events/event-1',
+    path: 'events/event-1',
     name: 'Test Event 1',
     seriesBrief: {
       id: 'series-1',
-      path: 'organizations/org-1/series/series-1',
+      path: 'series/series-1',
       name: 'Test Series 1',
       organizationBrief: {
         id: 'org-1',
@@ -73,7 +75,7 @@ describe('EditRace component', () => {
     await waitFor(() => {
       expect(editRaceAction).toHaveBeenCalledWith(
         expect.objectContaining({
-          path: 'organizations/org-1/series/series-1/events/event-1/races/race-1',
+          path: 'races/race-1',
           edits: expect.objectContaining({
             name: 'New Race Name',
             courseLink: 'https://strava.com/routes/456',

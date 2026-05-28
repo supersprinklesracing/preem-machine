@@ -8,12 +8,14 @@ import { NewRace } from './NewRace';
 
 describe('NewRace component', () => {
   const mockEvent: Event = {
+    organizationId: 'org-1',
+    seriesId: 'series-1',
     id: 'event-1',
-    path: 'organizations/org-1/series/series-1/events/event-1',
+    path: 'events/event-1',
     name: 'Test Event',
     seriesBrief: {
       id: 'series-1',
-      path: 'organizations/org-1/series/series-1',
+      path: 'series/series-1',
       name: 'Test Series',
       organizationBrief: {
         id: 'org-1',
@@ -34,7 +36,7 @@ describe('NewRace component', () => {
       <NewRace
         event={mockEvent}
         newRaceAction={newRaceAction}
-        path="organizations/org-1/series/series-1/events/event-1/races"
+        path="events/event-1"
       />,
     );
 
@@ -59,7 +61,7 @@ describe('NewRace component', () => {
 
     await waitFor(() => {
       expect(newRaceAction).toHaveBeenCalledWith({
-        path: 'organizations/org-1/series/series-1/events/event-1/races',
+        path: 'events/event-1',
         values: expect.objectContaining({
           name: 'New Test Race',
           location: 'Test Location',
@@ -82,7 +84,7 @@ describe('NewRace component', () => {
       <NewRace
         event={mockEvent}
         newRaceAction={newRaceAction}
-        path="organizations/org-1/series/series-1/events/event-1/races"
+        path="events/event-1"
       />,
     );
 

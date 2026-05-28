@@ -18,7 +18,7 @@ setupMockDb();
 describe('EditRacePage component', () => {
   it('should fetch race data and render the EditRace component', async () => {
     const searchParams = Promise.resolve({
-      path: 'organizations/super-sprinkles/series/sprinkles-2025/events/giro-sf-2025/races/masters-women',
+      path: 'races/masters-women',
     });
     const PageComponent = await EditRacePage({ searchParams });
     render(PageComponent);
@@ -31,8 +31,8 @@ describe('EditRacePage component', () => {
 
   it('should throw NotFoundError when the race does not exist', async () => {
     const searchParams = Promise.resolve({
-      path: 'organizations/super-sprinkles/series/sprinkles-2025/events/giro-sf-2025/races/non-existent-race',
+      path: 'races/non-existent-race',
     });
-    expect(EditRacePage({ searchParams })).rejects.toThrow(NotFoundError);
+    await expect(EditRacePage({ searchParams })).rejects.toThrow(NotFoundError);
   });
 });

@@ -44,6 +44,11 @@ describe('create', () => {
       (isUserAuthorized as jest.Mock).mockResolvedValue(false);
       const newSeries = {
         name: 'New Test Series',
+        description: 'A test series',
+        website: 'https://example.com',
+        location: 'San Francisco',
+        startDate: new Date('2025-01-01T00:00:00Z'),
+        endDate: new Date('2025-01-01T00:00:00Z'),
       };
       await expect(
         createSeries('organizations/super-sprinkles', newSeries, authUser),
@@ -55,6 +60,9 @@ describe('create', () => {
     it('should create a new series', async () => {
       const newSeries = {
         name: 'New Test Series',
+        description: 'A test series',
+        website: 'https://example.com',
+        location: 'San Francisco',
         startDate: new Date('2025-01-01T00:00:00Z'),
         endDate: new Date('2025-01-01T00:00:00Z'),
       };
@@ -66,18 +74,20 @@ describe('create', () => {
       const data = doc.data();
       expect(data?.path).toEqual(doc.ref.path);
       expect(data?.name).toEqual(newSeries.name);
-      expect(data?.organizationBrief?.name).toEqual('Super Sprinkles Racing');
     });
   });
 
   describe('createEvent', () => {
     it('should create a new event', async () => {
-      const seriesPath = 'organizations/super-sprinkles/series/sprinkles-2025';
+      const seriesPath = 'series/sprinkles-2025';
       const seriesDoc = await firestore.doc(seriesPath).get();
       const series = seriesDoc.data() as Series;
 
       const newEvent = {
         name: 'New Test Event',
+        description: 'A test event',
+        website: 'https://example.com',
+        location: 'San Francisco',
         startDate: series.startDate,
         endDate: series.endDate,
       };
@@ -85,18 +95,19 @@ describe('create', () => {
       const data = doc.data();
       expect(data?.path).toEqual(doc.ref.path);
       expect(data?.name).toEqual(newEvent.name);
-      expect(data?.seriesBrief?.name).toEqual('Sprinkles 2025');
     });
   });
 
   describe('createRace', () => {
     it('should create a new race', async () => {
-      const eventPath =
-        'organizations/super-sprinkles/series/sprinkles-2025/events/giro-sf-2025';
+      const eventPath = 'events/giro-sf-2025';
       const eventDoc = await firestore.doc(eventPath).get();
       const event = eventDoc.data() as Event;
       const newRace = {
         name: 'New Test Race',
+        description: 'A test race',
+        website: 'https://example.com',
+        location: 'San Francisco',
         startDate: event.startDate,
         endDate: event.endDate,
       };
@@ -104,7 +115,6 @@ describe('create', () => {
       const data = doc.data();
       expect(data?.path).toEqual(doc.ref.path);
       expect(data?.name).toEqual(newRace.name);
-      expect(data?.eventBrief?.name).toEqual('Il Giro di San Francisco');
     });
   });
 
@@ -112,16 +122,12 @@ describe('create', () => {
     it('should create a new preem', async () => {
       const newPreem = {
         name: 'New Test Preem',
+        description: 'A test preem',
       };
-      const doc = await createPreem(
-        'organizations/super-sprinkles/series/sprinkles-2025/events/giro-sf-2025/races/masters-women',
-        newPreem,
-        authUser,
-      );
+      const doc = await createPreem('races/masters-women', newPreem, authUser);
       const data = doc.data();
       expect(data?.path).toEqual(doc.ref.path);
       expect(data?.name).toEqual(newPreem.name);
-      expect(data?.raceBrief?.name).toEqual('Master Women 40+/50+');
     });
   });
 
@@ -133,15 +139,14 @@ describe('create', () => {
         isAnonymous: false,
       };
       await createPendingContribution(
-        'organizations/super-sprinkles/series/sprinkles-2025/events/giro-sf-2025/races/masters-women/preems/first-lap',
+        'preems/first-lap',
         contribution,
         authUser,
       );
 
       const snapshot = await firestore
-        .collection(
-          'organizations/super-sprinkles/series/sprinkles-2025/events/giro-sf-2025/races/masters-women/preems/first-lap/contributions',
-        )
+        .collection('contributions')
+        .where('preemId', '==', 'first-lap')
         .get();
 
       expect(snapshot.docs.length).toBe(2);
@@ -178,6 +183,7 @@ describe('create', () => {
       await createInvite(
         {
           email: 'invited-user@example.com',
+          uid: undefined,
           organizationRefs: [
             { id: 'super-sprinkles', path: 'organizations/super-sprinkles' },
           ],
@@ -187,6 +193,7 @@ describe('create', () => {
       await createInvite(
         {
           uid: 'invited-user-id',
+          email: undefined,
           organizationRefs: [
             { id: 'another-org', path: 'organizations/another-org' },
           ],
@@ -226,7 +233,7 @@ describe('create', () => {
           },
         ],
       };
-      const doc = await createInvite(invite, authUser);
+      const doc = await createInvite({ ...invite, uid: undefined }, authUser);
       const data = doc.data();
       expect(data?.path).toEqual(doc.ref.path);
       expect(data?.email).toEqual(invite.email);
@@ -244,9 +251,9 @@ describe('create', () => {
           },
         ],
       };
-      await expect(createInvite(invite, authUser)).rejects.toThrow(
-        'Unauthorized',
-      );
+      await expect(
+        createInvite({ ...invite, uid: undefined }, authUser),
+      ).rejects.toThrow('Unauthorized');
     });
   });
 });

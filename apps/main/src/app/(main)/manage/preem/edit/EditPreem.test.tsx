@@ -9,15 +9,16 @@ const mockRouterPush = jest.fn();
 
 // Mock next/navigation
 jest.mock('next/navigation', () => ({
-  // eslint-disable-next-line @eslint-react/no-unnecessary-use-prefix
   useRouter: () => ({
     push: mockRouterPush,
   }),
 }));
 
 const mockPreem: Preem = {
+  organizationId: 'org-1',
+  raceId: 'race-1',
   id: 'preem-1',
-  path: 'organizations/org-super-sprinkles/series/series-sprinkles-2025/events/event-giro-sf-2025/races/race-giro-sf-2025-masters-women/preems/preem-giro-sf-2025-masters-women-first-lap',
+  path: 'preems/preem-giro-sf-2025-masters-women-first-lap',
   name: 'Test Preem',
   description: 'Test Description',
   type: 'Pooled',
@@ -27,17 +28,17 @@ const mockPreem: Preem = {
   timeLimit: new Date('2025-09-01T10:00:00Z'),
   raceBrief: {
     id: 'race-1',
-    path: 'organizations/org-1/series/series-1/events/event-1/races/race-1',
+    path: 'races/race-1',
     name: 'Test Race',
     startDate: new Date('2025-09-01T12:00:00Z'),
     endDate: new Date('2025-09-02T12:00:00Z'),
     eventBrief: {
       id: 'event-1',
-      path: 'organizations/org-1/series/series-1/events/event-1',
+      path: 'events/event-1',
       name: 'Test Event',
       seriesBrief: {
         id: 'series-1',
-        path: 'organizations/org-1/series/series-1',
+        path: 'series/series-1',
         name: 'Test Series',
         organizationBrief: {
           id: 'org-1',
@@ -84,7 +85,7 @@ describe('EditPreem component', () => {
     await waitFor(() => {
       expect(editPreemAction).toHaveBeenCalledWith(
         expect.objectContaining({
-          path: 'organizations/org-super-sprinkles/series/series-sprinkles-2025/events/event-giro-sf-2025/races/race-giro-sf-2025-masters-women/preems/preem-giro-sf-2025-masters-women-first-lap',
+          path: 'preems/preem-giro-sf-2025-masters-women-first-lap',
           edits: expect.objectContaining({
             name: 'New Preem Name',
             description: 'New Description',
@@ -95,7 +96,7 @@ describe('EditPreem component', () => {
 
     await waitFor(() => {
       expect(mockRouterPush).toHaveBeenCalledWith(
-        '/manage/org-super-sprinkles/series-sprinkles-2025/event-giro-sf-2025/race-giro-sf-2025-masters-women/preem-giro-sf-2025-masters-women-first-lap',
+        '/manage/preem?path=preems/preem-giro-sf-2025-masters-women-first-lap',
       );
     });
   });

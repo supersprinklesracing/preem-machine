@@ -36,8 +36,9 @@ const mockData = {
         {
           series: {
             id: 'series-1',
-            path: 'organizations/org-1/series/series-1',
+            path: 'series/series-1',
             name: 'Test Series',
+            organizationId: 'org-1',
           },
           children: [],
         },

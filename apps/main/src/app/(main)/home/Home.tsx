@@ -20,9 +20,9 @@ import {
 } from '@tabler/icons-react';
 import Link from 'next/link';
 
-import { toUrlPath } from '@/datastore/paths';
-import { EventWithRaces } from '@/datastore/query-schema';
-import { Contribution, Preem } from '@/datastore/schema';
+import { getUrlPath } from '@/datastore/paths';
+import { ContributionWithUser, EventWithRaces } from '@/datastore/query-schema';
+import { Preem } from '@/datastore/schema';
 import { formatDateLong, formatTime } from '@/dates/dates';
 
 import { LiveContributionFeed } from '../../../components/LiveContributionFeed/LiveContributionFeed';
@@ -30,7 +30,7 @@ import { PreemSection } from './PreemSection';
 
 interface Props {
   eventsWithRaces: EventWithRaces[];
-  contributions: Contribution[];
+  contributions: ContributionWithUser[];
   preems: Preem[];
 }
 
@@ -124,7 +124,7 @@ export function Home({ eventsWithRaces, contributions, preems }: Props) {
                   >
                     <Stack gap="md">
                       <Link
-                        href={`/view/${toUrlPath(event.path)}`}
+                        href={getUrlPath('/view', event.path)}
                         style={{ textDecoration: 'none', color: 'inherit' }}
                       >
                         <Group
@@ -200,7 +200,7 @@ export function Home({ eventsWithRaces, contributions, preems }: Props) {
                             {children.map(({ race }) => (
                               <Link
                                 key={race.path}
-                                href={`/view/${toUrlPath(race.path)}`}
+                                href={getUrlPath('/view', race.path)}
                                 style={{
                                   textDecoration: 'none',
                                   color: 'inherit',

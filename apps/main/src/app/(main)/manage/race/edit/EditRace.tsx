@@ -52,6 +52,8 @@ export function EditRace({
     | 'endDate'
     | 'path'
     | 'id'
+    | 'eventId'
+    | 'organizationId'
     | 'eventBrief'
     | 'timezone'
   >;
@@ -69,14 +71,14 @@ export function EditRace({
           };
         }
       }
-      if (race.eventBrief.startDate && values.startDate) {
+      if (race.eventBrief?.startDate && values.startDate) {
         if (values.startDate < race.eventBrief.startDate) {
           return {
             startDate: 'Race start date cannot be before event start date',
           };
         }
       }
-      if (race.eventBrief.endDate && values.endDate) {
+      if (race.eventBrief?.endDate && values.endDate) {
         if (values.endDate > race.eventBrief.endDate) {
           return {
             endDate: 'Race end date cannot be after event end date',

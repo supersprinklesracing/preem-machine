@@ -2,7 +2,7 @@
 import { Anchor, Breadcrumbs as MantineBreadcrumbs, Text } from '@mantine/core';
 import Link from 'next/link';
 
-import { toUrlPath } from '@/datastore/paths';
+import { getUrlPath } from '@/datastore/paths';
 import {
   EventBrief,
   OrganizationBrief,
@@ -53,7 +53,7 @@ export function Breadcrumbs({ brief }: { brief: Brief | undefined }) {
     return (
       <Anchor
         component={Link}
-        href={`/view/${toUrlPath(b.path)}`}
+        href={getUrlPath('/view', b.path)}
         key={b.path}
         size="sm"
         c="dimmed"

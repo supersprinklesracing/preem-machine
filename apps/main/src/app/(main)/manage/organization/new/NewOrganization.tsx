@@ -16,7 +16,7 @@ import { OrganizationCard } from '@/components/cards/OrganizationCard';
 import { FormActionResult } from '@/components/forms/forms';
 import { useActionForm } from '@/components/forms/useActionForm';
 import { MultiPanelLayout } from '@/components/layout/MultiPanelLayout';
-import { toUrlPath } from '@/datastore/paths';
+import { getUrlPath } from '@/datastore/paths';
 import { Organization } from '@/datastore/schema';
 
 import { organizationSchema } from '../organization-schema';
@@ -41,7 +41,7 @@ export function NewOrganization({
     action: (values) => newOrganizationAction({ values }),
     onSuccess: (result) => {
       if (result.path) {
-        router.push(`/manage/${toUrlPath(result.path)}/edit`);
+        router.push(getUrlPath('/manage', result.path, '/edit'));
       }
     },
   });

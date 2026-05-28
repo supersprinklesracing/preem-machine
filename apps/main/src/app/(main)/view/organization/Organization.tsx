@@ -17,9 +17,9 @@ import Link from 'next/link';
 import { SeriesCard } from '@/components/cards/SeriesCard';
 import { MultiPanelLayout } from '@/components/layout/MultiPanelLayout';
 import { UserAvatar } from '@/components/UserAvatar/UserAvatar';
-import { toUrlPath } from '@/datastore/paths';
+import { getUrlPath } from '@/datastore/paths';
+import { ContributionWithUser } from '@/datastore/query-schema';
 import {
-  Contribution,
   Event,
   Organization as OrganizationType,
   Preem,
@@ -41,7 +41,7 @@ interface Props {
         race: Pick<Race, 'id' | 'path'>;
         children: {
           preem: Pick<Preem, 'id' | 'path'>;
-          children: Pick<Contribution, 'id'>[];
+          children: ContributionWithUser[];
         }[];
       }[];
     }[];
@@ -91,7 +91,7 @@ export function Organization({ organization, serieses, members }: Props) {
                 <SeriesCard key={series.path} series={series}>
                   <Button
                     component={Link}
-                    href={`/view/${toUrlPath(series.path)}`}
+                    href={getUrlPath('/view', series.path)}
                     variant="light"
                     rightSection={<IconChevronRight size={16} />}
                   >

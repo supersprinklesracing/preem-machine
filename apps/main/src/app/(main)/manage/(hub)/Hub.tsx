@@ -15,7 +15,7 @@ import { EventCard } from '@/components/cards/EventCard';
 import { RaceCard } from '@/components/cards/RaceCard';
 import { SeriesCard } from '@/components/cards/SeriesCard';
 import { MultiPanelLayout } from '@/components/layout/MultiPanelLayout';
-import { toUrlPath } from '@/datastore/paths';
+import { getUrlPath } from '@/datastore/paths';
 import { OrganizationWithSeries } from '@/datastore/query-schema';
 import { isDateAfter } from '@/dates/dates';
 
@@ -73,7 +73,7 @@ export function Hub({ organizations }: Props) {
                 <Title order={1}>{organization.name}</Title>
                 <Button
                   component={Link}
-                  href={`/manage/${toUrlPath(organization.path)}/edit`}
+                  href={getUrlPath('/manage', organization.path, '/edit')}
                   variant="outline"
                   leftSection={<IconPencil size={16} />}
                 >
@@ -103,7 +103,7 @@ export function Hub({ organizations }: Props) {
                     <SeriesCard series={series} titleOrder={2}>
                       <Button
                         component={Link}
-                        href={`/manage/${toUrlPath(series.path)}/edit`}
+                        href={getUrlPath('/manage', series.path, '/edit')}
                         variant="light"
                         rightSection={<IconChevronRight size={16} />}
                       >
@@ -127,7 +127,7 @@ export function Hub({ organizations }: Props) {
                           <EventCard event={event} titleOrder={2}>
                             <Button
                               component={Link}
-                              href={`/manage/${toUrlPath(event.path)}/live`}
+                              href={getUrlPath('/manage', event.path, '/live')}
                               variant="gradient"
                               size="sm"
                               mt="md"
@@ -185,7 +185,7 @@ export function Hub({ organizations }: Props) {
                               <EventCard event={event} titleOrder={2}>
                                 <Button
                                   component={Link}
-                                  href={`/manage/${toUrlPath(event.path)}`}
+                                  href={getUrlPath('/manage', event.path)}
                                   variant="light"
                                   size="sm"
                                   mt="md"

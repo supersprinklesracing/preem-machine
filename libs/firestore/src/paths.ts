@@ -3,54 +3,6 @@ export type DocPath = string;
 export type UrlPath = string;
 export type CollectionPath = string;
 
-export const organizationPath = (path: DocPath): DocPath => {
-  const segments = path.split('/');
-  if (segments.length < 2) {
-    throw new InvalidPathError('Invalid path for organizationPath');
-  }
-  return asDocPath(segments.slice(0, 2).join('/'));
-};
-
-export const seriesPath = (path: DocPath): DocPath => {
-  const segments = path.split('/');
-  if (segments.length < 4) {
-    throw new InvalidPathError('Invalid path for seriesPath');
-  }
-  return asDocPath(segments.slice(0, 4).join('/'));
-};
-
-export const eventPath = (path: DocPath): DocPath => {
-  const segments = path.split('/');
-  if (segments.length < 6) {
-    throw new InvalidPathError('Invalid path for eventPath');
-  }
-  return asDocPath(segments.slice(0, 6).join('/'));
-};
-
-export const racePath = (path: DocPath): DocPath => {
-  const segments = path.split('/');
-  if (segments.length < 8) {
-    throw new InvalidPathError('Invalid path for racePath');
-  }
-  return asDocPath(segments.slice(0, 8).join('/'));
-};
-
-export const preemPath = (path: DocPath): DocPath => {
-  const segments = path.split('/');
-  if (segments.length < 10) {
-    throw new InvalidPathError('Invalid path for preemPath');
-  }
-  return asDocPath(segments.slice(0, 10).join('/'));
-};
-
-export const contributionPath = (path: DocPath): DocPath => {
-  const segments = path.split('/');
-  if (segments.length < 12) {
-    throw new InvalidPathError('Invalid path for contributionPath');
-  }
-  return asDocPath(segments.slice(0, 12).join('/'));
-};
-
 const COLLECTION_IDS = [
   'organizations',
   'series',
@@ -61,71 +13,13 @@ const COLLECTION_IDS = [
 ];
 
 export const isDocPath = (path: string): path is DocPath => {
-  if (!path) {
-    console.debug('isDocPath: path is empty');
-    return false;
-  }
+  if (!path) return false;
   const segments = path.split('/');
-  if (segments.length === 0 || segments.some((s) => !s)) {
-    return false;
-  }
+  if (segments.length !== 2) return false;
+  if (segments.some((s) => !s)) return false;
 
-  if (segments[0] === 'users') {
-    const isValid = segments.length === 2;
-    if (!isValid) {
-      console.debug(
-        'isDocPath: (%s): invalid users path segment length: %d',
-        path,
-        segments.length,
-      );
-    }
-    return isValid;
-  }
-
-  if (segments[0] === 'invites') {
-    const isValid = segments.length === 2;
-    if (!isValid) {
-      console.debug(
-        'isDocPath: (%s): invalid invites path segment length: %d',
-        path,
-        segments.length,
-      );
-    }
-    return isValid;
-  }
-
-  if (segments[0] !== 'organizations') {
-      console.debug(
-        'isDocPath: (%s): must start with "organizations" or "users": %s',
-        path,
-        segments[0],
-      );
-    return false;
-  }
-  if (segments.length % 2 !== 0) {
-    console.debug(
-      'isDocPath: (%s): invalid segment length for organization-prefixed: %d',
-      path,
-      segments.length,
-    );
-    return false;
-  }
-
-  for (let i = 0; i < segments.length; i += 2) {
-    const collectionSegment = segments[i];
-    const expectedCollectionId = COLLECTION_IDS[i / 2];
-    if (collectionSegment !== expectedCollectionId) {
-      console.debug(
-        'isDocPath: (%s): collection segment mismatch, found: %s, expected: %s',
-        path,
-        collectionSegment,
-        expectedCollectionId,
-      );
-      return false;
-    }
-  }
-
-  return true;
+  const validCollections = [...COLLECTION_IDS, 'users', 'invites'];
+  return validCollections.includes(segments[0]);
 };
 
 export const asDocPath = (path: string): DocPath => {
@@ -135,6 +29,7 @@ export const asDocPath = (path: string): DocPath => {
   return path;
 };
 
+// Converts URL path like 'o1/s1/e1' to DocPath 'events/e1'
 export const toDocPath = (path: UrlPath): DocPath => {
   const urlSegments = path.split('/');
   if (urlSegments[0] === 'view' && urlSegments[1] === 'user') {
@@ -143,65 +38,24 @@ export const toDocPath = (path: UrlPath): DocPath => {
   if (urlSegments[0] === 'user') {
     return `users/${urlSegments[1]}`;
   }
-  const docSegments: string[] = [];
-  for (let i = 0; i < urlSegments.length; i++) {
-    docSegments.push(COLLECTION_IDS[i]);
-    docSegments.push(urlSegments[i]);
+
+  if (urlSegments.length > COLLECTION_IDS.length || urlSegments.length === 0) {
+    throw new InvalidPathError(`Invalid UrlPath to convert: ${path}`);
   }
-  return docSegments.join('/');
+
+  const collection = COLLECTION_IDS[urlSegments.length - 1];
+  const id = urlSegments[urlSegments.length - 1];
+  return `${collection}/${id}`;
 };
 
 export const isCollectionPath = (path: string): path is CollectionPath => {
-  if (!path) {
-    console.debug('isCollectionPath: path is empty');
-    return false;
-  }
+  if (!path) return false;
   const segments = path.split('/');
-  if (segments.length === 0 || segments.some((s) => !s)) {
-    return false;
-  }
+  if (segments.length !== 1) return false;
+  if (segments.some((s) => !s)) return false;
 
-  if (segments[0] === 'users') {
-    const isValid = segments.length === 1;
-    if (!isValid) {
-      console.debug(
-        'isCollectionPath: invalid users path segment length',
-        segments.length,
-      );
-    }
-    return isValid;
-  }
-
-  if (segments[0] !== 'organizations') {
-    console.debug(
-      'isCollectionPath: path must start with "organizations" or "users"',
-      segments[0],
-    );
-    return false;
-  }
-
-  if (segments.length % 2 === 0) {
-    console.debug(
-      'isCollectionPath: invalid segment length for organizations path',
-      segments.length,
-    );
-    return false;
-  }
-
-  for (let i = 0; i < segments.length; i += 2) {
-    const collectionSegment = segments[i];
-    const expectedCollectionId = COLLECTION_IDS[i / 2];
-    if (collectionSegment !== expectedCollectionId) {
-      console.debug(
-        'isCollectionPath: collection segment mismatch',
-        `found: ${collectionSegment}`,
-        `expected: ${expectedCollectionId}`,
-      );
-      return false;
-    }
-  }
-
-  return true;
+  const validCollections = [...COLLECTION_IDS, 'users', 'invites'];
+  return validCollections.includes(segments[0]);
 };
 
 export const asCollectionPath = (path: string): CollectionPath => {
@@ -242,38 +96,21 @@ export const asUrlPath = (path: string): UrlPath => {
   return path;
 };
 
-export const toUrlPath = (path: DocPath): UrlPath => {
-  const segments = path.split('/');
+export const getUrlPath = (
+  base: string,
+  docPath: string,
+  suffix = '',
+): string => {
+  if (!docPath) return '#';
+  const segments = docPath.split('/');
   if (segments[0] === 'users') {
-    return `user/${segments[1]}`;
+    return `${base}/user${suffix}?path=${docPath}`;
   }
-  return segments.filter((_, i) => i % 2 !== 0).join('/');
-};
-
-export const getParentPath = (path: string): string => {
-  const segments = path.split('/');
-  if (segments.length < 2) {
-    throw new InvalidPathError(`Path is too short to have a parent: ${path}`);
-  }
-  return segments.slice(0, -1).join('/');
-};
-
-export const getParentPathAsCollectionPath = (
-  path: DocPath,
-): CollectionPath => {
-  return path.split('/').slice(0, -1).join('/');
-};
-
-export const getSubCollectionPath = (
-  path: DocPath,
-  child: string,
-): CollectionPath => {
-  return path + (child.startsWith('/') ? '' : '/') + child;
-};
-
-export const getCollectionGroup = (path: DocPath) => {
-  const segments = path.split('/');
-  return segments[segments.length - 2];
+  const collectionName = segments[0];
+  const singular = collectionName.endsWith('s')
+    ? collectionName.slice(0, -1)
+    : collectionName;
+  return `${base}/${singular}${suffix}?path=${docPath}`;
 };
 
 export const docId = (path: DocPath): string => {
