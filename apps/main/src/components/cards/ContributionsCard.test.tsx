@@ -1,6 +1,5 @@
 import MatchMediaMock from 'jest-matchmedia-mock';
 
-import type { RaceWithPreems } from '@/datastore/query-schema';
 import { PHONE_WIDTH, render, screen } from '@/test-utils';
 
 import { ContributionsCard } from './ContributionsCard';
@@ -12,31 +11,35 @@ jest.mock('@/components/UserAvatar/UserAvatar', () => ({
   UserAvatar: jest.fn(() => <div>Mock UserAvatar</div>),
 }));
 
-const mockRace: RaceWithPreems = {
+const mockRace = {
+  organizationId: 'org-1',
+  eventId: 'event-1',
   race: {
     id: 'race-1',
-    path: 'organizations/org-1/series/series-1/events/event-1/races/race-1',
+    path: 'races/race-1',
     name: 'Test Race',
   },
   children: [
     {
       preem: {
         id: 'preem-1',
-        path: 'organizations/org-1/series/series-1/events/event-1/races/race-1/preems/preem-1',
+        path: 'preems/preem-1',
         name: 'Test Preem 1',
+        organizationId: 'org-1',
+        raceId: 'race-1',
       },
       children: [
         {
-          id: 'contrib-1',
-          path: 'organizations/org-1/series/series-1/events/event-1/races/race-1/preems/preem-1/contributions/contrib-1',
-          amount: 100,
-          message: 'Go fast!',
-          contributor: { id: 'user-1', path: 'users/user-1', name: 'Alice' },
-          preemBrief: {
-            id: 'preem-1',
-            path: 'organizations/org-1/series/series-1/events/event-1/races/race-1/preems/preem-1',
-            name: 'Test Preem 1',
+          contribution: {
+            id: 'contrib-1',
+            path: 'contributions/contrib-1',
+            amount: 100,
+            message: 'Go fast!',
+            preemId: 'preem-1',
+            organizationId: 'org-1',
+            date: new Date('2025-07-13T00:00:00Z'),
           },
+          contributor: { id: 'user-1', path: 'users/user-1', name: 'Alice' },
         },
       ],
     },
@@ -81,14 +84,16 @@ describe('ContributionsCard component', () => {
   });
 
   it('should render a message when there are no contributions', () => {
-    const raceWithNoContributions: RaceWithPreems = {
+    const raceWithNoContributions = {
       ...mockRace,
       children: [
         {
           preem: {
             id: 'preem-1',
-            path: 'organizations/org-1/series/series-1/events/event-1/races/race-1/preems/preem-1',
+            path: 'preems/preem-1',
             name: 'Test Preem 1',
+            organizationId: 'org-1',
+            raceId: 'race-1',
           },
           children: [],
         },

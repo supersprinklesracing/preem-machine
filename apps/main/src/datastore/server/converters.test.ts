@@ -215,7 +215,7 @@ describe('converter', () => {
     };
     circularSnapshot.ref = {
       path: 'test/circular-id',
-      // eslint-disable-next-line @typescript-eslint/no-explicit-any
+
       parent: circularSnapshot as any, // Circular reference
     };
 

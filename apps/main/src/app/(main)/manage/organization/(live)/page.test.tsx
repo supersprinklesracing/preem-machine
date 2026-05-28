@@ -14,7 +14,9 @@ setupMockDb();
 
 describe('LiveOrganizationPage component', () => {
   it('should fetch organization data and render the LiveOrganization component', async () => {
-    const searchParams = { path: 'organizations/super-sprinkles' };
+    const searchParams = Promise.resolve({
+      path: 'organizations/super-sprinkles',
+    });
     const PageComponent = await LiveOrganizationPage({
       searchParams,
     });
@@ -27,8 +29,10 @@ describe('LiveOrganizationPage component', () => {
   });
 
   it('should throw NotFoundError when the organization does not exist', async () => {
-    const searchParams = { path: 'organizations/non-existent-organization' };
-    expect(LiveOrganizationPage({ searchParams })).rejects.toThrow(
+    const searchParams = Promise.resolve({
+      path: 'organizations/non-existent-organization',
+    });
+    await expect(LiveOrganizationPage({ searchParams })).rejects.toThrow(
       NotFoundError,
     );
   });

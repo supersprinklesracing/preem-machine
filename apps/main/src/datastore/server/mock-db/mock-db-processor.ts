@@ -57,6 +57,13 @@ export const postProcessDatabase = (
   if (!organizations) {
     return db;
   }
+
+  db.series = db.series || [];
+  db.events = db.events || [];
+  db.races = db.races || [];
+  db.preems = db.preems || [];
+  db.contributions = db.contributions || [];
+
   organizations.forEach((organization) => {
     organization.path = `organizations/${organization.id}`;
     const organizationBrief: OrganizationBrief = {
@@ -65,11 +72,13 @@ export const postProcessDatabase = (
       name: organization.name,
     };
 
-    const series = organization._collections?.series;
-    if (!series) return;
+    const seriesList = organization._collections?.series;
+    delete organization._collections;
+    if (!seriesList) return;
 
-    series.forEach((series) => {
-      series.path = `${organization.path}/series/${series.id}`;
+    seriesList.forEach((series) => {
+      series.path = `series/${series.id}`;
+      series.organizationId = organization.id;
       series.organizationBrief = organizationBrief;
       const seriesBrief: SeriesBrief = {
         id: series.id,
@@ -79,12 +88,16 @@ export const postProcessDatabase = (
         endDate: series.endDate,
         organizationBrief,
       };
+      db.series!.push(series);
 
       const events = series._collections?.events;
+      delete series._collections;
       if (!events) return;
 
       events.forEach((event) => {
-        event.path = `${series.path}/events/${event.id}`;
+        event.path = `events/${event.id}`;
+        event.seriesId = series.id;
+        event.organizationId = organization.id;
         event.seriesBrief = seriesBrief;
         const eventBrief: EventBrief = {
           id: event.id,
@@ -94,12 +107,16 @@ export const postProcessDatabase = (
           endDate: event.endDate,
           seriesBrief,
         };
+        db.events!.push(event);
 
         const races = event._collections?.races;
+        delete event._collections;
         if (!races) return;
 
         races.forEach((race) => {
-          race.path = `${event.path}/races/${race.id}`;
+          race.path = `races/${race.id}`;
+          race.eventId = event.id;
+          race.organizationId = organization.id;
           race.eventBrief = eventBrief;
           const raceBrief: RaceBrief = {
             id: race.id,
@@ -109,12 +126,16 @@ export const postProcessDatabase = (
             endDate: race.endDate,
             eventBrief,
           };
+          db.races!.push(race);
 
           const preems = race._collections?.preems;
+          delete race._collections;
           if (!preems) return;
 
           preems.forEach((preem) => {
-            preem.path = `${race.path}/preems/${preem.id}`;
+            preem.path = `preems/${preem.id}`;
+            preem.raceId = race.id;
+            preem.organizationId = organization.id;
             preem.raceBrief = raceBrief;
             const preemBrief: PreemBrief = {
               id: preem.id,
@@ -122,13 +143,20 @@ export const postProcessDatabase = (
               name: preem.name,
               raceBrief,
             };
+            preem.timeLimit =
+              preem.timeLimit || new Date('2026-09-01T08:00:00Z');
+            db.preems!.push(preem);
 
             const contributions = preem._collections?.contributions;
+            delete preem._collections;
             if (!contributions) return;
 
             contributions.forEach((contribution) => {
-              contribution.path = `${preem.path}/contributions/${contribution.id}`;
+              contribution.path = `contributions/${contribution.id}`;
+              contribution.preemId = preem.id;
+              contribution.organizationId = organization.id;
               contribution.preemBrief = preemBrief;
+              db.contributions!.push(contribution);
             });
           });
         });

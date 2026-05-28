@@ -64,7 +64,7 @@ echo "--------------------------------------------------"
 
 # 'npx' can be run from any directory, so we don't need to 'cd'.
 echo "Opening Playwright report from: $REPORT_DATA_PATH"
-npx playwright show-report "$REPORT_DATA_PATH"
+pnpm exec playwright show-report "$REPORT_DATA_PATH"
 
 echo "Script finished successfully."
 

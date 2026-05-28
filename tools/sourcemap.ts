@@ -1,4 +1,4 @@
-// echo "at g (.next/server/chunks/9073.js:1:6362) " | npx ts-node tools/sourcemap.ts  9073.js
+// echo "at g (.next/server/chunks/9073.js:1:6362) " | pnpm exec ts-node tools/sourcemap.ts  9073.js
 
 import { promises as fs } from 'fs';
 import { SourceMapConsumer } from 'source-map';
@@ -53,7 +53,7 @@ async function main() {
       'Error: Please provide the path to the compiled JS file as an argument.',
     );
     console.error(
-      'Usage: cat stacktrace.log | npx ts-node decode.ts <path-to-js-file>',
+      'Usage: cat stacktrace.log | pnpm exec ts-node decode.ts <path-to-js-file>',
     );
     process.exit(1);
   }

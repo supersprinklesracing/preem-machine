@@ -18,28 +18,28 @@ describe('Breadcrumbs', () => {
 
   const series1: SeriesBrief = {
     id: 'series1',
-    path: 'organizations/org1/series/series1',
+    path: 'series/series1',
     name: 'Test Series 1',
     organizationBrief: org1,
   };
 
   const event1: EventBrief = {
     id: 'event1',
-    path: 'organizations/org1/series/series1/events/event1',
+    path: 'events/event1',
     name: 'Test Event 1',
     seriesBrief: series1,
   };
 
   const race1: RaceBrief = {
     id: 'race1',
-    path: 'organizations/org1/series/series1/events/event1/races/race1',
+    path: 'races/race1',
     name: 'Test Race 1',
     eventBrief: event1,
   };
 
   const preem1: PreemBrief = {
     id: 'preem1',
-    path: 'organizations/org1/series/series1/events/event1/races/race1/preems/preem1',
+    path: 'preems/preem1',
     name: 'Test Preem 1',
     raceBrief: race1,
   };

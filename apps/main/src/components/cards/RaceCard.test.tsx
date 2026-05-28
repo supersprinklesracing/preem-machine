@@ -5,8 +5,12 @@ import { RaceCard } from './RaceCard';
 const mockData = {
   race: {
     id: 'race-1',
-    path: 'organizations/org-1/series/series-1/events/event-1/races/race-1',
+    path: 'races/race-1',
     name: 'Test Race',
+    organizationId: 'org-1',
+    eventId: 'event-1',
+    timezone: 'America/Los_Angeles',
+    startDate: new Date(),
     description: 'This is a test race.',
     website: 'https://example.com',
     category: 'Category A',
@@ -20,7 +24,7 @@ const mockData = {
     sponsors: ['Sponsor 1', 'Sponsor 2'],
     eventBrief: {
       id: 'event-1',
-      path: 'organizations/org-1/series/series-1/events/event-1',
+      path: 'events/event-1',
       name: 'Test Event',
       startDate: new Date(),
       location: 'Test Location',
@@ -30,7 +34,10 @@ const mockData = {
     {
       preem: {
         id: 'preem-1',
-        path: 'organizations/org-1/series/series-1/events/event-1/races/race-1/preems/preem-1',
+        path: 'preems/preem-1',
+        name: 'Test Preem 1',
+        organizationId: 'org-1',
+        raceId: 'race-1',
         prizePool: 100,
       },
       children: [],
@@ -38,7 +45,10 @@ const mockData = {
     {
       preem: {
         id: 'preem-2',
-        path: 'organizations/org-1/series/series-1/events/event-1/races/race-1/preems/preem-2',
+        path: 'preems/preem-2',
+        name: 'Test Preem 2',
+        organizationId: 'org-1',
+        raceId: 'race-1',
         prizePool: 50,
       },
       children: [],

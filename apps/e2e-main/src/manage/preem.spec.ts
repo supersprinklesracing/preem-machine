@@ -5,9 +5,7 @@ test.describe('manage: preem', () => {
   useE2eTestingUserBeforeEach();
 
   test('live', async ({ page }) => {
-    await page.goto(
-      '/manage/super-sprinkles/sprinkles-2025/giro-sf-2025/masters-women/first-lap',
-    );
+    await page.goto('/manage/preem?path=preems/first-lap');
     await expect(
       page.getByRole('heading', { name: 'First Lap Leader', level: 1 }),
     ).toBeVisible();
@@ -15,9 +13,7 @@ test.describe('manage: preem', () => {
   });
 
   test('new', async ({ page }) => {
-    await page.goto(
-      '/manage/super-sprinkles/sprinkles-2025/giro-sf-2025/masters-women/preem/new',
-    );
+    await page.goto('/manage/preem/new?path=races/masters-women');
     await expect(
       page.getByRole('heading', { name: 'Create Preem' }),
     ).toBeVisible();
@@ -25,9 +21,7 @@ test.describe('manage: preem', () => {
   });
 
   test('edit', async ({ page }) => {
-    await page.goto(
-      '/manage/super-sprinkles/sprinkles-2025/giro-sf-2025/masters-women/first-lap/edit',
-    );
+    await page.goto('/manage/preem/edit?path=preems/first-lap');
     await expect(
       page.getByRole('heading', { name: 'Edit Preem' }),
     ).toBeVisible();

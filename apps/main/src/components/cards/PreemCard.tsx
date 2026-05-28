@@ -3,8 +3,9 @@ import { IconSparkles, IconTag, IconUser } from '@tabler/icons-react';
 import Link from 'next/link';
 import React from 'react';
 
-import { toUrlPath } from '@/datastore/paths';
-import { Contribution, Preem } from '@/datastore/schema';
+import { getUrlPath } from '@/datastore/paths';
+import { ContributionWithUser } from '@/datastore/query-schema';
+import { Preem } from '@/datastore/schema';
 import { getSponsorName } from '@/datastore/sponsors';
 
 import { ContentCard } from './ContentCard';
@@ -12,7 +13,7 @@ import { MetadataItem, MetadataRow } from './MetadataRow';
 
 interface PreemCardProps {
   preem: Preem;
-  contributions?: Contribution[];
+  contributions?: ContributionWithUser[];
 
   children?: React.ReactNode;
   style?: React.CSSProperties;
@@ -76,7 +77,7 @@ export function PreemCard({
         {showRace && preem.raceBrief?.path && (
           <Anchor
             component={Link}
-            href={`/view/${toUrlPath(preem.raceBrief.path)}`}
+            href={getUrlPath('/view', preem.raceBrief.path)}
           >
             {preem.raceBrief.name ?? 'Unknown Race'}
           </Anchor>
@@ -89,7 +90,7 @@ export function PreemCard({
         {showEvent && preem.raceBrief?.eventBrief?.path && (
           <Anchor
             component={Link}
-            href={`/view/${toUrlPath(preem.raceBrief.eventBrief.path)}`}
+            href={getUrlPath('/view', preem.raceBrief.eventBrief.path)}
           >
             {preem.raceBrief.eventBrief.name ?? 'Unknown Event'}
           </Anchor>

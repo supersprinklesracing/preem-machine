@@ -17,13 +17,17 @@ const mockData: SidebarProps = {
   events: [
     {
       id: 'event-1',
-      path: 'organizations/org-1/series/series-1/events/event-1',
+      path: 'events/event-1',
       name: 'Test Event 1',
+      organizationId: 'org-1',
+      seriesId: 'series-1',
     },
     {
       id: 'event-2',
-      path: 'organizations/org-1/series/series-1/events/event-2',
+      path: 'events/event-2',
       name: 'Test Event 2',
+      organizationId: 'org-1',
+      seriesId: 'series-1',
     },
   ],
   user: mockUser,

@@ -4,15 +4,12 @@ import { Card, Stack, Text, Title, useMantineTheme } from '@mantine/core';
 import { useMediaQuery } from '@mantine/hooks';
 import { CSSProperties } from 'react';
 
-import { Contribution } from '@/datastore/schema';
+import { ContributionWithUser } from '@/datastore/query-schema';
 
 import { LiveContributionFeedItem } from './LiveContributionFeedItem';
 
 interface LiveContributionFeedProps {
-  contributions: Pick<
-    Contribution,
-    'id' | 'path' | 'contributor' | 'amount' | 'preemBrief' | 'message'
-  >[];
+  contributions: ContributionWithUser[];
 }
 
 export function LiveContributionFeed({
@@ -36,7 +33,7 @@ export function LiveContributionFeed({
   // Bolt Optimization: Extracted to memoized component to prevent re-renders of list items
   // when parent re-renders (e.g. due to media query change).
   const contributionFeed = contributions.map((c) => (
-    <LiveContributionFeedItem key={c.path} contribution={c} />
+    <LiveContributionFeedItem key={c.contribution.path} data={c} />
   ));
 
   return (

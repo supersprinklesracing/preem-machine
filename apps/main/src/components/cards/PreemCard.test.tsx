@@ -4,18 +4,20 @@ import { render, screen } from '@/test-utils';
 import { PreemCard } from './PreemCard';
 
 const mockPreem: Preem = {
+  organizationId: 'org-1',
+  raceId: 'race-1',
   id: 'preem-1',
-  path: 'organizations/org-1/series/series-1/events/event-1/races/race-1/preems/preem-1',
+  path: 'preems/preem-1',
   name: 'Test Preem',
   description: 'This is a test preem.',
   prizePool: 150,
   raceBrief: {
     id: 'race-1',
-    path: 'organizations/org-1/series/series-1/events/event-1/races/race-1',
+    path: 'races/race-1',
     name: 'Test Race',
     eventBrief: {
       id: 'event-1',
-      path: 'organizations/org-1/series/series-1/events/event-1',
+      path: 'events/event-1',
       name: 'Test Event',
     },
   },

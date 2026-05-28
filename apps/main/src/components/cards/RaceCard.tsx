@@ -9,7 +9,7 @@ import {
 import Link from 'next/link';
 import React from 'react';
 
-import { toUrlPath } from '@/datastore/paths';
+import { getUrlPath } from '@/datastore/paths';
 import { PreemWithContributions } from '@/datastore/query-schema';
 import { Race } from '@/datastore/schema';
 
@@ -47,15 +47,17 @@ export function RaceCard({
   const subheadings = [];
   if (showEventLink) {
     subheadings.push(
-      <React.Fragment key="event-link">
+      <Text c="dimmed" key="brief">
         Part of{' '}
-        <Anchor
-          component={Link}
-          href={`/view/${toUrlPath(race.eventBrief.path)}`}
-        >
-          {race.eventBrief.name}
-        </Anchor>
-      </React.Fragment>,
+        {race.eventId && (
+          <Anchor
+            component={Link}
+            href={getUrlPath('/view', `events/${race.eventId}`)}
+          >
+            {race.eventBrief?.name || 'Event'}
+          </Anchor>
+        )}
+      </Text>,
     );
   }
   subheadings.push(`${race.category} - ${race.gender}`);

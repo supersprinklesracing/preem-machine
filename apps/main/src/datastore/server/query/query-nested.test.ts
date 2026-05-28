@@ -1,12 +1,6 @@
 import { type Firestore, Timestamp } from 'firebase-admin/firestore';
 
-import {
-  Contribution,
-  Event,
-  Preem,
-  Race,
-  Series,
-} from '@/datastore/schema';
+import { Contribution, Event, Preem, Race, Series } from '@/datastore/schema';
 import { getFirestore } from '@/firebase/server/firebase-admin';
 import { setupMockDb } from '@/test-utils';
 
@@ -23,52 +17,52 @@ describe('query performance optimization', () => {
   it('getRenderableSeriesDataForPage should return nested data correctly', async () => {
     const series1: Series = {
       id: 'series-1',
-      path: 'organizations/org-1/series/series-1',
+      path: 'series/series-1',
       name: 'Test Series 1',
       startDate: Timestamp.fromDate(new Date('2025-01-01')),
       endDate: Timestamp.fromDate(new Date('2025-01-31')),
-      organizationBrief: {
-        id: 'org-1',
-        path: 'organizations/org-1',
-        name: 'Test Org 1',
-      },
+      organizationId: 'org-1',
     };
     await db.doc(series1.path).set(series1);
 
     const event1: Event = {
       id: 'event-1',
-      path: 'organizations/org-1/series/series-1/events/event-1',
+      path: 'events/event-1',
       name: 'Test Event 1',
       startDate: Timestamp.fromDate(new Date('2025-01-10')),
       endDate: Timestamp.fromDate(new Date('2025-01-20')),
-      seriesBrief: series1,
+      organizationId: 'org-1',
+      seriesId: 'series-1',
     };
     await db.doc(event1.path).set(event1);
 
     const race1: Race = {
       id: 'race-1',
-      path: 'organizations/org-1/series/series-1/events/event-1/races/race-1',
+      path: 'races/race-1',
       name: 'Test Race 1',
       startDate: Timestamp.fromDate(new Date('2025-01-12')),
       endDate: Timestamp.fromDate(new Date('2025-01-18')),
-      eventBrief: event1,
+      organizationId: 'org-1',
+      eventId: 'event-1',
     };
     await db.doc(race1.path).set(race1);
 
     const preem1: Preem = {
       id: 'preem-1',
-      path: `${race1.path}/preems/preem-1`,
+      path: 'preems/preem-1',
       name: 'Preem Alpha',
-      raceBrief: race1,
+      organizationId: 'org-1',
+      raceId: 'race-1',
     };
     await db.doc(preem1.path).set(preem1);
 
     const contribution1: Contribution = {
       id: 'contribution-1',
-      path: `${preem1.path}/contributions/contribution-1`,
+      path: 'contributions/contribution-1',
       amount: 100,
       date: Timestamp.now(),
-      preemBrief: preem1,
+      organizationId: 'org-1',
+      preemId: 'preem-1',
     };
     await db.doc(contribution1.path).set(contribution1);
 
@@ -82,6 +76,8 @@ describe('query performance optimization', () => {
     expect(result.children[0].children[0].children.length).toBe(1); // One preem
     expect(result.children[0].children[0].children[0].preem.id).toBe('preem-1');
     expect(result.children[0].children[0].children[0].children.length).toBe(1); // One contribution
-    expect(result.children[0].children[0].children[0].children[0].id).toBe('contribution-1');
+    expect(
+      result.children[0].children[0].children[0].children[0].contribution.id,
+    ).toBe('contribution-1');
   });
 });

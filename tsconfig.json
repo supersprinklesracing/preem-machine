@@ -2,24 +2,5 @@
   "extends": "./tsconfig.base.json",
   "compileOnSave": false,
   "files": [],
-  "references": [
-    {
-      "path": "./apps/e2e-main"
-    },
-    {
-      "path": "./apps/main"
-    },
-    {
-      "path": "./apps/cli"
-    },
-    {
-      "path": "./libs/firestore"
-    },
-    {
-      "path": "./libs/env-vars"
-    },
-    {
-      "path": "./libs/stripe"
-    }
-  ]
+  "references": []
 }

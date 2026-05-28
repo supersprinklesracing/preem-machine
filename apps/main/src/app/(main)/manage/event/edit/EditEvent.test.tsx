@@ -6,8 +6,10 @@ import { act, render, screen, waitFor } from '@/test-utils';
 import { EditEvent } from './EditEvent';
 
 const mockEvent: Event = {
+  organizationId: 'org-1',
+  seriesId: 'series-1',
   id: 'event-1',
-  path: 'organizations/org-1/series/series-1/events/event-1',
+  path: 'events/event-1',
   name: 'Test Event',
   description: 'Test Description',
   location: 'Test Location',
@@ -17,7 +19,7 @@ const mockEvent: Event = {
   timezone: 'America/New_York',
   seriesBrief: {
     id: 'series-1',
-    path: 'organizations/org-1/series/series-1',
+    path: 'series/series-1',
     name: 'Test Series 1',
     organizationBrief: {
       id: 'org-1',
@@ -61,7 +63,7 @@ describe('EditEvent component', () => {
     await waitFor(() => {
       expect(editEventAction).toHaveBeenCalledWith(
         expect.objectContaining({
-          path: 'organizations/org-1/series/series-1/events/event-1',
+          path: 'events/event-1',
           edits: expect.objectContaining({
             name: 'New Event Name',
             timezone: 'America/New_York',

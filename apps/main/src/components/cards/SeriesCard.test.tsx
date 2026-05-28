@@ -6,8 +6,9 @@ import { render, screen } from '@/test-utils';
 import { SeriesCard } from './SeriesCard';
 
 const mockSeries: Series = {
+  organizationId: 'org-1',
   id: 'series-1',
-  path: 'organizations/org-1/series/series-1',
+  path: 'series/series-1',
   name: 'Test Series',
   location: 'Test Location',
   startDate: new Date('2024-01-01T00:00:00'),

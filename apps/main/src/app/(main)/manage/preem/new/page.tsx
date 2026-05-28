@@ -3,11 +3,7 @@
 import { Metadata } from 'next';
 
 import { CommonLayout } from '@/components/layout/CommonLayout';
-import {
-  asDocPath,
-  getCollectionPathFromSearchParams,
-  getParentPath,
-} from '@/datastore/paths';
+import { getDocPathFromSearchParams } from '@/datastore/paths';
 import { RaceSchema } from '@/datastore/schema';
 import { getDoc } from '@/datastore/server/query/query';
 
@@ -25,12 +21,11 @@ export default async function NewPreemPage({
 }: {
   searchParams: Promise<{ path: string }>;
 }) {
-  const path = getCollectionPathFromSearchParams(await searchParams);
-  const racePath = asDocPath(getParentPath(path));
-  const race = await getDoc(RaceSchema, racePath);
+  const path = getDocPathFromSearchParams(await searchParams);
+  const race = await getDoc(RaceSchema, path);
   return (
     <CommonLayout>
-      <NewPreem race={race} newPreemAction={newPreemAction} path={racePath} />
+      <NewPreem race={race} newPreemAction={newPreemAction} path={path} />
     </CommonLayout>
   );
 }

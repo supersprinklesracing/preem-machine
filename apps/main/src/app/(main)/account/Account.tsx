@@ -21,7 +21,7 @@ import { FormActionResult } from '@/components/forms/forms';
 import { useActionForm } from '@/components/forms/useActionForm';
 import { useAvatarUpload } from '@/components/forms/useAvatarUpload';
 import { MultiPanelLayout } from '@/components/layout/MultiPanelLayout';
-import { toUrlPath } from '@/datastore/paths';
+import { getUrlPath } from '@/datastore/paths';
 import { User } from '@/datastore/schema';
 
 import { UpdateUserOptions } from './update-user-action';
@@ -93,7 +93,7 @@ export function Account({
       {user && (
         <Button
           variant="outline"
-          onClick={() => router.push(`/view/${toUrlPath(user.path)}`)}
+          onClick={() => router.push(getUrlPath('/view', user.path))}
         >
           View Public Profile
         </Button>

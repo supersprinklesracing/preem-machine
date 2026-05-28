@@ -47,7 +47,7 @@ function buildProviders(): any[] {
             };
           } catch (error) {
             console.error('Error verifying credentials token:', error);
-            throw new Error('Token verification failed');
+            throw new Error('Token verification failed', { cause: error });
           }
         }
 

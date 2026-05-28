@@ -32,23 +32,6 @@ const baseDocSchema = z.object({
   metadata: MetadataSchema.optional(),
 });
 
-// UserBrief
-export const UserBriefSchema = z.object({
-  id: z.string(),
-  path: docPathSchema,
-  name: z.string().optional(),
-  avatarUrl: z.string().url().optional(),
-});
-export type UserBrief = z.infer<typeof UserBriefSchema>;
-
-// OrganizationBrief
-export const OrganizationBriefSchema = z.object({
-  id: z.string(),
-  path: docPathSchema,
-  name: z.string().optional(),
-});
-export type OrganizationBrief = z.infer<typeof OrganizationBriefSchema>;
-
 // User
 export const UserSchema = baseDocSchema.extend({
   termsAccepted: z.boolean().optional(),
@@ -76,6 +59,52 @@ export const InviteSchema = BaseInviteSchema.refine(
 );
 export type Invite = z.infer<typeof InviteSchema>;
 
+// Brief Schemas (For UI Compatibility)
+export const OrganizationBriefSchema = z.object({
+  id: z.string(),
+  path: z.string(),
+  name: z.string(),
+});
+export type OrganizationBrief = z.infer<typeof OrganizationBriefSchema>;
+
+export const SeriesBriefSchema = z.object({
+  id: z.string(),
+  path: z.string(),
+  name: z.string(),
+  startDate: z.date().optional(),
+  endDate: z.date().optional(),
+  organizationBrief: OrganizationBriefSchema.optional(),
+});
+export type SeriesBrief = z.infer<typeof SeriesBriefSchema>;
+
+export const EventBriefSchema = z.object({
+  id: z.string(),
+  path: z.string(),
+  name: z.string().optional(),
+  startDate: z.date().optional(),
+  endDate: z.date().optional(),
+  seriesBrief: SeriesBriefSchema.optional(),
+});
+export type EventBrief = z.infer<typeof EventBriefSchema>;
+
+export const RaceBriefSchema = z.object({
+  id: z.string(),
+  path: z.string(),
+  name: z.string().optional(),
+  startDate: z.date().optional(),
+  endDate: z.date().optional(),
+  eventBrief: EventBriefSchema.optional(),
+});
+export type RaceBrief = z.infer<typeof RaceBriefSchema>;
+
+export const PreemBriefSchema = z.object({
+  id: z.string(),
+  path: z.string(),
+  name: z.string().optional(),
+  raceBrief: RaceBriefSchema.optional(),
+});
+export type PreemBrief = z.infer<typeof PreemBriefSchema>;
+
 // Organization
 export const OrganizationSchema = baseDocSchema.extend({
   name: z.string().min(1, 'Organization name is required'),
@@ -91,18 +120,6 @@ export const OrganizationSchema = baseDocSchema.extend({
 });
 export type Organization = z.infer<typeof OrganizationSchema>;
 
-// SeriesBrief
-export const SeriesBriefSchema = z.object({
-  id: z.string(),
-  path: docPathSchema,
-  name: z.string().optional(),
-  startDate: z.date().optional(),
-  endDate: z.date().optional(),
-  timezone: z.string().optional(),
-  organizationBrief: OrganizationBriefSchema,
-});
-export type SeriesBrief = z.infer<typeof SeriesBriefSchema>;
-
 // Series
 export const SeriesSchema = baseDocSchema.extend({
   name: z.string().min(1, 'Series name is required'),
@@ -112,21 +129,10 @@ export const SeriesSchema = baseDocSchema.extend({
   startDate: z.date().optional(),
   endDate: z.date().optional(),
   timezone: z.string().optional(),
-  organizationBrief: OrganizationBriefSchema,
+  organizationId: z.string(),
+  organizationBrief: OrganizationBriefSchema.optional(),
 });
 export type Series = z.infer<typeof SeriesSchema>;
-
-// EventBrief
-export const EventBriefSchema = z.object({
-  id: z.string(),
-  path: docPathSchema,
-  name: z.string().optional(),
-  startDate: z.date().optional(),
-  endDate: z.date().optional(),
-  timezone: z.string().optional(),
-  seriesBrief: SeriesBriefSchema,
-});
-export type EventBrief = z.infer<typeof EventBriefSchema>;
 
 // Event
 export const EventSchema = baseDocSchema.extend({
@@ -137,21 +143,11 @@ export const EventSchema = baseDocSchema.extend({
   startDate: z.date().optional(),
   endDate: z.date().optional(),
   timezone: z.string().optional(),
-  seriesBrief: SeriesBriefSchema,
+  organizationId: z.string(),
+  seriesId: z.string(),
+  seriesBrief: SeriesBriefSchema.optional(),
 });
 export type Event = z.infer<typeof EventSchema>;
-
-// RaceBrief
-export const RaceBriefSchema = z.object({
-  id: z.string(),
-  path: docPathSchema,
-  name: z.string().optional(),
-  startDate: z.date().optional(),
-  endDate: z.date().optional(),
-  timezone: z.string().optional(),
-  eventBrief: EventBriefSchema,
-});
-export type RaceBrief = z.infer<typeof RaceBriefSchema>;
 
 // Race
 export const RaceSchema = baseDocSchema.extend({
@@ -172,18 +168,11 @@ export const RaceSchema = baseDocSchema.extend({
   startDate: z.date().optional(),
   endDate: z.date().optional(),
   timezone: z.string().optional(),
-  eventBrief: EventBriefSchema,
+  organizationId: z.string(),
+  eventId: z.string(),
+  eventBrief: EventBriefSchema.optional(),
 });
 export type Race = z.infer<typeof RaceSchema>;
-
-// PreemBrief
-export const PreemBriefSchema = z.object({
-  id: z.string(),
-  path: docPathSchema,
-  name: z.string().optional(),
-  raceBrief: RaceBriefSchema,
-});
-export type PreemBrief = z.infer<typeof PreemBriefSchema>;
 
 // Preem
 export const PreemSchema = baseDocSchema.extend({
@@ -194,25 +183,16 @@ export const PreemSchema = baseDocSchema.extend({
   prizePool: z.number().optional(),
   timeLimit: z.date().optional(),
   minimumThreshold: z.number().optional(),
-  raceBrief: RaceBriefSchema,
+  organizationId: z.string(),
+  raceId: z.string(),
+  raceBrief: RaceBriefSchema.optional(),
 });
 export type Preem = z.infer<typeof PreemSchema>;
-
-// ContributionBrief
-export const ContributionBriefSchema = z.object({
-  id: z.string(),
-  path: docPathSchema,
-  amount: z.number().optional(),
-  date: z.any().optional(),
-  message: z.string().optional(),
-  preemBrief: PreemBriefSchema,
-});
-export type ContributionBrief = z.infer<typeof ContributionBriefSchema>;
 
 // Contribution
 export const ContributionSchema = baseDocSchema.extend({
   status: z.enum(['pending', 'confirmed', 'failed']).or(z.string()).optional(),
-  contributor: UserBriefSchema.optional(),
+  userId: z.string().optional(),
   amount: z.number().optional(),
   date: z.any().optional(),
   message: z.string().optional(),
@@ -222,6 +202,8 @@ export const ContributionSchema = baseDocSchema.extend({
       paymentIntent: z.any(),
     })
     .optional(),
-  preemBrief: PreemBriefSchema,
+  organizationId: z.string(),
+  preemId: z.string(),
+  preemBrief: PreemBriefSchema.optional(),
 });
 export type Contribution = z.infer<typeof ContributionSchema>;

@@ -5,9 +5,7 @@ test.describe('manage: race', () => {
   useE2eTestingUserBeforeEach();
 
   test('live', async ({ page }) => {
-    await page.goto(
-      '/manage/super-sprinkles/sprinkles-2025/giro-sf-2025/masters-women',
-    );
+    await page.goto('/manage/race?path=races/masters-women');
     await expect(
       page.getByRole('heading', { name: 'Master Women 40+/50+', level: 1 }),
     ).toBeVisible();
@@ -15,9 +13,7 @@ test.describe('manage: race', () => {
   });
 
   test('new', async ({ page }) => {
-    await page.goto(
-      '/manage/super-sprinkles/sprinkles-2025/giro-sf-2025/race/new',
-    );
+    await page.goto('/manage/race/new?path=events/giro-sf-2025');
     await expect(
       page.getByRole('heading', { name: 'Create Race' }),
     ).toBeVisible();
@@ -25,9 +21,7 @@ test.describe('manage: race', () => {
   });
 
   test('edit', async ({ page }) => {
-    await page.goto(
-      '/manage/super-sprinkles/sprinkles-2025/giro-sf-2025/masters-women/edit',
-    );
+    await page.goto('/manage/race/edit?path=races/masters-women');
     await expect(
       page.getByRole('heading', { name: 'Edit Race' }),
     ).toBeVisible();

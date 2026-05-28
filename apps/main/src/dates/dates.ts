@@ -45,7 +45,14 @@ export function formatDateRange(
 function withDate(formatString: string) {
   return (date: Date | string | undefined, timeZone?: string) => {
     if (!date) return '';
-    const dateObj = typeof date === 'string' ? new Date(date) : date;
+    const dateObj =
+      typeof date === 'object' &&
+      'toDate' in date &&
+      typeof date.toDate === 'function'
+        ? date.toDate()
+        : typeof date === 'string'
+          ? new Date(date)
+          : date;
     if (timeZone) {
       return formatInTimeZone(dateObj, timeZone, formatString);
     }
@@ -66,7 +73,15 @@ export function formatDateRelative(
   options?: { addSuffix?: boolean },
 ) {
   if (!date) return '';
-  return formatDistanceToNow(new Date(date), options);
+  const dateObj =
+    typeof date === 'object' &&
+    'toDate' in date &&
+    typeof date.toDate === 'function'
+      ? date.toDate()
+      : typeof date === 'string'
+        ? new Date(date)
+        : date;
+  return formatDistanceToNow(dateObj as Date, options);
 }
 
 export function compareDates(

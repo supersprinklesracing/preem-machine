@@ -7,8 +7,9 @@ import { NewEvent } from './NewEvent';
 
 describe('NewEvent component', () => {
   const mockSeries: Series = {
+    organizationId: 'org-1',
     id: 'series-1',
-    path: 'organizations/org-1/series/series-1',
+    path: 'series/series-1',
     name: 'Test Series',
     organizationBrief: {
       id: 'org-1',
@@ -27,7 +28,7 @@ describe('NewEvent component', () => {
       <NewEvent
         series={mockSeries}
         newEventAction={newEventAction}
-        path="organizations/org-1/series/series-1"
+        path="series/series-1"
       />,
     );
 
@@ -48,7 +49,7 @@ describe('NewEvent component', () => {
 
     await waitFor(() => {
       expect(newEventAction).toHaveBeenCalledWith({
-        path: 'organizations/org-1/series/series-1',
+        path: 'series/series-1',
         values: expect.objectContaining({
           name: 'New Test Event',
           location: 'Test Location',
@@ -69,7 +70,7 @@ describe('NewEvent component', () => {
       <NewEvent
         series={mockSeries}
         newEventAction={newEventAction}
-        path="organizations/org-1/series/series-1"
+        path="series/series-1"
       />,
     );
 

@@ -22,7 +22,7 @@ import { FormActionResult } from '@/components/forms/forms';
 import { useActionForm } from '@/components/forms/useActionForm';
 import { useAvatarUpload } from '@/components/forms/useAvatarUpload';
 import { MultiPanelLayout } from '@/components/layout/MultiPanelLayout';
-import { toUrlPath } from '@/datastore/paths';
+import { getUrlPath } from '@/datastore/paths';
 import { useUserContext } from '@/user/client/UserContext';
 
 import { NewUserOptions } from './new-user-action';
@@ -59,7 +59,7 @@ export function NewUser({
       if (onSuccess) {
         onSuccess();
       } else if (data?.path) {
-        router.push(`/view/${toUrlPath(data.path)}`);
+        router.push(getUrlPath('/view', data.path));
       } else {
         router.push('/');
       }
@@ -81,9 +81,7 @@ export function NewUser({
   const topLeft = (
     <Stack>
       <UpdateUserProfileCard
-        name={
-          debouncedValues.name || authUser.displayName || 'Your full name'
-        }
+        name={debouncedValues.name || authUser.displayName || 'Your full name'}
         email={authUser.email ?? undefined}
         avatarUrl={form.values.avatarUrl ?? undefined}
         uploading={uploading}

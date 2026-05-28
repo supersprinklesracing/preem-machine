@@ -5,20 +5,17 @@ import Link from 'next/link';
 import { memo } from 'react';
 
 import { UserAvatarIcon } from '@/components/UserAvatar/UserAvatar';
-import { toUrlPath } from '@/datastore/paths';
-import { Contribution } from '@/datastore/schema';
+import { getUrlPath } from '@/datastore/paths';
+import { ContributionWithUser } from '@/datastore/query-schema';
 
 export interface LiveContributionFeedItemProps {
-  contribution: Pick<
-    Contribution,
-    'id' | 'path' | 'contributor' | 'amount' | 'preemBrief' | 'message'
-  >;
+  data: ContributionWithUser;
 }
 
 export const LiveContributionFeedItem = memo(function LiveContributionFeedItem({
-  contribution,
+  data,
 }: LiveContributionFeedItemProps) {
-  const contributor = contribution.contributor;
+  const { contribution, contributor } = data;
 
   return (
     <Group wrap="nowrap">
@@ -28,7 +25,7 @@ export const LiveContributionFeedItem = memo(function LiveContributionFeedItem({
           <Text
             component={Link}
             href={
-              contributor?.path ? `/view/${toUrlPath(contributor.path)}` : '#'
+              contributor?.path ? getUrlPath('/view', contributor.path) : '#'
             }
             fw={600}
             style={{ textDecoration: 'none', color: 'inherit' }}
@@ -44,19 +41,19 @@ export const LiveContributionFeedItem = memo(function LiveContributionFeedItem({
             component={Link}
             href={
               contribution.preemBrief?.path
-                ? `/view/${toUrlPath(contribution.preemBrief.path)}`
+                ? getUrlPath('/view', contribution.preemBrief.path)
                 : '#'
             }
             style={{ textDecoration: 'none', color: 'inherit' }}
           >
-            &quot;{contribution.preemBrief?.name ?? 'Unknown Preem'}&quot;
+            &quot;{contribution.preemBrief?.name ?? 'Preem'}&quot;
           </Text>{' '}
           in the{' '}
           <Text
             component={Link}
             href={
               contribution.preemBrief?.raceBrief?.path
-                ? `/view/${toUrlPath(contribution.preemBrief.raceBrief.path)}`
+                ? getUrlPath('/view', contribution.preemBrief.raceBrief.path)
                 : '#'
             }
             fw={600}

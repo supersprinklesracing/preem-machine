@@ -73,3 +73,8 @@ jest.mock('react-timezone-select', () => ({
 }));
 
 jest.useFakeTimers().setSystemTime(new Date('2025-07-13T00:00:00-07:00'));
+
+import { Timestamp } from 'firebase-admin/firestore';
+Timestamp.prototype.valueOf = function () {
+  return this.toMillis();
+};

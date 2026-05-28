@@ -30,8 +30,10 @@ jest.mock('@stripe/react-stripe-js', () => ({
 
 describe('ContributionModal', () => {
   const mockPreem = {
+    organizationId: 'org-1',
+    raceId: 'race-1',
     id: 'preem-123',
-    path: 'organizations/org1/series/series1/events/event1/races/race1/preems/preem-123',
+    path: 'preems/preem-123',
     name: 'Hill Climb Preem',
   };
 

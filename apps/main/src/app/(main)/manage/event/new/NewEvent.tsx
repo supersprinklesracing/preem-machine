@@ -21,7 +21,7 @@ import { EventCard } from '@/components/cards/EventCard';
 import { FormActionResult } from '@/components/forms/forms';
 import { useActionForm } from '@/components/forms/useActionForm';
 import { MultiPanelLayout } from '@/components/layout/MultiPanelLayout';
-import { toUrlPath } from '@/datastore/paths';
+import { getUrlPath } from '@/datastore/paths';
 import { Event, Series } from '@/datastore/schema';
 
 import { eventSchema } from '../event-schema';
@@ -62,7 +62,7 @@ export function NewEvent({
       if (onSuccess) {
         onSuccess();
       } else if (result.path) {
-        router.push(`/manage/${toUrlPath(result.path)}/edit`);
+        router.push(getUrlPath('/manage', result.path, '/edit'));
       }
     },
   });
@@ -72,6 +72,8 @@ export function NewEvent({
   const eventPreview: Event = {
     id: 'preview',
     path: 'organizations/org-1/series/series-1/events/preview',
+    organizationId: series.organizationId,
+    seriesId: series.id,
     ...debouncedValues,
     seriesBrief: series,
   };

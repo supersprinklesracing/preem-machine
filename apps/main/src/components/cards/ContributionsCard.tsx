@@ -5,7 +5,7 @@ import Link from 'next/link';
 
 import { ContributionCard } from '@/components/cards/ContributionCard';
 import { UserAvatar } from '@/components/UserAvatar/UserAvatar';
-import { toUrlPath } from '@/datastore/paths';
+import { getUrlPath } from '@/datastore/paths';
 import type { PreemWithContributions } from '@/datastore/query-schema';
 import { formatDateRelative } from '@/dates/dates';
 
@@ -18,11 +18,13 @@ interface LiveContributionsProps {
 export function ContributionsCard({ children }: LiveContributionsProps) {
   const liveContributions =
     children
-      ?.flatMap((p: PreemWithContributions) => p.children || [])
+      ?.flatMap((p: PreemWithContributions) =>
+        (p.children || []).map((c) => ({ ...c, preem: p.preem })),
+      )
       .filter((c) => !!c?.contributor) ?? [];
 
-  const contributionRows = liveContributions.map((contribution) => {
-    const contributor = contribution.contributor;
+  const contributionRows = liveContributions.map((data) => {
+    const { contribution, contributor, preem } = data;
     return (
       <Table.Tr key={contribution.path}>
         <Table.Td>
@@ -36,10 +38,10 @@ export function ContributionsCard({ children }: LiveContributionsProps) {
         <Table.Td>
           <Text
             component={Link}
-            href={`/view/${toUrlPath(contribution.preemBrief.path)}`}
+            href={getUrlPath('/view', `preems/${contribution.preemId}`)}
             style={{ textDecoration: 'none', color: 'inherit' }}
           >
-            {contribution.preemBrief?.name}
+            {preem.name}
           </Text>
         </Table.Td>
         <Table.Td>
@@ -56,8 +58,8 @@ export function ContributionsCard({ children }: LiveContributionsProps) {
     );
   });
 
-  const contributionCards = liveContributions.map((contribution) => (
-    <ContributionCard key={contribution.path} contribution={contribution} />
+  const contributionCards = liveContributions.map((data) => (
+    <ContributionCard key={data.contribution.path} data={data} />
   ));
 
   const mainContent = (

@@ -122,7 +122,7 @@ Good URLs look like:
 - **Updating Snapshots:** If a test fails due to an intentional UI change, you need to update the baseline snapshot. You can do this by running the tests with the `--update-snapshots` flag:
 
   ```shell
-  npx nx e2e e2e-main --update-snapshots
+  pnpm exec nx e2e e2e-main --update-snapshots
   ```
 
 After updating the snapshots, you need to commit the new snapshot files to the repository.

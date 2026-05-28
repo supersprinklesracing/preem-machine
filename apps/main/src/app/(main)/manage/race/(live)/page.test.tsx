@@ -15,7 +15,7 @@ setupMockDb();
 describe('LiveRacePage component', () => {
   it('should fetch race data and render the LiveRace component', async () => {
     const searchParams = Promise.resolve({
-      path: 'organizations/super-sprinkles/series/sprinkles-2025/events/giro-sf-2025/races/masters-women',
+      path: 'races/masters-women',
     });
     const PageComponent = await LiveRacePage({ searchParams });
     render(PageComponent);
@@ -28,8 +28,8 @@ describe('LiveRacePage component', () => {
 
   it('should throw NotFoundError when the race does not exist', async () => {
     const searchParams = Promise.resolve({
-      path: 'organizations/org-1/series/series-1/events/event-1/races/non-existent-race',
+      path: 'races/non-existent-race',
     });
-    expect(LiveRacePage({ searchParams })).rejects.toThrow(NotFoundError);
+    await expect(LiveRacePage({ searchParams })).rejects.toThrow(NotFoundError);
   });
 });

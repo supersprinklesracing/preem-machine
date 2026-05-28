@@ -20,7 +20,7 @@ import { PreemCard } from '@/components/cards/PreemCard';
 import { FormActionResult } from '@/components/forms/forms';
 import { useActionForm } from '@/components/forms/useActionForm';
 import { MultiPanelLayout } from '@/components/layout/MultiPanelLayout';
-import { toUrlPath } from '@/datastore/paths';
+import { getUrlPath } from '@/datastore/paths';
 import { Preem } from '@/datastore/schema';
 
 import { preemSchema } from '../preem-schema';
@@ -50,7 +50,7 @@ export function EditPreem({
     },
     action: (values) => editPreemAction({ path: preem.path, edits: values }),
     onSuccess: () => {
-      router.push(`/manage/${toUrlPath(preem.path)}`);
+      router.push(getUrlPath('/manage', preem.path));
     },
   });
 

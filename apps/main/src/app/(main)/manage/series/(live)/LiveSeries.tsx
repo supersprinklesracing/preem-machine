@@ -14,7 +14,7 @@ import Link from 'next/link';
 
 import { EventCard } from '@/components/cards/EventCard';
 import { MultiPanelLayout } from '@/components/layout/MultiPanelLayout';
-import { toUrlPath } from '@/datastore/paths';
+import { getUrlPath } from '@/datastore/paths';
 import { EventWithRaces } from '@/datastore/query-schema';
 import { Series } from '@/datastore/schema';
 import { formatDateRange } from '@/firebase/client/dates';
@@ -48,7 +48,7 @@ export function LiveSeries({ series, children }: Props) {
             leftSection={<IconPencil size={14} />}
             size="xs"
             component={Link}
-            href={`/manage/${toUrlPath(series.path)}/edit`}
+            href={getUrlPath('/manage', series.path, '/edit')}
           >
             Edit Series
           </Button>
@@ -57,7 +57,11 @@ export function LiveSeries({ series, children }: Props) {
           Hosted by{' '}
           <Anchor
             component={Link}
-            href={`/manage/${toUrlPath(organization.path)}/edit`}
+            href={
+              organization
+                ? getUrlPath('/manage', organization.path, '/edit')
+                : '#'
+            }
           >
             {organization?.name}
           </Anchor>
@@ -82,7 +86,7 @@ export function LiveSeries({ series, children }: Props) {
               <EventCard key={event.path} event={event}>
                 <Button
                   component={Link}
-                  href={`/manage/${toUrlPath(event.path)}`}
+                  href={getUrlPath('/manage', event.path)}
                   fullWidth
                   mt="md"
                   variant="outline"

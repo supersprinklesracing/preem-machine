@@ -34,6 +34,7 @@ describe('main', () => {
   it('should run without throwing an error', async () => {
     const processArgv = process.argv;
     process.argv = ['node', 'apps/cli/dist/main.js'];
+    // eslint-disable-next-line no-restricted-syntax
     await import('./main');
     expect(yargs).toHaveBeenCalledWith(hideBin(process.argv));
     process.argv = processArgv;

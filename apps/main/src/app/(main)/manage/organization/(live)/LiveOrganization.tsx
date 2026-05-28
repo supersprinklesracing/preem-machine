@@ -6,7 +6,7 @@ import Link from 'next/link';
 
 import { SeriesCard } from '@/components/cards/SeriesCard';
 import { MultiPanelLayout } from '@/components/layout/MultiPanelLayout';
-import { toUrlPath } from '@/datastore/paths';
+import { getUrlPath } from '@/datastore/paths';
 import { SeriesWithEvents } from '@/datastore/query-schema';
 import { Organization } from '@/datastore/schema';
 
@@ -26,7 +26,7 @@ export function LiveOrganization({ organization, serieses }: Props) {
             leftSection={<IconPencil size={14} />}
             size="xs"
             component={Link}
-            href={`/manage/${toUrlPath(organization.path)}/edit`}
+            href={getUrlPath('/manage', organization.path, '/edit')}
           >
             Edit Organization
           </Button>
@@ -38,7 +38,7 @@ export function LiveOrganization({ organization, serieses }: Props) {
               <SeriesCard key={series.path} series={series}>
                 <Button
                   component={Link}
-                  href={`/manage/${toUrlPath(series.path)}`}
+                  href={getUrlPath('/manage', series.path)}
                   fullWidth
                   mt="md"
                   variant="outline"

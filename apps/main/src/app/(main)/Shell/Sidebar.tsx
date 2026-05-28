@@ -12,7 +12,7 @@ import Link from 'next/link';
 import { usePathname } from 'next/navigation';
 import React from 'react';
 
-import { toUrlPath } from '@/datastore/paths';
+import { getUrlPath } from '@/datastore/paths';
 import { Event, User } from '@/datastore/schema';
 import { ENV_DEBUG_LINKS } from '@/env/env';
 
@@ -65,7 +65,7 @@ export function Sidebar({ events, user }: SidebarProps) {
                   onClick={handleLinkClick}
                 />
                 {events.map((event) => {
-                  const href = `/manage/${toUrlPath(event.path)}`;
+                  const href = getUrlPath('/manage', event.path);
                   return (
                     <NavLink
                       key={event.path}

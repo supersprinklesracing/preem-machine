@@ -14,7 +14,7 @@ import Link from 'next/link';
 import { DateLocationDetail } from '@/components/cards/DateLocationDetail';
 import { RaceCard } from '@/components/cards/RaceCard';
 import { MultiPanelLayout } from '@/components/layout/MultiPanelLayout';
-import { organizationPath, seriesPath, toUrlPath } from '@/datastore/paths';
+import { getUrlPath } from '@/datastore/paths';
 import { RaceWithPreems } from '@/datastore/query-schema';
 import { Event as EventType } from '@/datastore/schema';
 
@@ -35,27 +35,32 @@ interface Props {
 
 export function Event({ event, children }: Props) {
   const series = event.seriesBrief;
-  const organization = series.organizationBrief;
+  const organization = series?.organizationBrief;
 
   return (
     <MultiPanelLayout>
       <Stack>
         <Title>{event.name}</Title>
         <Text>
-          Part of{' '}
-          <Anchor
-            component={Link}
-            href={`/view/${toUrlPath(seriesPath(event.path))}`}
-          >
-            {series.name}
-          </Anchor>{' '}
-          hosted by{' '}
-          <Anchor
-            component={Link}
-            href={`/view/${toUrlPath(organizationPath(event.path))}`}
-          >
-            {organization.name}
-          </Anchor>
+          {series ? (
+            <>
+              Part of{' '}
+              <Anchor component={Link} href={getUrlPath('/view', series.path)}>
+                {series.name}
+              </Anchor>{' '}
+            </>
+          ) : null}
+          {organization ? (
+            <>
+              hosted by{' '}
+              <Anchor
+                component={Link}
+                href={getUrlPath('/view', organization.path)}
+              >
+                {organization.name}
+              </Anchor>
+            </>
+          ) : null}
         </Text>
         <Group data-testid="event-details">
           <Group>
@@ -89,7 +94,7 @@ export function Event({ event, children }: Props) {
                   >
                     <Button
                       component={Link}
-                      href={`/view/${toUrlPath(race.path)}`}
+                      href={getUrlPath('/view', race.path)}
                       variant="light"
                       size="sm"
                       mt="md"

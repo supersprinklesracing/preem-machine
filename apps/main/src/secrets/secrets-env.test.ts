@@ -17,6 +17,7 @@ describe('secrets-env', () => {
       jest.mock('@preem-machine/env', () => ({
         ENV_STRIPE_ENABLED: true,
       }));
+      // eslint-disable-next-line no-restricted-syntax
       const { getStripeSecrets } = require('./secrets-env');
       const secrets = await getStripeSecrets();
       expect(secrets).toEqual({
@@ -29,6 +30,7 @@ describe('secrets-env', () => {
       jest.mock('@preem-machine/env', () => ({
         ENV_STRIPE_ENABLED: false,
       }));
+      // eslint-disable-next-line no-restricted-syntax
       const { getStripeSecrets } = require('./secrets-env');
       const secrets = await getStripeSecrets();
       expect(secrets).toBeUndefined();

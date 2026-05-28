@@ -1,5 +1,6 @@
 //@ts-check
 
+// eslint-disable-next-line no-restricted-syntax
 const { composePlugins, withNx } = require('@nx/next');
 
 /**

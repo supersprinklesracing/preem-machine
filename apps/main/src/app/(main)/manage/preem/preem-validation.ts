@@ -6,10 +6,10 @@ import { preemSchema } from './preem-schema';
 
 export const validatePreemForm = (
   values: z.infer<typeof preemSchema>,
-  race: Race,
+  race: Pick<Race, 'startDate'> | undefined,
 ) => {
   if (values.timeLimit) {
-    if (race.startDate && values.timeLimit) {
+    if (race?.startDate && values.timeLimit) {
       if (values.timeLimit > race.startDate) {
         return {
           timeLimit: 'Preem time limit cannot be after race start date',

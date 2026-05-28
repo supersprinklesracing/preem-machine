@@ -5,7 +5,7 @@ import { Event } from './Event';
 const mockData = {
   event: {
     id: 'event-1',
-    path: 'organizations/org-1/series/series-1/events/event-1',
+    path: 'events/event-1',
     name: 'Test Event',
     description: 'This is a test event.',
     website: 'https://example.com',
@@ -14,7 +14,7 @@ const mockData = {
     timezone: 'America/Los_Angeles',
     seriesBrief: {
       id: 'series-1',
-      path: 'organizations/org-1/series/series-1',
+      path: 'series/series-1',
       name: 'Test Series',
       organizationBrief: {
         id: 'org-1',
@@ -27,13 +27,15 @@ const mockData = {
     {
       race: {
         id: 'race-1',
-        path: 'organizations/org-1/series/series-1/events/event-1/races/race-1',
+        path: 'races/race-1',
+        organizationId: 'org-1',
+        eventId: 'event-1',
         name: 'Test Race 1',
         category: 'Pro',
         startDate: new Date(),
         eventBrief: {
           id: 'event-1',
-          path: 'organizations/org-1/series/series-1/events/event-1',
+          path: 'events/event-1',
           name: 'Test Event',
         },
       },
@@ -42,13 +44,15 @@ const mockData = {
     {
       race: {
         id: 'race-2',
-        path: 'organizations/org-1/series/series-1/events/event-1/races/race-2',
+        path: 'races/race-2',
+        organizationId: 'org-1',
+        eventId: 'event-1',
         name: 'Test Race 2',
         category: 'Amateur',
         startDate: new Date(),
         eventBrief: {
           id: 'event-1',
-          path: 'organizations/org-1/series/series-1/events/event-1',
+          path: 'events/event-1',
           name: 'Test Event',
         },
       },

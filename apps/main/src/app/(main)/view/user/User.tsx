@@ -16,10 +16,12 @@ import React from 'react';
 
 import { MultiPanelLayout } from '@/components/layout/MultiPanelLayout';
 import { UserAvatarIcon } from '@/components/UserAvatar/UserAvatar';
-import { toUrlPath } from '@/datastore/paths';
+import { getUrlPath } from '@/datastore/paths';
 import type {
   Contribution,
   Organization,
+  Preem,
+  Race,
   User as UserType,
 } from '@/datastore/schema';
 import { compareDates, formatDateShort } from '@/dates/dates';
@@ -27,10 +29,11 @@ import { useUserContext } from '@/user/client/UserContext';
 
 interface Props {
   user: Pick<UserType, 'id' | 'path' | 'name' | 'email' | 'avatarUrl'>;
-  contributions: Pick<
-    Contribution,
-    'id' | 'path' | 'date' | 'amount' | 'preemBrief'
-  >[];
+  contributions: {
+    contribution: Pick<Contribution, 'id' | 'path' | 'date' | 'amount'>;
+    preem?: Pick<Preem, 'name'>;
+    race?: Pick<Race, 'name'>;
+  }[];
   organizations: Pick<Organization, 'id' | 'path' | 'name'>[];
 }
 
@@ -39,23 +42,21 @@ export function User({ user, contributions, organizations }: Props) {
   const isOwnProfile = authUser?.uid === user.id;
 
   const totalContributed = contributions.reduce(
-    (sum, c) => sum + (c.amount ?? 0),
+    (sum, c) => sum + (c.contribution.amount ?? 0),
     0,
   );
 
   const contributionRows = contributions
     // eslint-disable-next-line @typescript-eslint/no-non-null-assertion
-    .sort((a, b) => compareDates(a.date!, b.date!))
+    .sort((a, b) => compareDates(a.contribution.date!, b.contribution.date!))
     .map((c) => (
-      <Table.Tr key={c.path}>
-        <Table.Td>
-          {formatDateShort(c.date, c.preemBrief?.raceBrief?.timezone)}
-        </Table.Td>
-        <Table.Td>{c.preemBrief?.raceBrief?.name}</Table.Td>
-        <Table.Td>{c.preemBrief?.name}</Table.Td>
+      <Table.Tr key={c.contribution.path}>
+        <Table.Td>{formatDateShort(c.contribution.date)}</Table.Td>
+        <Table.Td>{c.race?.name}</Table.Td>
+        <Table.Td>{c.preem?.name}</Table.Td>
         <Table.Td>
           <Text ta="right" c="green" fw={600}>
-            ${(c.amount ?? 0).toLocaleString()}
+            ${(c.contribution.amount ?? 0).toLocaleString()}
           </Text>
         </Table.Td>
       </Table.Tr>
@@ -77,7 +78,7 @@ export function User({ user, contributions, organizations }: Props) {
                 <Stack>
                   {organizations.map((org) => (
                     <Text key={org.path}>
-                      <Link href={`/view/${toUrlPath(org.path)}`}>
+                      <Link href={getUrlPath('/view', org.path)}>
                         {org.name}
                       </Link>
                     </Text>

@@ -21,7 +21,7 @@ import { PreemCard } from '@/components/cards/PreemCard';
 import { FormActionResult } from '@/components/forms/forms';
 import { useActionForm } from '@/components/forms/useActionForm';
 import { MultiPanelLayout } from '@/components/layout/MultiPanelLayout';
-import { DocPath, toUrlPath } from '@/datastore/paths';
+import { DocPath, getUrlPath } from '@/datastore/paths';
 import { Preem, Race } from '@/datastore/schema';
 
 import { preemSchema } from '../preem-schema';
@@ -56,7 +56,7 @@ export function NewPreem({
     action: (values) => newPreemAction({ path, values }),
     onSuccess: (result) => {
       if (result.path) {
-        router.push(`/manage/${toUrlPath(result.path)}`);
+        router.push(getUrlPath('/manage', result.path));
       }
     },
   });
@@ -66,6 +66,8 @@ export function NewPreem({
   const preemPreview: Preem = {
     id: 'preview',
     path: 'organizations/org-1/series/series-1/events/event-1/races/race-1/preems/preview',
+    organizationId: race.organizationId,
+    raceId: race.id,
     raceBrief: race,
     ...debouncedValues,
   };

@@ -4,17 +4,17 @@ import { Avatar, Group, MantineSize, Text } from '@mantine/core';
 import Link from 'next/link';
 import { usePathname } from 'next/navigation';
 
-import { toUrlPath } from '@/datastore/paths';
+import { getUrlPath } from '@/datastore/paths';
 import { User } from '@/datastore/schema';
 
 interface UserAvatarProps {
-  user?: Pick<User, 'id' | 'path' | 'name' | 'avatarUrl'> | null;
+  user?: (Pick<User, 'id' | 'name' | 'avatarUrl'> & { path?: string }) | null;
   size?: MantineSize;
 }
 
 export function UserAvatar({ user, size = 'md' }: UserAvatarProps) {
   const name = user?.name ?? 'Anonymous';
-  const linkHref = user?.path ? `/view/${toUrlPath(user.path)}` : '#';
+  const linkHref = user?.path ? getUrlPath('/view', user.path) : '#';
 
   const content = (
     <Group>
@@ -41,7 +41,7 @@ export function UserAvatar({ user, size = 'md' }: UserAvatarProps) {
 
 export function UserAvatarIcon({ user, size = 'md' }: UserAvatarProps) {
   const name = user?.name ?? 'Anonymous';
-  const linkHref = user?.path ? `/view/${toUrlPath(user.path)}` : '#';
+  const linkHref = user?.path ? getUrlPath('/view', user.path) : '#';
 
   const content = (
     <Avatar src={user?.avatarUrl} alt={name} radius="50%" size={size} />

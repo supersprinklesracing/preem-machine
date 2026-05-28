@@ -47,19 +47,13 @@ describe('isUserAuthorized', () => {
 
   it('should return true for a sub-collection document if the user has access to the root document', async () => {
     const authUser = { uid: MOCK_USER_1.id, email: MOCK_USER_1.email };
-    const result = await isUserAuthorized(
-      authUser,
-      'organizations/super-sprinkles/series/sprinkles-2025',
-    );
+    const result = await isUserAuthorized(authUser, 'series/sprinkles-2025');
     expect(result).toBe(true);
   });
 
   it('should return false for a sub-collection document if the user does not have access to the root document', async () => {
     const authUser = { uid: 'some-other-user', email: 'other@test.com' };
-    const result = await isUserAuthorized(
-      authUser,
-      'organizations/super-sprinkles/series/sprinkles-2025',
-    );
+    const result = await isUserAuthorized(authUser, 'series/sprinkles-2025');
     expect(result).toBe(false);
   });
 });

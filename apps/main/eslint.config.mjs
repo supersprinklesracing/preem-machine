@@ -1,7 +1,6 @@
 // apps/main/eslint.config.mjs
 import baseConfig from '../../eslint.config.mjs';
 import nx from '@nx/eslint-plugin';
-import eslintReact from '@eslint-react/eslint-plugin';
 import jsxA11y from 'eslint-plugin-jsx-a11y';
 
 /** @type {import('eslint').Linter.FlatConfig[]} */
@@ -10,9 +9,6 @@ const config = [
 
   // Apply Nx's recommended React settings
   ...nx.configs['flat/react-typescript'],
-
-  // Apply new official React plugin's recommended settings
-  eslintReact.configs.recommended,
 
   // Apply accessibility rules
   jsxA11y.flatConfigs.recommended,

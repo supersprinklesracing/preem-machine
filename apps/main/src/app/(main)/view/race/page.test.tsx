@@ -17,7 +17,7 @@ setupMockDb();
 describe('RacePage component', () => {
   it('should fetch race data and render the Race component', async () => {
     const searchParams = Promise.resolve({
-      path: 'organizations/super-sprinkles/series/sprinkles-2025/events/giro-sf-2025/races/masters-women',
+      path: 'races/masters-women',
     });
     render(await RacePage({ searchParams }));
 
@@ -29,8 +29,8 @@ describe('RacePage component', () => {
 
   it('should throw NotFoundError when the race does not exist', async () => {
     const searchParams = Promise.resolve({
-      path: 'organizations/org-1/series/series-1/events/event-1/races/non-existent-race',
+      path: 'races/non-existent-race',
     });
-    expect(RacePage({ searchParams })).rejects.toThrow(NotFoundError);
+    await expect(RacePage({ searchParams })).rejects.toThrow(NotFoundError);
   });
 });

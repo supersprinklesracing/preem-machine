@@ -15,7 +15,7 @@ export interface ContributionWithUser {
 
 export interface PreemWithContributions {
   preem: Preem;
-  children: Contribution[];
+  children: ContributionWithUser[];
 }
 export interface RaceWithPreems {
   race: Race;

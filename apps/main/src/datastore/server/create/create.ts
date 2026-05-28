@@ -13,22 +13,16 @@ import {
   type Contribution,
   ContributionSchema,
   Event,
-  EventBriefSchema,
   EventSchema,
   Invite,
   InviteSchema,
   Organization,
-  OrganizationBriefSchema,
   OrganizationSchema,
   Preem,
-  PreemBriefSchema,
   PreemSchema,
   Race,
-  type RaceBrief,
-  RaceBriefSchema,
   RaceSchema,
   Series,
-  SeriesBriefSchema,
   SeriesSchema,
   User,
   UserSchema,
@@ -51,57 +45,54 @@ export const createUser = async (
   newUserEdits: Pick<User, 'name' | 'avatarUrl'>,
   authUser: AuthUser,
 ) => {
-  // Any authorized user can create a record for themselves in the DB; but they
-  // can still only modifiy their own record due to the use of authUser.uid.
   const path = `users/${authUser.uid}`;
   const newUserRef = await getDocRefInternal(UserSchema, path);
 
-  const newUserDetails = await newUserRef.firestore.runTransaction(async (transaction) => {
-    // Check for invites for the user's email address or UID
-    const invitesByEmailSnapshot = await (
-      await getCollectionRefInternal(InviteSchema, 'invites')
-    )
-      .where('email', '==', authUser.email)
-      .where('status', '==', 'pending')
-      .get();
-    const invitesByUidSnapshot = await (
-      await getCollectionRefInternal(InviteSchema, 'invites')
-    )
-      .where('uid', '==', authUser.uid)
-      .where('status', '==', 'pending')
-      .get();
+  const newUserDetails = await newUserRef.firestore.runTransaction(
+    async (transaction) => {
+      const invitesByEmailSnapshot = await (
+        await getCollectionRefInternal(InviteSchema, 'invites')
+      )
+        .where('email', '==', authUser.email)
+        .where('status', '==', 'pending')
+        .get();
+      const invitesByUidSnapshot = await (
+        await getCollectionRefInternal(InviteSchema, 'invites')
+      )
+        .where('uid', '==', authUser.uid)
+        .where('status', '==', 'pending')
+        .get();
 
-    const allInvites = [
-      ...invitesByEmailSnapshot.docs,
-      ...invitesByUidSnapshot.docs,
-    ];
+      const allInvites = [
+        ...invitesByEmailSnapshot.docs,
+        ...invitesByUidSnapshot.docs,
+      ];
 
-    const organizationRefsMap = new Map<
-      string,
-      {id: string, path: string}
-    >();
+      const organizationRefsMap = new Map<
+        string,
+        { id: string; path: string }
+      >();
 
-    allInvites.forEach((doc) => {
-      (doc.data().organizationRefs ?? []).forEach((orgRef) => {
-        organizationRefsMap.set(orgRef.path, orgRef);
+      allInvites.forEach((doc) => {
+        (doc.data().organizationRefs ?? []).forEach((orgRef) => {
+          organizationRefsMap.set(orgRef.path, orgRef);
+        });
+        transaction.update(doc.ref, { status: 'accepted' });
       });
-      transaction.update(doc.ref, { status: 'accepted' });
-    });
 
-    const newUser: User = {
-      ...newUserEdits,
-      id: newUserRef.id,
-      path: asDocPath(newUserRef.path),
-      organizationRefs: Array.from(organizationRefsMap.values()),
-      ...getCreateMetadata(newUserRef),
-    };
+      const newUser: User = {
+        ...newUserEdits,
+        id: newUserRef.id,
+        path: asDocPath(newUserRef.path),
+        organizationRefs: Array.from(organizationRefsMap.values()),
+        ...getCreateMetadata(newUserRef),
+      };
 
-    transaction.set(newUserRef, newUser);
-    return newUser;
-  });
-  // This is a hack to satisfy tests (which have issues with reading a record
-  // after a transaction)
-  return {newUserDetails, newUser: await newUserRef.get()}
+      transaction.set(newUserRef, newUser);
+      return newUser;
+    },
+  );
+  return { newUserDetails, newUser: await newUserRef.get() };
 };
 
 export const createOrganization = async (
@@ -109,13 +100,10 @@ export const createOrganization = async (
   organization: Pick<Organization, 'name'>,
   authUser: AuthUser,
 ) => {
-  // TODO: Re-enable this in the future. Not now. We need a claim or something.
-  // if (!(await isUserAuthorized(authUser, getParentPath(path)))) {
-  //   unauthorized();
-  // }
-
   const userRef = await getDocRefInternal(UserSchema, `users/${authUser.uid}`);
-  const ref = (await getCollectionRefInternal(OrganizationSchema, path)).doc();
+  const ref = (
+    await getCollectionRefInternal(OrganizationSchema, 'organizations')
+  ).doc();
   const newOrganization = {
     ...organization,
     id: ref.id,
@@ -139,16 +127,13 @@ export const createSeries = async (
   }
 
   const userRef = await getDocRefInternal(UserSchema, `users/${authUser.uid}`);
-  const organization = await getDoc(OrganizationSchema, path);
-  const organizationBrief = OrganizationBriefSchema.parse(organization);
-  const ref = (
-    await getCollectionRefInternal(SeriesSchema, `${path}/series`)
-  ).doc();
+  const organizationId = docId(path);
+  const ref = (await getCollectionRefInternal(SeriesSchema, 'series')).doc();
   const newSeries = {
     ...series,
     id: ref.id,
     path: asDocPath(ref.path),
-    organizationBrief,
+    organizationId,
     ...getCreateMetadata(userRef),
   };
   await ref.set(newSeries);
@@ -170,15 +155,13 @@ export const createEvent = async (
   const userRef = await getDocRefInternal(UserSchema, `users/${authUser.uid}`);
   const series = await getDoc(SeriesSchema, path);
   await validateEventDateRange(event, series.path);
-  const seriesBrief = SeriesBriefSchema.parse(series);
-  const ref = (
-    await getCollectionRefInternal(EventSchema, `${path}/events`)
-  ).doc();
+  const ref = (await getCollectionRefInternal(EventSchema, 'events')).doc();
   const newEvent = {
     ...event,
     id: ref.id,
     path: asDocPath(ref.path),
-    seriesBrief,
+    seriesId: series.id,
+    organizationId: series.organizationId,
     ...getCreateMetadata(userRef),
   };
   await ref.set(newEvent);
@@ -200,15 +183,13 @@ export const createRace = async (
   const userRef = await getDocRefInternal(UserSchema, `users/${authUser.uid}`);
   const event = await getDoc(EventSchema, path);
   await validateRaceDateRange(race, event.path);
-  const eventBrief = EventBriefSchema.parse(event);
-  const ref = (
-    await getCollectionRefInternal(RaceSchema, `${path}/races`)
-  ).doc();
+  const ref = (await getCollectionRefInternal(RaceSchema, 'races')).doc();
   const newRace = {
     ...race,
     id: ref.id,
     path: asDocPath(ref.path),
-    eventBrief,
+    eventId: event.id,
+    organizationId: event.organizationId,
     ...getCreateMetadata(userRef),
   };
   await ref.set(newRace);
@@ -226,15 +207,13 @@ export const createPreem = async (
 
   const userRef = await getDocRefInternal(UserSchema, `users/${authUser.uid}`);
   const race = await getDoc(RaceSchema, path);
-  const raceBrief: RaceBrief = RaceBriefSchema.parse(race);
-  const ref = (
-    await getCollectionRefInternal(PreemSchema, `${path}/preems`)
-  ).doc();
+  const ref = (await getCollectionRefInternal(PreemSchema, 'preems')).doc();
   const newPreem = {
     ...preem,
     id: ref.id,
     path: asDocPath(ref.path),
-    raceBrief,
+    raceId: race.id,
+    organizationId: race.organizationId,
     ...getCreateMetadata(userRef),
   };
   await ref.set(newPreem);
@@ -252,22 +231,17 @@ export const createPendingContribution = async (
 
   const userRef = await getDocRefInternal(UserSchema, `users/${authUser.uid}`);
   const preem = await getDoc(PreemSchema, path);
-  const preemBrief = PreemBriefSchema.parse(preem);
   const ref = (
-    await getCollectionRefInternal(ContributionSchema, `${path}/contributions`)
+    await getCollectionRefInternal(ContributionSchema, 'contributions')
   ).doc();
   const newContribution = {
     ...contribution,
     id: ref.id,
     path: asDocPath(ref.path),
     status: 'pending',
-    preemBrief,
-    contributor: {
-      id: docId(userRef.path),
-      path: asDocPath(userRef.path),
-      name: authUser.displayName ?? undefined,
-      avatarUrl: authUser.photoURL ?? undefined,
-    },
+    preemId: preem.id,
+    organizationId: preem.organizationId,
+    userId: authUser.uid,
     ...getCreateMetadata(userRef),
   };
   await ref.set(newContribution);

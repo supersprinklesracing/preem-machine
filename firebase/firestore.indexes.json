@@ -5,23 +5,8 @@
       "queryScope": "COLLECTION_GROUP",
       "fields": [
         {
-          "fieldPath": "seriesBrief.organizationBrief.id",
+          "fieldPath": "organizationId",
           "order": "ASCENDING"
-        },
-        {
-          "fieldPath": "endDate",
-          "order": "ASCENDING"
-        }
-      ],
-      "density": "SPARSE_ALL"
-    },
-    {
-      "collectionGroup": "events",
-      "queryScope": "COLLECTION_GROUP",
-      "fields": [
-        {
-          "fieldPath": "seriesBrief.organizationBrief.id",
-          "arrayConfig": "CONTAINS"
         },
         {
           "fieldPath": "endDate",

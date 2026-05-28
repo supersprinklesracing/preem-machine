@@ -6,7 +6,7 @@ This document provides essential information for agents working on this project.
 
 ## 2. Getting Started
 
-To set up your local environment, use `HUSKY=0 npm ci` to install the project dependencies.
+To set up your local environment, use `HUSKY=0 pnpm install --frozen-lockfile` to install the project dependencies.
 
 ## 3. Critical Rules
 

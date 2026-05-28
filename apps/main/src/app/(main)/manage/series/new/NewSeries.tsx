@@ -21,7 +21,7 @@ import { SeriesCard } from '@/components/cards/SeriesCard';
 import { FormActionResult } from '@/components/forms/forms';
 import { useActionForm } from '@/components/forms/useActionForm';
 import { MultiPanelLayout } from '@/components/layout/MultiPanelLayout';
-import { toUrlPath } from '@/datastore/paths';
+import { getUrlPath } from '@/datastore/paths';
 import { Organization, Series } from '@/datastore/schema';
 
 import { seriesSchema } from '../series-schema';
@@ -55,7 +55,7 @@ export function NewSeries({
     action: (values) => newSeriesAction({ path, values }),
     onSuccess: (result) => {
       if (result.path) {
-        router.push(`/manage/${toUrlPath(result.path)}/edit`);
+        router.push(getUrlPath('/manage', result.path, '/edit'));
       }
     },
   });
@@ -66,6 +66,7 @@ export function NewSeries({
     id: 'preview',
     path: 'organizations/org-1/series/preview',
     ...debouncedValues,
+    organizationId: organization.id,
     organizationBrief: {
       id: organization.id,
       path: organization.path,

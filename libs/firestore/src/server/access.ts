@@ -35,8 +35,24 @@ export async function isUserAuthorized(
     return false;
   }
 
+  let orgId: string | undefined;
+
   if (rootRef.path.startsWith('organizations')) {
-    const orgData = rootDoc.data() as Organization;
+    orgId = rootRef.id;
+  } else if (
+    rootRef.path.startsWith('series') ||
+    rootRef.path.startsWith('events') ||
+    rootRef.path.startsWith('races') ||
+    rootRef.path.startsWith('preems') ||
+    rootRef.path.startsWith('contributions')
+  ) {
+    orgId = rootDoc.data()?.organizationId;
+  }
+
+  if (orgId) {
+    const orgDoc = await db.doc(`organizations/${orgId}`).get();
+    if (!orgDoc.exists) return false;
+    const orgData = orgDoc.data() as Organization;
     return (
       orgData?.memberRefs?.some((member) => member.id === authUser.uid) ?? false
     );

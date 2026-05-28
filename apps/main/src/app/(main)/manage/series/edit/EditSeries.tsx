@@ -46,6 +46,7 @@ export function EditSeries({
     | 'id'
     | 'organizationBrief'
     | 'path'
+    | 'organizationId'
     | 'timezone'
   >;
   newEventAction: (
@@ -93,6 +94,7 @@ export function EditSeries({
   const seriesPreview: Series = {
     ...series,
     ...debouncedValues,
+    organizationId: series.organizationId,
   };
 
   return (

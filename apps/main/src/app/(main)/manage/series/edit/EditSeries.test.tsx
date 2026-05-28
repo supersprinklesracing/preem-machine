@@ -6,8 +6,9 @@ import { act, render, screen, waitFor } from '@/test-utils';
 import { EditSeries } from './EditSeries';
 
 const mockSeries: Series = {
+  organizationId: 'org-1',
   id: 'series-1',
-  path: 'organizations/org-1/series/series-1',
+  path: 'series/series-1',
   name: 'Test Series',
   description: 'This is a test series description.',
   location: 'Test Location',
@@ -63,7 +64,7 @@ describe('EditSeries component', () => {
     await waitFor(() => {
       expect(editSeriesAction).toHaveBeenCalledWith(
         expect.objectContaining({
-          path: 'organizations/org-1/series/series-1',
+          path: 'series/series-1',
           edits: expect.objectContaining({
             name: 'New Series Name',
             timezone: 'America/New_York',

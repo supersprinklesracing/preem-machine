@@ -23,7 +23,7 @@ import { CourseLink } from '@/components/CourseLink/CourseLink';
 import { MultiPanelLayout } from '@/components/layout/MultiPanelLayout';
 import { PreemStatusBadge } from '@/components/PreemStatusBadge/PreemStatusBadge';
 import { UserAvatarIcon } from '@/components/UserAvatar/UserAvatar';
-import { toUrlPath } from '@/datastore/paths';
+import { getUrlPath } from '@/datastore/paths';
 import { PreemWithContributions } from '@/datastore/query-schema';
 import { Preem, Race as RaceType } from '@/datastore/schema';
 import { getSponsorName } from '@/datastore/sponsors';
@@ -45,8 +45,12 @@ export function Race({ race, children }: Props) {
         preemPath: p.preem?.path,
       })),
     )
-    // eslint-disable-next-line @typescript-eslint/no-non-null-assertion
-    .sort((a, b) => new Date(b.date!).getTime() - new Date(a.date!).getTime());
+
+    .sort(
+      (a, b) =>
+        new Date(b.contribution.date!).getTime() -
+        new Date(a.contribution.date!).getTime(),
+    );
 
   const preemRows = children.map((preemWithContributions) => {
     const { preem } = preemWithContributions;
@@ -57,7 +61,7 @@ export function Race({ race, children }: Props) {
       <Table.Tr key={preem.id}>
         <Table.Td>
           <Link
-            href={`/view/${toUrlPath(preem.path)}`}
+            href={getUrlPath('/view', preem.path)}
             passHref
             style={{ textDecoration: 'none', color: 'inherit' }}
           >
@@ -121,19 +125,21 @@ export function Race({ race, children }: Props) {
   const contributionItems = allContributions.map((c) => {
     const contributor = c.contributor
       ? {
-          id: c.contributor.id,
-          path: c.contributor.path,
-          name: c.contributor.name,
-          avatarUrl: c.contributor.avatarUrl,
+          id: c.contribution.userId ?? '',
+          path: c.contribution.userId
+            ? `users/${c.contribution.userId}`
+            : undefined,
+          name: 'Anonymous',
+          avatarUrl: undefined,
         }
       : {
-          id: undefined,
+          id: '',
           path: undefined,
           name: 'Anonymous',
           avatarUrl: 'https://placehold.co/40x40.png',
         };
     return (
-      <Box key={c.path} mb="md">
+      <Box key={c.contribution.path} mb="md">
         <Group>
           {contributor.path && <UserAvatarIcon user={contributor} />}
           <div>
@@ -141,9 +147,7 @@ export function Race({ race, children }: Props) {
               <Text
                 component={Link}
                 href={
-                  contributor.path
-                    ? `/view/${toUrlPath(contributor.path)}`
-                    : '#'
+                  contributor.path ? getUrlPath('/view', contributor.path) : '#'
                 }
                 fw={600}
                 style={{ textDecoration: 'none', color: 'inherit' }}
@@ -152,23 +156,23 @@ export function Race({ race, children }: Props) {
               </Text>{' '}
               contributed{' '}
               <Text span fw={600} c="green">
-                ${c.amount}
+                ${c.contribution.amount}
               </Text>
             </Text>
             <Text size="xs" c="dimmed">
               to{' '}
               <Text
                 component={Link}
-                href={`/view/${toUrlPath(c.preemPath)}`}
+                href={getUrlPath('/view', c.preemPath)}
                 style={{ textDecoration: 'none', color: 'inherit' }}
               >
                 &quot;{c.preemName}&quot;
               </Text>
             </Text>
-            {c.message && (
+            {c.contribution.message && (
               <Card withBorder padding="xs" mt="xs">
                 <Text size="xs" fs="italic">
-                  &quot;{c.message}&quot;
+                  &quot;{c.contribution.message}&quot;
                 </Text>
               </Card>
             )}
@@ -192,7 +196,7 @@ export function Race({ race, children }: Props) {
                 <Title order={2}>Preems</Title>
                 <Button
                   component={Link}
-                  href={`/big-screen/${toUrlPath(race.path)}`}
+                  href={getUrlPath('/big-screen', race.path)}
                   variant="outline"
                   leftSection={<IconDeviceTv size={16} />}
                 >

@@ -21,26 +21,23 @@ describe('validation', () => {
   describe('validateEventDateRange', () => {
     it('should not throw an error for a valid date range', async () => {
       const series: Series = {
+        organizationId: 'org-1',
         id: 'series-1',
-        path: 'organizations/org-1/series/series-1',
+        path: 'series/series-1',
         name: 'Test Series',
         startDate: Timestamp.fromDate(new Date('2025-01-01')),
         endDate: Timestamp.fromDate(new Date('2025-01-31')),
-        organizationBrief: {
-          id: 'org-1',
-          path: 'organizations/org-1',
-          name: 'Test Org',
-        },
       };
       await db.doc(series.path).set(series);
 
       const event: Event = {
+        organizationId: 'org-1',
+        seriesId: 'series-1',
         id: 'event-1',
-        path: 'organizations/org-1/series/series-1/events/event-1',
+        path: 'events/event-1',
         name: 'Test Event',
         startDate: Timestamp.fromDate(new Date('2025-01-10')),
         endDate: Timestamp.fromDate(new Date('2025-01-20')),
-        seriesBrief: series,
       };
 
       await expect(
@@ -50,26 +47,23 @@ describe('validation', () => {
 
     it('should throw a DateRangeError for an invalid start date', async () => {
       const series: Series = {
+        organizationId: 'org-1',
         id: 'series-1',
-        path: 'organizations/org-1/series/series-1',
+        path: 'series/series-1',
         name: 'Test Series',
         startDate: Timestamp.fromDate(new Date('2025-01-01')),
         endDate: Timestamp.fromDate(new Date('2025-01-31')),
-        organizationBrief: {
-          id: 'org-1',
-          path: 'organizations/org-1',
-          name: 'Test Org',
-        },
       };
       await db.doc(series.path).set(series);
 
       const event: Event = {
+        organizationId: 'org-1',
+        seriesId: 'series-1',
         id: 'event-1',
-        path: 'organizations/org-1/series/series-1/events/event-1',
+        path: 'events/event-1',
         name: 'Test Event',
         startDate: Timestamp.fromDate(new Date('2024-12-31')),
         endDate: Timestamp.fromDate(new Date('2025-01-20')),
-        seriesBrief: series,
       };
 
       await expect(validateEventDateRange(event, series.path)).rejects.toThrow(
@@ -79,26 +73,23 @@ describe('validation', () => {
 
     it('should throw a DateRangeError for an invalid end date', async () => {
       const series: Series = {
+        organizationId: 'org-1',
         id: 'series-1',
-        path: 'organizations/org-1/series/series-1',
+        path: 'series/series-1',
         name: 'Test Series',
         startDate: Timestamp.fromDate(new Date('2025-01-01')),
         endDate: Timestamp.fromDate(new Date('2025-01-31')),
-        organizationBrief: {
-          id: 'org-1',
-          path: 'organizations/org-1',
-          name: 'Test Org',
-        },
       };
       await db.doc(series.path).set(series);
 
       const event: Event = {
+        organizationId: 'org-1',
+        seriesId: 'series-1',
         id: 'event-1',
-        path: 'organizations/org-1/series/series-1/events/event-1',
+        path: 'events/event-1',
         name: 'Test Event',
         startDate: Timestamp.fromDate(new Date('2025-01-10')),
         endDate: Timestamp.fromDate(new Date('2025-02-01')),
-        seriesBrief: series,
       };
 
       await expect(validateEventDateRange(event, series.path)).rejects.toThrow(
@@ -110,33 +101,24 @@ describe('validation', () => {
   describe('validateRaceDateRange', () => {
     it('should not throw an error for a valid date range', async () => {
       const event: Event = {
+        organizationId: 'org-1',
+        seriesId: 'series-1',
         id: 'event-1',
-        path: 'organizations/org-1/series/series-1/events/event-1',
+        path: 'events/event-1',
         name: 'Test Event',
         startDate: Timestamp.fromDate(new Date('2025-01-10')),
         endDate: Timestamp.fromDate(new Date('2025-01-20')),
-        seriesBrief: {
-          id: 'series-1',
-          path: 'organizations/org-1/series/series-1',
-          name: 'Test Series',
-          startDate: Timestamp.fromDate(new Date('2025-01-01')),
-          endDate: Timestamp.fromDate(new Date('2025-01-31')),
-          organizationBrief: {
-            id: 'org-1',
-            path: 'organizations/org-1',
-            name: 'Test Org',
-          },
-        },
       };
       await db.doc(event.path).set(event);
 
       const race: Race = {
+        organizationId: 'org-1',
+        eventId: 'event-1',
         id: 'race-1',
-        path: 'organizations/org-1/series/series-1/events/event-1/races/race-1',
+        path: 'races/race-1',
         name: 'Test Race',
         startDate: Timestamp.fromDate(new Date('2025-01-12')),
         endDate: Timestamp.fromDate(new Date('2025-01-18')),
-        eventBrief: event,
       };
 
       await expect(
@@ -146,33 +128,24 @@ describe('validation', () => {
 
     it('should throw a DateRangeError for an invalid start date', async () => {
       const event: Event = {
+        organizationId: 'org-1',
+        seriesId: 'series-1',
         id: 'event-1',
-        path: 'organizations/org-1/series/series-1/events/event-1',
+        path: 'events/event-1',
         name: 'Test Event',
         startDate: Timestamp.fromDate(new Date('2025-01-10')),
         endDate: Timestamp.fromDate(new Date('2025-01-20')),
-        seriesBrief: {
-          id: 'series-1',
-          path: 'organizations/org-1/series/series-1',
-          name: 'Test Series',
-          startDate: Timestamp.fromDate(new Date('2025-01-01')),
-          endDate: Timestamp.fromDate(new Date('2025-01-31')),
-          organizationBrief: {
-            id: 'org-1',
-            path: 'organizations/org-1',
-            name: 'Test Org',
-          },
-        },
       };
       await db.doc(event.path).set(event);
 
       const race: Race = {
+        organizationId: 'org-1',
+        eventId: 'event-1',
         id: 'race-1',
-        path: 'organizations/org-1/series/series-1/events/event-1/races/race-1',
+        path: 'races/race-1',
         name: 'Test Race',
         startDate: Timestamp.fromDate(new Date('2025-01-09')),
         endDate: Timestamp.fromDate(new Date('2025-01-18')),
-        eventBrief: event,
       };
 
       await expect(validateRaceDateRange(race, event.path)).rejects.toThrow(
@@ -182,33 +155,24 @@ describe('validation', () => {
 
     it('should throw a DateRangeError for an invalid end date', async () => {
       const event: Event = {
+        organizationId: 'org-1',
+        seriesId: 'series-1',
         id: 'event-1',
-        path: 'organizations/org-1/series/series-1/events/event-1',
+        path: 'events/event-1',
         name: 'Test Event',
         startDate: Timestamp.fromDate(new Date('2025-01-10')),
         endDate: Timestamp.fromDate(new Date('2025-01-20')),
-        seriesBrief: {
-          id: 'series-1',
-          path: 'organizations/org-1/series/series-1',
-          name: 'Test Series',
-          startDate: Timestamp.fromDate(new Date('2025-01-01')),
-          endDate: Timestamp.fromDate(new Date('2025-01-31')),
-          organizationBrief: {
-            id: 'org-1',
-            path: 'organizations/org-1',
-            name: 'Test Org',
-          },
-        },
       };
       await db.doc(event.path).set(event);
 
       const race: Race = {
+        organizationId: 'org-1',
+        eventId: 'event-1',
         id: 'race-1',
-        path: 'organizations/org-1/series/series-1/events/event-1/races/race-1',
+        path: 'races/race-1',
         name: 'Test Race',
         startDate: Timestamp.fromDate(new Date('2025-01-12')),
         endDate: Timestamp.fromDate(new Date('2025-01-21')),
-        eventBrief: event,
       };
 
       await expect(validateRaceDateRange(race, event.path)).rejects.toThrow(

@@ -4,18 +4,18 @@ import { Stack, Text } from '@mantine/core';
 import Link from 'next/link';
 
 import { UserAvatar } from '@/components/UserAvatar/UserAvatar';
-import { toUrlPath } from '@/datastore/paths';
-import { Contribution } from '@/datastore/schema';
+import { getUrlPath } from '@/datastore/paths';
+import { ContributionWithUser } from '@/datastore/query-schema';
 import { formatDateRelative } from '@/dates/dates';
 
 import { ContentCard } from './ContentCard';
 
 interface ContributionCardProps {
-  contribution: Contribution;
+  data: ContributionWithUser & { preem?: { name?: string } };
 }
 
-export function ContributionCard({ contribution }: ContributionCardProps) {
-  const contributor = contribution.contributor;
+export function ContributionCard({ data }: ContributionCardProps) {
+  const { contribution, contributor, preem } = data;
   if (!contributor) {
     return null;
   }
@@ -33,10 +33,10 @@ export function ContributionCard({ contribution }: ContributionCardProps) {
         <strong>Preem:</strong>{' '}
         <Text
           component={Link}
-          href={`/view/${toUrlPath(contribution.preemBrief.path)}`}
+          href={getUrlPath('/view', `preems/${contribution.preemId}`)}
           style={{ textDecoration: 'none', color: 'inherit' }}
         >
-          {contribution.preemBrief?.name}
+          {preem?.name || 'Preem'}
         </Text>
       </Text>
       {contribution.message && (

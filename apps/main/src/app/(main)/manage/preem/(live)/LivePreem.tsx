@@ -1,6 +1,6 @@
 'use client';
 
-import { toUrlPath } from '@/datastore/paths';
+import { getUrlPath } from '@/datastore/paths';
 export const dynamic = 'force-dynamic';
 
 import { Button, Card, Grid, Group, Stack, Text, Title } from '@mantine/core';
@@ -37,7 +37,7 @@ export function LivePreem({ preem, children }: LivePreemProps) {
             leftSection={<IconPencil size={14} />}
             size="xs"
             component={Link}
-            href={`/manage/${toUrlPath(preem.path)}/edit`}
+            href={getUrlPath('/manage', preem.path, '/edit')}
           >
             Edit Preem
           </Button>
@@ -64,7 +64,7 @@ export function LivePreem({ preem, children }: LivePreemProps) {
               </Group>
               <Button
                 component={Link}
-                href={`/big-screen/${toUrlPath(preem.path)}`}
+                href={getUrlPath('/big-screen', preem.path)}
                 variant="outline"
                 leftSection={<IconDeviceTv size={16} />}
                 mt="md"

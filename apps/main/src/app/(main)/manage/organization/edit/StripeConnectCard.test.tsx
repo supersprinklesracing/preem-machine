@@ -15,6 +15,7 @@ jest.mock('@/env/env', () => ({
   ...jest.requireActual('@/env/env'),
   ENV_STRIPE_ENABLED: true,
 }));
+// eslint-disable-next-line no-restricted-syntax
 const mockEnv = require('@/env/env');
 
 const mockUseStripeConnect = useStripeConnect as jest.Mock;
@@ -43,6 +44,7 @@ describe('StripeConnectCard component', () => {
     const mockOrganization: Organization = {
       id: 'org-1',
       path: 'organizations/org-1',
+      name: 'Test Org',
     };
     render(<StripeConnectCard organization={mockOrganization} />);
 
@@ -57,6 +59,7 @@ describe('StripeConnectCard component', () => {
     const mockOrganization: Organization = {
       id: 'org-1',
       path: 'organizations/org-1',
+      name: 'Test Org',
       stripe: { account: { details_submitted: false } },
     };
     render(<StripeConnectCard organization={mockOrganization} />);
@@ -72,6 +75,7 @@ describe('StripeConnectCard component', () => {
     const mockOrganization: Organization = {
       id: 'org-1',
       path: 'organizations/org-1',
+      name: 'Test Org',
       stripe: { account: { details_submitted: true } },
     };
     render(<StripeConnectCard organization={mockOrganization} />);
@@ -87,6 +91,7 @@ describe('StripeConnectCard component', () => {
     const mockOrganization: Organization = {
       id: 'org-1',
       path: 'organizations/org-1',
+      name: 'Test Org',
     };
     render(<StripeConnectCard organization={mockOrganization} />);
     expect(screen.queryByText('Stripe Connect')).toBeNull();

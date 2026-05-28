@@ -15,7 +15,7 @@ import Link from 'next/link';
 import { DateLocationDetail } from '@/components/cards/DateLocationDetail';
 import { EventCard } from '@/components/cards/EventCard';
 import { MultiPanelLayout } from '@/components/layout/MultiPanelLayout';
-import { organizationPath, toUrlPath } from '@/datastore/paths';
+import { getUrlPath } from '@/datastore/paths';
 import { EventWithRaces } from '@/datastore/query-schema';
 import { Series as SeriesType } from '@/datastore/schema';
 
@@ -45,9 +45,11 @@ export function Series({ series, children: eventsWithRaces }: Props) {
           Hosted by{' '}
           <Anchor
             component={Link}
-            href={`/view/${toUrlPath(organizationPath(series.path))}`}
+            href={
+              organization?.path ? getUrlPath('/view', organization.path) : '#'
+            }
           >
-            {organization.name}
+            {organization?.name}
           </Anchor>
         </Text>
         <Group>
@@ -76,7 +78,7 @@ export function Series({ series, children: eventsWithRaces }: Props) {
                   <EventCard key={event.path} event={event}>
                     <Button
                       component={Link}
-                      href={`/view/${toUrlPath(event.path)}`}
+                      href={getUrlPath('/view', event.path)}
                       variant="light"
                       size="sm"
                       mt="md"
