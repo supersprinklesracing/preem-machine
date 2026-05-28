@@ -27,6 +27,7 @@ import { getUrlPath } from '@/datastore/paths';
 import { PreemWithContributions } from '@/datastore/query-schema';
 import { Preem, Race as RaceType } from '@/datastore/schema';
 import { getSponsorName } from '@/datastore/sponsors';
+import { compareDates } from '@/dates/dates';
 
 interface Props {
   race: RaceType;
@@ -46,11 +47,7 @@ export function Race({ race, children }: Props) {
       })),
     )
 
-    .sort(
-      (a, b) =>
-        new Date(b.contribution.date!).getTime() -
-        new Date(a.contribution.date!).getTime(),
-    );
+    .sort((a, b) => compareDates(a.contribution.date, b.contribution.date));
 
   const preemRows = children.map((preemWithContributions) => {
     const { preem } = preemWithContributions;
@@ -129,8 +126,8 @@ export function Race({ race, children }: Props) {
           path: c.contribution.userId
             ? `users/${c.contribution.userId}`
             : undefined,
-          name: 'Anonymous',
-          avatarUrl: undefined,
+          name: c.contributor.name || 'Anonymous',
+          avatarUrl: c.contributor.avatarUrl,
         }
       : {
           id: '',

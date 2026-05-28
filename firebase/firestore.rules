@@ -21,7 +21,8 @@ service cloud.firestore {
     
     match /organizations/{orgId} {
       allow read: if true; // Publicly readable
-      allow write: if isAuth() && isOrgMember(orgId);
+      allow update, delete: if isAuth() && isOrgMember(orgId);
+      allow create: if isAuth();
     }
     
     match /series/{docId} {
