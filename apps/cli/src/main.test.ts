@@ -26,8 +26,8 @@ jest.mock('./claims', () => ({
   claimsCommand: {},
 }));
 
-jest.mock('./secrets', () => ({
-  secretsCommand: {},
+jest.mock('./commands/dotenv/dotenv', () => ({
+  dotenvCommand: {},
 }));
 
 describe('main', () => {
@@ -35,7 +35,7 @@ describe('main', () => {
     const processArgv = process.argv;
     process.argv = ['node', 'apps/cli/dist/main.js'];
     // eslint-disable-next-line no-restricted-syntax
-    await import('./main');
+    await import('./main.js');
     expect(yargs).toHaveBeenCalledWith(hideBin(process.argv));
     process.argv = processArgv;
   });
