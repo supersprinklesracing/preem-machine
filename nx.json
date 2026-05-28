@@ -19,7 +19,7 @@
     "enabled": false,
     "autoExit": true
   },
-  "defaultProject": "@preem-machine/main",
+  "defaultProject": "@preem-machine/primes",
   "plugins": [
     {
       "plugin": "@nx/js/typescript",
