@@ -1,6 +1,6 @@
 scripts:
-  buildCommand: . tools/cloud-build-prebuild.sh && ./tools/nx bundle @preem-machine/main --verbose
-  runCommand: node dist/apps/main/.next/standalone/apps/main/server.js
+  buildCommand: . tools/cloud-build-prebuild.sh && ./tools/nx bundle @preem-machine/primes --verbose
+  runCommand: node dist/apps/primes/.next/standalone/apps/primes/server.js
 outputFiles:
   serverApp:
     include:

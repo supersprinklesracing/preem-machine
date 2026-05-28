@@ -1,0 +1,51 @@
+name: CI NPM
+
+on:
+  # pull_request: # DISABLED to save minutes - npm ci is already validated in main CI workflow
+  workflow_dispatch:
+
+permissions:
+  actions: read
+  contents: read
+  pull-requests: read
+
+concurrency:
+  group: ${{ github.workflow }}-${{ github.ref }}
+  cancel-in-progress: true
+
+jobs:
+  ci-npm:
+    name: CI NPM
+    runs-on: ubuntu-latest
+    timeout-minutes: 10
+
+    steps:
+      - name: Checkout
+        if: github.actor != 'jlapenna'
+        uses: actions/checkout@v6
+        with:
+          fetch-depth: 0
+
+      - name: Check for changes in package files
+        if: github.actor != 'jlapenna'
+        uses: dorny/paths-filter@v4
+        id: filter
+        with:
+          filters: |
+            packages:
+              - 'package.json'
+              - 'pnpm-lock.yaml'
+
+      - name: Setup Node
+        if: github.actor != 'jlapenna' && steps.filter.outputs.packages == 'true'
+        uses: actions/setup-node@v6
+        with:
+          node-version: 24
+
+      - name: Install correct NPM version
+        if: github.actor != 'jlapenna' && steps.filter.outputs.packages == 'true'
+        run: npm install -g pnpm
+
+      - name: CI NPM
+        if: github.actor != 'jlapenna' && steps.filter.outputs.packages == 'true'
+        run: pnpm install --frozen-lockfile
