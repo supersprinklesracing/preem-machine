@@ -35,4 +35,4 @@ if [ "$SKIP_E2E_TESTS" = "1" ]; then
   exit 0
 fi
 
-./tools/nx e2e e2e-main
+./tools/nx e2e e2e-primes

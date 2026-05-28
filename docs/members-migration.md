@@ -1,6 +1,6 @@
-# Migrate preem-machine/apps/main to members/apps/primes
+# Migrate preem-machine/apps/primes to members/apps/primes
 
-This document outlines the detailed step-by-step plan for migrating the "main" web application from the `preem-machine` monorepo into the `members` monorepo under the new name `primes`.
+This document outlines the detailed step-by-step plan for migrating the "primes" web application from the `preem-machine` monorepo into the `members` monorepo.
 
 ## Resolved Decisions
 
@@ -9,7 +9,7 @@ This document outlines the detailed step-by-step plan for migrating the "main" w
    - `preem-machine/libs/firestore` → `members/libs/primes-firestore`
    - `preem-machine/libs/env-vars` → `members/libs/primes-env`
 3. **Stripe Dependencies:** We will add the required Stripe dependencies to the `members` root `package.json`.
-4. **Git History:** We will preserve Git history. To do this while renaming paths, we will create a temporary local clone of `preem-machine`, use `git filter-repo` to isolate and rename the target directories (`apps/main` -> `apps/primes`, `libs/firestore` -> `libs/primes-firestore`, etc.), and then pull those commits into the `members` repository.
+4. **Git History:** We will preserve Git history. To do this while renaming paths, we will create a temporary local clone of `preem-machine`, use `git filter-repo` to isolate and rename the target directories (`libs/firestore` -> `libs/primes-firestore`, etc.), and then pull those commits into the `members` repository.
 5. **E2E Tests:** We will copy the e2e tests into `members/apps/e2e-primes`.
 
 ## Proposed Changes
@@ -44,8 +44,8 @@ Assuming we keep the libraries separate for the initial migration to reduce scop
 
 #### [NEW] [members/apps/primes](file:///home/jlapenna/p/members/apps/primes)
 
-- Copy `preem-machine/apps/main` into this directory.
-- Update `project.json` name from `@preem-machine/main` to `@members/primes`.
+- Copy `preem-machine/apps/primes` into this directory.
+- Update `project.json` name from `@preem-machine/primes` to `@members/primes`.
 - Update `tsconfig.json` paths and extends to point to `members` base configs.
 - Find and replace all `import { ... } from '@preem-machine/...'` with `import { ... } from '@members/...'`.
 - Update internal imports to reference the newly namespaced libraries (`@members/primes-firestore`, `@members/stripe`, `@members/primes-env`).
@@ -53,8 +53,8 @@ Assuming we keep the libraries separate for the initial migration to reduce scop
 
 #### [NEW] [members/apps/e2e-primes](file:///home/jlapenna/p/members/apps/e2e-primes)
 
-- Copy `preem-machine/apps/e2e-main` into this directory.
-- Update Playwright and project config files to target `primes` instead of `main`.
+- Copy `preem-machine/apps/e2e-primes` into this directory.
+- Update Playwright and project config files to target `primes`.
 
 ### Infrastructure & Deployment Layer
 

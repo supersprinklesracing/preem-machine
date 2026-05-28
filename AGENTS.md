@@ -46,8 +46,8 @@ A Firestore Document **ID** is only unique within its parent collection. A Docum
 
 This is an NX monorepo. The key applications are:
 
-- `apps/main`: The main Next.js web application.
-- `apps/e2e-main`: Playwright E2E tests for the main application.
+- `apps/primes`: The main Next.js web application.
+- `apps/e2e-primes`: Playwright E2E tests for the main application.
 - `apps/cli`: Command-line tools for project automation.
 
 ## 5. Development Workflow
@@ -72,9 +72,9 @@ This is an NX monorepo. The key applications are:
 
 #### Building & Running
 
-- **Run Dev Server:** `./tools/nx run @preem-machine/main:dev`
-- **Verify Build:** `./tools/nx run @preem-machine/main:build:verify`
-- **Production Bundle:** `./tools/nx run @preem-machine/main:build`
+- **Run Dev Server:** `./tools/nx run @preem-machine/primes:dev`
+- **Verify Build:** `./tools/nx run @preem-machine/primes:build:verify`
+- **Production Bundle:** `./tools/nx run @preem-machine/primes:build`
 
 #### Testing
 
@@ -83,12 +83,12 @@ You **MUST NOT** run E2E tests with `--update-snapshots` unless the user explici
 
 Note: Always quote file path variables like `"${TEST_FILE}"` to prevent errors.
 
-- **Run all unit tests:** `./tools/nx run @preem-machine/main:test`
-- **Run a single unit test:** `./tools/nx run @preem-machine/main:test --testFile="'${TEST_REGEX_PATTERN}'"` (This is a regular expression, special characters like "." or "\" must be escaped in the pattern must be escaped (e.g. "\(main\)/my\.test\.ts").)
-- **Run all E2E tests:** `./tools/nx e2e e2e-main`
-- **Run a single E2E test:** `./tools/nx e2e e2e-main -- "${TEST_FILE}"`
-- **Update E2E snapshots:** `./tools/nx e2e e2e-main --update-snapshots`
-- **Update a single E2E snapshot:** `./tools/nx e2e e2e-main --update-snapshots -- "${TEST_FILE}"`
+- **Run all unit tests:** `./tools/nx run @preem-machine/primes:test`
+- **Run a single unit test:** `./tools/nx run @preem-machine/primes:test --testFile="'${TEST_REGEX_PATTERN}'"` (This is a regular expression, special characters like "." or "\" must be escaped in the pattern must be escaped (e.g. "\(main\)/my\.test\.ts").)
+- **Run all E2E tests:** `./tools/nx e2e e2e-primes`
+- **Run a single E2E test:** `./tools/nx e2e e2e-primes -- "${TEST_FILE}"`
+- **Update E2E snapshots:** `./tools/nx e2e e2e-primes --update-snapshots`
+- **Update a single E2E snapshot:** `./tools/nx e2e e2e-primes --update-snapshots -- "${TEST_FILE}"`
 
 #### Code Style & Formatting
 
@@ -100,7 +100,7 @@ Note: Always quote file path variables like `"${TEST_FILE}"` to prevent errors.
 ### File System & Search Tools
 
 - **To search code content:** Use `git grep "search pattern"`. It's fast and respects `.gitignore`.
-- **To find files by name/path:** Use the `glob` tool with a pattern like `'apps/main/src/**/*.tsx'`.
+- **To find files by name/path:** Use the `glob` tool with a pattern like `'apps/primes/src/**/*.tsx'`.
 - **To read one or more files:** Use `read_file` or `read_many_files`.
 - **To list all tracked files:** Use `git ls-files`.
 
@@ -112,8 +112,8 @@ This project uses Jest for unit testing and Playwright for E2E testing. All new 
 
 This project uses `@mantine/form` for state management and validation, and `@mantine/hooks` for debouncing user input to improve UX.
 
-- **Form State Reference:** `apps/main/src/app/(main)/manage/series/[seriesId]/edit/EditSeries.tsx`
-- **Debouncing Reference:** `apps/main/src/app/(main)/account/Details.tsx`
+- **Form State Reference:** `apps/primes/src/app/(main)/manage/series/[seriesId]/edit/EditSeries.tsx`
+- **Debouncing Reference:** `apps/primes/src/app/(main)/account/Details.tsx`
 
 ## 9. Accessing Environment Variables
 

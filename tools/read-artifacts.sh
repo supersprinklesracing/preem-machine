@@ -7,7 +7,7 @@ DOWNLOADS_DIR="${HOME}/downloads"
 SOURCE_ZIP="${DOWNLOADS_DIR}/artifacts.zip"
 ARTIFACTS_EXTRACT_DIR="${DOWNLOADS_DIR}/artifacts"
 # This internal path may need adjustment if your test output structure changes.
-REPORT_DATA_PATH="${ARTIFACTS_EXTRACT_DIR}/apps/e2e-main/playwright-report"
+REPORT_DATA_PATH="${ARTIFACTS_EXTRACT_DIR}/apps/e2e-primes/playwright-report"
 E2E_LOG_FILE="${ARTIFACTS_EXTRACT_DIR}/e2e-server.log"
 
 

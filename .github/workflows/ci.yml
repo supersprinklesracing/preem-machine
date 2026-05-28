@@ -174,7 +174,7 @@ jobs:
         if: github.actor != 'jlapenna' && (steps.filter.outputs.ts == 'true' || steps.filter.outputs.go == 'true')
         env:
           AUTH_SECRET: "e2e-testing-secret-that-is-at-least-32-chars-long"
-        run: ./tools/nx run e2e-main:e2e -- --ignore-snapshots
+        run: ./tools/nx run e2e-primes:e2e -- --ignore-snapshots
 
       - name: E2E Artifacts
         uses: actions/upload-artifact@v7
@@ -183,7 +183,7 @@ jobs:
           name: artifacts
           path: |
             e2e-server.log
-            apps/e2e-main/test-output
+            apps/e2e-primes/test-output
           retention-days: 7
 
       - name: Save E2E Playwright Cache Deps

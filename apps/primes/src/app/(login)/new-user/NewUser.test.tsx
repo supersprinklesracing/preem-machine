@@ -24,7 +24,9 @@ describe('NewUser component', () => {
     const user = userEvent.setup({
       advanceTimers: jest.advanceTimersByTime,
     });
-    const mockNewUserAction = jest.fn(() => Promise.resolve({path: `/users/${MOCK_USER_CONTEXT.user.id}`}));
+    const mockNewUserAction = jest.fn(() =>
+      Promise.resolve({ path: `/users/${MOCK_USER_CONTEXT.user.id}` }),
+    );
     render(<NewUser newUserAction={mockNewUserAction} />, {
       ...withLoggedInUserContext(),
     });
@@ -58,7 +60,9 @@ describe('NewUser component', () => {
   });
 
   it('should allow editing the avatar URL', () => {
-    const mockNewUserAction = jest.fn(() => Promise.resolve({path: `/users/${MOCK_USER_CONTEXT.user.id}`}));
+    const mockNewUserAction = jest.fn(() =>
+      Promise.resolve({ path: `/users/${MOCK_USER_CONTEXT.user.id}` }),
+    );
     render(<NewUser newUserAction={mockNewUserAction} />, {
       ...withLoggedInUserContext(),
     });
