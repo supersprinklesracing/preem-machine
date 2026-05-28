@@ -54,7 +54,7 @@ export const uploadDotenvCommand: CommandModule = {
 
     if (!file) {
       const nodeEnv = getNodeEnv() || 'development';
-      file = `.env.${nodeEnv}.local`;
+      file = `apps/primes/.env.${nodeEnv}.local`;
       logger.info(`ℹ️  No file specified, using default: ${file}`);
     }
 

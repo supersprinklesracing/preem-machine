@@ -95,7 +95,7 @@ Assuming we keep the libraries separate for the initial migration to reduce scop
 
 ### Infrastructure Verification
 
-- Use `./tools/setup-repo.sh` on a fresh branch to verify `.env.development.local` for `primes` is downloaded correctly.
+- Use `./tools/setup-repo.sh` on a fresh branch to verify `apps/primes/.env.development.local` for `primes` is downloaded correctly.
 - Test the deployment script locally with `python3 .agents/skills/sprinkles-dev/scripts/deploy.py primes --monitor-only` (or a dry-run equivalent) to ensure Firebase target mapping succeeds.
 - Start the server using `./tools/nx run @members/primes:serve`.
 - Navigate to the local instance (e.g., `localhost:4200`) and manually verify the UI loads.

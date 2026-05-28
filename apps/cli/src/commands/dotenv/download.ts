@@ -68,7 +68,7 @@ export const downloadDotenvCommand: CommandModule = {
       if (format === 'yml') {
         file = `dist/apps/agent/env.${nodeEnv}.yml`;
       } else {
-        file = `.env.${nodeEnv}.local`;
+        file = `apps/primes/.env.${nodeEnv}.local`;
       }
       logger.info(`ℹ️  No file specified, using default: ${file}`);
     }
