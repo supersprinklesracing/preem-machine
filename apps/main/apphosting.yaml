@@ -53,6 +53,8 @@ env:
     value: /workspace/node_modules/.go/go/bin:/usr/local/sbin:/usr/local/bin:/usr/sbin:/usr/bin:/sbin:/bin
     availability:
       - BUILD
+  - variable: AUTH_URL
+    secret: AUTH_URL
   - variable: AUTH_SECRET
     secret: AUTH_SECRET
   - variable: GOOGLE_CLIENT_ID
@@ -95,5 +97,3 @@ env:
     secret: STRIPE_API_KEY
   - variable: STRIPE_WEBHOOK_SECRET
     secret: STRIPE_WEBHOOK_SECRET
-  - variable: AUTH_URL
-    secret: AUTH_URL
