@@ -2,21 +2,37 @@
   "indexes": [
     {
       "collectionGroup": "events",
-      "queryScope": "COLLECTION",
+      "queryScope": "COLLECTION_GROUP",
       "fields": [
         {
-          "fieldPath": "organizationId",
+          "fieldPath": "seriesBrief.organizationBrief.id",
           "order": "ASCENDING"
         },
         {
           "fieldPath": "endDate",
           "order": "ASCENDING"
         }
-      ]
+      ],
+      "density": "SPARSE_ALL"
     },
     {
       "collectionGroup": "events",
-      "queryScope": "COLLECTION",
+      "queryScope": "COLLECTION_GROUP",
+      "fields": [
+        {
+          "fieldPath": "seriesBrief.organizationBrief.id",
+          "arrayConfig": "CONTAINS"
+        },
+        {
+          "fieldPath": "endDate",
+          "order": "ASCENDING"
+        }
+      ],
+      "density": "SPARSE_ALL"
+    },
+    {
+      "collectionGroup": "events",
+      "queryScope": "COLLECTION_GROUP",
       "fields": [
         {
           "fieldPath": "startDate",
@@ -26,7 +42,8 @@
           "fieldPath": "endDate",
           "order": "ASCENDING"
         }
-      ]
+      ],
+      "density": "SPARSE_ALL"
     }
   ],
   "fieldOverrides": [
