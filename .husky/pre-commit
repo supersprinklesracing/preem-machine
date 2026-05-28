@@ -1,3 +1,28 @@
-npx lint-staged --relative
-./tools/nx affected --target=build
-./tools/nx affected --target=test --target=test:node --forceExit
+#!/bin/bash
+
+set -e
+
+export NX_TUI=false
+
+branch="$(git rev-parse --abbrev-ref HEAD)"
+
+if [ "$branch" = "main" ]; then
+  echo "======================================================================"
+  echo "🚨 ERROR: DIRECT COMMITS TO MAIN ARE STRICTLY FORBIDDEN! 🚨"
+  echo "You must create a feature branch and use GitHub Pull Requests."
+  echo "If you are trying to test a deployment, pushing code is WRONG."
+  echo "Use: python3 .agents/skills/sprinkles-dev/scripts/deploy.py <target>"
+  echo "======================================================================"
+  exit 1
+fi
+
+./tools/check-dependencies.sh
+./tools/nx affected -t format lint --base=main
+
+if [ "$SKIP_TESTS" = "1" ]; then
+  echo "Skipping tests (SKIP_TESTS=1)"
+  ./tools/nx affected -t build --base=main
+else
+  ./tools/nx affected -t test build --base=main
+fi
+

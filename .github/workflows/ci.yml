@@ -9,6 +9,7 @@ on:
 permissions:
   actions: read
   contents: read
+  pull-requests: read
 
 concurrency:
   group: ${{ github.workflow }}-${{ github.ref }}
@@ -22,20 +23,61 @@ jobs:
       name: ci
     env:
       NEXT_PUBLIC_E2E_TESTING: "true"
+      SERVICE_ACCOUNT_SECRET_KEY: SERVICE_ACCOUNT_KEY_JSON_E2E_TESTING_USER
+      NX_MAX_PARALLEL: 3
+      E2E_TIMEOUT: 15m
 
     steps:
       - name: Checkout
+        if: github.actor != 'jlapenna'
         uses: actions/checkout@v6
+
+      - name: Fetch main branch
+        if: github.actor != 'jlapenna'
+        run: git fetch origin main:main
+
+      - name: Check for changes
+        if: github.actor != 'jlapenna'
+        id: filter
+        uses: dorny/paths-filter@v4
         with:
-          filter: tree:0
-          fetch-depth: 0
+          token: ''
+          filters: |
+            ts:
+              - '**/*.ts'
+              - '**/*.tsx'
+              - '**/*.js'
+              - '**/*.cjs'
+              - '**/*.mjs'
+              - '**/tsconfig*'
+            tsPackages:
+              - 'package.json'
+              - 'pnpm-lock.yaml'
+              - '**/package.json'
+              - '**/pnpm-lock.yaml'
+            go:
+              - '**/*.go'
+              - 'go.work'
+              - 'go.work.sum'
+              - '.golangci.yml'
+            repo:
+              - 'nx.json'
+
+      - name: Commit Categories
+        if: github.actor != 'jlapenna'
+        run: |
+          echo "TS: ${{ steps.filter.outputs.ts }}"
+          echo "Go: ${{ steps.filter.outputs.go }}"
+          echo "Repo: ${{ steps.filter.outputs.repo }}"
 
       - name: Authenticate to Google Cloud
+        if: github.actor != 'jlapenna' && (steps.filter.outputs.ts == 'true' || steps.filter.outputs.go == 'true')
         uses: 'google-github-actions/auth@v3'
         with:
           credentials_json: '${{ secrets.CREDENTIALS_GITHUB_ACTIONS_SERVICE_ACCOUNT }}'
 
       - name: Secret Manager Secrets
+        if: github.actor != 'jlapenna' && (steps.filter.outputs.ts == 'true' || steps.filter.outputs.go == 'true')
         uses: 'google-github-actions/get-secretmanager-secrets@v3'
         with:
           export_to_environment: true
@@ -62,38 +104,59 @@ jobs:
             SERVICE_ACCOUNT_PRIVATE_KEY:preem-machine-ci/SERVICE_ACCOUNT_PRIVATE_KEY
             STRIPE_API_KEY:preem-machine-ci/STRIPE_API_KEY
 
-      - name: Install pnpm
-        uses: pnpm/action-setup@v4
-
       - name: Setup Node
+        if: github.actor != 'jlapenna'
         uses: actions/setup-node@v6
         with:
           node-version: 24
-          cache: 'pnpm'
 
-      - name: Install dependencies
+      - name: Install pnpm
+        if: github.actor != 'jlapenna'
+        run: npm install -g pnpm
+
+      - name: Restore NPM CI Cache
+        if: github.actor != 'jlapenna'
+        id: node_modules-cache
+        uses: actions/cache/restore@v5
+        with:
+          path: node_modules
+          key: node-modules-${{ runner.os }}-${{ hashFiles('pnpm-lock.yaml') }}
+
+      - name: NPM CI
+        if: github.actor != 'jlapenna' && steps.node_modules-cache.outputs.cache-hit != 'true'
         run: pnpm install --frozen-lockfile
 
-      - name: Build
-        run: ./tools/nx run-many --target=build
-
       - name: Lint
-        run: ./tools/nx run-many -t lint
+        if: github.actor != 'jlapenna'
+        run: ./tools/nx affected -t lint
+
+      - name: Build
+        if: github.actor != 'jlapenna' && (steps.filter.outputs.ts == 'true' || steps.filter.outputs.go == 'true')
+        env:
+          NX_MAX_PARALLEL: 1
+          NODE_OPTIONS: '--max-old-space-size=4096'
+        run: ./tools/nx affected -t build
 
       - name: 'Test (test:default)'
-        run: ./tools/nx run-many -t test
+        if: github.actor != 'jlapenna' && (steps.filter.outputs.ts == 'true' || steps.filter.outputs.go == 'true')
+        env:
+          NODE_OPTIONS: '--max-old-space-size=8192'
+        run: ./tools/nx affected -t test
 
       - name: 'Test (test:node)'
-        run: ./tools/nx run-many -t test:node
+        if: github.actor != 'jlapenna' && (steps.filter.outputs.ts == 'true' || steps.filter.outputs.go == 'true')
+        run: ./tools/nx affected -t test:node
 
       # https://github.com/microsoft/playwright/issues/7249
       - name: E2E Playwright Deps Version
+        if: github.actor != 'jlapenna' && (steps.filter.outputs.ts == 'true' || steps.filter.outputs.go == 'true')
         run: |
           PLAYWRIGHT_VERSION="$(jq -r '.devDependencies."@playwright/test"' package.json)"
           echo "Playwright Version: ${PLAYWRIGHT_VERSION}"
           echo "PLAYWRIGHT_VERSION=${PLAYWRIGHT_VERSION}" >> $GITHUB_ENV
 
       - name: Restore E2E Playwright Cache Deps
+        if: github.actor != 'jlapenna' && (steps.filter.outputs.ts == 'true' || steps.filter.outputs.go == 'true')
         id: playwright-cache
         uses: actions/cache/restore@v4
         with:
@@ -104,17 +167,18 @@ jobs:
             playwright-${{ runner.os }}-
 
       - name: E2E Deps
-        if: steps.playwright-cache.outputs.cache-hit != 'true'
+        if: github.actor != 'jlapenna' && (steps.filter.outputs.ts == 'true' || steps.filter.outputs.go == 'true') && steps.playwright-cache.outputs.cache-hit != 'true'
         run: pnpm exec playwright install --with-deps chromium
 
       - name: E2E
+        if: github.actor != 'jlapenna' && (steps.filter.outputs.ts == 'true' || steps.filter.outputs.go == 'true')
         env:
           AUTH_SECRET: "e2e-testing-secret-that-is-at-least-32-chars-long"
         run: ./tools/nx run e2e-main:e2e -- --ignore-snapshots
 
       - name: E2E Artifacts
         uses: actions/upload-artifact@v7
-        if: always()
+        if: always() && github.actor != 'jlapenna' && (steps.filter.outputs.ts == 'true' || steps.filter.outputs.go == 'true')
         with:
           name: artifacts
           path: |
@@ -123,9 +187,16 @@ jobs:
           retention-days: 7
 
       - name: Save E2E Playwright Cache Deps
-        if: always()
+        if: always() && github.actor != 'jlapenna' && (steps.filter.outputs.ts == 'true' || steps.filter.outputs.go == 'true')
         uses: actions/cache/save@v4
         with:
           path: |
             ~/.cache/ms-playwright
           key: playwright-${{ runner.os }}-${{ hashFiles('pnpm-lock.yaml') }}
+
+      - name: Save NPM CI Cache
+        if: always() && github.actor != 'jlapenna' && steps.node_modules-cache.outputs.cache-hit != 'true'
+        uses: actions/cache/save@v5
+        with:
+          path: node_modules
+          key: node-modules-${{ runner.os }}-${{ hashFiles('pnpm-lock.yaml') }}

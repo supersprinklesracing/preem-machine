@@ -1,4 +1,38 @@
-npx lint-staged --relative
-./tools/nx run-many -t build
-./tools/nx run-many --targets test,test:node --forceExit
-./tools/nx run e2e-main:e2e
+#!/bin/bash
+
+set -e
+
+export NX_TUI=false
+
+branch="$(git rev-parse --abbrev-ref HEAD)"
+
+if [ "$branch" = "main" ]; then
+  echo "======================================================================"
+  echo "🚨 ERROR: DIRECT PUSHES TO MAIN ARE STRICTLY FORBIDDEN! 🚨"
+  echo "You must create a feature branch and use GitHub Pull Requests."
+  echo "If you are trying to test a deployment, pushing code is WRONG."
+  echo "Use: python3 .agents/skills/sprinkles-dev/scripts/deploy.py <target>"
+  echo "======================================================================"
+  exit 1
+fi
+
+# Always run LFS first so we don't break the remote
+git lfs pre-push "$@"
+
+./tools/check-dependencies.sh
+
+./tools/nx run-many -t format lint
+
+if [ "$SKIP_TESTS" = "1" ]; then
+  echo "Skipping tests (SKIP_TESTS=1)"
+  ./tools/nx run-many -t build
+else
+  ./tools/nx run-many -t test build
+fi
+
+if [ "$SKIP_E2E_TESTS" = "1" ]; then
+  echo "Skipping E2E tests (SKIP_E2E_TESTS=1)"
+  exit 0
+fi
+
+./tools/nx e2e e2e-main
