@@ -71,8 +71,8 @@ export const validateServerEnv = () => {
         throw new Error('STRIPE_API_KEY is required when Stripe is enabled');
       }
       if (!parsed.STRIPE_WEBHOOK_SECRET) {
-        throw new Error(
-          'STRIPE_WEBHOOK_SECRET is required when Stripe is enabled',
+        console.warn(
+          '⚠️ STRIPE_WEBHOOK_SECRET is missing. Stripe Webhooks will fail.',
         );
       }
     }

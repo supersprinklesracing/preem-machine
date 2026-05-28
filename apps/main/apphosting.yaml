@@ -93,3 +93,5 @@ env:
     secret: SERVICE_ACCOUNT_PRIVATE_KEY
   - variable: STRIPE_API_KEY
     secret: STRIPE_API_KEY
+  - variable: STRIPE_WEBHOOK_SECRET
+    secret: STRIPE_WEBHOOK_SECRET
