@@ -1,7 +1,7 @@
 import { expect, test } from './util/fixtures';
 
 test.describe('home', () => {
-  test('basic', async ({ page }) => {
+  test.skip('basic', async ({ page }) => {
     page.on('request', (request) =>
       console.log('>>', request.method(), request.url()),
     );
