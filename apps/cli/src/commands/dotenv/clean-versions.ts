@@ -73,25 +73,21 @@ export const cleanVersionsDotenvCommand: CommandModule = {
           versions.push(version);
         }
 
-        if (versions.length === 0) {
+        const activeVersions = versions.filter((v) => v.state !== 'DESTROYED');
+
+        if (activeVersions.length === 0) {
           continue;
         }
 
         let foundLatestActive = false;
         let destroyedCount = 0;
 
-        for (let i = 0; i < versions.length; i++) {
-          const version = versions[i];
+        for (let i = 0; i < activeVersions.length; i++) {
+          const version = activeVersions[i];
           const state = version.state;
           const versionNameStr = version.name
             ? version.name.split('/').pop()
             : 'unknown';
-
-          // States correspond to: 'ENABLED', 'DISABLED', 'DESTROYED'
-          // We only care about ENABLED or DISABLED versions. DESTROYED is already gone.
-          if (state === 'DESTROYED') {
-            continue;
-          }
 
           // Keep the newest version (index 0) to ensure we never have zero versions.
           // If index 0 is ENABLED, we've found our latest active.

@@ -12,7 +12,7 @@ echo "Running workspace health checks..."
 echo "Checking workspace dependency mandate..."
 violations=0
 # Find all package.json files excluding the root one and those in dist/ or node_modules/
-files=$(find apps libs -name "package.json" -not -path "*/dist/*" -not -path "*/node_modules/*")
+files=$(find "apps" "libs" -name "package.json" -not -path "*/dist/*" -not -path "*/node_modules/*")
 for file in $files; do
   # Check for dependencies that are NOT workspace-local (@members/*).
   # We allow workspace-local dependencies to facilitate Nx dependency detection

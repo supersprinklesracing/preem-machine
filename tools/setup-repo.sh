@@ -26,7 +26,7 @@ if [ ! -f "$HOME/.config/gcloud/application_default_credentials.json" ]; then
 fi
 
 # Setup dotenv.
-./tools/dotenv-init.sh "${PROJECT_ID}" "${TARGET_ENV_FILE}" "${TARGET_E2E_FILE}"
+"./tools/dotenv-init.sh" "${PROJECT_ID}" "${TARGET_ENV_FILE}" "${TARGET_E2E_FILE}"
 
 # Ensure Go is installed (required for agent app)
 if ! command -v go >/dev/null 2>&1; then

@@ -68,7 +68,7 @@ git branch --format='%(refname:short)' | grep -v '^main$' | while read -r branch
   fi
 
   # 1. Check if it's merged into main (handles non-squash merges)
-  if git branch --merged main | grep -q "^[ *]*$branch$"; then
+  if git merge-base --is-ancestor "$branch" main 2>/dev/null; then
     echo "$branch" >> "$PR_MAP_FILE.delete"
     continue
   fi
