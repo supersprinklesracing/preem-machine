@@ -2,7 +2,7 @@
   "indexes": [
     {
       "collectionGroup": "events",
-      "queryScope": "COLLECTION_GROUP",
+      "queryScope": "COLLECTION",
       "fields": [
         {
           "fieldPath": "organizationId",
@@ -12,12 +12,11 @@
           "fieldPath": "endDate",
           "order": "ASCENDING"
         }
-      ],
-      "density": "SPARSE_ALL"
+      ]
     },
     {
       "collectionGroup": "events",
-      "queryScope": "COLLECTION_GROUP",
+      "queryScope": "COLLECTION",
       "fields": [
         {
           "fieldPath": "startDate",
@@ -27,8 +26,7 @@
           "fieldPath": "endDate",
           "order": "ASCENDING"
         }
-      ],
-      "density": "SPARSE_ALL"
+      ]
     }
   ],
   "fieldOverrides": [
