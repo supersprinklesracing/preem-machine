@@ -49,18 +49,7 @@ async function clearCollection(
   collectionPath: string,
 ) {
   const collectionRef = db.collection(collectionPath);
-  const querySnapshot = await collectionRef.get();
-
-  if (querySnapshot.size === 0) {
-    return;
-  }
-
-  const batch = db.batch();
-  querySnapshot.docs.forEach((doc) => {
-    batch.delete(doc.ref);
-  });
-  await batch.commit();
-
+  await db.recursiveDelete(collectionRef);
   console.log(`Deleted all documents in collection: ${collectionPath}`);
 }
 

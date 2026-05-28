@@ -16,6 +16,8 @@ test.describe('home', () => {
       page.getByRole('heading', { name: 'Upcoming Events' }),
     ).toBeVisible();
     await expect(page.getByText('First Lap Leader').first()).toBeVisible();
+    // eslint-disable-next-line playwright/no-networkidle
+    await page.waitForLoadState('networkidle');
     await expect(page).toHaveScreenshot({ fullPage: true });
   });
 });

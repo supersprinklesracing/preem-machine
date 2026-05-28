@@ -53,6 +53,8 @@ env:
     value: /workspace/node_modules/.go/go/bin:/usr/local/sbin:/usr/local/bin:/usr/sbin:/usr/bin:/sbin:/bin
     availability:
       - BUILD
+  - variable: AUTH_URL
+    secret: AUTH_URL
   - variable: AUTH_SECRET
     secret: AUTH_SECRET
   - variable: GOOGLE_CLIENT_ID

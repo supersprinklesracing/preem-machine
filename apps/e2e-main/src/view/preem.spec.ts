@@ -6,6 +6,8 @@ test.describe('view: preem', () => {
     await expect(
       page.getByRole('heading', { name: 'First Lap Leader' }),
     ).toBeVisible();
+    // eslint-disable-next-line playwright/no-networkidle
+    await page.waitForLoadState('networkidle');
     await expect(page).toHaveScreenshot({ fullPage: true });
   });
 });

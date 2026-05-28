@@ -46,6 +46,10 @@ if (!global.Request) {
   global.Headers = Headers;
 }
 
+if (typeof process === 'undefined') {
+  (global as any).process = { env: {} };
+}
+
 // Mock ResizeObserver
 class ResizeObserver {
   observe() {

@@ -5,9 +5,5 @@
     "rootDir": "src"
   },
   "include": ["src/**/*.ts"],
-  "references": [
-    {
-      "path": "../env-vars"
-    }
-  ]
+  "references": []
 }
